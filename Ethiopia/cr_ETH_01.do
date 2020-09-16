@@ -13,7 +13,8 @@ import excel using "$user/$data/Raw/Ethiopia_Health system performance during Co
 * VOLUMES 
 * FP
 rename (Totalnewandrepeatacceptors G H I J K L M N O P Q) ///
-( fp_util1_19	fp_util2_19	fp_util3_19	fp_util4_19	fp_util5_19	fp_util6_19	fp_util7_19	fp_util8_19	fp_util9_19	fp_util10_19	fp_util11_19	fp_util12_19)
+( 	fp_util1_19		fp_util2_19		fp_util3_19		fp_util4_19		fp_util5_19		fp_util6_19	
+	fp_util7_19		fp_util8_19		fp_util9_19		fp_util10_19	fp_util11_19	fp_util12_19)
 * STI
 rename (TotalnumberofSTIcasesbysex S T U V W X Y Z AA AB AC) ///
 (sti_util1_19	sti_util2_19	sti_util3_19	sti_util4_19	sti_util5_19	sti_util6_19	sti_util7_19	sti_util8_19	sti_util9_19	sti_util10_19	sti_util11_19	sti_util12_19)
