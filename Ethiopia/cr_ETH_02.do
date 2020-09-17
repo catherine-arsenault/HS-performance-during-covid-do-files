@@ -102,51 +102,74 @@ rename (Numberofadultandpediatricpa IY IZ JA JB JC JD JE JF JG JH JI) ///
 	hivsupp_qual_num9_19	hivsupp_qual_num10_19	hivsupp_qual_num11_19	hivsupp_qual_num12_19)
 * Controlled diabetes #
 rename (JJ JK JL JM JN JO JP JQ JR JS JT JU ) ///
-(diab_qual_num1_19	diab_qual_num2_19	diab_qual_num3_19	diab_qual_num4_19	diab_qual_num5_19	diab_qual_num6_19	diab_qual_num7_19	diab_qual_num8_19	diab_qual_num9_19	diab_qual_num10_19	diab_qual_num11_19	diab_qual_num12_19)
+(	diab_qual_num1_19	diab_qual_num2_19	diab_qual_num3_19	diab_qual_num4_19	diab_qual_num5_19 ///
+	diab_qual_num6_19	diab_qual_num7_19	diab_qual_num8_19	diab_qual_num9_19	diab_qual_num10_19 ///
+	diab_qual_num11_19	diab_qual_num12_19)
 * Controlled hypertension #
 rename (JV JW JX JY JZ KA KB KC KD KE KF KG ) ///
-(hyper_qual_num1_19	hyper_qual_num2_19	hyper_qual_num3_19	hyper_qual_num4_19	hyper_qual_num5_19	hyper_qual_num6_19	hyper_qual_num7_19	hyper_qual_num8_19	hyper_qual_num9_19	hyper_qual_num10_19	hyper_qual_num11_19	hyper_qual_num12_19)
+(	hyper_qual_num1_19	hyper_qual_num2_19	hyper_qual_num3_19	hyper_qual_num4_19	hyper_qual_num5_19 ///
+	hyper_qual_num6_19	hyper_qual_num7_19	hyper_qual_num8_19	hyper_qual_num9_19	hyper_qual_num10_19 ///
+	hyper_qual_num11_19	hyper_qual_num12_19)
 * Full vaccination
 rename (Numberofchildrenreceivedall KI KJ KK KL KM KN KO KP KQ KR KS) ///
-(vacc_qual1_19	vacc_qual2_19	vacc_qual3_19	vacc_qual4_19	vacc_qual5_19	vacc_qual6_19	vacc_qual7_19	vacc_qual8_19	vacc_qual9_19	vacc_qual10_19	vacc_qual11_19	vacc_qual12_19)
+(	vacc_qual1_19	vacc_qual2_19	vacc_qual3_19	vacc_qual4_19	vacc_qual5_19	vacc_qual6_19 ///
+	vacc_qual7_19	vacc_qual8_19	vacc_qual9_19	vacc_qual10_19	vacc_qual11_19	vacc_qual12_19)
 * Penta3
 rename(Numberofchildrenunderoneyea KU KV KW KX KY KZ LA LB LC LD LE) ///
-(pent_qual1_19	pent_qual2_19	pent_qual3_19	pent_qual4_19	pent_qual5_19	pent_qual6_19	pent_qual7_19	pent_qual8_19	pent_qual9_19	pent_qual10_19	pent_qual11_19	pent_qual12_19)
+(	pent_qual1_19	pent_qual2_19	pent_qual3_19	pent_qual4_19	pent_qual5_19	pent_qual6_19 ///
+	pent_qual7_19	pent_qual8_19	pent_qual9_19	pent_qual10_19	pent_qual11_19	pent_qual12_19)
 * BCG
 rename (LF LG LH LI LJ LK LL LM LN LO LP LQ) ///
-(bcg_qual1_19	bcg_qual2_19	bcg_qual3_19	bcg_qual4_19	bcg_qual5_19	bcg_qual6_19	bcg_qual7_19	bcg_qual8_19	bcg_qual9_19	bcg_qual10_19	bcg_qual11_19	bcg_qual12_19)
+(	bcg_qual1_19	bcg_qual2_19	bcg_qual3_19	bcg_qual4_19	bcg_qual5_19	bcg_qual6_19 ///
+	bcg_qual7_19 	bcg_qual8_19	bcg_qual9_19	bcg_qual10_19	bcg_qual11_19	bcg_qual12_19)
 * Measles
 rename (LR LS LT LU LV LW LX LY LZ MA MB MC) ///
-(measles_qual1_19	measles_qual2_19	measles_qual3_19	measles_qual4_19	measles_qual5_19	measles_qual6_19	measles_qual7_19	measles_qual8_19	measles_qual9_19	measles_qual10_19	measles_qual11_19	measles_qual12_19)
+(	measles_qual1_19	measles_qual2_19	measles_qual3_19	measles_qual4_19	measles_qual5_19 ///
+	measles_qual6_19	measles_qual7_19	measles_qual8_19	measles_qual9_19	measles_qual10_19 ///
+	measles_qual11_19	measles_qual12_19)
 * Polio3
 rename (MD ME MF MG MH MI MJ MK ML MM MN MO) ///
-(opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	opv3_qual6_19	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	opv3_qual11_19	opv3_qual12_19)
+(	opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	opv3_qual6_19 ///
+	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	opv3_qual11_19	opv3_qual12_19)
 * Pneumococcal 
 rename (MP MQ MR MS MT MU MV MW MX MY MZ NA) ///
-(pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19)
+(	pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19 ///
+	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19)
 * Rotavirus 2nd dose
 drop NB NC ND NE NF NG NH NI NJ NK NL NM // dropping 1st dose only
 rename (NN NO NP NQ NR NS NT NU NV NW NX NY) ///
-(rota_qual1_19	rota_qual2_19	rota_qual3_19	rota_qual4_19	rota_qual5_19	rota_qual6_19	rota_qual7_19	rota_qual8_19	rota_qual9_19	rota_qual10_19	rota_qual11_19	rota_qual12_19)
+(	rota_qual1_19	rota_qual2_19	rota_qual3_19	rota_qual4_19	rota_qual5_19	rota_qual6_19 ///
+	rota_qual7_19	rota_qual8_19	rota_qual9_19	rota_qual10_19	rota_qual11_19	rota_qual12_19)
 * MORTALITY 
 * Newborn deaths # numerator
 rename(Numberofneonataldeathsinthe OA OB OC OD OE OF OG OH OI OJ OK) ///
-(newborn_mort_num1_19	newborn_mort_num2_19	newborn_mort_num3_19	newborn_mort_num4_19	newborn_mort_num5_19	newborn_mort_num6_19	newborn_mort_num7_19	newborn_mort_num8_19	newborn_mort_num9_19	newborn_mort_num10_19	newborn_mort_num11_19	newborn_mort_num12_19)
+(	newborn_mort_num1_19	newborn_mort_num2_19	newborn_mort_num3_19	newborn_mort_num4_19 ///
+	newborn_mort_num5_19	newborn_mort_num6_19	newborn_mort_num7_19	newborn_mort_num8_19 ///
+	newborn_mort_num9_19	newborn_mort_num10_19	newborn_mort_num11_19	newborn_mort_num12_19)
 * Stillbirths # numerator
-rename (NumberofstillbirthsJanuary NumberofstillbirthsFebruar NumberofstillbirthsMarch2 NumberofstillbirthsApril20 NumberofstillbirthsMay2019 NumberofstillbirthsJune20 NumberofstillbirthsJuly201 NumberofstillbirthsAugust2 NumberofstillbirthsSeptembe NumberofstillbirthsOctober NumberofstillbirthsNovembe NumberofstillbirthsDecember) ///
-(sb_mort_num1_19	sb_mort_num2_19	sb_mort_num3_19	sb_mort_num4_19	sb_mort_num5_19	sb_mort_num6_19	sb_mort_num7_19	sb_mort_num8_19	sb_mort_num9_19	sb_mort_num10_19	sb_mort_num11_19	sb_mort_num12_19)
+rename (NumberofstillbirthsJanuary-NumberofstillbirthsDecember) ///
+(	sb_mort_num1_19	sb_mort_num2_19	sb_mort_num3_19	sb_mort_num4_19		sb_mort_num5_19		sb_mort_num6_19 ///
+	sb_mort_num7_19	sb_mort_num8_19	sb_mort_num9_19	sb_mort_num10_19 	sb_mort_num11_19	sb_mort_num12_19 )
 * Maternal deaths # numerator
 rename (Numberofmaternaldeathsinhea OY OZ PA PB PC PD PE PF PG PH PI) ///
-(mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19	mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19	mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19)
+(	mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19	mat_mort_num5_19 ///
+	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19	mat_mort_num9_19	mat_mort_num10_19 ///
+	mat_mort_num11_19	mat_mort_num12_19)
 *Inpatient deaths # numerator
 rename (Numberofinpatientdeathsinth PK PL PM PN PO PP PQ PR PS PT PU) ///
-(ipd_mort_num1_19	ipd_mort_num2_19	ipd_mort_num3_19	ipd_mort_num4_19	ipd_mort_num5_19	ipd_mort_num6_19	ipd_mort_num7_19	ipd_mort_num8_19 ipd_mort_num9_19	ipd_mort_num10_19	ipd_mort_num11_19 ipd_mort_num12_19)
+(	ipd_mort_num1_19	ipd_mort_num2_19	ipd_mort_num3_19	ipd_mort_num4_19	ipd_mort_num5_19 ///
+	ipd_mort_num6_19	ipd_mort_num7_19	ipd_mort_num8_19 ipd_mort_num9_19	ipd_mort_num10_19 ///
+	ipd_mort_num11_19 ipd_mort_num12_19)
 * ICU deaths # numerator
-rename (TotaldeathinICUinthereport QI QJ QK QL QM QN QO QP QQ QR QS) (icu_mort_num1_19	icu_mort_num2_19	icu_mort_num3_19	icu_mort_num4_19	icu_mort_num5_19	icu_mort_num6_19	icu_mort_num7_19	icu_mort_num8_19	icu_mort_num9_19	icu_mort_num10_19	icu_mort_num11_19	icu_mort_num12_19)
-drop orgunitlevel1 orgunitlevel4  QT QU QV QW QX QY QZ RA RB RC RD RE RF RG RH RI
+rename (TotaldeathinICUinthereport QI QJ QK QL QM QN QO QP QQ QR QS) ///
+(	icu_mort_num1_19	icu_mort_num2_19	icu_mort_num3_19	icu_mort_num4_19	icu_mort_num5_19 ///
+	icu_mort_num6_19	icu_mort_num7_19	icu_mort_num8_19	icu_mort_num9_19	icu_mort_num10_19 ///
+	icu_mort_num11_19	icu_mort_num12_19)
+drop orgunitlevel1 orgunitlevel4  QT-RI
 * ER mortality  numerator
 rename (Totaldeathintheemergencyuni PW PX PY PZ QA QB QC QD QE QF QG) ///
-(er_mort_num1_19	er_mort_num2_19	er_mort_num3_19	er_mort_num4_19	er_mort_num5_19	er_mort_num6_19	er_mort_num7_19	er_mort_num8_19	er_mort_num9_19	er_mort_num10_19	er_mort_num11_19	er_mort_num12_19)
+(	er_mort_num1_19	er_mort_num2_19	er_mort_num3_19	er_mort_num4_19		er_mort_num5_19		er_mort_num6_19 ///
+	er_mort_num7_19	er_mort_num8_19	er_mort_num9_19	er_mort_num10_19	er_mort_num11_19	er_mort_num12_19)
 * Create unique facility id
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
 replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
