@@ -44,3 +44,5 @@ table region year if month>=4 & month<=6 , c(sum opd_util)
 table region year if month>=4 & month<=6 , c(sum ipd_util)
 table region year if month>=4 & month<=6 , c(mean mat_mort)
 table region year if month>=4 & month<=6 , c(mean sb_mort)
+
+* Another test
