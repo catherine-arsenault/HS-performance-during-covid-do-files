@@ -1,6 +1,7 @@
 * HS performance during Covid
 * Aug 4, 2020 
 * Ethiopia, January - December 2019
+*Permissions test
 clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
