@@ -5,7 +5,13 @@ clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
+<<<<<<< Updated upstream
 * Hello
+=======
+
+* Yet another test 
+
+>>>>>>> Stashed changes
 * Compare 2020 to 2019
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_clean.dta", clear
 
@@ -45,4 +51,7 @@ table region year if month>=4 & month<=6 , c(sum ipd_util)
 table region year if month>=4 & month<=6 , c(mean mat_mort)
 table region year if month>=4 & month<=6 , c(mean sb_mort)
 
+<<<<<<< Updated upstream
 * Another test
+=======
+>>>>>>> Stashed changes
