@@ -109,8 +109,8 @@ drop Indic20_tuber_2019 Indic20_tuber_2020 Indic23vih_suppres2019
 *QUALITY
 * Cervical cancer screening %
 rename Indic21_Enero1Den cerv_denom
-rename (Indic21cacu_jan2019-Indic21cacu_dec2019) (cerv_qual1_19 cerv_qual2_19 cerv_qual3_19 cerv_qual4_19 cerv_qual5_19 ///
-		cerv_qual6_19 cerv_qual7_19 cerv_qual8_19 cerv_qual9_19 cerv_qual10_19 cerv_qual11_19 cerv_qual12_19)
+rename (Indic21cacu_jan2019-Indic21cacu_dec2019) (cerv_util1_19 cerv_util2_19 cerv_util3_19 cerv_util4_19 cerv_util5_19 ///
+		cerv_util6_19 cerv_util7_19 cerv_util8_19 cerv_util9_19 cerv_util10_19 cerv_util11_19 cerv_util12_19)
 * Blood sugar control % Edits Aug 26, among 20+
 save "$user/$data/Data for analysis/IMSS_Jan19-Feb20_WIDE.dta", replace	
 import spss using "$user/$data/Raw/Number_DM& hypertensive patients visited primary care clinics_2019-20years and older.sav", clear
