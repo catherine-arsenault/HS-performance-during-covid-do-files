@@ -201,7 +201,6 @@ rename (Indic31_RV_ene19 Indic31_RV_feb19 Indic31_RV_mar19 Indic31_RV_abr19 Indi
 rename (Indic32_NMN_ene19-Indic32_NMN_dic19) (newborn_mort_num1_19 newborn_mort_num2_19 newborn_mort_num3_19 newborn_mort_num4_19 ///
 		newborn_mort_num5_19 newborn_mort_num6_19 newborn_mort_num7_19 newborn_mort_num8_19 newborn_mort_num9_19 newborn_mort_num10_19 ///
 		newborn_mort_num11_19 newborn_mort_num12_19)
-drop Indic32*
 * Stillbirth mortality
 foreach v in Indic33_NMF_ene19 Indic33_NMF_feb19 Indic33_NMF_mar19 Indic33_NMF_abr19 ///
 			 Indic33_NMF_may19 Indic33_NMF_jun19 Indic33_NMF_jul19 Indic33_NMF_ago19 ///
@@ -211,7 +210,6 @@ foreach v in Indic33_NMF_ene19 Indic33_NMF_feb19 Indic33_NMF_mar19 Indic33_NMF_a
 rename(Indic33_NMF_ene19-Indic33_NMF_dic19) (sb_mort_num1_19 sb_mort_num2_19 sb_mort_num3_19 sb_mort_num4_19 ///
 		sb_mort_num5_19 sb_mort_num6_19 sb_mort_num7_19 sb_mort_num8_19 sb_mort_num9_19 sb_mort_num10_19 ///
 		sb_mort_num11_19 sb_mort_num12_19)
-drop Indic33*
 * Maternal mortality	
 foreach v in Indic34_NMM_ene19 Indic34_NMM_feb19 Indic34_NMM_mar19 Indic34_NMM_abr19 ///
 			 Indic34_NMM_may19 Indic34_NMM_jun19 Indic34_NMM_jul19 Indic34_NMM_ago19 ///
@@ -219,10 +217,10 @@ foreach v in Indic34_NMM_ene19 Indic34_NMM_feb19 Indic34_NMM_mar19 Indic34_NMM_a
 	replace `v'= 0 if `v'==.
 }
 rename (Indic34_NMM_ene19-Indic34_NMM_dic19)(mat_mort_num1_19 mat_mort_num2_19 mat_mort_num3_19 mat_mort_num4_19 mat_mort_num5_19 mat_mort_num6_19 mat_mort_num7_19 mat_mort_num8_19 mat_mort_num9_19 mat_mort_num10_19 mat_mort_num11_19 mat_mort_num12_19)
-drop Indic34*
 * ER mortality
-rename(Indic36_ene19-Indic36_feb_20)(er_mort_num1_19 er_mort_num2_19 er_mort_num3_19 er_mort_num4_19 er_mort_num5_19 er_mort_num6_19 er_mort_num7_19 er_mort_num8_19 er_mort_num9_19 er_mort_num10_19 er_mort_num11_19 er_mort_num12_19 er_mort_num1_20  er_mort_num2_20) 
-drop Indic36*
+rename(Indic36_ene19-Indic36_dic19 Indic36_ene_20 Indic36_feb_20)(er_mort_num1_19 er_mort_num2_19 er_mort_num3_19 er_mort_num4_19 ///
+	   er_mort_num5_19 er_mort_num6_19 er_mort_num7_19 er_mort_num8_19 er_mort_num9_19 er_mort_num10_19 er_mort_num11_19 ///
+	   er_mort_num12_19 er_mort_num1_20  er_mort_num2_20) 
 * Inpatient mortality (ICU and inpatient deaths, not ER deaths)
 egen ipd_mort_num1_19 =rowtotal (  Indic37_ene19 Indic38_ene19) , m
 egen ipd_mort_num2_19 =rowtotal (Indic37_feb19  Indic38_feb19) , m
@@ -240,15 +238,6 @@ egen ipd_mort_num1_20 =rowtotal ( Indic37_ene20     Indic38_ene_20  ) , m
 egen ipd_mort_num2_20 =rowtotal (  Indic37_feb20  Indic38_feb20 ) , m
 drop Indic37* Indic38* 
 
-forval i = 1/12 {
-	replace newborn_mort`i'_19 = newborn_mort`i'_19 * 1000
-	replace sb_mort`i'_19 = sb_mort`i'_19*1000
-	replace mat_mort`i'_19 = mat_mort`i'_19*1000
-	replace er_mort`i'_19 = er_mort`i'_19*1000
-	replace ipd_mort`i'_19 = ipd_mort`i'_19*1000
-	cap replace er_mort`i'_20 = er_mort`i'_20*1000
-	cap replace ipd_mort`i'_20 = ipd_mort`i'_20*1000
-}
  
 save "$user/$data/Data for analysis/IMSS_Jan19-Feb20_WIDE.dta", replace	
 

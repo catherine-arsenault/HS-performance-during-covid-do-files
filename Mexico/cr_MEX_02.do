@@ -34,23 +34,21 @@ drop Indic3_*
 rename(Indic4_FD_mar2020 Indic4_FD_april2020 Indic4_FD_may2020)  (del_util3_20 del_util4_20 del_util5_20)
 *Caesareans
 rename (Indic5_Cesa_mar2020 Indic5_Cesa_april2020 Indic5_Cesa_may2020 )(cs_util3_20 cs_util4_20 cs_util5_20)
-* Caesarean section rates = (number of C-sections) / (number of deliveries + number of C-sections)
+* Create total deliveries to calculate rates later on = number of deliveries + number of C-sections
 egen totaldel3_20= rowtotal(del_util3_20 cs_util3_20), m
 egen totaldel4_20= rowtotal(del_util4_20 cs_util4_20), m
 egen totaldel5_20= rowtotal(del_util5_20 cs_util5_20), m
-gen cs_qual3_20 =  cs_util3_20/ 	 totaldel3_20
-gen cs_qual4_20 = cs_util4_20 / 	 totaldel4_20
-gen cs_qual5_20 =  cs_util5_20/ 	 totaldel5_20
 * Diarrhea , pneumonia, malnutrition
-rename (Indic7_Gastro_mar2020 Indic7_Gastro_april2020 Indic7_Gastro_may2020 Indic8_Neumo_mar2020 Indic8_Neumo_april2020 Indic8_Neumo_may2020 ///
-        Indic9_Desnu_mar2020 Indic9_Desnu_april2020 Indic9_Desnu_may2020) (diarr_util3_20 diarr_util4_20 diarr_util5_20 pneum_util3_20 pneum_util4_20 ///
+rename (Indic7_Gastro_mar2020 Indic7_Gastro_april2020 Indic7_Gastro_may2020 Indic8_Neumo_mar2020 Indic8_Neumo_april2020 ///
+		Indic8_Neumo_may2020 Indic9_Desnu_mar2020 Indic9_Desnu_april2020 Indic9_Desnu_may2020) ///
+		(diarr_util3_20 diarr_util4_20 diarr_util5_20 pneum_util3_20 pneum_util4_20 ///
 		pneum_util5_20 malnu_util3_20 malnu_util4_20 malnu_util5_20)
 * OPD = (# of visits to family medicine) + (# of outpatient specialty consultations) 	
 egen opd_util3_20=rowtotal( Indic11_vmf_mar2020 Indic11_esp_mar2020), m
 egen opd_util4_20= rowtotal( Indic11_vmf_abr2020 Indic11_esp_abr2020) , m		
 egen opd_util5_20= rowtotal(Indic11_vmf_may2020 Indic11_esp_may2020 ) , m		
 * ER
-rename (Indic11_urg_mar2020 Indic11_urg_abr2020 Indic11_urg_may2020)	(er_util3_20 er_util4_20 er_util5_20)
+rename (Indic11_urg_mar2020 Indic11_urg_abr2020 Indic11_urg_may2020) (er_util3_20 er_util4_20 er_util5_20)
 * Dental 
 rename (Indic11_dntl_mar2020 Indic11_dntl_abr2020 Indic11_dntl_may2020) (dental_util3_20 dental_util4_20 dental_util5_20 )
 drop Indic11* 
@@ -68,33 +66,26 @@ rename (In17_sui_mar20 In17_sui_abr20 In17_sui_may20) (mental_util3_20 mental_ut
 * QUALITY (just numerators)
 ********************************************************************************
 * Cervical cancer screening
-gen cerv_qual1_20 = Indic21cacu_jan2020 /In21_EneDen20
-gen cerv_qual2_20 = Indic21cacu_febr2020 / In21_EneDen20
-gen cerv_qual3_20 = Indic21cacu_march2020 / In21_EneDen20
-gen cerv_qual4_20 =Indic21cacu_apr2020 / In21_EneDen20
-gen cerv_qual5_20 = Indic21cacu_may2020/ In21_EneDen20
-drop Indic21* In21* 
+rename In21_EneDen20 cerv_denom
+rename (Indic21cacu_jan2020-Indic21cacu_may2020) (cerv_util1_20 cerv_util2_20 cerv_util3_20 cerv_util4_20 cerv_util5_20 ) 
 * DM blood sugar control 
-gen diab_qual1_20 =Indic24_dmctrl_jan20 / numberDM_jan20
-gen diab_qual2_20 =Indic24_dmctrl_feb20 /numberDM_feb2020
-gen diab_qual3_20 =Indic24_dmctrl_mar20 /numberDM_mar20
-gen diab_qual4_20 =Indic24_dmctrl_abr20 /numberDM_abr20
-gen diab_qual5_20 = Indic24_dmctrl_may20 / numberDM_may20
-drop Indic24* numberDM* 
+rename(Indic24_dmctrl_jan20 Indic24_dmctrl_feb20 Indic24_dmctrl_mar20 Indic24_dmctrl_abr20 Indic24_dmctrl_may20) ///
+		(diab_qual_num1_20 diab_qual_num2_20 diab_qual_num3_20 diab_qual_num4_20 diab_qual_num5_20 )
+rename(numberDM_jan20 numberDM_feb2020 numberDM_mar20 numberDM_abr20 numberDM_may20) ///
+		(diab_qual_denom1_20 diab_qual_denom2_20 diab_qual_denom3_20 diab_qual_denom4_20 diab_qual_denom5_20)
 * HTN blood pressure control 
-gen hyper_qual1_20 = Indic25_htactrl_ene20 / numberHBP_ene20 
-gen hyper_qual2_20 = Indic25_htactrl_feb20 / numberHBP_feb20
-gen hyper_qual3_20 =  Indic25_htactrl_mar20 / numberHBP_mar20 
-gen hyper_qual4_20 =  Indic25_htactrl_abr20 / numberHBP_apr20
-gen hyper_qual5_20 =  Indic25_htactrl_may20 / numberHBP_may20
-drop Indic25* numberHBP* 
+rename( Indic25_htactrl_ene20 Indic25_htactrl_feb20 Indic25_htactrl_mar20 Indic25_htactrl_abr20 Indic25_htactrl_may20) ///
+	  (hyper_qual_num1_20 hyper_qual_num2_20 hyper_qual_num3_20 hyper_qual_num4_20 hyper_qual_num5_20)
+	 rename(numberHBP_ene20 numberHBP_feb20 numberHBP_mar20 numberHBP_apr20 numberHBP_may20) ///
+	 (hyper_qual_denom1_20 hyper_qual_denom2_20 hyper_qual_denom3_20 hyper_qual_denom4_20 hyper_qual_denom5_20) 
 * TB (only annual, drop for now)
 drop In20_tuber_total20
 ********************************************************************************
 * MORTALITY (just numerators)
 ********************************************************************************
-rename (In32_NMN_ene20 In32_NMN_feb20 In32_NMN_mar20) (newborn_mort1_20 newborn_mort2_20 newborn_mort3_20)
-rename (In34_NMM_ene20 In34_NMM_feb20 In34_NMM_mar20 In34_NMM_abr20 In34_NMM_may20) (mat_mort1_20 mat_mort2_20 mat_mort3_20 mat_mort4_20 mat_mort5_20)
+rename (In32_NMN_ene20 In32_NMN_feb20 In32_NMN_mar20) (newborn_mort_num1_20 newborn_mort_num2_20 newborn_mort_num3_20)
+rename (In34_NMM_ene20 In34_NMM_feb20 In34_NMM_mar20 In34_NMM_abr20 In34_NMM_may20) (mat_mort_num1_20 mat_mort_num2_20 ///
+		mat_mort_num3_20 mat_mort_num4_20 mat_mort_num5_20)
 * ER and Inpatient were updated Sept 5th 2020
 drop In36* In37* In38* 
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
@@ -103,15 +94,15 @@ rename Delegación Delegation
 replace Deleg="México Oriente" if Deleg=="México  Oriente"
 replace Deleg="México Poniente" if Deleg=="México  Poniente"
 rename (In36_MortServUrg_ene20 In36_MortServUrg_feb20 In36_MortServUrg_mar20 In36_MortServUrg_abr20 In36_MortServUrg_may20 /// 
-		In36_MortServUrg_jun20 In36_MortServUrg_jul20) (er_mort1_20 er_mort2_20 er_mort3_20 er_mort4_20 er_mort5_20 /// 
-		er_mort6_20 er_mort7_20)
-egen ipd_mort1_20 = rowtotal(In37_MortServCI_ene20 In38_MortHosp_ene20), m 
-egen ipd_mort2_20 = rowtotal(In37_MortServCI_feb20 In38_MortHosp_feb20), m
-egen ipd_mort3_20= rowtotal(In37_MortServCI_mar20 In38_MortHosp_mar20), m
-egen ipd_mort4_20 = rowtotal(In37_MortServCI_abr20 In38_MortHosp_abr20) , m 
-egen ipd_mort5_20  = rowtotal(In37_MortServCI_may20 In38_MortHosp_may20), m 	
-egen ipd_mort6_20  = rowtotal(In37_MortServCI_jun20 In38_MortHosp_jun20), m 
-egen ipd_mort7_20  = rowtotal(In37_MortServCI_jul20 In38_MortHosp_jul20), m 
+		In36_MortServUrg_jun20 In36_MortServUrg_jul20) (er_mort_num1_20 er_mort_num2_20 er_mort_num3_20 er_mort_num4_20 ///
+		er_mort_num5_20 er_mort_num6_20 er_mort_num7_20)
+egen ipd_mort_num1_20 = rowtotal(In37_MortServCI_ene20 In38_MortHosp_ene20), m 
+egen ipd_mort_num2_20 = rowtotal(In37_MortServCI_feb20 In38_MortHosp_feb20), m
+egen ipd_mort_num3_20= rowtotal(In37_MortServCI_mar20 In38_MortHosp_mar20), m
+egen ipd_mort_num4_20 = rowtotal(In37_MortServCI_abr20 In38_MortHosp_abr20) , m 
+egen ipd_mort_num5_20  = rowtotal(In37_MortServCI_may20 In38_MortHosp_may20), m 	
+egen ipd_mort_num6_20  = rowtotal(In37_MortServCI_jun20 In38_MortHosp_jun20), m 
+egen ipd_mort_num7_20  = rowtotal(In37_MortServCI_jul20 In38_MortHosp_jul20), m 
 drop In37* In38* 
 
 merge 1:1 Deleg using "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta"
@@ -126,26 +117,8 @@ drop _merge VAR00001
 ********************************************************************************
 * CREATE DATASET TO MEASURE RATES AT NATIONAL LEVEL
 *******************************************************************************
+	replace newborn_mort_num2_20= 0 if newborn_mort_num2_20==. // there were no deliveries in 1 delegation in Feb 2020
 
-
-* MORTALITY RATES AT DELEGATION LEVEL (replace with appropriate denominator)
-	replace newborn_mort1_20 = newborn_mort1_20 /totaldel1_20
-	replace newborn_mort2_20 = newborn_mort2_20  / totaldel2_20
-	replace newborn_mort2_20= 0 if newborn_mort2_20==. // there were no deliveries in 1 delegation in Feb 2020
-	replace newborn_mort3_20 =  newborn_mort3_20 / totaldel3_20
-
-	replace mat_mort1_20 = mat_mort1_20 / totaldel1_20
-	replace mat_mort2_20 = mat_mort2_20 / totaldel2_20
-	replace mat_mort3_20 = mat_mort3_20 / totaldel3_20
-	replace mat_mort4_20 = mat_mort4_20 / totaldel4_20
-	replace mat_mort5_20 = mat_mort5_20 / totaldel5_20
-	 
-	replace er_mort1_20 = er_mort1_20 /  er_util1_20
-	replace er_mort2_20 = er_mort2_20 / er_util2_20
-	replace er_mort3_20 =er_mort3_20/  er_util3_20
-	replace er_mort4_20 =er_mort4_20/er_util4_20
-	replace er_mort5_20=er_mort5_20/er_util5_20
-	drop er_mort6_20 er_mort7_20				// we dont have the denominator yet
 	
 	replace ipd_mort1_20 = ipd_mort1_20 / ipd_util1_20 
 	replace ipd_mort2_20 = ipd_mort2_20/ ipd_util2_20 
