@@ -1,6 +1,7 @@
 * HS performance during Covid
 * Aug 26, 2020 
 * Mexico - IMSS, Second round of data (March-June 2020)
+* And Merging to first round of data (Jan19-Feb20)
 clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
@@ -40,7 +41,6 @@ egen totaldel5_20= rowtotal(del_util5_20 cs_util5_20), m
 gen cs_qual3_20 =  cs_util3_20/ 	 totaldel3_20
 gen cs_qual4_20 = cs_util4_20 / 	 totaldel4_20
 gen cs_qual5_20 =  cs_util5_20/ 	 totaldel5_20
-
 * Diarrhea , pneumonia, malnutrition
 rename (Indic7_Gastro_mar2020 Indic7_Gastro_april2020 Indic7_Gastro_may2020 Indic8_Neumo_mar2020 Indic8_Neumo_april2020 Indic8_Neumo_may2020 ///
         Indic9_Desnu_mar2020 Indic9_Desnu_april2020 Indic9_Desnu_may2020) (diarr_util3_20 diarr_util4_20 diarr_util5_20 pneum_util3_20 pneum_util4_20 ///
@@ -65,7 +65,7 @@ rename (In16_HTA_ene20 In16_HTA_feb20 In16_HTA_mar20 In16_HTA_abr20 In16_HTA_may
 * Mental health, attempted suicide
 rename (In17_sui_mar20 In17_sui_abr20 In17_sui_may20) (mental_util3_20 mental_util4_20 mental_util5_20)
 ********************************************************************************
-* QUALITY
+* QUALITY (just numerators)
 ********************************************************************************
 * Cervical cancer screening
 gen cerv_qual1_20 = Indic21cacu_jan2020 /In21_EneDen20
@@ -98,7 +98,7 @@ rename (In34_NMM_ene20 In34_NMM_feb20 In34_NMM_mar20 In34_NMM_abr20 In34_NMM_may
 * ER and Inpatient were updated Sept 5th 2020
 drop In36* In37* In38* 
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
-import spss using "Indicators_IMSS__mortality indic36_37_38January_July2020.sav", clear
+import spss using "$user/$data/Raw/Indicators_IMSS__mortality indic36_37_38January_July2020.sav", clear
 rename Delegación Delegation
 replace Deleg="México Oriente" if Deleg=="México  Oriente"
 replace Deleg="México Poniente" if Deleg=="México  Poniente"
@@ -118,11 +118,17 @@ merge 1:1 Deleg using "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta"
 drop _merge 
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 
+********************************************************************************
 * MERGE TO DATA FROM FIRST ROUND (Jan19-Feb20)
+********************************************************************************
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Feb20_WIDE.dta"
 drop _merge VAR00001 
+********************************************************************************
+* CREATE DATASET TO MEASURE RATES AT NATIONAL LEVEL
+*******************************************************************************
 
-* MORTALITY RATES (replace with appropriate denominator)
+
+* MORTALITY RATES AT DELEGATION LEVEL (replace with appropriate denominator)
 	replace newborn_mort1_20 = newborn_mort1_20 /totaldel1_20
 	replace newborn_mort2_20 = newborn_mort2_20  / totaldel2_20
 	replace newborn_mort2_20= 0 if newborn_mort2_20==. // there were no deliveries in 1 delegation in Feb 2020
