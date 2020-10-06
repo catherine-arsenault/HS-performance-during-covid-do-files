@@ -84,6 +84,7 @@ drop In20_tuber_total20
 * MORTALITY (just numerators)
 ********************************************************************************
 rename (In32_NMN_ene20 In32_NMN_feb20 In32_NMN_mar20) (newborn_mort_num1_20 newborn_mort_num2_20 newborn_mort_num3_20)
+replace newborn_mort_num2_20= 0 if newborn_mort_num2_20==. // there were no deliveries in 1 delegation in Feb 2020
 rename (In34_NMM_ene20 In34_NMM_feb20 In34_NMM_mar20 In34_NMM_abr20 In34_NMM_may20) (mat_mort_num1_20 mat_mort_num2_20 ///
 		mat_mort_num3_20 mat_mort_num4_20 mat_mort_num5_20)
 * ER and Inpatient were updated Sept 5th 2020
@@ -103,6 +104,7 @@ egen ipd_mort_num4_20 = rowtotal(In37_MortServCI_abr20 In38_MortHosp_abr20) , m
 egen ipd_mort_num5_20  = rowtotal(In37_MortServCI_may20 In38_MortHosp_may20), m 	
 egen ipd_mort_num6_20  = rowtotal(In37_MortServCI_jun20 In38_MortHosp_jun20), m 
 egen ipd_mort_num7_20  = rowtotal(In37_MortServCI_jul20 In38_MortHosp_jul20), m 
+drop ipd_mort_num6_20 ipd_mort_num7_20 				// we dont have the denominator yet
 drop In37* In38* 
 
 merge 1:1 Deleg using "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta"
@@ -114,25 +116,7 @@ save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 ********************************************************************************
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Feb20_WIDE.dta"
 drop _merge VAR00001 
-********************************************************************************
-* CREATE DATASET TO MEASURE RATES AT NATIONAL LEVEL
-*******************************************************************************
-	replace newborn_mort_num2_20= 0 if newborn_mort_num2_20==. // there were no deliveries in 1 delegation in Feb 2020
 
-	
-	replace ipd_mort1_20 = ipd_mort1_20 / ipd_util1_20 
-	replace ipd_mort2_20 = ipd_mort2_20/ ipd_util2_20 
-	replace ipd_mort3_20= ipd_mort3_20/ ipd_util3_20 
-	replace ipd_mort4_20 = ipd_mort4_20/ ipd_util4_20 
-	replace ipd_mort5_20  = ipd_mort5_20/ ipd_util5_20 
-	drop ipd_mort6_20 ipd_mort7_20 				// we dont have the denominator yet
-	
-forval i = 1/5 {
-	cap replace newborn_mort`i'_20 = newborn_mort`i'_20 * 1000
-	cap replace mat_mort`i'_20 = mat_mort`i'_20*1000
-	cap replace er_mort`i'_20 = er_mort`i'_20*1000
-	replace ipd_mort`i'_20 = ipd_mort`i'_20*1000
-}
 order num_del Delegation HF_tot HF1level HF2level HF3level men2019 women2019 population2019 men2020 women2020 population2020
 sort Delegation
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
@@ -148,36 +132,30 @@ import spss using "$user/$data/Raw/Hospital_mortalityCOVID_march-july2020.sav", 
 drop if delegacion==""
 sort delegacion
 merge 1:1 delegacion using "$user/$data/Raw/link.dta"
-gen covid_mort3_20 = death_covid_march / hospit_covid_march
-gen covid_mort4_20 = death_covid_april / hospit_covid_april
-gen covid_mort5_20 = death_covid_may /hospit_covid_may
-gen covid_mort6_20 = death_covid_june /hospit_covid_june
-gen covid_mort7_20 = death_covid_july /hospit_covid_juliy
-gen covid_prob_mort3_20 = death_negative_march /hospit_negative_march 
-gen covid_prob_mort4_20 = death_negative_april /hospit_negative_april 
-gen covid_prob_mort5_20 = death_negative_mayo /hospit_negative_mayo 
-gen covid_prob_mort6_20 = death_negative_june /hospit_negative_june 
-gen covid_prob_mort7_20 = death_negative_july/hospit_negative_july
-gen covid_pend_mort3_20 = death_covid_march / hospit_covid_march
-gen covid_pend_mort4_20 = death_pending_april /hospit_pending_april
-gen covid_pend_mort5_20 = death_pending_may /hospit_pending_may
-gen covid_pend_mort6_20 = death_pending_june/hospit_pending_june
-gen covid_pend_mort7_20 = death_pending_july/hospit_pending_july
-/*forval i = 3/7 {
-	replace covid_mort`i'_20 = covid_mort`i'_20 * 1000 
-	replace covid_prob_mort`i'_20 = covid_prob_mort`i'_20 * 1000
-	replace covid_pend_mort`i'_20 = covid_pend_mort`i'_20 * 1000
-} */
-keep Deleg covid* 
+rename (death_covid_march death_covid_april death_covid_may death_covid_june death_covid_july) ///
+	  (death_covid3_20 death_covid4_20 death_covid5_20 death_covid6_20 death_covid7_20)
+rename (hospit_covid_march hospit_covid_april hospit_covid_may hospit_covid_june hospit_covid_juliy) ///
+		(hospit_covid3_20 hospit_covid4_20 hospit_covid5_20 hospit_covid6_20 hospit_covid7_20)
+rename (death_negative_march death_negative_april death_negative_mayo death_negative_june death_negative_july) ///
+		(death_negative3_20 death_negative4_20 death_negative5_20 death_negative6_20 death_negative7_20)
+rename (hospit_negative_march hospit_negative_april hospit_negative_mayo hospit_negative_june hospit_negative_july) ///
+		(hospit_negative3_20 hospit_negative4_20 hospit_negative5_20 hospit_negative6_20 hospit_negative7_20 )	
+rename (death_pending_april death_pending_may death_pending_june death_pending_july) ///
+		(death_pending4_20 death_pending5_20 death_pending6_20 death_pending7_20)
+rename (hospit_pending_march hospit_pending_april hospit_pending_may hospit_pending_june hospit_pending_july ) ///
+	   ( hospit_pending3_20 hospit_pending4_20 hospit_pending5_20 hospit_pending6_20 hospit_pending7_20)
+	   
+keep Deleg hospit_covid3_20-hospit_negative7_20 death_covid3_20-death_negative7_20
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta"
-drop _merge totaldel*
+drop _merge 
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 
 * Reshape to long form
 	reshape long  sti_util  del_util  cs_util  diarr_util  pneum_util  malnu_util  art_util  er_util  ipd_util  dental_util diab_util  ///
-				  hyper_util  mental_util  cs_qual opv3_qual  pneum_qual  rota_qual  fp_util  anc_util  opd_util  cerv_qual  diab_qual  ///
-				  hyper_qual  pent_qual  bcg_qual  measles_qual  newborn_mort  sb_mort  mat_mort  er_mort  ipd_mort covid_mort covid_prob_mort ///
-				  covid_pend_mort  , i(num_del) j(month) string
+				  hyper_util  mental_util   opv3_qual  pneum_qual  rota_qual  fp_util  anc_util  opd_util  cerv_util  diab_qual_num  ///
+				  diab_qual_denom hyper_qual_num hyper_qual_denom  pent_qual  bcg_qual  measles_qual  newborn_mort_num  sb_mort_num ///
+				  mat_mort_num  er_mort_num  ipd_mort_num death_covid  hospit_covid death_negative hospit_negative death_pending ///
+				  hospit_pending totaldel  , i(num_del) j(month) string
 * Labels (And dashboard format)
 * Volume RMNCH services
 	lab var fp_util "Number of new and current users of contraceptives"
@@ -205,20 +183,20 @@ save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 	lab var er_util "Number of emergency room visits"
 	lab var ipd_util "Number of inpatient admissions total"
 * Quality 
-	lab var cerv_qual "% women 25-64 screened with VIA for cervical cancer"
-	lab var diab_qual "% diabetic patients aged 20+  with controlled blood sugar"
-	lab var hyper_qual "% hypertisive patients aged 20+ with controlled blood pressure" 
-	lab var cs_qual "Caesarean section rate"
+	*lab var cerv_qual "% women 25-64 screened with VIA for cervical cancer"
+	*lab var diab_qual "% diabetic patients aged 20+  with controlled blood sugar"
+	*lab var hyper_qual "% hypertisive patients aged 20+ with controlled blood pressure" 
+	*lab var cs_qual "Caesarean section rate"
 * Institutional mortality 
-	lab var newborn_mort "Institutional newborn mortality %"
-	lab var sb_mort "Institutional stillbirth rate %"
-	lab var mat_mort "Institutional maternal mortality rate %"
-	lab var er_mort "Emergency room mortality  %"
-	lab var ipd_mort "ICU and inpatient deaths (not ED) / inpatient admissions  %"
+	*lab var newborn_mort "Institutional newborn mortality %"
+	*lab var sb_mort "Institutional stillbirth rate %"
+	*lab var mat_mort "Institutional maternal mortality rate %"
+	*lab var er_mort "Emergency room mortality  %"
+	*lab var ipd_mort "ICU and inpatient deaths (not ED) / inpatient admissions  %"
 * Institutional Covid mortality 	
-	lab var covid_mort "Covid mortality, confirmed"
-	lab var covid_prob_mort "Covid mortality, probable"
-	lab var  covid_pend_mort "Covid mortality, pending test"
+	*lab var covid_mort "Covid mortality, confirmed"
+	*lab var covid_prob_mort "Covid mortality, probable"
+	*lab var  covid_pend_mort "Covid mortality, pending test"
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" |	month=="6_20"  | ///
                 	month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" |	month=="11_20" |	month=="12_20"
@@ -237,9 +215,7 @@ replace mo = 11 if month =="11_19" | month =="11_20"
 replace mo = 12 if month =="12_19" | month =="12_20"
 drop month
 
-order num_del Delegation year mo fp_util anc_util sti_util del_util cs_util diarr_util pneum_util malnu_util art_util er_util ///
-	  opd_util ipd_util diab_util hyper_util dental mental_util cs_qual cerv_qual diab_qual hyper_qual pent_qual measles_qual ///
-	  bcg_qual opv3_qual pneum_qual rota_qual *_mort
+order num_del Delegation year mo 
 sort num_del year mo 
 rename mo month
 
@@ -248,9 +224,11 @@ save "$user/$data/Data for analysis/IMSS_Jan19-May20_clean.dta", replace
 * Reshaping for dashboard
 preserve
 	keep if year == 2020
-	global varlist fp_util anc_util sti_util del_util cs_util diarr_util pneum_util malnu_util art_util er_util opd_util ipd_util ///
-				   diab_util hyper_util dental_util mental_util cs_qual cerv_qual diab_qual hyper_qual pent_qual measles_qual bcg_qual ///
-				   opv3_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort er_mort ipd_mort covid_mort covid_prob_mort covid_pend_mort
+	global varlist cerv_denom diab_qual_denom hyper_qual_denom sti_util del_util cs_util diarr_util pneum_util ///
+	malnu_util art_util er_util dental_util ipd_util diab_util hyper_util mental_util cerv_util diab_qual_num ///
+	hyper_qual_num opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num er_mort_num fp_util ///
+	anc_util totaldel opd_util pent_qual bcg_qual measles_qual ipd_mort_num death_covid hospit_covid ///
+	death_negative hospit_negative death_pending hospit_pending
 				   
 	foreach v of global varlist {
 		rename(`v')(`v'20)
@@ -260,13 +238,12 @@ preserve
 restore
 
 keep if year==2019
-
 foreach v of global varlist {
 	rename(`v')(`v'19)
-	}
+}
 drop year
 merge m:m num_del Delegation month using "$user/$data/temp.dta"
-drop HF_tot - population2020 _merge covid_mort19 covid_prob_mort19 covid_pend_mort19
+drop HF_tot - population2020 _merge 
 
 export delimited using "$user/$data/IMSS_Jan19-May20_fordashboard.csv", replace
 
