@@ -86,7 +86,7 @@ drop Indic29_SABIN_U_* Indic29_SABIN_P_* Indic29_SABIN_S_* Indic29_SABIN_R_* Ind
 rename ( Indic29_SABIN_T_may20 Indic29_SABIN_T_jun20) ( opv3_qual5_20 opv3_qual6_20)
 
 * Pneumococcal #
-rename (Indic30_ANC_jun20 Indic30_ANC_may20 Indic30_ANC_jun20) (pneum_qual5_20 pneum_qual6_20)
+rename (Indic30_ANC_jun20 Indic30_ANC_may20 ) (pneum_qual5_20 pneum_qual6_20)
 
 * Rotavirus #
 rename (Indic31_RV_may20 Indic31_RV_jun20) (rota_qual5_20 rota_qual6_20)
