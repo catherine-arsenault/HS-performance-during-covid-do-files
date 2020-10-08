@@ -190,8 +190,9 @@ egen measles_qual4_20 =rowtotal (  Indic28*abr20  ) , m
 egen measles_qual5_20 =rowtotal (  Indic28*may20   ) , m
 drop Indic28*
 * OPV3
-rename (Indic29_SABIN_T_ene19 Indic29_SABIN_T_feb19 Indic29_SABIN_T_mar19 Indic29_SABIN_T_abr19 Indic29_SABIN_T_may19 Indic29_SABIN_T_jun19 Indic29_SABIN_T_jul19 Indic29_SABIN_T_ago19 Indic29_SABIN_T_sept19 Indic29_SABIN_T_oct9 Indic29_SABIN_T_nov19 Indic29_SABIN_T_dic19 Indic29_SABIN_T_ene20 Indic29_SABIN_T_feb20 Indic29_SABIN_T_mar20 Indic29_SABIN_T_abr20 Indic29_SABIN_T_may20) (opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	opv3_qual6_19	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	opv3_qual11_19	opv3_qual12_19  opv3_qual1_20	opv3_qual2_20	opv3_qual3_20	opv3_qual4_20	opv3_qual5_20)
 drop Indic29_SABIN_U_* Indic29_SABIN_P_* Indic29_SABIN_S_* Indic29_SABIN_R_* Indic29_SABIN_A_*
+rename (Indic29_SABIN_T_ene19-Indic29_SABIN_T_may20) (opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	opv3_qual6_19	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	opv3_qual11_19	opv3_qual12_19  opv3_qual1_20	opv3_qual2_20	opv3_qual3_20	opv3_qual4_20	opv3_qual5_20)
+
 * Pneumo vaccine
 rename (Indic30_ANC_ene19 Indic30_ANC_feb19 Indic30_ANC_mar19 Indic30_ANC_abr19 Indic30_ANC_may19 Indic30_ANC_jun19 Indic30_ANC_jul19 Indic30_ANC_ago19 Indic30_ANC_sept19 Indic30_ANC_oct19 Indic30_ANC_nov19 Indic30_ANC_dic19 Indic30_ANC_ene20 Indic30_ANC_feb20 Indic30_ANC_mar20 Indic30_ANC_abr20 Indic30_ANC_may20) (pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19 pneum_qual1_20	pneum_qual2_20	pneum_qual3_20	pneum_qual4_20	pneum_qual5_20)
 * Rota vaccine
