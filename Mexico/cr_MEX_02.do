@@ -143,16 +143,18 @@ rename (hospit_negative_march hospit_negative_april hospit_negative_mayo hospit_
 rename (death_pending_april death_pending_may death_pending_june death_pending_july) ///
 		(death_pending4_20 death_pending5_20 death_pending6_20 death_pending7_20)
 rename (hospit_pending_march hospit_pending_april hospit_pending_may hospit_pending_june hospit_pending_july ) ///
-	   ( hospit_pending3_20 hospit_pending4_20 hospit_pending5_20 hospit_pending6_20 hospit_pending7_20)
+	   (hospit_pending3_20 hospit_pending4_20 hospit_pending5_20 hospit_pending6_20 hospit_pending7_20)
 	   
 keep Deleg hospit_covid3_20-hospit_negative7_20 death_covid3_20-death_negative7_20
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta"
 drop _merge 
 set obs 36 
 replace Delegation = "National" if Delegation==""
-save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 
-* Reshape to long form
+save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
+/********************************************************************************
+* RESHAPE TO LONG FORM
+********************************************************************************
 	reshape long  sti_util  del_util  cs_util  diarr_util  pneum_util  malnu_util  art_util  er_util  ipd_util  ///
 	dental_util diab_util   hyper_util  mental_util   opv3_qual  pneum_qual  rota_qual  fp_util  anc_util  opd_util  ///
 	cerv_util  diab_qual_num diab_qual_denom hyper_qual_num hyper_qual_denom  pent_qual  bcg_qual  measles_qual ///
