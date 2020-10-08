@@ -14,11 +14,15 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	*Family planning 2019 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_fp_util.csv", clear
 	drop organisationunitdescription
-	rename (familyplanningprogrampermanentfp familyplanningprogrampostpartumf 						 				  	familyplanningprogramtemporaryfp) (v9 v69 v105)  
+	rename (familyplanningprogrampermanentfp familyplanningprogrampostpartumf ///
+			familyplanningprogramtemporaryfp) (v9 v69 v105)  
 	//24 indicators 
-	egen fp_util1_19 = rowtotal(v9 v21 v33 v45 v57 v69 v81 v93 v105 v117 v129 v141 v153 v165 v177 v189 v201 v213 								v225 v237 v249 v261 v273 v285), m
-	egen fp_util2_19 = rowtotal(v10 v22 v34 v46 v58 v70 v82 v94 v106 v118 v130 v142 v154 v166 v178 v190 v202 v214 								 v226 v238 v250 v262 v274 v286), m
-	egen fp_util3_19 = rowtotal(v11 v23 v35 v47 v59 v71 v83 v95 v107 v119 v131 v143 v155 v167 v179 v191 v203 v215 								 v227 v239 v251 v263 v275 v287), m
+	egen fp_util1_19 = rowtotal(v9 v21 v33 v45 v57 v69 v81 v93 v105 v117 v129 v141 v153 v165 v177 v189 v201 v213 ///
+	  							v225 v237 v249 v261 v273 v285), m
+	egen fp_util2_19 = rowtotal(v10 v22 v34 v46 v58 v70 v82 v94 v106 v118 v130 v142 v154 v166 v178 v190 v202 v214 	///
+								v226 v238 v250 v262 v274 v286), m
+	egen fp_util3_19 = rowtotal(v11 v23 v35 v47 v59 v71 v83 v95 v107 v119 v131 v143 v155 v167 v179 v191 v203 v215 ///
+							    v227 v239 v251 v263 v275 v287), m
 	egen fp_util4_19 = rowtotal(v12 v24 v36 v48 v60 v72 v84 v96 v108 v120 v132 v144 v156 v168 v180 v192 v204 v216 								 v228 v240 v252 v264 v276 v288), m
 	egen fp_util5_19 = rowtotal(v13 v25 v37 v49 v61 v73 v85 v97 v109 v121 v133 v145 v157 v169 v181 v193 v205 v217 								 v229 v241 v253 v265 v277 v289), m
 	egen fp_util6_19 = rowtotal(v14 v26 v38 v50 v62 v74 v86 v98 v110 v122 v134 v146 v158 v170 v182 v194 v206 v218 								 v230 v242 v254 v266 v278 v290), m
