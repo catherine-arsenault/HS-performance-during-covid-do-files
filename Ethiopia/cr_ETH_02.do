@@ -164,7 +164,7 @@ merge 1:1  region zone organisationunitname using "$user/$data/Ethiopia_Jan19-De
     ----------------------------------------- */
 drop _merge
 
-save "$user/$data/Ethiopia_Jan19-June20_WIDE.dta", replace
+save "$user/$data/Data for analysis/Ethiopia_Jan19-June20_WIDE.dta", replace
 
 /* By woreda, new TB cases, unable to read labels, waiting for Solomon to confirm
 import excel using "$user/$data/Raw/Ethiopia_Health system performance during Covid_data extraction_2019_January to December_03_08_2020_GC/Ethiopia_2019_January to December_all death & quarterly data_03_08_2020/Ethiopia_TB_Quarterly_2019_January to December_ by woreda.xlsx", firstrow clear
