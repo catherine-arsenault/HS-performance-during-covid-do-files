@@ -41,11 +41,7 @@ global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pn
 
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
-global all fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-		   art_util  opd_util ipd_util er_util road_util diab_util hyper_util kmc_qual resus_qual ///
-		   cerv_qual hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-		   measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
-		   er_mort_num icu_mort_num ipd_mort_num
+global all $volumes $mortality
 
 order  region zone org fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 del_util*_20  cs_util*_19 ///
 	  cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 diarr_util*_19 diarr_util*_20 ///
