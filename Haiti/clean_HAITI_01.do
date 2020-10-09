@@ -48,8 +48,7 @@ order org* anc_util*_19 anc_util*_20 cs_util*_19 cs_util*_20 del_util*_19 del_ut
 
 global volumes anc_util cs_util del_util pnc_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util vacc_qual tbdetect_qual
 global mortality mat_mort  sb_mort   
-global all anc_util cs_util del_util pnc_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util vacc_qual ///
-			tbdetect_qual mat_mort  sb_mort  
+global all $volumes $mortality 
 
 /****************************************************************
 VOLUMES:  REPLACE MISSINGS TO 0 IF MISSINGNESS IS CONSISTENT
