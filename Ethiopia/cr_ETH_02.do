@@ -164,6 +164,13 @@ merge 1:1  region zone organisationunitname using "$user/$data/Ethiopia_Jan19-De
     ----------------------------------------- */
 drop _merge
 
+/* THIS IS A TEST*/
+*
+*
+*
+
+
+
 save "$user/$data/Data for analysis/Ethiopia_Jan19-June20_WIDE.dta", replace
 
 /* By woreda, new TB cases, unable to read labels, waiting for Solomon to confirm
