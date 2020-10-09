@@ -1,16 +1,6 @@
 * HS performance during Covid
 * Ethiopia 
 * Data cleaning, January-June 2020 
-clear all
-set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
-
-u "$user/$data/Data for analysis/Ethiopia_Jan19-June20_WIDE.dta", clear
-
-****NEW TEXT IS RIGHT HERE*****
-****NEW AND IMPROVED******
-
 /********************************************************************
 SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
  IN DHIS2. IT USES DATASET IN WIDE FORM (1 ROW PER HEALTH FACILITY)
@@ -29,6 +19,12 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
   
 5 Reshape dataset from wide to long.
 ********************************************************************/
+clear all
+set more off	
+global user "/Users/acatherine/Dropbox (Harvard University)"
+global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
+
+u "$user/$data/Data for analysis/Ethiopia_Jan19-June20_WIDE.dta", clear
 
 * 3710 woreda/facilities 
 * Dropping all woreda/facilities that don't report any indicators all period
@@ -36,6 +32,7 @@ egen all_visits = rowtotal(fp_util1_20-icu_mort_num12_19), m
 drop if all_visits==.
 drop all_visits 
 * Retains 2383 woreda/facilities with some data from Jan19-Jun20
+********************************************************************
 
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 				ipd_util er_util road_util diab_util hyper_util kmc_qual resus_qual  cerv_qual ///
