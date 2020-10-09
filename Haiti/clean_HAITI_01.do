@@ -23,7 +23,6 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 5 Reshape dataset from wide to long.
 ********************************************************************/
 
-=======
 clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
