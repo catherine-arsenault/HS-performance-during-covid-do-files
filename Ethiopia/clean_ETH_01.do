@@ -8,6 +8,8 @@ global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 
 u "$user/$data/Data for analysis/Ethiopia_Jan19-June20_WIDE.dta", clear
 
+****NEW TEXT IS RIGHT HERE*****
+
 /********************************************************************
 SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
  IN DHIS2. IT USES DATASET IN WIDE FORM (1 ROW PER HEALTH FACILITY)
