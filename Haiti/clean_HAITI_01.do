@@ -3,6 +3,27 @@
 * Hait, January 2019 - June 2020
 * Data cleaning, Catherine Arsenault
 * Data recoded in R by Celestin
+
+/********************************************************************
+SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
+ IN DHIS2. IT USES DATASET IN WIDE FORM (1 ROW PER HEALTH FACILITY)
+
+1 Impute 0s for missing values: 
+	- For volume data, missingness must be consistent
+	- For mortality, 0s are imputed if the facility offers the
+	  service it relates to.
+
+2 Identify extreme outliers and set them to missing
+
+3 Calculate completeness for each indicator-month 
+
+4 Complete case analysis: keep only health facilities that have 
+  reported every month (or nearly every month) 
+  
+5 Reshape dataset from wide to long.
+********************************************************************/
+
+=======
 clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
