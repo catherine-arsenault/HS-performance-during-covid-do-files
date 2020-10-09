@@ -11,12 +11,12 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_2020_Jan-Jul_Facility.xlsx", firstrow clear
 rename (orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4) (Province District SubDistrict Facility)
 drop organisationunitname Hospitalpublic NonFixedfacilitysatellitehe
-save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for Analysis/tmp2020.dta", replace 
+save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta", replace 
 * Jan-Dec 2019
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_2019_Jan-Dec_Facility.xlsx", firstrow clear
 
 *Append in additional months
-append using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for Analysis/tmp2020.dta"
+append using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta"
 
 *Months
 encode periodname, gen(month)
@@ -136,7 +136,8 @@ order Province dist subdist Facility factype fp_util* anc*_util* del_util* cs_ut
 
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", replace
 
-*export excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data cleaning/South Africa_2019_Jan-Dec_Facility_reshaped.xlsx", firstrow(var) replace
+rm "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta"
+
 
 
 
