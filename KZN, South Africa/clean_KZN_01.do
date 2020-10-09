@@ -1,20 +1,47 @@
 * HS performance during Covid
 * KZN, South Africa
 * Data cleaning, January-December 2019 Baseline data
+* Created by Catherine Arsenault, September 2020
+/********************************************************************
+SUMMARY: This do file contains methods to address data quality issues
+in Dhis2. It uses a dataset in wide form (1 row per health facility)
+
+1 Impute 0s for missing values: 
+	- For volume data, missingness must be consistent
+	- For mortality, 0s are imputed if the facility offers the
+	  service the mortality indicator relates to.
+
+2 Identify extreme outliers and set them to missing
+
+3 Calculate completeness for each indicator-month 
+
+4 Complete case analysis: keep only health facilities that have 
+  reported every month (or nearly every month) 
+  
+5 Reshape dataset from wide to long.
+********************************************************************/
 clear all 
 set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
 
-global volumes anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ipd_util er_util road_util diab_util ///
-	kmcn_qual cerv_qual tbscreen_qual tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util trauma_util
+global volumes anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util er_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
+			   trauma_util
 global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num
 global all $volumes $mortality 
 
-drop fp_util* hyper_util*
+drop fp_util* hyper_util* /* these indicators are no longer collected after April 2020 (start of financial year)
+							 Must be dropped from analysis */ 
+
+/****************************************************************
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning0.xlsx", firstrow(variable) replace
 
 /***************************************************************
 VOLUMES:  REPLACE MISSINGS TO 0 IF MISSINGNESS IS CONSISTENT
