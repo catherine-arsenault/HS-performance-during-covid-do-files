@@ -271,6 +271,9 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 }
 
 keep region zone org diab* hyper* 
+egen total = rowtotal(diab_util10_19-hyper_qual_num6_20), m
+drop if total==.
+drop total 
 save "$user/$data/Data for analysis/tmpdiab_hyper.dta", replace
 
 * Merge together
@@ -294,7 +297,7 @@ foreach x in diab_hyper fp_util sti_util anc_util del_util cs_util pnc_util diar
 /****************************************************************
 EXPORT RECODED DATA FOR VISUAL CHECK IN EXCEL
 ****************************************************************/
-export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning3.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning3.xlsx", firstrow(variable) replace
 
 /******************************************************************************
  Calculate total deliveries and total inpatients for mortality indicators
@@ -302,21 +305,23 @@ export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning
 forval i = 1/12 {
 	egen totaldel`i'_19 = rowtotal(del_util`i'_19  cs_util`i'_19)
 	egen totalipd_mort`i'_19= rowtotal(ipd_mort_num`i'_19 icu_mort_num`i'_19), m	
+	drop icu_mort_num`i'_19
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
 forval i = 1/6 {
 	egen totaldel`i'_20 = rowtotal(del_util`i'_20  cs_util`i'_20)
-	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m	 
+	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m
+	drop icu_mort_num`i'_20
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
 /****************************************************************
                   RESHAPE FOR DASHBOARD
 *****************************************************************/	
-reshape long  fp_util sti_util anc_util del_util cs_util totaldel pnc_util diarr_util pneum_util sam_util ///
-			  art_util opd_util ipd_util er_util road_util diab_util hyper_util kmc_qual resus_qual ///
-			  cs_qual cerv_qual hivsupp_qual diab_qual hyper_qual vacc_qual pent_qual bcg_qual ///
-			  measles_qual opv3_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort er_mort ///
-			  ipd_mort totalipdmort, i(unit_id) j(month) string
+reshape long  fp_util sti_util anc_util del_util cs_util totaldel pnc_util diarr_util pneum_util ///
+			  sam_util art_util opd_util ipd_util er_util road_util diab_util hyper_util kmc_qual ///
+			  resus_qual cs_qual cerv_qual hivsupp_qual diab_qual hyper_qual vacc_qual pent_qual ///
+			  bcg_qual measles_qual opv3_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort ///
+			  er_mort ipd_mort totalipd_mort, i(region zone org) j(month) string
 
 * Labels (And dashboard format)
 * Volume RMNCH services TOTALS
@@ -348,20 +353,21 @@ reshape long  fp_util sti_util anc_util del_util cs_util totaldel pnc_util diarr
 	lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
 * Quality MEANS
 	lab var kmc_qual "% of LBW babies initiated on KMC"
-	lab var cs_qual "Caesarean rates"
+	*lab var cs_qual "Caesarean rates"
 	lab var resus_qual "% asphyxiated neonates who were resuscitated and survived"
-	lab var diab_qual "% diabetic patients with controlled blood sugar"
-	lab var hyper_qual "% hypertisive patients with controlled blood pressure" 
-	lab var hivsupp_qual "% ART patients with undetect VL"
+	*lab var diab_qual "% diabetic patients with controlled blood sugar"
+	*lab var hyper_qual "% hypertisive patients with controlled blood pressure" 
+	*lab var hivsupp_qual "% ART patients with undetect VL"
 * Institutional mortality MEANS
-	lab var newborn_mort"Institutional newborn deaths per 1000"
-	lab var sb_mort "Institutional stillbirths per 1000 "
-	lab var mat_mort "Institutional maternal deaths per 1000"
-	lab var er_mort "Emergency room deaths per 1000"
-	lab var ipd_mort "Inpatient (incl. ICU) deaths per 1000"
+	*lab var newborn_mort "Institutional newborn deaths per 1000"
+	*lab var sb_mort "Institutional stillbirths per 1000 "
+	*lab var mat_mort "Institutional maternal deaths per 1000"
+	*lab var er_mort "Emergency room deaths per 1000"
+	*lab var ipd_mort "Inpatient (incl. ICU) deaths per 1000"
 * Month and year
-gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" |	month=="6_20"  | ///
-                	month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" |	month=="11_20" |	month=="12_20"
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
+				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
 replace year = 2019 if year==.
 gen mo = 1 if month =="1_19" | month =="1_20"
 replace mo = 2 if month =="2_19" | month =="2_20"
@@ -380,6 +386,32 @@ rename mo month
 sort region zone organisationunitname year mo
 order region zone organisationunitname year mo
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_clean.dta", replace
+
+
+* Reshaping for data visualisations / dashboard
+preserve
+	keep if year == 2020
+	global varlist hivsupp_qual newborn_mort sb_mort mat_mort er_mort ipd_mort fp_util sti_util ///
+	anc_util del_util cs_util totaldel pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+	ipd_util er_util road_util diab_util hyper_util kmc_qual resus_qual cs_qual cerv_qual ///
+	diab_qual hyper_qual vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
+	totalipd_mort
+	foreach v of global varlist {
+		rename(`v')(`v'20)
+	}
+	drop year
+	save "$user/$data/Data for analysis/temp.dta", replace
+restore
+keep if year==2019
+foreach v of global varlist {
+	rename(`v')(`v'19)
+	}
+drop year
+merge m:m region zone organisationunitname month using "$user/$data/Data for analysis/temp.dta"
+drop _merge
+
+rm "$user/$data/Data for analysis/temp.dta"
+
 
 export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Jun20_fordashboard.csv", replace
 
