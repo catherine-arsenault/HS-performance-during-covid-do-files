@@ -43,14 +43,20 @@ global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_
 
 global all $volumes $mortality
 
-order  region zone org fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 del_util*_20  cs_util*_19 ///
-	  cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 diarr_util*_19 diarr_util*_20 ///
-	  pneum_util*_19 pneum_util*_20 sb_mort*_19 sb_mort*_20 mat_mort*_19 mat_mort*_20 sam_util*_19 sam_util*_20 ///
-	  ipd_util*_19 ipd_util*_20 er_util*_19 er_util*_20 road_util*_19 road_util*_20 diab_util*_19 diab_util*_20 ///
-	  hyper_util*_19 hyper_util*_20 kmc_qual*_19 kmc_qual*_20 resus_qual*_19 resus_qual*_20  cerv_qual*_19 cerv_qual*_20 ///
-	  hivsupp_qual_num*_19 hivsupp_qual_num*_20  diab_qual_num*_19 diab_qual_num*_20 hyper_qual_num*_19 hyper_qual_num*_20  ///
-	  vacc_qual*_19 vacc_qual*_20 pent_qual*_19 pent_qual*_20 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 measles_qual*_20 ///
-	  opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20 rota_qual*_19 rota_qual*_20 
+order  region zone org fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 del_util*_20 ///
+	  cs_util*_19 cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 diarr_util*_19  ///
+	  diarr_util*_20  pneum_util*_19 pneum_util*_20 sb_mort*_19 sb_mort*_20 mat_mort*_19 mat_mort*_20 ///
+	  sam_util*_19 sam_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 er_util*_20 road_util*_19 ///
+	  road_util*_20 diab_util*_19 diab_util*_20 hyper_util*_19 hyper_util*_20 kmc_qual*_19 ///
+	  kmc_qual*_20 resus_qual*_19 resus_qual*_20  cerv_qual*_19 cerv_qual*_20 hivsupp_qual_num*_19 ///
+	  hivsupp_qual_num*_20  diab_qual_num*_19 diab_qual_num*_20 hyper_qual_num*_19 hyper_qual_num*_20  ///
+	  vacc_qual*_19 vacc_qual*_20 pent_qual*_19 pent_qual*_20 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 ///
+	  measles_qual*_20 opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20 rota_qual*_19 ///
+	  rota_qual*_20 
+/****************************************************************
+EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
+****************************************************************/
+export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning0.xlsx", firstrow(variable) replace
 /****************************************************************
 VOLUMES:  REPLACE MISSINGS TO 0 IF MISSINGNESS IS CONSISTENT
 ****************************************************************
