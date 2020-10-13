@@ -148,6 +148,7 @@ replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
 replace region ="Harari"  if region== "Harari Regional Health Bureau"
 replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
 replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
+replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
 replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 
