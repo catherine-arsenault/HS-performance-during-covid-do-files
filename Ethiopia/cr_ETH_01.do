@@ -128,25 +128,35 @@ rename (MP MQ MR MS MT MU MV MW MX MY MZ NA) ///
 drop NB NC ND NE NF NG NH NI NJ NK NL NM // dropping 1st dose only
 rename (NN NO NP NQ NR NS NT NU NV NW NX NY) ///
 (rota_qual1_19	rota_qual2_19	rota_qual3_19	rota_qual4_19	rota_qual5_19	rota_qual6_19	rota_qual7_19	rota_qual8_19	rota_qual9_19	rota_qual10_19	rota_qual11_19	rota_qual12_19)
+
 * MORTALITY 
 * Newborn deaths # numerator
 rename(Numberofneonataldeathsinthe OA OB OC OD OE OF OG OH OI OJ OK) ///
 (newborn_mort_num1_19	newborn_mort_num2_19	newborn_mort_num3_19	newborn_mort_num4_19	newborn_mort_num5_19	newborn_mort_num6_19	newborn_mort_num7_19	newborn_mort_num8_19	newborn_mort_num9_19	newborn_mort_num10_19	newborn_mort_num11_19	newborn_mort_num12_19)
+
 * Stillbirths # numerator
-rename (NumberofstillbirthsJanuary NumberofstillbirthsFebruar NumberofstillbirthsMarch2 NumberofstillbirthsApril20 NumberofstillbirthsMay2019 NumberofstillbirthsJune20 NumberofstillbirthsJuly201 NumberofstillbirthsAugust2 NumberofstillbirthsSeptembe NumberofstillbirthsOctober NumberofstillbirthsNovembe NumberofstillbirthsDecember) ///
+rename (NumberofstillbirthsJanuary-NumberofstillbirthsDecember) ///
 (sb_mort_num1_19	sb_mort_num2_19	sb_mort_num3_19	sb_mort_num4_19	sb_mort_num5_19	sb_mort_num6_19	sb_mort_num7_19	sb_mort_num8_19	sb_mort_num9_19	sb_mort_num10_19	sb_mort_num11_19	sb_mort_num12_19)
+
 * Maternal deaths # numerator
 rename (Numberofmaternaldeathsinhea OY OZ PA PB PC PD PE PF PG PH PI) ///
 (mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19	mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19	mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19)
+
 *Inpatient deaths # numerator
 rename (Numberofinpatientdeathsinth PK PL PM PN PO PP PQ PR PS PT PU) ///
 (ipd_mort_num1_19	ipd_mort_num2_19	ipd_mort_num3_19	ipd_mort_num4_19	ipd_mort_num5_19	ipd_mort_num6_19	ipd_mort_num7_19	ipd_mort_num8_19 ipd_mort_num9_19	ipd_mort_num10_19	ipd_mort_num11_19 ipd_mort_num12_19)
+
 * ICU deaths # numerator
-rename (TotaldeathinICUinthereport QI QJ QK QL QM QN QO QP QQ QR QS) (icu_mort_num1_19	icu_mort_num2_19	icu_mort_num3_19	icu_mort_num4_19	icu_mort_num5_19	icu_mort_num6_19	icu_mort_num7_19	icu_mort_num8_19	icu_mort_num9_19	icu_mort_num10_19	icu_mort_num11_19	icu_mort_num12_19)
+rename (TotaldeathinICUinthereport QI QJ QK QL QM QN QO QP QQ QR QS) ///
+(icu_mort_num1_19	icu_mort_num2_19	icu_mort_num3_19	icu_mort_num4_19	icu_mort_num5_19	icu_mort_num6_19	icu_mort_num7_19	icu_mort_num8_19	icu_mort_num9_19	icu_mort_num10_19	icu_mort_num11_19	icu_mort_num12_19)
 drop orgunitlevel1 orgunitlevel4  QT QU QV QW QX QY QZ RA RB RC RD RE RF RG RH RI
+
 * ER mortality  numerator
 rename (Totaldeathintheemergencyuni PW PX PY PZ QA QB QC QD QE QF QG) ///
-(er_mort_num1_19	er_mort_num2_19	er_mort_num3_19	er_mort_num4_19	er_mort_num5_19	er_mort_num6_19	er_mort_num7_19	er_mort_num8_19	er_mort_num9_19	er_mort_num10_19	er_mort_num11_19	er_mort_num12_19)
+(er_mort_num1_19	er_mort_num2_19	er_mort_num3_19	er_mort_num4_19	er_mort_num5_19	///
+er_mort_num6_19	er_mort_num7_19	er_mort_num8_19	er_mort_num9_19	er_mort_num10_19	///
+er_mort_num11_19	er_mort_num12_19)
+
 * Create unique facility id
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
 replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
