@@ -43,20 +43,23 @@ global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_
 
 global all $volumes $mortality
 
-order  region zone org fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 del_util*_20 ///
-	  cs_util*_19 cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 diarr_util*_19  ///
-	  diarr_util*_20  pneum_util*_19 pneum_util*_20 sb_mort*_19 sb_mort*_20 mat_mort*_19 mat_mort*_20 ///
-	  sam_util*_19 sam_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 er_util*_20 road_util*_19 ///
+order  region zone org unit_id fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 ///
+	  del_util*_20 cs_util*_19 cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 ///
+	  diarr_util*_19  diarr_util*_20  pneum_util*_19 pneum_util*_20 art_util*_19 art_util*_20  ///
+	  sam_util*_19 sam_util*_20 opd_util*_19 opd_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 ///
+	  er_util*_20 road_util*_19 ///
 	  road_util*_20 diab_util*_19 diab_util*_20 hyper_util*_19 hyper_util*_20 kmc_qual*_19 ///
 	  kmc_qual*_20 resus_qual*_19 resus_qual*_20  cerv_qual*_19 cerv_qual*_20 hivsupp_qual_num*_19 ///
 	  hivsupp_qual_num*_20  diab_qual_num*_19 diab_qual_num*_20 hyper_qual_num*_19 hyper_qual_num*_20  ///
 	  vacc_qual*_19 vacc_qual*_20 pent_qual*_19 pent_qual*_20 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 ///
 	  measles_qual*_20 opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20 rota_qual*_19 ///
-	  rota_qual*_20 
+	  rota_qual*_20 sb_mort*_19 sb_mort*_20 newborn_mort_num*_19 newborn_mort_num*_20 mat_mort*_19 ///
+	  mat_mort*_20 er_mort_num*19 er_mort_num*20 icu_mort_num*19  icu_mort_num*20 ipd_mort_num*19 ///
+	  ipd_mort_num*20
 /****************************************************************
 EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
 ****************************************************************/
-export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning0.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning0.xlsx", firstrow(variable) replace
 /****************************************************************
 VOLUMES:  REPLACE MISSINGS TO 0 IF MISSINGNESS IS CONSISTENT
 ****************************************************************
@@ -166,8 +169,8 @@ This technique avoids flagging as outlier a value of 1 if facility reports:
 0 0 0 0 0 1 0 0 0 0 0 0  which is common for mortality
 
 Hypertension and diabetes (util and quality) were incomplete until October 2019. 
-We wont drop outliers for these 4 variables, as we do not have 12 months of data.
-KMC quality and Newborn resuscitated were provided as proportions, we also do not include those in outlier assessement */
+We won't drop outliers for these 4 variables, as we do not have 12 months of data.
+KMC quality and Newborn resuscitated were extracted as proportions, we also do not include those in outlier assessement */
 
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 				ipd_util er_util road_util kmc_qual resus_qual cerv_qual hivsupp_qual_num  ///
@@ -184,6 +187,10 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 	}
 	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x' flag_outlier_`x'*
 }
+/****************************************************************
+EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning2.xlsx", firstrow(variable) replace
 /****************************************************************
                     CALCULATE COMPLETENESS
 ****************************************************************
@@ -209,15 +216,13 @@ foreach x of global all {
 	}
 	drop nb`x'* maxfac`x'
 }
-/****************************************************************
-		REVIEW COMPLETENESS
-****************************************************************/
-tabstat compl*, c(s) s(min) 
+
+	tabstat compl*, c(s) s(min) // Review completeness here
 	
 * Create flags for low completeness
 foreach v of varlist compl* {
-	gen flag`v' = 1 if `v'<0.90
-	lab var flag`v' "Completeness < 90%"
+	gen flag`v' = 1 if `v'<0.95
+	lab var flag`v' "Completeness < 95%"
 }
 *Drop all empty flags // remaining flags will identify the months < 95%
 foreach var of varlist flag* {
@@ -228,9 +233,8 @@ foreach var of varlist flag* {
  }
 drop compl* 
 
-* Investigate flags that remain 
 /****************************************************************
-DIABETES AND HYPERTENSION STARTED BEING COLLECTED IN OCT 19
+DIABETES AND HYPERTENSION STARTED BEING COLLECTED IN OCT 2019
 drop any values for utilisation and quality from Jan to Sep 2019
 ****************************************************************/
 foreach x in diab_util diab_qual_num hyper_util hyper_qual_num {
