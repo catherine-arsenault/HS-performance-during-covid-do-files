@@ -188,7 +188,7 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x' flag_outlier_`x'*
 }
 /****************************************************************
-EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning2.xlsx", firstrow(variable) replace
 /****************************************************************
@@ -243,6 +243,59 @@ foreach x in diab_util diab_qual_num hyper_util hyper_qual_num {
 	}
 }
 drop flagcompl*diab* flagcompl*hyper*  
+
+/***************************************************************
+                 COMPLETE CASE ANALYSIS
+****************************************************************
+Completeness is an issue, particularly March-June 2020. Some Woredas 
+have not reported yet. For each variable, keep only heath facilities that 
+have reported at least 14 out of 18 months (incl the latest 3 months) 
+This brings completeness up "generally" above 90% for all variables. 
+This won't include diabetes and hypertension because they started
+in October 2019. */
+drop flag* 
+foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+				ipd_util er_util road_util  kmc_qual resus_qual  cerv_qual ///
+				hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
+				er_mort_num icu_mort_num ipd_mort_num  {
+	preserve
+		keep region  zone org `x'* 
+		egen total`x'= rownonmiss(`x'*)
+		keep if total`x'>14 & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. 
+		* keep if at least 14 out of 18 months are reported & april-jun 2020 are reported 
+		* keep if total`x'== 18
+		drop total`x'
+		save "$user/$data/Data for analysis/tmp`x'.dta", replace
+	restore
+}
+
+keep region zone org diab* hyper* 
+save "$user/$data/Data for analysis/tmpdiab_hyper.dta", replace
+
+* Merge together
+foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+				ipd_util er_util road_util  kmc_qual resus_qual  cerv_qual ///
+				hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
+				er_mort_num icu_mort_num ipd_mort_num  {
+			 	merge 1:1 region  zone org using "$user/$data/Data for analysis/tmp`x'.dta"
+				drop _merge
+				save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA.dta", replace
+	}
+	
+foreach x in diab_hyper fp_util sti_util anc_util del_util cs_util pnc_util diarr_util ///
+				pneum_util sam_util ipd_util er_util road_util  kmc_qual resus_qual cerv_qual ///
+				hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
+				er_mort_num icu_mort_num ipd_mort_num  {
+			 rm "$user/$data/Data for analysis/tmp`x'.dta"
+			 }
+/****************************************************************
+EXPORT RECODED DATA FOR VISUAL CHECK IN EXCEL
+****************************************************************/
+export excel using "$user/$data/Data cleaning/Ethio_Jan19-June20_fordatacleaning3.xlsx", firstrow(variable) replace
+
 /******************************************************************************
  Calculate total deliveries and total inpatients for mortality indicators
 *******************************************************************************/ 
@@ -256,18 +309,14 @@ forval i = 1/6 {
 	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m	 
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
- 
-save "$user/$data/Ethiopia_Jan19-June20_WIDE.dta", replace
-
 /****************************************************************
                   RESHAPE FOR DASHBOARD
 *****************************************************************/	
-drop flag* 
-reshape long  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+reshape long  fp_util sti_util anc_util del_util cs_util totaldel pnc_util diarr_util pneum_util sam_util ///
 			  art_util opd_util ipd_util er_util road_util diab_util hyper_util kmc_qual resus_qual ///
 			  cs_qual cerv_qual hivsupp_qual diab_qual hyper_qual vacc_qual pent_qual bcg_qual ///
-		measles_qual opv3_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort er_mort ipd_mort, ///
-		i(unit_id) j(month) string
+			  measles_qual opv3_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort er_mort ///
+			  ipd_mort totalipdmort, i(unit_id) j(month) string
 
 * Labels (And dashboard format)
 * Volume RMNCH services TOTALS
