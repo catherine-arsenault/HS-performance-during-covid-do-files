@@ -172,7 +172,6 @@ replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 
 egen unit_id = concat(region zone organisationunitname)
-order region zone organisationunitname unit_id
 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec19_WIDE.dta", replace
 
