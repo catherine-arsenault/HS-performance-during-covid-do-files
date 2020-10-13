@@ -151,7 +151,9 @@ replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 
 egen unit_id = concat(region zone organisationunitname)
 order region zone organisationunitname unit_id
-
+********************************************************************************
+* MERGE TO DATA FROM 2019
+********************************************************************************
 
 merge 1:1  region zone organisationunitname using "$user/$data/Ethiopia_Jan19-Dec19_WIDE.dta"
 /*    Result                           # of obs.
