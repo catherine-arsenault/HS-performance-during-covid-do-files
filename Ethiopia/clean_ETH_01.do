@@ -36,8 +36,8 @@ drop all_visits
 
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 				ipd_util er_util road_util diab_util hyper_util kmc_qual resus_qual  cerv_qual ///
-				hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual 
+				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util
 
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
@@ -173,8 +173,8 @@ We won't drop outliers for these 4 variables, as we do not have 12 months of dat
 KMC quality and Newborn resuscitated were extracted as proportions, we also do not include those in outlier assessement */
 
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-				ipd_util er_util road_util kmc_qual resus_qual cerv_qual hivsupp_qual_num  ///
-				 vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual   {
+			 opd_util ipd_util er_util road_util art_util kmc_qual resus_qual cerv_qual ///
+			 hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual   {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3*(rowsd`x'))
@@ -255,10 +255,10 @@ This won't include diabetes and hypertension because they started
 in October 2019. */
 drop flag* 
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-				ipd_util er_util road_util  kmc_qual resus_qual  cerv_qual ///
-				hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
-				er_mort_num icu_mort_num ipd_mort_num  {
+			 opd_util ipd_util er_util road_util  kmc_qual resus_qual  cerv_qual ///
+			 art_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
+			 measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
+			 er_mort_num icu_mort_num ipd_mort_num  {
 	preserve
 		keep region  zone org `x'* 
 		egen total`x'= rownonmiss(`x'*)
@@ -278,8 +278,8 @@ save "$user/$data/Data for analysis/tmpdiab_hyper.dta", replace
 
 * Merge together
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-				ipd_util er_util road_util  kmc_qual resus_qual  cerv_qual ///
-				hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
+				opd_util ipd_util er_util road_util  kmc_qual resus_qual  cerv_qual ///
+				art_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
 				er_mort_num icu_mort_num ipd_mort_num  {
 			 	merge 1:1 region  zone org using "$user/$data/Data for analysis/tmp`x'.dta"
@@ -289,7 +289,7 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 	
 foreach x in diab_hyper fp_util sti_util anc_util del_util cs_util pnc_util diarr_util ///
 				pneum_util sam_util ipd_util er_util road_util  kmc_qual resus_qual cerv_qual ///
-				hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
+				art_util opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num ///
 				er_mort_num icu_mort_num ipd_mort_num  {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -314,14 +314,18 @@ forval i = 1/6 {
 	drop icu_mort_num`i'_20
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
+
+save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA.dta", replace
+
 /****************************************************************
-                  RESHAPE FOR DASHBOARD
+                  RESHAPE TO LONG
 *****************************************************************/	
-reshape long  fp_util sti_util anc_util del_util cs_util totaldel pnc_util diarr_util pneum_util ///
-			  sam_util art_util opd_util ipd_util er_util road_util diab_util hyper_util kmc_qual ///
-			  resus_qual cs_qual cerv_qual hivsupp_qual diab_qual hyper_qual vacc_qual pent_qual ///
-			  bcg_qual measles_qual opv3_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort ///
-			  er_mort ipd_mort totalipd_mort, i(region zone org) j(month) string
+reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util anc_util ///
+			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
+			  er_util road_util kmc_qual resus_qual cerv_qual art_util hivsupp_qual_num  ///
+			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel ///
+			  totalipd_mort, i(region zone org) j(month) string
 
 * Labels (And dashboard format)
 * Volume RMNCH services TOTALS
@@ -385,17 +389,64 @@ drop month
 rename mo month
 sort region zone organisationunitname year mo
 order region zone organisationunitname year mo
+
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_clean.dta", replace
 
+/****************************************************************
+  COLLAPSE TO REGION TOTALS AND RESHAPE FOR DASHBOARD
+*****************************************************************/
+u "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA.dta", clear
+collapse (sum) diab_util10_19-totalipd_mort6_20, by(region)
+encode region, gen(reg)
+drop region
+order reg
+set obs 12
+foreach x of var _all    {
+	egen `x'tot= total(`x'), m
+	replace `x'= `x'tot in 12
+	drop `x'tot
+}
+decode reg, gen(region)
+replace region="National" if region==""
+drop reg
+order region
+
+reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util anc_util ///
+			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
+			  er_util road_util kmc_qual resus_qual cerv_qual art_util hivsupp_qual_num  ///
+			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel ///
+			  totalipd_mort, i(region ) j(month) string
+* Month and year
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
+				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
+replace year = 2019 if year==.
+gen mo = 1 if month =="1_19" | month =="1_20"
+replace mo = 2 if month =="2_19" | month =="2_20"
+replace mo = 3 if month =="3_19" | month =="3_20"
+replace mo = 4 if month =="4_19" | month =="4_20"
+replace mo = 5 if month =="5_19" | month =="5_20"
+replace mo = 6 if month =="6_19" | month =="6_20"
+replace mo = 7 if month =="7_19" | month =="7_20"
+replace mo = 8 if month =="8_19" | month =="8_20"
+replace mo = 9 if month =="9_19" | month =="9_20"
+replace mo = 10 if month =="10_19" | month =="10_20"
+replace mo = 11 if month =="11_19" | month =="11_20"
+replace mo = 12 if month =="12_19" | month =="12_20"
+drop month	
+rename mo month
+sort region year month
+order region year month 
 
 * Reshaping for data visualisations / dashboard
 preserve
 	keep if year == 2020
-	global varlist hivsupp_qual newborn_mort sb_mort mat_mort er_mort ipd_mort fp_util sti_util ///
-	anc_util del_util cs_util totaldel pnc_util diarr_util pneum_util sam_util art_util opd_util ///
-	ipd_util er_util road_util diab_util hyper_util kmc_qual resus_qual cs_qual cerv_qual ///
-	diab_qual hyper_qual vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-	totalipd_mort
+	global varlist fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
+	sam_util opd_util ipd_util er_util road_util kmc_qual resus_qual cerv_qual art_util ///
+	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
+	newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel totalipd_mort ///
+	diab_util hyper_util diab_qual_num hyper_qual_num
 	foreach v of global varlist {
 		rename(`v')(`v'20)
 	}
@@ -407,7 +458,7 @@ foreach v of global varlist {
 	rename(`v')(`v'19)
 	}
 drop year
-merge m:m region zone organisationunitname month using "$user/$data/Data for analysis/temp.dta"
+merge m:m region month using "$user/$data/Data for analysis/temp.dta"
 drop _merge
 
 rm "$user/$data/Data for analysis/temp.dta"
