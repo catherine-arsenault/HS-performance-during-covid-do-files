@@ -60,6 +60,7 @@ rename (totalnumberofdiabeticpatientsenr-v95 ) ///
 rename (totalnumberofhypertensivepatient-v101) ///
 (	hyper_util1_20	hyper_util2_20	hyper_util3_20	hyper_util4_20	hyper_util5_20	hyper_util6_20 ) 
 drop totalnumberofindividualsscreened-v113 // screened for diabetes or hypertension, not needed
+
 * QUALITY 
 * KMC %
 rename (proportionoflowbirthweightandorp-v119) ///
@@ -111,6 +112,7 @@ rename (v180-v185) ///
 drop v186-v191 // dropping 1st dose only
 rename (v192-v197) ///
 (	rota_qual1_20	rota_qual2_20	rota_qual3_20	rota_qual4_20	rota_qual5_20	rota_qual6_20 )
+
 * MORTALITY 
 * Newborn deaths # numerator
 rename(numberofneonataldeathsinthefirst-v203) ///
@@ -146,24 +148,18 @@ replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
 replace region ="Harari"  if region== "Harari Regional Health Bureau"
 replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
 replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
+replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
 replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 
 egen unit_id = concat(region zone organisationunitname)
 order region zone organisationunitname unit_id
+********************************************************************************
+* MERGE TO DATA FROM 2019
+********************************************************************************
 
-
-merge 1:1  region zone organisationunitname using "$user/$data/Ethiopia_Jan19-Dec19_WIDE.dta"
-/*    Result                           # of obs.
-    -----------------------------------------
-    not matched                           344
-        from master                       245  (_merge==1)
-        from using                         99  (_merge==2)
-
-    matched                             3,366  (_merge==3)
-    ----------------------------------------- */
+merge 1:1  region zone organisationunitname using "$user/$data/Data for analysis/Ethiopia_Jan19-Dec19_WIDE.dta"
 drop _merge
-
 save "$user/$data/Data for analysis/Ethiopia_Jan19-June20_WIDE.dta", replace
 
 /* By woreda, new TB cases, unable to read labels, waiting for Solomon to confirm
