@@ -234,8 +234,8 @@ foreach var of varlist flag* {
 drop compl* 
 *Investigate flags that remain 
 /****************************************************************
-DIABETES AND HYPERTENSION STARTED BEING COLLECTED IN OCT 2019
-drop any values for utilisation and quality from Jan to Sep 2019
+Diabetes and hypertension were only collected starting OCT 2019
+Drop any values for utilisation and quality from Jan to Sep 2019
 ****************************************************************/
 foreach x in diab_util diab_qual_num hyper_util hyper_qual_num {
 	forval i = 1/9 {
