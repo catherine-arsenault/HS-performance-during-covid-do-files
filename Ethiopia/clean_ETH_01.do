@@ -162,8 +162,8 @@ EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
          IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
 	               AND SET THEM TO MISSING 
 ***************************************************************** 
-Identifying extreme outliers over 12 months 
-Any value that is greater or smaller than 3SD from the mean 12-month trend is set to missing
+Identifying extreme outliers over 12 months. Any value that is greater 
+or smaller than 3SD from the mean 12-month trend is set to missing
 This is only applied if the mean of the series is greater or equal to 1 
 This technique avoids flagging as outlier a value of 1 if facility reports: 
 0 0 0 0 0 1 0 0 0 0 0 0  which is common for mortality
