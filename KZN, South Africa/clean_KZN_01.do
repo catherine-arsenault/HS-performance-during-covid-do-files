@@ -22,8 +22,8 @@ in Dhis2. It uses a dataset in wide form (1 row per health facility)
 ********************************************************************/
 clear all 
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear

@@ -4,8 +4,8 @@
 * Anna Gage, code checked by: Catherine Arsenault
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 
 * Jan-Jul 2020
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_2020_Jan-Jul_Facility.xlsx", firstrow clear
@@ -87,7 +87,7 @@ rename (Antenatal1stvisittotal Deliveryinfacilitysum Deliverybycaesareansection 
 		(anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util diab_util ///
 		hyper_util er_util)
 		
-egen road_util = rowtotal(EmergencycaseMotorVehicleA AF AH), missing
+egen road_util = rowtotal(EmergencycaseMotorVehicleA AF AH AI), missing
 
 * Quality 
 rename (NeonateReceived24hrKMC Cervicalcancerscreening30yea ScreenforTBsymptoms5yearsa ///
