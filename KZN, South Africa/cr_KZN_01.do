@@ -12,11 +12,18 @@ import excel using "$user/HMIS Data for Health System Performance Covid (South A
 rename (orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4) (Province District SubDistrict Facility)
 drop organisationunitname Hospitalpublic NonFixedfacilitysatellitehe
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta", replace 
+import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/Missing Facility Data Element - 18Oct2020.xls", firstrow clear
+rename (organisationunitname) (Facility)
+drop orgunitlevel1-orgunitlevel4 Admissions I
+save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta", replace 
+
 * Jan-Dec 2019
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_2019_Jan-Dec_Facility.xlsx", firstrow clear
 
 *Append in additional months
 append using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta"
+merge 1:1 Facility periodname using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta"
+drop _merge
 
 *Months
 encode periodname, gen(month)
@@ -78,6 +85,7 @@ lab val dist dlbl
 
 *Indicators
 * Volumes
+
 egen fp_util =rowtotal(FamilyPlanningAcceptor1019y FamilyPlanningAcceptor2035y FamilyPlanningAcceptor36year), missing
 
 rename (Antenatal1stvisittotal Deliveryinfacilitysum Deliverybycaesareansection Infantpostnatalvisitwithin6 ///
@@ -88,6 +96,7 @@ rename (Antenatal1stvisittotal Deliveryinfacilitysum Deliverybycaesareansection 
 		hyper_util er_util)
 		
 egen road_util = rowtotal(EmergencycaseMotorVehicleA AF AH AI), missing
+replace opd_util = OPDheadcountsum if opd_util==. & OPDheadcountsum!=.
 
 replace totaldel = cs_util if cs_util>totaldel & cs_util<.
 gen del_util = totaldel-cs_util
@@ -109,6 +118,8 @@ rename (Deathinfacility06days Stillbirthinfacility Maternaldeathinfacility Inpat
 		(newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num trauma_mort_num icu_mort_num) 
 		
 * Mortality (denominators)
+
+replace AdmissionsTotal = BK if rmonth>12
 rename ( AdmissionsTotal AdmissionsTrauma AdmissionICU)	( ipd_util trauma_util icu_util)
 
 lab var fp_util "Number of new and current users of contraceptives THROUGH MARCH 2020 ONLY"
@@ -139,7 +150,7 @@ order Province dist subdist Facility factype fp_util* anc*_util* totaldel* del_u
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", replace
 
 rm "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta"
-
+rm "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta"
 
 
 
