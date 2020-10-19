@@ -84,10 +84,13 @@ rename (Antenatal1stvisittotal Deliveryinfacilitysum Deliverybycaesareansection 
         Diarrhoeaseparationunder5yea Pneumonianewinchildunder5y Severeacutemalnutritioninchi ///
 		ARTclientremainonARTendof OPDheadcounttotal Diabetestreatmentvisit Hypertensionvisitbyclienton ///
 		Emergencyheadcounttotal) ///
-		(anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util diab_util ///
+		(anc1_util totaldel cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util diab_util ///
 		hyper_util er_util)
 		
 egen road_util = rowtotal(EmergencycaseMotorVehicleA AF AH AI), missing
+
+replace totaldel = cs_util if cs_util>totaldel & cs_util<.
+gen del_util = totaldel-cs_util
 
 * Quality 
 rename (NeonateReceived24hrKMC Cervicalcancerscreening30yea ScreenforTBsymptoms5yearsa ///
@@ -107,7 +110,6 @@ rename (Deathinfacility06days Stillbirthinfacility Maternaldeathinfacility Inpat
 		
 * Mortality (denominators)
 rename ( AdmissionsTotal AdmissionsTrauma AdmissionICU)	( ipd_util trauma_util icu_util)
-egen totaldel = rowtotal( del_util cs_util), m // did Deliveryinfacilitysum already include csections?
 
 lab var fp_util "Number of new and current users of contraceptives THROUGH MARCH 2020 ONLY"
 lab var road_util "Number of patients with road traffic injuries"
@@ -118,7 +120,7 @@ drop FamilyPlanningAcceptor1019y FamilyPlanningAcceptor2035y FamilyPlanningAccep
 	 Deliveryinfacilitytotal Motherpostnatalvisitwithin6 EmergencycaseMotorVehicleA AF ///
 	 PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st Livebirthinfacility Totalbirthsinfacilitysum AH AI Clientsscreen Cervicalcancer* Diabetesclient BK Casualty
 
-order fp_util anc1_util-opd_util ipd_util er_util icu_util road_util trauma_util diab_util-tbtreat_qual vacc_qual pent_qual-rota_qual newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num  icu_mort_num trauma_mort_num, after(factype)	
+order fp_util anc1_util totaldel del_util cs_util-opd_util ipd_util er_util icu_util road_util trauma_util diab_util-tbtreat_qual vacc_qual pent_qual-rota_qual newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num  icu_mort_num trauma_mort_num, after(factype)	
 
 keep Province Facility rmonth-dist
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/2019_fac_long.dta", replace 
@@ -132,7 +134,7 @@ drop if all_visits==.
 drop all_visits
 *Retains 1021 facilities with some data during 2019-2020
 
-order Province dist subdist Facility factype fp_util* anc*_util* del_util* cs_util* pnc_util* diarr_util* pneum_util* sam_util* art_util* opd_util* ipd_util* er_util* road_util* diab_util* hyper_util* kmcn_qual* cerv_qual* tbscreen_qual* tbdetect_qual* tbtreat_qual* vacc_qual* pent_qual* bcg_qual* measles_qual* pneum_qual* rota_qual* newborn_mort_num* sb_mort_num*  mat_mort_num* ipd_mort_num*  icu_mort_num* icu_util* trauma_mort_num*
+order Province dist subdist Facility factype fp_util* anc*_util* totaldel* del_util* cs_util* pnc_util* diarr_util* pneum_util* sam_util* art_util* opd_util* ipd_util* er_util* road_util* diab_util* hyper_util* kmcn_qual* cerv_qual* tbscreen_qual* tbdetect_qual* tbtreat_qual* vacc_qual* pent_qual* bcg_qual* measles_qual* pneum_qual* rota_qual* newborn_mort_num* sb_mort_num*  mat_mort_num* ipd_mort_num*  icu_mort_num* icu_util* trauma_mort_num*
 
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", replace
 
