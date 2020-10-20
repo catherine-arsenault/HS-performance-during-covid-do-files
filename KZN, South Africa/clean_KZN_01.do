@@ -22,8 +22,8 @@ in Dhis2. It uses a dataset in wide form (1 row per health facility)
 ********************************************************************/
 clear all 
 set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
@@ -139,7 +139,9 @@ foreach x of global all  {
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3*(rowsd`x'))
 	gen neg_out`x' = rowmean`x'-(3*(rowsd`x'))
-	forval i = 1/19 {
+	/*We need to investigate if we can remove outliers post Covid? For now, only
+	  assessing outliers from Jan-Dec 2019*/
+	forval i = 1/12 {
 		gen flag_outlier_`x'`i'= 1 if `x'`i'>pos_out`x' & `x'`i'<.
 		replace flag_outlier_`x'`i'= 1 if `x'`i' < neg_out`x'
 		replace flag_outlier_`x'`i'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less
@@ -153,22 +155,28 @@ foreach x of global all  {
 Completeness for each indicator-month
 This calculates the % of facilities reporting each indicator every month
 Creates a flag variable if less than 90% of expected facilities are reporting */
+
+* Calculate max number of facilities reporting any indicator each month
 foreach x of global all {
 	forval i=1/19 {
 		egen nb`x'`i' = count(`x'`i')
 	}
 	egen maxfac`x' = rowmax (nb`x'*)
-	forval i=1/12 {
+	
+* Calculate the % reporting each month from the max	
+	forval i=1/19 {
 		gen complete_`x'`i'= nb`x'`i'/maxfac`x' 
 		lab var complete_`x'`i' "Proportion of facilities reporting indicator x in month i"
 	}
 	drop nb`x'* maxfac`x'
 }
+* Create flag if completeness is below 95%
 foreach v of varlist complete_* {
 	gen flag`v' = 1 if `v'<0.95
 	lab var flag`v' "Completeness < 95%"
 }
-*Drop all empty flags // remaining flags will identify the months < 95%
+
+*Drop all empty flags // remaining flags will identify the indicator-months that are incomeplete < 95%
 foreach var of varlist flag* {
      capture assert mi(`var')
      if !_rc {
@@ -177,6 +185,7 @@ foreach var of varlist flag* {
  }
   tabstat complete*, c(s) s(min) // Review completeness here
   drop complete* 
+  
 /******************************************************************************
  CALCULATE INDICATORS (NUM/DENOM) HERE, ONCE DATA CLEANING COMPLETE
  Quality and mortality indicators
@@ -207,7 +216,8 @@ foreach v in newborn_mort sb_mort mat_mort trauma_mort ipd_mort icu_mort {
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel Province dist subdist Facility factype *mort* using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning2.xlsx", firstrow(variable) replace
+export excel Province dist subdist Facility factype *mort* using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning2.xlsx", firstrow(variable) replace
+
 drop flag* 
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_WIDE.dta", replace
 /****************************************************************
@@ -218,10 +228,14 @@ save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data fo
 			   measles_qual pneum_qual rota_qual newborn_mort_num sb_mort_num ///
 			  mat_mort_num  , i(Facility factype Province dist subdist) j(month) */
 			  
-reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
-			  icu_util diab_util kmcn_qual cerv_qual cs_qual tbscreen_qual tbdetect_qual tbtreat_qual vacc_qual pent_qual ///
-			  bcg_qual measles_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort ipd_mort trauma_mort icu_mort ///
-			  newborn_mort_num mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, i(Facility factype Province dist subdist) j(month)
+reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
+			  sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
+			  icu_util diab_util kmcn_qual cerv_qual cs_qual tbscreen_qual ///
+			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
+			  measles_qual pneum_qual rota_qual newborn_mort sb_mort ///
+			  mat_mort ipd_mort trauma_mort icu_mort newborn_mort_num ///
+			  mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, ///
+			  i(Facility factype Province dist subdist) j(month)
 			  
 rename month rmonth
 gen month= rmonth
