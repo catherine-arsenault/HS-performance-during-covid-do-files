@@ -41,7 +41,7 @@ drop fp_util* hyper_util* /* these indicators are no longer collected after Apri
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning0.xlsx", firstrow(variable) replace
+*export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning0.xlsx", firstrow(variable) replace
 
 /***************************************************************
 VOLUMES:  REPLACE MISSINGS TO 0 IF MISSINGNESS IS CONSISTENT
@@ -124,7 +124,7 @@ forval i = 1/19 {
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
+*export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
 /****************************************************************
               IDENTIFY OUTLIERS AND SET TO MISSING 
 ****************************************************************
@@ -191,7 +191,7 @@ save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data fo
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning3.xlsx", firstrow(variable) replace
+*export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning3.xlsx", firstrow(variable) replace
 /***************************************************************
                  COMPLETE CASE ANALYSIS
 ****************************************************************
@@ -227,23 +227,18 @@ foreach x of global all {
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning4.xlsx", firstrow(variable) replace
+*export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning4.xlsx", firstrow(variable) replace
 	
 			   
 /****************************************************************
                   RESHAPE FOR DASHBOARD
 *****************************************************************/	
-
-/*reshape long   anc1_util del_util  pnc_util diarr_util pneum_util kmcn_qual pent_qual /// 
-			   measles_qual pneum_qual rota_qual newborn_mort_num sb_mort_num ///
-			  mat_mort_num  , i(Facility factype Province dist subdist) j(month) */
 			  
 reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
 			  sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
-			  icu_util diab_util kmcn_qual cerv_qual cs_qual tbscreen_qual ///
+			  icu_util diab_util kmcn_qual cerv_qual tbscreen_qual ///
 			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
-			  measles_qual pneum_qual rota_qual newborn_mort sb_mort ///
-			  mat_mort ipd_mort trauma_mort icu_mort newborn_mort_num ///
+			  measles_qual pneum_qual rota_qual  newborn_mort_num ///
 			  mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, ///
 			  i(Facility factype Province dist subdist) j(month)
 			  
@@ -287,13 +282,13 @@ replace year= 2020 if rmonth>=13
 	lab var tbdetect_qual "Number tb cases confirmed"
 	lab var tbtreat_qual "Number tb cases started on treatment"
 	lab var tbscreen_qual "Number screened for tb"
-* Institutional mortality MEANS
-	lab var newborn_mort "Institutional newborn deaths per 1000"
-	lab var sb_mort "Institutional stillbirths per 1000 "
-	lab var mat_mort "Institutional maternal deaths per 1000"
-	lab var trauma_mort "Trauma deaths per 1000"
-	lab var ipd_mort "Inpatient deaths per 1000"
-	lab var icu_mort "ICU deaths per 1000"
+* Institutional mortality 
+	lab var newborn_mort_num "Institutional newborn deaths"
+	lab var sb_mort_num "Institutional stillbirths "
+	lab var mat_mort_num "Institutional maternal deaths "
+	lab var trauma_mort_num "Trauma deaths "
+	lab var ipd_mort "Inpatient deaths "
+	lab var icu_mort "ICU deaths"
 	
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_clean.dta", replace
 
@@ -318,10 +313,9 @@ u "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA.dta", clear
 
 reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
 			  sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
-			  icu_util diab_util kmcn_qual cerv_qual cs_qual tbscreen_qual ///
+			  icu_util diab_util kmcn_qual cerv_qual tbscreen_qual ///
 			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
-			  measles_qual pneum_qual rota_qual newborn_mort sb_mort ///
-			  mat_mort ipd_mort trauma_mort icu_mort newborn_mort_num ///
+			  measles_qual pneum_qual rota_qual  newborn_mort_num ///
 			  mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, ///
 			  i(district) j(month)
 			  
@@ -339,8 +333,7 @@ preserve
 	sam_util art_util opd_util ipd_util er_util road_util diab_util kmcn_qual cerv_qual ///
 	tbscreen_qual tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual ///
 	pneum_qual rota_qual icu_util trauma_util newborn_mort_num sb_mort_num mat_mort_num ///
-	ipd_mort_num icu_mort_num trauma_mort_num cs_qual newborn_mort sb_mort mat_mort ipd_mort ///
-	trauma_mort icu_mort 
+	ipd_mort_num icu_mort_num trauma_mort_num  
 	foreach v of global varlist {
 		rename(`v')(`v'20)
 	}
