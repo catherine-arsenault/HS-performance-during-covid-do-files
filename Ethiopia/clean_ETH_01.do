@@ -162,8 +162,8 @@ EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
          IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
 	               AND SET THEM TO MISSING 
 ***************************************************************** 
-Identifying extreme outliers over 12 months in volume data
-Any value that is greater or smaller than 3SD from the mean 12-month trend is set to missing
+Identifying extreme outliers over 12 months. Any value that is greater 
+or smaller than 3SD from the mean 12-month trend is set to missing
 This is only applied if the mean of the series is greater or equal to 1 
 This technique avoids flagging as outlier a value of 1 if facility reports: 
 0 0 0 0 0 1 0 0 0 0 0 0  which is common for mortality
@@ -173,8 +173,10 @@ We won't drop outliers for these 4 variables, as we do not have 12 months of dat
 KMC quality and Newborn resuscitated were extracted as proportions, we also do not include those in outlier assessement */
 
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			 opd_util ipd_util er_util road_util art_util kmc_qual resus_qual cerv_qual ///
-			 hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual   {
+				ipd_util er_util road_util   cerv_qual ///
+				opd_util hivsupp_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3*(rowsd`x'))
@@ -234,8 +236,8 @@ foreach var of varlist flag* {
 drop compl* 
 *Investigate flags that remain 
 /****************************************************************
-DIABETES AND HYPERTENSION STARTED BEING COLLECTED IN OCT 2019
-drop any values for utilisation and quality from Jan to Sep 2019
+Diabetes and hypertension were only collected starting OCT 2019
+Drop any values for utilisation and quality from Jan to Sep 2019
 ****************************************************************/
 foreach x in diab_util diab_qual_num hyper_util hyper_qual_num {
 	forval i = 1/9 {
@@ -396,7 +398,8 @@ save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_clean.dta", replace
   COLLAPSE TO REGION TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA.dta", clear
-collapse (sum) diab_util10_19-totalipd_mort6_20, by(region)
+drop kmc* resus*
+collapse (sum) diab_util10_19-totalipd_mort6_20 , by(region)
 encode region, gen(reg)
 drop region
 order reg
@@ -413,7 +416,7 @@ order region
 
 reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util anc_util ///
 			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
-			  er_util road_util kmc_qual resus_qual cerv_qual art_util hivsupp_qual_num  ///
+			  er_util road_util  cerv_qual art_util hivsupp_qual_num  ///
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel ///
 			  totalipd_mort, i(region ) j(month) string
@@ -443,7 +446,7 @@ order region year month
 preserve
 	keep if year == 2020
 	global varlist fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
-	sam_util opd_util ipd_util er_util road_util kmc_qual resus_qual cerv_qual art_util ///
+	sam_util opd_util ipd_util er_util road_util  cerv_qual art_util ///
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 	newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel totalipd_mort ///
 	diab_util hyper_util diab_qual_num hyper_qual_num
