@@ -4,8 +4,8 @@
 * Anna Gage, code checked by: Catherine Arsenault
 clear all
 set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 
 * Jan-Jul 2020
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_2020_Jan-Jul_Facility.xlsx", firstrow clear
@@ -101,6 +101,7 @@ replace opd_util = OPDheadcountsum if opd_util==. & OPDheadcountsum!=.
 
 replace totaldel = cs_util if cs_util>totaldel & cs_util<.
 gen del_util = totaldel-cs_util
+replace del_util = totaldel if del_util==.
 
 * Quality 
 rename (NeonateReceived24hrKMC Cervicalcancerscreening30yea ScreenforTBsymptoms5yearsa ///
