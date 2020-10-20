@@ -22,13 +22,13 @@ in Dhis2. It uses a dataset in wide form (1 row per health facility)
 ********************************************************************/
 clear all 
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
 
-global volumes anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+global volumes anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util er_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util
@@ -114,9 +114,9 @@ foreach x of global mortality  {
 /* We also need to impute 0 deaths for facilities that had deliveries, ER visits and Inpatient admissions, but no deaths all year
 Otherwise, average mortality will be inflated at regional level  when we calculate rates */
 forval i = 1/19 {
-	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. & del_util`i' >0 & del_util`i' <.
-	replace sb_mort_num`i' = 0 	   if sb_mort_num`i' ==. & del_util`i' >0 & del_util`i' <. 
-	replace mat_mort_num`i' = 0     if mat_mort_num`i' == . & del_util`i' >0 & del_util`i' <. 
+	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. & del_util`i' >0 & totaldel`i' <.
+	replace sb_mort_num`i' = 0 	   if sb_mort_num`i' ==. & del_util`i' >0 & totaldel`i' <. 
+	replace mat_mort_num`i' = 0     if mat_mort_num`i' == . & del_util`i' >0 & totaldel`i' <. 
 	replace trauma_mort_num`i' = 0      if trauma_mort_num`i' ==. & trauma_util`i' >0 & trauma_util`i' <. 
 	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' >0 & ipd_util`i' <. 
 	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' >0 & icu_util`i' <. 	
@@ -182,10 +182,10 @@ foreach var of varlist flag* {
  Quality and mortality indicators
 *******************************************************************************/
 forval i = 1/19 {
-	gen cs_qual`i'= cs_util`i'/del_util`i'
-	gen newborn_mort`i' = newborn_mort_num`i'/del_util`i'
-	gen sb_mort`i' = sb_mort_num`i'/del_util`i'
-	gen mat_mort`i'=mat_mort_num`i'/del_util`i'
+	gen cs_qual`i'= cs_util`i'/totaldel`i'
+	gen newborn_mort`i' = newborn_mort_num`i'/totaldel`i'
+	gen sb_mort`i' = sb_mort_num`i'/totaldel`i'
+	gen mat_mort`i'=mat_mort_num`i'/totaldel`i'
 	gen trauma_mort`i'= trauma_mort_num`i'/trauma_util`i'
 	gen ipd_mort`i' = ipd_mort_num`i'/ ipd_util`i'
 	gen icu_mort`i' = icu_mort_num`i'/ icu_util`i'
@@ -218,7 +218,7 @@ save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data fo
 			   measles_qual pneum_qual rota_qual newborn_mort_num sb_mort_num ///
 			  mat_mort_num  , i(Facility factype Province dist subdist) j(month) */
 			  
-reshape long  anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
+reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
 			  icu_util diab_util kmcn_qual cerv_qual cs_qual tbscreen_qual tbdetect_qual tbtreat_qual vacc_qual pent_qual ///
 			  bcg_qual measles_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort ipd_mort trauma_mort icu_mort ///
 			  newborn_mort_num mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, i(Facility factype Province dist subdist) j(month)
@@ -233,7 +233,8 @@ replace year= 2020 if rmonth>=13
 * Volume RMNCH services TOTALS
 	*lab var fp_util "Number of new and current users of contraceptives"
 	lab var anc1_util "Total number of first antenatal care visits"
-	lab var del_util "Number of facility deliveries"
+	lab var totaldel "Number of facility deliveries: c-section and vaginal"
+	lab var del_util "Number of vaginal facility deliveries"
 	lab var cs_util "Number of caesarean sections"
 	lab var diarr_util "Number children treated with ORS for diarrhea"
 	lab var pneum_util "Number of consultations for sick child care - pneumonia"
