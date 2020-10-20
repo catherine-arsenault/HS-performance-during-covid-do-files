@@ -151,7 +151,7 @@ foreach x of global all  {
 }
 /****************************************************************
                     CALCULATE COMPLETENESS
-****************************************************************
+***************************************************************** 
 Completeness for each indicator-month
 This calculates the % of facilities reporting each indicator every month
 Creates a flag variable if less than 90% of expected facilities are reporting */
@@ -186,37 +186,10 @@ foreach var of varlist flag* {
   tabstat complete*, c(s) s(min) // Review completeness here
   drop complete* 
   
-/******************************************************************************
- CALCULATE INDICATORS (NUM/DENOM) HERE, ONCE DATA CLEANING COMPLETE
- Quality and mortality indicators
-*******************************************************************************/
-forval i = 1/19 {
-	gen cs_qual`i'= cs_util`i'/totaldel`i'
-	gen newborn_mort`i' = newborn_mort_num`i'/totaldel`i'
-	gen sb_mort`i' = sb_mort_num`i'/totaldel`i'
-	gen mat_mort`i'=mat_mort_num`i'/totaldel`i'
-	gen trauma_mort`i'= trauma_mort_num`i'/trauma_util`i'
-	gen ipd_mort`i' = ipd_mort_num`i'/ ipd_util`i'
-	gen icu_mort`i' = icu_mort_num`i'/ icu_util`i'
-}
-order cs_qual* newborn_mort* mat_mort* sb_mort*  ipd_mort*  trauma_mort* icu_mort* , after(flagcomplete_diarr_util7)
-
-* REPLACE TO MISSING ANY % indicator that is greater than 1 
-foreach v in cs_qual newborn_mort sb_mort mat_mort trauma_mort ipd_mort icu_mort {
-	forval i =1/19 {
-		replace `v'`i'= . if `v'`i' > 1 & `v'`i'<. // , there are many ICU mortality > 1
-	}
-}
-* MORTALITY PER 1000
-foreach v in newborn_mort sb_mort mat_mort trauma_mort ipd_mort icu_mort {
-	forval i = 1/19 {
-		replace `v'`i' = `v'`i' * 1000
-	}
-}
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel Province dist subdist Facility factype *mort* using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning2.xlsx", firstrow(variable) replace
+export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning3.xlsx", firstrow(variable) replace
 
 drop flag* 
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_WIDE.dta", replace
