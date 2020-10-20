@@ -12,6 +12,7 @@ import excel using "$user/HMIS Data for Health System Performance Covid (South A
 rename (orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4) (Province District SubDistrict Facility)
 drop organisationunitname Hospitalpublic NonFixedfacilitysatellitehe
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta", replace 
+	*OPD was missing from original 2020 data-- need to merge in separately
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/Missing Facility Data Element - 18Oct2020.xls", firstrow clear
 rename (organisationunitname) (Facility)
 drop orgunitlevel1-orgunitlevel4 Admissions I
