@@ -183,16 +183,53 @@ foreach var of varlist flag* {
         drop `var'
      }
  }
+* Investigate completeness 
   tabstat complete*, c(s) s(min) // Review completeness here
   drop complete* 
-  
+  drop flag* 
+save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_WIDE.dta", replace
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning3.xlsx", firstrow(variable) replace
-
-drop flag* 
-save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_WIDE.dta", replace
+/***************************************************************
+                 COMPLETE CASE ANALYSIS
+****************************************************************
+Completeness is an issue, particularly April-June 2020. An for c-sections,
+child diarrhea, total outpatient visits and tb screening. Some Facilities 
+have not reported yet. For each variable, keep only heath facilities that 
+have reported at least 14 out of 18 months (incl the latest 3 months) 
+This brings completeness up "generally" above 90% for all variables. */
+foreach x of global all  {
+	preserve
+		keep Province-factype `x'* 
+		egen total`x'= rownonmiss(`x'*)
+		keep if total`x'>14 & `x'17!=. & `x'18!=. & `x'19!=. 
+		* keep if at least 14 out of 18 months are reported & april-jun 2020 are reported 
+		* keep if total`x'== 18
+		drop total`x'
+		save "$user/$data/Data for analysis/tmp`x'.dta", replace
+	restore
+}
+* Merge together
+u "$user/$data/Data for analysis/tmpanc1_util.dta", clear
+foreach x in totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util er_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
+			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
+			   merge 1:1 Province-factype using "$user/$data/Data for analysis/tmp`x'.dta"
+			   drop _merge
+			   save "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA.dta", replace
+	}
+foreach x of global all {
+	rm "$user/$data/Data for analysis/tmp`x'.dta"
+}
+/****************************************************************
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning4.xlsx", firstrow(variable) replace
+	
+			   
 /****************************************************************
                   RESHAPE FOR DASHBOARD
 *****************************************************************/	
