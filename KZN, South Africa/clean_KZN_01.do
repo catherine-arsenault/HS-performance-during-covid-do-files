@@ -22,20 +22,20 @@ in Dhis2. It uses a dataset in wide form (1 row per health facility)
 ********************************************************************/
 clear all 
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
 
 global volumes anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
-			   ipd_util er_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util
 global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num
 global all $volumes $mortality 
 
-drop fp_util* hyper_util* /* these indicators are no longer collected after April 2020 (start of financial year)
+drop fp_util* hyper_util* er_util* /* these indicators are no longer collected after April 2020 (start of financial year)
 							 Must be dropped from analysis */ 
 
 /****************************************************************
@@ -184,7 +184,7 @@ foreach var of varlist flag* {
      }
  }
 * Investigate completeness 
-  tabstat complete*, c(s) s(min) // Review completeness here
+  *tabstat complete*, c(s) s(min) // Review completeness here
   drop complete* 
   drop flag* 
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_WIDE.dta", replace
@@ -195,7 +195,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 /***************************************************************
                  COMPLETE CASE ANALYSIS
 ****************************************************************
-Completeness is an issue, particularly April-June 2020. An for c-sections,
+Completeness is an issue, particularly May-July 2020. An for c-sections,
 child diarrhea, total outpatient visits and tb screening. Some Facilities 
 have not reported yet. For each variable, keep only heath facilities that 
 have reported at least 14 out of 18 months (incl the latest 3 months) 
@@ -205,7 +205,7 @@ foreach x of global all  {
 		keep Province-factype `x'* 
 		egen total`x'= rownonmiss(`x'*)
 		keep if total`x'>14 & `x'17!=. & `x'18!=. & `x'19!=. 
-		* keep if at least 14 out of 18 months are reported & april-jun 2020 are reported 
+		* keep if at least 14 out of 18 months are reported & May-july 2020 are reported 
 		* keep if total`x'== 18
 		drop total`x'
 		save "$user/$data/Data for analysis/tmp`x'.dta", replace
@@ -214,7 +214,7 @@ foreach x of global all  {
 * Merge together
 u "$user/$data/Data for analysis/tmpanc1_util.dta", clear
 foreach x in totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
-			   ipd_util er_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			   merge 1:1 Province-factype using "$user/$data/Data for analysis/tmp`x'.dta"
@@ -235,7 +235,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 *****************************************************************/	
 			  
 reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
-			  sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
+			  sam_util art_util opd_util ipd_util road_util trauma_util ///
 			  icu_util diab_util kmcn_qual cerv_qual tbscreen_qual ///
 			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
 			  measles_qual pneum_qual rota_qual  newborn_mort_num ///
@@ -271,7 +271,7 @@ replace year= 2020 if rmonth>=13
 	*lab var hyper_util "Number of hypertensive patients enrolled"
 	lab var art_util "Number of adult and children on ART "
 	lab var opd_util  "Nb outpatient visits"
-	lab var er_util "Number of emergency room visits"
+	*lab var er_util "Number of emergency room visits"
 	lab var trauma_util "Number of trauma admissions"
 	lab var ipd_util "Number of inpatient admissions "
 	lab var icu_util " Number of icu admissions"
@@ -312,7 +312,7 @@ u "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA.dta", clear
 	order district 
 
 reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
-			  sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
+			  sam_util art_util opd_util ipd_util road_util trauma_util ///
 			  icu_util diab_util kmcn_qual cerv_qual tbscreen_qual ///
 			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
 			  measles_qual pneum_qual rota_qual  newborn_mort_num ///
@@ -330,7 +330,7 @@ replace year= 2020 if rmonth>=13
 preserve
 	keep if year == 2020
 	global varlist anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
-	sam_util art_util opd_util ipd_util er_util road_util diab_util kmcn_qual cerv_qual ///
+	sam_util art_util opd_util ipd_util road_util diab_util kmcn_qual cerv_qual ///
 	tbscreen_qual tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual ///
 	pneum_qual rota_qual icu_util trauma_util newborn_mort_num sb_mort_num mat_mort_num ///
 	ipd_mort_num icu_mort_num trauma_mort_num  
