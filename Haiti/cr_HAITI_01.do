@@ -318,7 +318,14 @@ gen peri_mort_num3_20 = totaldel3_20 -livebirths3_20
 gen peri_mort_num4_20 = totaldel4_20 -livebirths4_20 
 gen peri_mort_num5_20 = totaldel5_20 -livebirths5_20 
 gen peri_mort_num6_20 = totaldel6_20 -livebirths6_20 
-gen peri_mort_num7_20 = totaldel7_20 -livebirths7_20 	
+gen peri_mort_num7_20 = totaldel7_20 -livebirths7_20 
+forval i 1/12 {
+	replace peri_mort_num`i'_18 = 0 if peri_mort_num`i'_18 <0 & peri_mort_num`i'_18!=.
+	replace peri_mort_num`i'_19 = 0 if peri_mort_num`i'_19 <0 & peri_mort_num`i'_19!=.
+}	
+forval i 1/7 {
+	eplace peri_mort_num`i'_20 = 0 if peri_mort_num`i'_20 <0 & peri_mort_num`i'_20!=.
+}
 
 drop livebirths*  
 
