@@ -25,3 +25,23 @@ pncm_util4_19	pncm_util5_19	pncm_util6_19	pncm_util7_19	pncm_util8_19	///
 pncm_util9_19	pncm_util10_19	pncm_util11_19	pncm_util12_19 pncm_util1_20	///
 pncm_util2_20	pncm_util3_20	pncm_util4_20	pncm_util5_20	pncm_util6_20	///
 pncm_util7_20					)
+
+rename (naissancesvivantesinstitutionnel-v103) ///
+(livebirths1_18	livebirths2_18	livebirths3_18	livebirths4_18 livebirths5_18	///
+livebirths6_18	livebirths7_18	livebirths8_18	livebirths9_18	livebirths10_18	///
+livebirths11_18	livebirths12_18 livebirths1_19	livebirths2_19	livebirths3_19	///
+livebirths4_19	livebirths5_19	livebirths6_19	livebirths7_19	livebirths8_19	///
+livebirths9_19	livebirths10_19	livebirths11_19	livebirths12_19 livebirths1_20	///
+livebirths2_20	livebirths3_20	livebirths4_20	livebirths5_20	livebirths6_20	///
+livebirths7_20					)
+
+rename (nbreclientsensoinsbuccodentaires-v165) ///
+(dental_util1_18dental_util2_18	dental_util3_18	dental_util4_18	dental_util5_18	///
+dental_util6_18	dental_util7_18 dental_util1_19	dental_util2_19	dental_util3_19	///
+dental_util4_19	dental_util5_19	dental_util6_19	dental_util7_19 dental_util1_20	///
+dental_util2_20	dental_util3_20	dental_util4_20	dental_util5_20	dental_util6_20	///
+dental_util7_20 )
+
+
+
+gen peri_mort1_18 = totaldel1_18 - livebirths1_18	
