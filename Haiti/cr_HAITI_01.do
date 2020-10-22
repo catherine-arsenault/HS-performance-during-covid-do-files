@@ -284,5 +284,44 @@ rename (nbredefemmesbenificiairesduneins-v847) ///
 rename (nouveauxcasdetuberculosepulmonai-v692) ///
 ( tb_detect1_18	tb_detect2_18	tb_detect3_18	tb_detect4_18	tb_detect5_18	tb_detect6_18	tb_detect7_18	tb_detect8_18	tb_detect9_18	tb_detect10_18	tb_detect11_18	tb_detect12_18 tb_detect1_19	tb_detect2_19	tb_detect3_19	tb_detect4_19	tb_detect5_19	tb_detect6_19	tb_detect7_19	tb_detect8_19	tb_detect9_19	tb_detect10_19	tb_detect11_19	tb_detect12_19 tb_detect1_20	tb_detect2_20	tb_detect3_20	tb_detect4_20	tb_detect5_20	tb_detect6_20	tb_detect7_20					)
 
+* Estimated perinatal deaths (stillbirths and newborn)
+* Total deliveries - live births
+gen peri_mort_num1_18 = totaldel1_18 - livebirths1_18
+gen peri_mort_num2_18 = totaldel2_18 -livebirths2_18 
+gen peri_mort_num3_18 = totaldel3_18 -livebirths3_18 
+gen peri_mort_num4_18 = totaldel4_18 -livebirths4_18 
+gen peri_mort_num5_18 = totaldel5_18 -livebirths5_18 
+gen peri_mort_num6_18 = totaldel6_18 -livebirths6_18 
+gen peri_mort_num7_18 = totaldel7_18 -livebirths7_18 
+gen peri_mort_num8_18 = totaldel8_18 -livebirths8_18 
+gen peri_mort_num9_18 = totaldel9_18 -livebirths9_18 
+gen peri_mort_num10_18 = totaldel10_18 -livebirths10_18 
+gen peri_mort_num11_18 = totaldel11_18 -livebirths11_18 
+gen peri_mort_num12_18 = totaldel12_18 -livebirths12_18 
 
-gen peri_mort1_18 = totaldel1_18 - livebirths1_18	
+gen peri_mort_num1_19 = totaldel1_19 - livebirths1_19
+gen peri_mort_num2_19 = totaldel2_19 -livebirths2_19 
+gen peri_mort_num3_19 = totaldel3_19 -livebirths3_19 
+gen peri_mort_num4_19 = totaldel4_19 -livebirths4_19 
+gen peri_mort_num5_19 = totaldel5_19 -livebirths5_19 
+gen peri_mort_num6_19 = totaldel6_19 -livebirths6_19 
+gen peri_mort_num7_19 = totaldel7_19 -livebirths7_19 
+gen peri_mort_num8_19 = totaldel8_19 -livebirths8_19 
+gen peri_mort_num9_19 = totaldel9_19 -livebirths9_19 
+gen peri_mort_num10_19 = totaldel10_19 -livebirths10_19 
+gen peri_mort_num11_19 = totaldel11_19 -livebirths11_19 
+gen peri_mort_num12_19 = totaldel12_19 -livebirths12_19  
+
+gen peri_mort_num1_20 = totaldel1_20 - livebirths1_20
+gen peri_mort_num2_20 = totaldel2_20 -livebirths2_20 
+gen peri_mort_num3_20 = totaldel3_20 -livebirths3_20 
+gen peri_mort_num4_20 = totaldel4_20 -livebirths4_20 
+gen peri_mort_num5_20 = totaldel5_20 -livebirths5_20 
+gen peri_mort_num6_20 = totaldel6_20 -livebirths6_20 
+gen peri_mort_num7_20 = totaldel7_20 -livebirths7_20 	
+
+drop livebirths*  
+
+save "$user/$data/Data for analysis/Haiti_Jan18-Jul20_WIDE.dta", replace
+
+	
