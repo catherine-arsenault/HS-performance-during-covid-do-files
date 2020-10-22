@@ -36,7 +36,7 @@ livebirths2_20	livebirths3_20	livebirths4_20	livebirths5_20	livebirths6_20	///
 livebirths7_20					)
 
 rename (nbreclientsensoinsbuccodentaires-v165) ///
-(dental_util1_18dental_util2_18	dental_util3_18	dental_util4_18	dental_util5_18	///
+(dental_util1_18 dental_util2_18	dental_util3_18	dental_util4_18	dental_util5_18	///
 dental_util6_18	dental_util7_18 dental_util1_19	dental_util2_19	dental_util3_19	///
 dental_util4_19	dental_util5_19	dental_util6_19	dental_util7_19 dental_util1_20	///
 dental_util2_20	dental_util3_20	dental_util4_20	dental_util5_20	dental_util6_20	///
