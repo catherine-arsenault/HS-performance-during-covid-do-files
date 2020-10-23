@@ -1,6 +1,6 @@
 * HS performance during Covid
-* Aug 24, 2020 
-* Hait, January 2019 - June 2020
+* Oct 21, 2020 
+* Haiti, January 2019 - June 2020
 * Data cleaning, Catherine Arsenault
 * Data recoded in R by Celestin
 
@@ -22,52 +22,34 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
   
 5 Reshape dataset from wide to long.
 ********************************************************************/
-
 clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
 *global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Haiti)"
 
-import excel using "$user/$data/Data for analysis/Data_Haiti_Recoded_JAN2019_JUN2020.xlsx", firstrow clear
+u "$user/$data/Data for analysis/Haiti_Jan18-Jul20_WIDE.dta", clear
 
-gen month = "8_19" if regexm(date, "Août 2019")
-replace month = "4_19" if regexm(date,  "Avril 2019")
-replace month = "4_20" if regexm(date,  "Avril 2020")
-replace  month = "12_19" if regexm(date, "Décembre 2019")
-replace  month = "2_19" if regexm(date,  "Février 2019" )
-replace  month = "2_20" if regexm(date,   "Février 2020" )       
-replace  month = "1_19" if regexm(date,  "Janvier 2019" )
-replace  month = "1_20" if regexm(date,   "Janvier 2020" )
-replace  month =  "7_19" if regexm(date,   "Juillet 2019")
-replace  month = "6_19"  if regexm(date,    "Juin 2019" )
-replace  month = "6_20" if regexm(date,     "Juin 2020" )
-replace  month = "5_19" if regexm(date,     "Mai 2019" )
-replace  month = "5_20" if regexm(date,      "Mai 2020" )
-replace  month = "3_19" if regexm(date,    "Mars 2019" )
-replace  month = "3_20" if regexm(date,     "Mars 2020" )
-replace  month = "11_19" if regexm(date,  "Novembre 2019") 
-replace  month = "10_19" if regexm(date,   "Octobre 2019") 
-replace  month = "9_19" if regexm(date,"Septembre 2019" )
-drop date
+/****************************************************************
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning0.xlsx", firstrow(variable) replace
 
-reshape wide anc_util-ipd_mort, i(orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitname) j(month) string
-* Looking at data in excel before we clean
-*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning.xlsx", firstrow(variable) replace // 
-
-* 8997 facilities. Dropping all facilities that don't report any indicators all 18 months
-egen all_visits = rowtotal(anc_util10_19-ipd_mort9_19), m
+* FOR NOW WE WILL NOT INCLUDE DATA FROM 2018!
+drop *_18
+* We will also drop July 2020 as it was too incomplete
+drop *7_20
+* 897 facilities. Dropping all facilities that don't report any indicators all 18 months
+egen all_visits = rowtotal(totaldel1_19-peri_mort_num6_20), m
 drop if  all_visits==.
 drop all_visits 
 * Drops 65 facilities, retains 835
 
-order org* anc_util*_19 anc_util*_20 cs_util*_19 cs_util*_20 del_util*_19 del_util*_20 pnc_util*_19 pnc_util*_20 diab_util*_19 diab_util*_20 ///
-			diarr_util*_19 diarr_util*_20 fp_util*_19 fp_util*_20 vacc_qual*_19 vacc_qual*_20 hyper_util*_19 hyper_util*_20 live_birth*_19 ///
-			live_birth*_20 malnu_util*_19 malnu_util*_20 opd_util*_19 opd_util*_20 road_util*_19 road_util*_20 tbdetect_qual*_19 ///
-			tbdetect_qual*_20 mat_mort*_19 mat_mort*_20 sb_mort*_19 sb_mort*_20 ipd_mort*_19 ipd_mort*_20 
+drop tb_detect* // variable was empty
 
-global volumes anc_util cs_util del_util pnc_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util vacc_qual tbdetect_qual
-global mortality mat_mort  sb_mort   
+global volumes totaldel pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+			   cerv_qual pncc_util opd_util diab_util hyper_util 
+global mortality mat_mort_num peri_mort_num 
 global all $volumes $mortality 
 
 /****************************************************************
@@ -79,53 +61,54 @@ indicates a new facility opening (or that newly starts reporting a certain indic
 In this case, replace the missings with zeros */
 foreach x of global volumes  {
 	recode `x'1_19 (.=0) if `x'1_19==. & (`x'2_19!=. & `x'3_19!=. & `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & `x'7_19!=. & `x'8_19!=. ///
-		& `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		& `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 (.=0) if (`x'1_19==. & `x'2_19==.) & (`x'3_19!=. & `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & `x'7_19!=. & ///
-		`x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		`x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 (.=0) if (`x'1_19==. & `x'2_19==. & `x'3_19==.) & (`x'4_19!=. & `x'5_19!=. & `x'6_19!=. & `x'7_19!=. ///
-		& `x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		& `x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 (.=0) if (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==.) & (`x'5_19!=. & `x'6_19!=. & ///
 		`x'7_19!=. & `x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. ///
-		& `x'6_20!=.)
+		& `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 (.=0) if (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==. & `x'5_19==.) & (`x'6_19!=. ///
 		& `x'7_19!=. & `x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & ///
-		`x'5_20!=. & `x'6_20!=.)
+		`x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 (.=0) if (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==. & `x'5_19==. & ///
 		`x'6_19==.) & (`x'7_19!=. & `x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & ///
-		`x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		`x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 (.=0) if (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==. & ///
 		`x'5_19==. & `x'6_19==. & `x'7_19==.) & (`x'8_19!=. & `x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & ///
 		`x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 (.=0) if (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==. ///
 		& `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==.) & (`x'9_19!=. & `x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & `x'2_20!=. & ///
-		`x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		`x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 (.=0) if (`x'1_19==. & `x'2_19==. & `x'3_19==. & ///
 		`x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==.) & (`x'10_19!=. & `x'11_19!=. & `x'12_19!=. & `x'1_20!=. & ///
-		`x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		`x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 (.=0) if (`x'1_19==. & `x'2_19==. & ///
 		`x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==.) & (`x'11_19!=. & `x'12_19!=. & ///
-		`x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		`x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 `x'11_19 (.=0) if (`x'1_19==. & `x'2_19==. & ///
 		`x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & `x'11_19==.) & (`x'12_19!=. & ///
-		`x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		`x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 `x'11_19 `x'12_19 (.=0) if (`x'1_19==. & `x'2_19==. & ///
 		`x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & `x'11_19==. & `x'12_19==.) &  ///
-		(`x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		(`x'1_20!=. & `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 `x'11_19 `x'12_19 `x'1_20 (.=0) if (`x'1_19==. & `x'2_19==. & ///
 		`x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & `x'11_19==. & `x'12_19==. & `x'1_20==.) &  ///
-		( `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		( `x'2_20!=. & `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 `x'11_19 `x'12_19 `x'1_20 `x'2_20 (.=0) if (`x'1_19==. & ///
 			`x'2_19==. & `x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & `x'11_19==. & ///
-			`x'12_19==. & `x'1_20==. & `x'2_20==.) &  ( `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+			`x'12_19==. & `x'1_20==. & `x'2_20==.) &  ( `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 `x'11_19 `x'12_19 `x'1_20 `x'2_20 `x'3_20 (.=0) if (`x'1_19==. & ///
 	       `x'2_19==. & `x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & `x'11_19==. & ///
-		   `x'12_19==. & `x'1_20==. & `x'2_20==. & `x'3_20==.) &  ( `x'4_20!=. & `x'5_20!=. & `x'6_20!=.)
+		   `x'12_19==. & `x'1_20==. & `x'2_20==. & `x'3_20==.) &  ( `x'4_20!=. & `x'5_20!=. & `x'6_20!=. )
 	recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 `x'11_19 `x'12_19 `x'1_20 `x'2_20 `x'3_20 `x'4_20 (.=0) if ///
 		  (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & ///
-		  `x'11_19==. & `x'12_19==. & `x'1_20==. & `x'2_20==. & `x'3_20==. & `x'4_20==.) &  ( `x'5_20!=. & `x'6_20!=.)
+		  `x'11_19==. & `x'12_19==. & `x'1_20==. & `x'2_20==. & `x'3_20==. & `x'4_20==.) &  ( `x'5_20!=. & `x'6_20!=. )
     recode `x'1_19 `x'2_19 `x'3_19 `x'4_19 `x'5_19 `x'6_19 `x'7_19 `x'8_19 `x'9_19 `x'10_19 `x'11_19 `x'12_19 `x'1_20 `x'2_20 `x'3_20 `x'4_20 `x'5_20 (.=0) if ///
 		  (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & ///
-		  `x'11_19==. & `x'12_19==. & `x'1_20==. & `x'2_20==. & `x'3_20==. & `x'4_20==. & `x'5_20==.) &  ( `x'6_20!=.)
+		  `x'11_19==. & `x'12_19==. & `x'1_20==. & `x'2_20==. & `x'3_20==. & `x'4_20==. & `x'5_20==.) &  ( `x'6_20!=. )
+
 }
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
@@ -139,28 +122,22 @@ foreach x of global mortality  {
 	forval i = 1/12 {
 		replace `x'`i'_19=0 if `x'`i'_19==. & total`x'!=. // replaces to 0 all the missings if all vars are not missing 
 	}
-	forval i= 1/6 { // For now ends at June in 2020
+	forval i= 1/6 { // For now ends at June  2020
 		replace `x'`i'_20=0 if `x'`i'_20==. & total`x'!=.
 	}
 	drop total`x'
 }
 /* We also need to put 0s for facilities that had deliveries, ER visits and Inpatient admissions, but no deaths all year
 Otherwise, average mortality will be inflated */
-egen somedeliveries= rowtotal(del_util*), m 
+egen somedeliveries= rowtotal(totaldel*), m 
 forval i = 1/12 {
-	replace sb_mort`i'_19 = 0 	   if sb_mort`i'_19==. &  somedeliveries>0 & somedeliveries<.
-	replace mat_mort`i'_19 = 0     if mat_mort`i'_19== . & somedeliveries>0 & somedeliveries<.
-	*replace ipd_mort`i'_19 = 0     if ipd_mort`i'_19==. & ipd_util`i'_19>0 & ipd_util`i'_19<. 
+	replace peri_mort_num`i'_19 = 0  if peri_mort_num`i'_19==. &  somedeliveries>0 & somedeliveries<.
+	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & somedeliveries>0 & somedeliveries<.
 }
 forval i= 1/6 { // For now ends at June in 2020
-	replace sb_mort`i'_20 = 0 	if sb_mort`i'_20==. & somedeliveries>0 & somedeliveries<.
-	replace mat_mort`i'_20 = 0  if mat_mort`i'_20== . & somedeliveries>0 & somedeliveries<.
-	*replace ipd_mort`i'_20 = 0  if ipd_mort`i'_20==. & ipd_util`i'_20>0 & ipd_util`i'_20<.  
+	replace peri_mort_num`i'_20 = 0  if peri_mort_num`i'_20==. &  somedeliveries>0 & somedeliveries<.
+	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & somedeliveries>0 & somedeliveries<.
 }
-/****************************************************************
-EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
-****************************************************************/
-*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning1.xlsx", firstrow(variable) replace
 
 /****************************************************************
          IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
@@ -172,6 +149,7 @@ This is only applied if the mean of the series is greater or equal to 1
 This technique avoids flagging as outlier a value of 1 if facility reports: 
 0 0 0 0 0 1 0 0 0 0 0 0  which is common for mortality
 AS THERE ARE ONLY 6 MONTHS OF DATA IN 2020, WE WON'T DROP OUTLIERS IN 2020 FOR NOW */
+
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*_19)
 	egen rowsd`x'= rowsd(`x'*_19)
@@ -185,8 +163,6 @@ foreach x of global all {
 	}
 	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x' flag_outlier_`x'*
 }
-	
-save "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE.dta", replace
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
@@ -218,6 +194,7 @@ foreach x of global all {
 	drop nb`x'* maxfac`x'
 }
 tabstat complete*, c(s) s(min) // Review completeness here
+
 * Create flags
 foreach v of varlist complete* {
 	gen flag`v' = 1 if `v'<0.90
@@ -243,70 +220,35 @@ out of 18 months (incl the latest 2 months) This brings
 completeness up "generally" above 90% for all variables. */
 foreach x of global all {
 			 	preserve
-				keep org* `x'* 
-				egen total`x'= rownonmiss(`x'*)
-				keep if total`x'>14 & `x'5_20!=. & `x'6_20!=. // keep if at least 14 out of 18 months are reported & may/jun are reported
-				*keep if total`x'== 18
-				drop total`x'
+					keep org* `x'* 
+					egen total`x'= rownonmiss(`x'*)
+					keep if total`x'>14 & `x'5_20!=. & `x'6_20!=. // keep if at least 14 out of 18 months are reported & may/jun are reported
+					*keep if total`x'== 18
+					drop total`x'
 				save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 			 }
-u "$user/$data/Data for analysis/tmpanc_util.dta", clear
+u "$user/$data/Data for analysis/tmptotaldel.dta", clear
 
-foreach x in cs_util del_util pnc_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util ///
-			 vacc_qual tbdetect_qual mat_mort  sb_mort   {
-			 	merge 1:1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitname orgunitlevel1  ///
-			              using "$user/$data/Data for analysis/tmp`x'.dta"
-						  drop _merge
-				save "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA.dta", replace
+foreach x in pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num   {
+					merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
+					drop _merge
+					save "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA.dta", replace
 	}
-foreach x in anc_util cs_util del_util pnc_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util ///
-			 vacc_qual tbdetect_qual mat_mort  sb_mort   {
-			 rm "$user/$data/Data for analysis/tmp`x'.dta"
+foreach var of global all{ 
+			 rm "$user/$data/Data for analysis/tmp`var'.dta"
 			 }
-/******************************************************************************
- CALCULATE INDICATORS (NUM/DENOM) HERE, ONCE DATA CLEANING COMPLETE
- Quality and mortality indicators
-*******************************************************************************/
-forval i = 1/12 {
-	egen totaldel`i'_19 = rowtotal( del_util`i'_19  cs_util`i'_19), m
-	gen cs_qual`i'_19 = cs_util`i'_19 / totaldel`i'_19  // Csection %
-	gen sb_mort_rate`i'_19 = sb_mort`i'_19 / (totaldel`i'_19) // stillbirth rate 
-	gen mat_mort_rate`i'_19 = mat_mort`i'_19 / (totaldel`i'_19) // Maternal mortality 
-}
-forval i = 1/6 {
-	egen totaldel`i'_20 = rowtotal( del_util`i'_20  cs_util`i'_20), m
-	gen cs_qual`i'_20 = cs_util`i'_20 / totaldel`i'_20 // Csection %
-	gen sb_mort_rate`i'_20 = sb_mort`i'_20 / totaldel`i'_20 // stillbirth rate 
-	gen mat_mort_rate`i'_20 = mat_mort`i'_20 / totaldel`i'_20 // Maternal mortality 
-}
-*REPLACE TO MISSING ANY % indicator that is greater than 1 
-foreach x in cs_qual sb_mort_rate mat_mort_rate  {
-	forval i = 1/12 {
-		replace `x'`i'_19 = . if `x'`i'_19 >1
-	}
-	forval i = 1/6 {
-		replace `x'`i'_20 = . if `x'`i'_20 >1
-	}
-}
-drop totaldel*
-* MORTALITY PER 1000
-forval i = 1/12 {
-	replace sb_mort_rate`i'_19 = sb_mort_rate`i'_19*1000
-	replace mat_mort_rate`i'_19 = mat_mort_rate`i'_19*1000
-}
-forval i = 1/6 {
-	replace sb_mort_rate`i'_20 = sb_mort_rate`i'_20*1000
-	replace mat_mort_rate`i'_20 = mat_mort_rate`i'_20*1000
-}
-save "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE.dta", replace
 
 /****************************************************************
                   RESHAPE FOR DASHBOARD
 *****************************************************************/	
-reshape long  anc_util cs_util del_util diab_util diarr_util pnc_util vacc_qual fp_util hyper_util live_birth malnu_util ///
-			  opd_util road_util tbdetect_qual mat_mort  sb_mort mat_mort_rate  sb_mort_rate cs_qual, ///
-			  i(orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitname) j(month) string
+reshape long  totaldel pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num , ///
+			  i(org*) j(month) string
+* CREATE DEL_UTIL 
+gen del_util = totaldel-cs_util
+replace del_util = totaldel if del_util==.
 
 * Labels (And dashboard format)
 * Volume RMNCH services TOTALS
@@ -334,19 +276,19 @@ reshape long  anc_util cs_util del_util diab_util diarr_util pnc_util vacc_qual 
 	lab var opd_util  "Nb outpatient visits"
 	*lab var er_util "Number of emergency room visits"
 	*lab var ipd_util "Number of inpatient admissions total"
-	lab var road_util "Number of road traffic injuries"
+	*lab var road_util "Number of road traffic injuries"
 	*lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
 * Quality MEANS
 	*lab var kmc_qual "% of LBW babies initiated on KMC"
-	lab var cs_qual "Caesarean rates"
+	*lab var cs_qual "Caesarean rates"
 	*lab var resus_qual "% asphyxiated neonates who were resuscitated and survived"
 	*lab var diab_qual "% diabetic patients with controlled blood sugar"
 	*lab var hyper_qual "% hypertisive patients with controlled blood pressure" 
 	*lab var hivsupp_qual "% ART patients with undetect VL"
 * Institutional mortality MEANS
 	*lab var newborn_mort"Institutional newborn deaths per 1000"
-	lab var sb_mort_rate "Institutional stillbirths per 1000 "
-	lab var mat_mort_rate "Institutional maternal deaths per 1000"
+	lab var peri_mort_num "Estimated number of perinatal deaths"
+	lab var mat_mort_num "Institutional maternal deaths "
 	*lab var er_mort "Emergency room deaths per 1000"
 	*lab var ipd_mort "Inpatient (incl. ICU) deaths per 1000"
 * Month and year
@@ -373,8 +315,7 @@ save "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean.dta", replace
 * Reshaping for data visualisations
 preserve
 	keep if year == 2020
-	global varlist anc_util cs_util del_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util ///
-			      tbdetect_qual mat_mort  sb_mort cs_qual  
+	global varlist totaldel pncm_util dental_util fp_util anc_util cs_util diarr_util cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num del_util
 	foreach v of global varlist {
 		rename(`v')(`v'20)
 	}
