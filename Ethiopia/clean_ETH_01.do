@@ -289,13 +289,13 @@ EXPORT RECODED DATA FOR VISUAL CHECK IN EXCEL
  Calculate total deliveries and total inpatients for mortality indicators
 *******************************************************************************/ 
 forval i = 1/12 {
-	egen totaldel`i'_19 = rowtotal(del_util`i'_19  cs_util`i'_19)
+	egen totaldel`i'_19 = rowtotal(del_util`i'_19  cs_util`i'_19), m
 	egen totalipd_mort`i'_19= rowtotal(ipd_mort_num`i'_19 icu_mort_num`i'_19), m	
 	drop icu_mort_num`i'_19
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
 forval i = 1/6 {
-	egen totaldel`i'_20 = rowtotal(del_util`i'_20  cs_util`i'_20)
+	egen totaldel`i'_20 = rowtotal(del_util`i'_20  cs_util`i'_20), m
 	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m
 	drop icu_mort_num`i'_20
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
