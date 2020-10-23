@@ -22,8 +22,8 @@ in Dhis2. It uses a dataset in wide form (1 row per health facility)
 ********************************************************************/
 clear all 
 set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
@@ -101,25 +101,15 @@ recode `x'1 `x'2 `x'3 `x'4 `x'5 `x'6 `x'7 `x'8 `x'9 `x'10 `x'11 `x'12 `x'13 `x'1
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS SOMETHING AT SOME POINT DURING THE YEAR
 ****************************************************************
-For mortality, if a faciity reports a death (or a 0) at any point then missings will be replaced by 0s for all other months
-Missingness doesnt need to be consistent since deaths are rare */
-
-foreach x of global mortality  {
-	egen total`x' = rowtotal(`x'*), m // sums all the deaths and sets new var to . if all vars are missing
-	forval i = 1/19 {
-		replace `x'`i'=0 if `x'`i'==. & total`x'!=. // replaces to 0 all the missings if all vars are not missing 
-	}
-	drop total`x'
-}
-/* We also need to impute 0 deaths for facilities that had deliveries, ER visits and Inpatient admissions, but no deaths all year
-Otherwise, average mortality will be inflated at regional level  when we calculate rates */
+For mortality, we inpute 0s if the facility had the service that the deaths
+relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/19 {
-	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. & del_util`i' >0 & totaldel`i' <.
-	replace sb_mort_num`i' = 0 	   if sb_mort_num`i' ==. & del_util`i' >0 & totaldel`i' <. 
-	replace mat_mort_num`i' = 0     if mat_mort_num`i' == . & del_util`i' >0 & totaldel`i' <. 
-	replace trauma_mort_num`i' = 0      if trauma_mort_num`i' ==. & trauma_util`i' >0 & trauma_util`i' <. 
-	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' >0 & ipd_util`i' <. 
-	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' >0 & icu_util`i' <. 	
+	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. &  totaldel`i'!=.
+	replace sb_mort_num`i' = 0 	    if sb_mort_num`i' ==.  & totaldel`i'!=.
+	replace mat_mort_num`i' = 0     if mat_mort_num`i' == .  &  totaldel`i'!=.
+	replace trauma_mort_num`i' = 0  if trauma_mort_num`i' ==. & trauma_util`i'!=.
+	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' !=. 
+	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' !=. 	
 }
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
