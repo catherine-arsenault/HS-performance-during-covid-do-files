@@ -22,16 +22,27 @@ drop nb*
 tabstat max* , s(min) c(s)
 
 
-u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean.dta", clear
 * First Covid case: March 20, 2020
 **********************************************************************
 * DESCRIPTIVES
 **********************************************************************
+u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean.dta", clear 
+*fp_util anc_util totaldel cs_util pncm_util pncc_util  diarr_util cerv_qual 
 
-by year, sort: tabstat fp_util	anc_util del_util cs_util pnc_util 	vacc_qual	diarr_util	///
-		       malnu_util  if month>=4 & month<= 6, s(N sum) c(s) // April-June 2020 vs. 2019
-by year, sort: tabstat sb_mort mat_mort  if month>=4 & month<= 6, s(N sum) c(s) // April-June 2020 vs. 2019
-by year, sort: tabstat sb_mort_rate mat_mort_rate  if month>=4 & month<= 6, s(N mean) c(s)
+* dental_util opd_util diab_util hyper_util 
+
+* mat_mort_num peri_mort_num 
+
+
+by year, sort: tabstat fp_util anc_util totaldel cs_util pncm_util pncc_util  ///
+					   diarr_util cerv_qual  if month>=4 & month<= 6, s(N sum) c(s) 
+			   
+
+by year, sort: tabstat dental_util opd_util diab_util hyper_util ///
+			   if month>=4 & month<= 6, s(N sum) c(s) 
+
+by year, sort: tabstat mat_mort_num peri_mort_num totaldel ///
+			   if month>=4 & month<= 6, s(N sum) c(s) 
 
 
 collapse (sum) *util (count) N_anc_util=anc_util N_cs_util=cs_util N_del_util=del_util    (mean) cs_qual *mort, by(year month)
