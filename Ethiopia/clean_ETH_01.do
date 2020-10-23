@@ -121,38 +121,22 @@ foreach x of global volumes  {
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS SOME MORTAILITY DATA AT SOME POINT DURING THE YEAR
 ****************************************************************
-For mortality, if a faciity reports a death (or a 0) at any point during the year then missings will be replaced by 0s for all other months
-Missingness doesnt need to be consistent since deaths are rare */
-foreach x of global mortality  {
-	egen total`x' = rowtotal(`x'*), m  // sums all the deaths and sets new var to . if all vars are missing
-	forval i = 1/12 {
-		replace `x'`i'_19=0 if `x'`i'_19==. & total`x'!=. // replaces to 0 all the missings if there was a value during period
-	}
-	forval i= 1/6 { 
-		replace `x'`i'_20=0 if `x'`i'_20==. & total`x'!=.
-	}
-	drop total`x'
-}
-/* We also need to put 0s for facilities that had deliveries, ER visits and Inpatient admissions, but no deaths all year
-Otherwise, average mortality will be inflated */
-egen somedeliveries= rowtotal(del_util*), m 
-egen someinpatient= rowtotal(ipd_util*), m 
-egen someer= rowtotal(er_util*), m 
+For mortality, we inpute 0s if the facility had the service that the deaths
+relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
-	replace newborn_mort_num`i'_19 = 0 if newborn_mort_num`i'_19==. & somedeliveries>0 & somedeliveries<.
-	replace sb_mort_num`i'_19 = 0 	   if sb_mort_num`i'_19==. &  somedeliveries>0 & somedeliveries<. 
-	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & somedeliveries>0 & somedeliveries<. 
-	replace er_mort_num`i'_19 = 0      if er_mort_num`i'_19==. & someer>0 & someer<. 
-	replace ipd_mort_num`i'_19 = 0     if ipd_mort_num`i'_19==. & someinpatient>0 & someinpatient<. 
+	replace newborn_mort_num`i'_19 = 0 if newborn_mort_num`i'_19==. & (del_util`i'_19!=. | cs_util`i'_19!=.)
+	replace sb_mort_num`i'_19 = 0 	   if sb_mort_num`i'_19==. & (del_util`i'_19!=. | cs_util`i'_19!=.)
+	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & (del_util`i'_19!=. | cs_util`i'_19!=.)
+	replace er_mort_num`i'_19 = 0      if er_mort_num`i'_19==. & er_util`i'_19!=.
+	replace ipd_mort_num`i'_19 = 0     if ipd_mort_num`i'_19==. & ipd_util`i'_19!=.
 }
 forval i = 1/6 {
-	replace newborn_mort_num`i'_20 = 0 if newborn_mort_num`i'_20==. & somedeliveries>0 & somedeliveries<.
-	replace sb_mort_num`i'_20 = 0 	   if sb_mort_num`i'_20==. &  somedeliveries>0 & somedeliveries<. 
-	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & somedeliveries>0 & somedeliveries<. 
-	replace er_mort_num`i'_20 = 0      if er_mort_num`i'_20==. & someer>0 & someer<. 
-	replace ipd_mort_num`i'_20 = 0     if ipd_mort_num`i'_20==. & someinpatient>0 & someinpatient<. 
+	replace newborn_mort_num`i'_20 = 0 if newborn_mort_num`i'_20==. & (del_util`i'_20!=. | cs_util`i'_20!=.)
+	replace sb_mort_num`i'_20 = 0 	   if sb_mort_num`i'_20==. &  (del_util`i'_20!=. | cs_util`i'_20!=.)
+	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & (del_util`i'_20!=. | cs_util`i'_20!=.)
+	replace er_mort_num`i'_20 = 0      if er_mort_num`i'_20==. & er_util`i'_20!=. 
+	replace ipd_mort_num`i'_20 = 0     if ipd_mort_num`i'_20==. & ipd_util`i'_20!=. 
 }
-drop some*
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
