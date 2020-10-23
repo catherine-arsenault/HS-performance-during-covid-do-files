@@ -33,7 +33,7 @@ u "$user/$data/Data for analysis/Haiti_Jan18-Jul20_WIDE.dta", clear
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning0.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning0.xlsx", firstrow(variable) replace
 
 * FOR NOW WE WILL NOT INCLUDE DATA FROM 2018!
 drop *_18
@@ -115,8 +115,10 @@ MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS SOME MORTAILITY DATA AT SOME POINT DURING THE YEAR OR IF 
 THE SERVICE WAS >0 THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
 ********************************************************************	
-For mortality, if a faciity reports a death (or a 0) at any point, then missings will be replaced by 0s for all other months
+/* For mortality, if a faciity reports a death (or a 0) at any point, 
+then missings will be replaced by 0s for all other months
 Missingness doesnt need to be consistent since deaths are rare */
+
 foreach x of global mortality  {
 	egen total`x' = rowtotal(`x'*), m // sums all the deaths and sets new var to . if all vars are missing
 	forval i = 1/12 {
@@ -126,17 +128,18 @@ foreach x of global mortality  {
 		replace `x'`i'_20=0 if `x'`i'_20==. & total`x'!=.
 	}
 	drop total`x'
-}
-/* We also need to put 0s for facilities that had deliveries, ER visits and Inpatient admissions, but no deaths all year
-Otherwise, average mortality will be inflated */
-egen somedeliveries= rowtotal(totaldel*), m 
+}*/
+
+/* We also need to put 0s for facilities that had deliveries, ER visits and Inpatient admissions, 
+but no deaths that month. Otherwise, average mortality will be inflated */
+
 forval i = 1/12 {
-	replace peri_mort_num`i'_19 = 0  if peri_mort_num`i'_19==. &  somedeliveries>0 & somedeliveries<.
-	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & somedeliveries>0 & somedeliveries<.
+	replace peri_mort_num`i'_19 = 0  if peri_mort_num`i'_19==. &  totaldel`i'_19!=.
+	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & totaldel`i'_19!=.
 }
 forval i= 1/6 { // For now ends at June in 2020
-	replace peri_mort_num`i'_20 = 0  if peri_mort_num`i'_20==. &  somedeliveries>0 & somedeliveries<.
-	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & somedeliveries>0 & somedeliveries<.
+	replace peri_mort_num`i'_20 = 0  if peri_mort_num`i'_20==. &  totaldel`i'_20!=.
+	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & totaldel`i'_20!=.
 }
 
 /****************************************************************
@@ -166,7 +169,7 @@ foreach x of global all {
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning2.xlsx", firstrow(variable) replace
+export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning2.xlsx", firstrow(variable) replace
 	
 /****************************************************************
                     CALCULATE COMPLETENESS
