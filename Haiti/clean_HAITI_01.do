@@ -40,14 +40,14 @@ drop *_18
 * We will also drop July 2020 as it was too incomplete
 drop *7_20
 * 897 facilities. Dropping all facilities that don't report any indicators all 18 months
-egen all_visits = rowtotal(totaldel1_19-peri_mort_num6_20), m
+egen all_visits = rowtotal(totaldel1_19-del_util6_20), m
 drop if  all_visits==.
 drop all_visits 
-* Drops 65 facilities, retains 835
+* Drops 65 facilities, retains 833
 
 drop tb_detect* // variable was empty
 
-global volumes totaldel pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+global volumes totaldel del_util  pncm_util dental_util fp_util anc_util cs_util diarr_util ///
 			   cerv_qual pncc_util opd_util diab_util hyper_util 
 global mortality mat_mort_num peri_mort_num 
 global all $volumes $mortality 
@@ -112,27 +112,10 @@ foreach x of global volumes  {
 }
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
-REPORTS SOME MORTAILITY DATA AT SOME POINT DURING THE YEAR OR IF 
-THE SERVICE WAS >0 THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
+REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
 ********************************************************************	
-/* For mortality, if a faciity reports a death (or a 0) at any point, 
-then missings will be replaced by 0s for all other months
-Missingness doesnt need to be consistent since deaths are rare */
-
-foreach x of global mortality  {
-	egen total`x' = rowtotal(`x'*), m // sums all the deaths and sets new var to . if all vars are missing
-	forval i = 1/12 {
-		replace `x'`i'_19=0 if `x'`i'_19==. & total`x'!=. // replaces to 0 all the missings if all vars are not missing 
-	}
-	forval i= 1/6 { // For now ends at June  2020
-		replace `x'`i'_20=0 if `x'`i'_20==. & total`x'!=.
-	}
-	drop total`x'
-}*/
-
-/* We also need to put 0s for facilities that had deliveries, ER visits and Inpatient admissions, 
-but no deaths that month. Otherwise, average mortality will be inflated */
-
+For mortality, we inpute 0s if the facility had the service that the deaths
+relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
 	replace peri_mort_num`i'_19 = 0  if peri_mort_num`i'_19==. &  totaldel`i'_19!=.
 	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & totaldel`i'_19!=.
@@ -141,7 +124,6 @@ forval i= 1/6 { // For now ends at June in 2020
 	replace peri_mort_num`i'_20 = 0  if peri_mort_num`i'_20==. &  totaldel`i'_20!=.
 	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & totaldel`i'_20!=.
 }
-
 /****************************************************************
          IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
 	               AND SET THEM TO MISSING 
@@ -169,7 +151,7 @@ foreach x of global all {
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning2.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning2.xlsx", firstrow(variable) replace
 	
 /****************************************************************
                     CALCULATE COMPLETENESS
@@ -233,7 +215,7 @@ foreach x of global all {
 			 }
 u "$user/$data/Data for analysis/tmptotaldel.dta", clear
 
-foreach x in pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+foreach x in pncm_util del_util dental_util fp_util anc_util cs_util diarr_util ///
 			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num   {
 					merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 					drop _merge
@@ -244,14 +226,12 @@ foreach var of global all{
 			 }
 
 /****************************************************************
-                  RESHAPE FOR DASHBOARD
+                  RESHAPE TO LONG
+				  this is the dataset we use for analyses
 *****************************************************************/	
-reshape long  totaldel pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util diarr_util ///
 			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num , ///
 			  i(org*) j(month) string
-* CREATE DEL_UTIL 
-gen del_util = totaldel-cs_util
-replace del_util = totaldel if del_util==.
 
 * Labels (And dashboard format)
 * Volume RMNCH services TOTALS
@@ -315,22 +295,66 @@ sort orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organ
 rename mo month
 save "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean.dta", replace
 
+/****************************************************************
+  COLLAPSE TO REGION/DEPARTMENTS TOTALS AND RESHAPE FOR DASHBOARD
+*****************************************************************/
+u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA.dta", clear
+rename orgunitlevel2 departement
+collapse (sum) totaldel1_19-peri_mort_num6_20 , by(departement)
+encode departement, gen(dpt)
+drop departement
+order dpt
+set obs 11
+foreach x of var _all    {
+	egen `x'tot= total(`x'), m
+	replace `x'= `x'tot in 11
+	drop `x'tot
+}
+decode dpt, gen(departement)
+replace departement="National" if departement==""
+drop dpt
+order departement
+
+reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util ///
+			  diarr_util cerv_qual pncc_util opd_util diab_util hyper_util ///
+			  mat_mort_num peri_mort_num, i(departement ) j(month) string
+* Month and year
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
+				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
+replace year = 2019 if year==.
+gen mo = 1 if month =="1_19" | month =="1_20"
+replace mo = 2 if month =="2_19" | month =="2_20"
+replace mo = 3 if month =="3_19" | month =="3_20"
+replace mo = 4 if month =="4_19" | month =="4_20"
+replace mo = 5 if month =="5_19" | month =="5_20"
+replace mo = 6 if month =="6_19" | month =="6_20"
+replace mo = 7 if month =="7_19" | month =="7_20"
+replace mo = 8 if month =="8_19" | month =="8_20"
+replace mo = 9 if month =="9_19" | month =="9_20"
+replace mo = 10 if month =="10_19" | month =="10_20"
+replace mo = 11 if month =="11_19" | month =="11_20"
+replace mo = 12 if month =="12_19" | month =="12_20"
+drop month	
+rename mo month
+sort  departement year month
+order departement year month 
+
 * Reshaping for data visualisations
 preserve
 	keep if year == 2020
-	global varlist totaldel pncm_util dental_util fp_util anc_util cs_util diarr_util cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num del_util
-	foreach v of global varlist {
+	foreach v of global all {
 		rename(`v')(`v'20)
 	}
 	drop year
 	save "$user/$data/temp.dta", replace
 restore
 keep if year==2019
-foreach v of global varlist {
+foreach v of global all {
 	rename(`v')(`v'19)
 	}
 drop year
-merge m:m orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitname orgunitlevel1 mo using "$user/$data/temp.dta"
+merge m:m departement month using "$user/$data/temp.dta"
 drop _merge
 
 
