@@ -323,9 +323,49 @@ forval i =1/12 {
 forval i =1/7 {
 	replace peri_mort_num`i'_20 = 0 if peri_mort_num`i'_20 <0 & peri_mort_num`i'_20!=.
 }
-
 drop livebirths*  
 
+gen del_util1_18 = totaldel1_18 - cs_util1_18
+gen del_util2_18 = totaldel2_18 -cs_util2_18 
+gen del_util3_18 = totaldel3_18 -cs_util3_18 
+gen del_util4_18 = totaldel4_18 -cs_util4_18 
+gen del_util5_18 = totaldel5_18 -cs_util5_18 
+gen del_util6_18 = totaldel6_18 -cs_util6_18 
+gen del_util7_18 = totaldel7_18 -cs_util7_18 
+gen del_util8_18 = totaldel8_18 -cs_util8_18 
+gen del_util9_18 = totaldel9_18 -cs_util9_18 
+gen del_util10_18 = totaldel10_18 -cs_util10_18 
+gen del_util11_18 = totaldel11_18 -cs_util11_18 
+gen del_util12_18 = totaldel12_18 -cs_util12_18 
+
+gen del_util1_19 = totaldel1_19 - cs_util1_19
+gen del_util2_19 = totaldel2_19 -cs_util2_19 
+gen del_util3_19 = totaldel3_19 -cs_util3_19 
+gen del_util4_19 = totaldel4_19 -cs_util4_19 
+gen del_util5_19 = totaldel5_19 -cs_util5_19 
+gen del_util6_19 = totaldel6_19 -cs_util6_19 
+gen del_util7_19 = totaldel7_19 -cs_util7_19 
+gen del_util8_19 = totaldel8_19 -cs_util8_19 
+gen del_util9_19 = totaldel9_19 -cs_util9_19 
+gen del_util10_19 = totaldel10_19 -cs_util10_19 
+gen del_util11_19 = totaldel11_19 -cs_util11_19 
+gen del_util12_19 = totaldel12_19 -cs_util12_19  
+
+gen del_util1_20 = totaldel1_20 - cs_util1_20
+gen del_util2_20 = totaldel2_20 -cs_util2_20 
+gen del_util3_20 = totaldel3_20 -cs_util3_20 
+gen del_util4_20 = totaldel4_20 -cs_util4_20 
+gen del_util5_20 = totaldel5_20 -cs_util5_20 
+gen del_util6_20 = totaldel6_20 -cs_util6_20 
+gen del_util7_20 = totaldel7_20 -cs_util7_20 
+
+forval i=1/12 {
+	replace del_util`i'_18 = totaldel`i'_18 if del_util`i'_18==.
+	replace del_util`i'_19 = totaldel`i'_19 if del_util`i'_19==.
+}
+forval i=1/7 {
+	replace del_util`i'_20 = totaldel`i'_20 if del_util`i'_20==.
+}
 save "$user/$data/Data for analysis/Haiti_Jan18-Jul20_WIDE.dta", replace
 
 	
