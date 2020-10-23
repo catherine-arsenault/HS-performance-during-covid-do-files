@@ -117,10 +117,10 @@ foreach x of global volumes  {
 		  (`x'1_19==. & `x'2_19==. & `x'3_19==. & `x'4_19==. & `x'5_19==. & `x'6_19==. & `x'7_19==. & `x'8_19==. & `x'9_19==. & `x'10_19==. & ///
 		  `x'11_19==. & `x'12_19==. & `x'1_20==. & `x'2_20==. & `x'3_20==. & `x'4_20==. & `x'5_20==.) &  ( `x'6_20!=.)
 }
-/****************************************************************
+/*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
-REPORTS SOME MORTAILITY DATA AT SOME POINT DURING THE YEAR
-****************************************************************
+REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
+********************************************************************	
 For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
