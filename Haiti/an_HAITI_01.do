@@ -3,25 +3,6 @@ set more off
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Haiti)"
 
-
-u  "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE.dta", clear 
-
-* Calculating number of facilities for each indicator
-global all  anc_util cs_util del_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util tbdetect_qual cs_qual sb_mort mat_mort 
-
-foreach x of global all {
-	forval i=1/12 {
-		egen nb`x'`i'_19 = count(`x'`i'_19) 
-	}
-	forval i=1/6 { // ends at june for now
-		egen nb`x'`i'_20 = count(`x'`i'_20) 
-	}
-	egen maxfac`x' = rowmax (nb`x'*)
-}
-drop nb*
-tabstat max* , s(min) c(s)
-
-
 * First Covid case: March 20, 2020
 **********************************************************************
 * DESCRIPTIVES
@@ -37,7 +18,6 @@ u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean.dta", clear
 by year, sort: tabstat fp_util anc_util totaldel cs_util pncm_util pncc_util  ///
 					   diarr_util cerv_qual  if month>=4 & month<= 6, s(N sum) c(s) 
 			   
-
 by year, sort: tabstat dental_util opd_util diab_util hyper_util ///
 			   if month>=4 & month<= 6, s(N sum) c(s) 
 
@@ -45,7 +25,24 @@ by year, sort: tabstat mat_mort_num peri_mort_num totaldel ///
 			   if month>=4 & month<= 6, s(N sum) c(s) 
 
 
-collapse (sum) *util (count) N_anc_util=anc_util N_cs_util=cs_util N_del_util=del_util    (mean) cs_qual *mort, by(year month)
+/* * Calculating number of facilities for each indicator
+u  "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE.dta", clear 
+global all  anc_util cs_util del_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util tbdetect_qual cs_qual sb_mort mat_mort 
+
+foreach x of global all {
+	forval i=1/12 {
+		egen nb`x'`i'_19 = count(`x'`i'_19) 
+	}
+	forval i=1/6 { // ends at june for now
+		egen nb`x'`i'_20 = count(`x'`i'_20) 
+	}
+	egen maxfac`x' = rowmax (nb`x'*)
+}
+drop nb*
+tabstat max* , s(min) c(s)
+
+
+collapse (sum) *util (count) N_anc_util=anc_util N_cs_util=cs_util N_del_util=del_util (mean) cs_qual *mort, by(year month)
 * N_diab_util= N_diarr_util= N_fp_util= N_hyper_util= N_malnu_util= N_opd_util= N_road_util= N_mat_mort= N_sb_mort= N_cs_qual= 
 sort year month
 gen time= _n
