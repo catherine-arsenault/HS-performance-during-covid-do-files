@@ -28,20 +28,20 @@ global data "/HMIS Data for Health System Performance Covid (South Africa)"
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
 
-global volumes anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
-			   ipd_util er_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+global volumes anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util
 global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num
 global all $volumes $mortality 
 
-drop fp_util* hyper_util* /* these indicators are no longer collected after April 2020 (start of financial year)
+drop fp_util* hyper_util* er_util* /* these indicators are no longer collected after April 2020 (start of financial year)
 							 Must be dropped from analysis */ 
 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning0.xlsx", firstrow(variable) replace
+*export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning0.xlsx", firstrow(variable) replace
 
 /***************************************************************
 VOLUMES:  REPLACE MISSINGS TO 0 IF MISSINGNESS IS CONSISTENT
@@ -101,30 +101,20 @@ recode `x'1 `x'2 `x'3 `x'4 `x'5 `x'6 `x'7 `x'8 `x'9 `x'10 `x'11 `x'12 `x'13 `x'1
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS SOMETHING AT SOME POINT DURING THE YEAR
 ****************************************************************
-For mortality, if a faciity reports a death (or a 0) at any point then missings will be replaced by 0s for all other months
-Missingness doesnt need to be consistent since deaths are rare */
-
-foreach x of global mortality  {
-	egen total`x' = rowtotal(`x'*), m // sums all the deaths and sets new var to . if all vars are missing
-	forval i = 1/19 {
-		replace `x'`i'=0 if `x'`i'==. & total`x'!=. // replaces to 0 all the missings if all vars are not missing 
-	}
-	drop total`x'
-}
-/* We also need to impute 0 deaths for facilities that had deliveries, ER visits and Inpatient admissions, but no deaths all year
-Otherwise, average mortality will be inflated at regional level  when we calculate rates */
+For mortality, we inpute 0s if the facility had the service that the deaths
+relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/19 {
-	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. & del_util`i' >0 & del_util`i' <.
-	replace sb_mort_num`i' = 0 	   if sb_mort_num`i' ==. & del_util`i' >0 & del_util`i' <. 
-	replace mat_mort_num`i' = 0     if mat_mort_num`i' == . & del_util`i' >0 & del_util`i' <. 
-	replace trauma_mort_num`i' = 0      if trauma_mort_num`i' ==. & trauma_util`i' >0 & trauma_util`i' <. 
-	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' >0 & ipd_util`i' <. 
-	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' >0 & icu_util`i' <. 	
+	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. &  totaldel`i'!=.
+	replace sb_mort_num`i' = 0 	    if sb_mort_num`i' ==.  & totaldel`i'!=.
+	replace mat_mort_num`i' = 0     if mat_mort_num`i' == .  &  totaldel`i'!=.
+	replace trauma_mort_num`i' = 0  if trauma_mort_num`i' ==. & trauma_util`i'!=.
+	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' !=. 
+	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' !=. 	
 }
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
+*export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
 /****************************************************************
               IDENTIFY OUTLIERS AND SET TO MISSING 
 ****************************************************************
@@ -139,7 +129,9 @@ foreach x of global all  {
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3*(rowsd`x'))
 	gen neg_out`x' = rowmean`x'-(3*(rowsd`x'))
-	forval i = 1/19 {
+	/*We need to investigate if we can remove outliers post Covid? For now, only
+	  assessing outliers from Jan-Dec 2019*/
+	forval i = 1/12 {
 		gen flag_outlier_`x'`i'= 1 if `x'`i'>pos_out`x' & `x'`i'<.
 		replace flag_outlier_`x'`i'= 1 if `x'`i' < neg_out`x'
 		replace flag_outlier_`x'`i'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less
@@ -149,79 +141,96 @@ foreach x of global all  {
 }
 /****************************************************************
                     CALCULATE COMPLETENESS
-****************************************************************
+***************************************************************** 
 Completeness for each indicator-month
 This calculates the % of facilities reporting each indicator every month
 Creates a flag variable if less than 90% of expected facilities are reporting */
+
+* Calculate max number of facilities reporting any indicator each month
 foreach x of global all {
 	forval i=1/19 {
 		egen nb`x'`i' = count(`x'`i')
 	}
 	egen maxfac`x' = rowmax (nb`x'*)
-	forval i=1/12 {
+	
+* Calculate the % reporting each month from the max	
+	forval i=1/19 {
 		gen complete_`x'`i'= nb`x'`i'/maxfac`x' 
 		lab var complete_`x'`i' "Proportion of facilities reporting indicator x in month i"
 	}
 	drop nb`x'* maxfac`x'
 }
+* Create flag if completeness is below 95%
 foreach v of varlist complete_* {
 	gen flag`v' = 1 if `v'<0.95
 	lab var flag`v' "Completeness < 95%"
 }
-*Drop all empty flags // remaining flags will identify the months < 95%
+
+*Drop all empty flags // remaining flags will identify the indicator-months that are incomeplete < 95%
 foreach var of varlist flag* {
      capture assert mi(`var')
      if !_rc {
         drop `var'
      }
  }
-  tabstat complete*, c(s) s(min) // Review completeness here
+* Investigate completeness 
+  *tabstat complete*, c(s) s(min) // Review completeness here
   drop complete* 
-/******************************************************************************
- CALCULATE INDICATORS (NUM/DENOM) HERE, ONCE DATA CLEANING COMPLETE
- Quality and mortality indicators
-*******************************************************************************/
-forval i = 1/19 {
-	gen cs_qual`i'= cs_util`i'/del_util`i'
-	gen newborn_mort`i' = newborn_mort_num`i'/del_util`i'
-	gen sb_mort`i' = sb_mort_num`i'/del_util`i'
-	gen mat_mort`i'=mat_mort_num`i'/del_util`i'
-	gen trauma_mort`i'= trauma_mort_num`i'/trauma_util`i'
-	gen ipd_mort`i' = ipd_mort_num`i'/ ipd_util`i'
-	gen icu_mort`i' = icu_mort_num`i'/ icu_util`i'
+  drop flag* 
+save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_WIDE.dta", replace
+/****************************************************************
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+*export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning3.xlsx", firstrow(variable) replace
+/***************************************************************
+                 COMPLETE CASE ANALYSIS
+****************************************************************
+Completeness is an issue, particularly May-July 2020. An for c-sections,
+child diarrhea, total outpatient visits and tb screening. Some Facilities 
+have not reported yet. For each variable, keep only heath facilities that 
+have reported at least 14 out of 18 months (incl the latest 3 months) 
+This brings completeness up "generally" above 90% for all variables. */
+foreach x of global all  {
+	preserve
+		keep Province-factype `x'* 
+		egen total`x'= rownonmiss(`x'*)
+		keep if total`x'>14 & `x'17!=. & `x'18!=. & `x'19!=. 
+		* keep if at least 14 out of 18 months are reported & May-july 2020 are reported 
+		* keep if total`x'== 18
+		drop total`x'
+		save "$user/$data/Data for analysis/tmp`x'.dta", replace
+	restore
 }
-order cs_qual* newborn_mort* mat_mort* sb_mort*  ipd_mort*  trauma_mort* icu_mort* , after(flagcomplete_diarr_util7)
-
-* REPLACE TO MISSING ANY % indicator that is greater than 1 
-foreach v in cs_qual newborn_mort sb_mort mat_mort trauma_mort ipd_mort icu_mort {
-	forval i =1/19 {
-		replace `v'`i'= . if `v'`i' > 1 & `v'`i'<. // , there are many ICU mortality > 1
+* Merge together
+u "$user/$data/Data for analysis/tmpanc1_util.dta", clear
+foreach x in totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
+			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
+			   merge 1:1 Province-factype using "$user/$data/Data for analysis/tmp`x'.dta"
+			   drop _merge
+			   save "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA.dta", replace
 	}
-}
-* MORTALITY PER 1000
-foreach v in newborn_mort sb_mort mat_mort trauma_mort ipd_mort icu_mort {
-	forval i = 1/19 {
-		replace `v'`i' = `v'`i' * 1000
-	}
+foreach x of global all {
+	rm "$user/$data/Data for analysis/tmp`x'.dta"
 }
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel Province dist subdist Facility factype *mort* using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning2.xlsx", firstrow(variable) replace
-drop flag* 
-save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_WIDE.dta", replace
+*export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning4.xlsx", firstrow(variable) replace
+	
+			   
 /****************************************************************
                   RESHAPE FOR DASHBOARD
 *****************************************************************/	
-
-/*reshape long   anc1_util del_util  pnc_util diarr_util pneum_util kmcn_qual pent_qual /// 
-			   measles_qual pneum_qual rota_qual newborn_mort_num sb_mort_num ///
-			  mat_mort_num  , i(Facility factype Province dist subdist) j(month) */
 			  
-reshape long  anc1_util del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ipd_util er_util road_util trauma_util ///
-			  icu_util diab_util kmcn_qual cerv_qual cs_qual tbscreen_qual tbdetect_qual tbtreat_qual vacc_qual pent_qual ///
-			  bcg_qual measles_qual pneum_qual rota_qual newborn_mort sb_mort mat_mort ipd_mort trauma_mort icu_mort ///
-			  newborn_mort_num mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, i(Facility factype Province dist subdist) j(month)
+reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
+			  sam_util art_util opd_util ipd_util road_util trauma_util ///
+			  icu_util diab_util kmcn_qual cerv_qual tbscreen_qual ///
+			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
+			  measles_qual pneum_qual rota_qual  newborn_mort_num ///
+			  mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, ///
+			  i(Facility factype Province dist subdist) j(month)
 			  
 rename month rmonth
 gen month= rmonth
@@ -233,7 +242,8 @@ replace year= 2020 if rmonth>=13
 * Volume RMNCH services TOTALS
 	*lab var fp_util "Number of new and current users of contraceptives"
 	lab var anc1_util "Total number of first antenatal care visits"
-	lab var del_util "Number of facility deliveries"
+	lab var totaldel "Number of facility deliveries: c-section and vaginal"
+	lab var del_util "Number of vaginal facility deliveries"
 	lab var cs_util "Number of caesarean sections"
 	lab var diarr_util "Number children treated with ORS for diarrhea"
 	lab var pneum_util "Number of consultations for sick child care - pneumonia"
@@ -251,7 +261,7 @@ replace year= 2020 if rmonth>=13
 	*lab var hyper_util "Number of hypertensive patients enrolled"
 	lab var art_util "Number of adult and children on ART "
 	lab var opd_util  "Nb outpatient visits"
-	lab var er_util "Number of emergency room visits"
+	*lab var er_util "Number of emergency room visits"
 	lab var trauma_util "Number of trauma admissions"
 	lab var ipd_util "Number of inpatient admissions "
 	lab var icu_util " Number of icu admissions"
@@ -262,15 +272,74 @@ replace year= 2020 if rmonth>=13
 	lab var tbdetect_qual "Number tb cases confirmed"
 	lab var tbtreat_qual "Number tb cases started on treatment"
 	lab var tbscreen_qual "Number screened for tb"
-* Institutional mortality MEANS
-	lab var newborn_mort "Institutional newborn deaths per 1000"
-	lab var sb_mort "Institutional stillbirths per 1000 "
-	lab var mat_mort "Institutional maternal deaths per 1000"
-	lab var trauma_mort "Trauma deaths per 1000"
-	lab var ipd_mort "Inpatient deaths per 1000"
-	lab var icu_mort "ICU deaths per 1000"
+* Institutional mortality 
+	lab var newborn_mort_num "Institutional newborn deaths"
+	lab var sb_mort_num "Institutional stillbirths "
+	lab var mat_mort_num "Institutional maternal deaths "
+	lab var trauma_mort_num "Trauma deaths "
+	lab var ipd_mort "Inpatient deaths "
+	lab var icu_mort "ICU deaths"
 	
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_Jan19-Jul20_clean.dta", replace
+
+/****************************************************************
+  COLLAPSE TO REGION TOTALS AND RESHAPE FOR DASHBOARD
+*****************************************************************/
+u "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA.dta", clear
+	drop Province
+	encode Facility, gen(facname)
+	collapse (sum) anc1_util1-trauma_mort_num19 , by(dist)
+	order dist
+	set obs 12 // adding an empty row to dataset
+	foreach x of var _all    {
+		egen `x'tot= total(`x'), m
+		replace `x'= `x'tot in 12 // adding each var's total in that empty row
+		drop `x'tot
+}
+	decode dist, gen(district)
+	replace district="Kwazulu-Natal (Province total)" if district==""
+	drop dist
+	order district 
+
+reshape long  anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
+			  sam_util art_util opd_util ipd_util road_util trauma_util ///
+			  icu_util diab_util kmcn_qual cerv_qual tbscreen_qual ///
+			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
+			  measles_qual pneum_qual rota_qual  newborn_mort_num ///
+			  mat_mort_num sb_mort_num ipd_mort_num trauma_mort_num icu_mort_num, ///
+			  i(district) j(month)
+			  
+rename month rmonth
+gen month= rmonth
+replace month=month-12 if month>=13
+gen year = 2019
+replace year= 2020 if rmonth>=13	
+
+
+* Reshaping for data visualisations / dashboard
+preserve
+	keep if year == 2020
+	global varlist anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
+	sam_util art_util opd_util ipd_util road_util diab_util kmcn_qual cerv_qual ///
+	tbscreen_qual tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual ///
+	pneum_qual rota_qual icu_util trauma_util newborn_mort_num sb_mort_num mat_mort_num ///
+	ipd_mort_num icu_mort_num trauma_mort_num  
+	foreach v of global varlist {
+		rename(`v')(`v'20)
+	}
+	drop year
+	save "$user/$data/Data for analysis/temp.dta", replace
+restore
+	keep if year==2019
+	foreach v of global varlist {
+		rename(`v')(`v'19)
+	}
+drop year
+
+merge m:m district month using "$user/$data/Data for analysis/temp.dta"
+drop _merge
+
+rm "$user/$data/Data for analysis/temp.dta"
 
 export delimited using "$user/HMIS Data for Health System Performance Covid (South Africa)/KZN_Jan19-Jul20_fordashboard.csv", replace
 

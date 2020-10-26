@@ -19,7 +19,7 @@ by year, sort: tabstat vacc_qual pent_qual bcg_qual ///
 by year, sort: tabstat art_util  opd_util ipd_util er_util road_util  if month>=4 & month<= 6, s(N sum) c(s) format(%20.10f)
 
 * Mortality 
-by year, sort: tabstat  sb_mort_num newborn_mort_num mat_mort_num totaldel if month>=4 & month<= 6, s(N sum) c(s) 
+by year, sort: tabstat  sb_mort_num newborn_mort_num mat_mort_num del_util cs_util totaldel if month>=4 & month<= 6, s(N sum) c(s) 
 by year, sort: tabstat   totalipd_mort ipd_util er_mort_num er_util if month>=4 & month<= 6, s(N sum) c(s) 
 
 * Quality
