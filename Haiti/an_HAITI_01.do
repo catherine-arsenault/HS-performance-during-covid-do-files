@@ -24,7 +24,10 @@ by year, sort: tabstat dental_util opd_util diab_util hyper_util ///
 by year, sort: tabstat mat_mort_num peri_mort_num totaldel ///
 			   if month>=4 & month<= 6, s(N sum) c(s) 
 
-
+* By region
+table orgunitlevel2 year if month>=4 & month<=6 , c(sum opd_util)
+table orgunitlevel2 year if month>=4 & month<=6 , c(sum totaldel N totaldel)			   
+			   
 /* * Calculating number of facilities for each indicator
 u  "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE.dta", clear 
 global all  anc_util cs_util del_util diab_util diarr_util fp_util hyper_util live_birth malnu_util opd_util road_util tbdetect_qual cs_qual sb_mort mat_mort 
