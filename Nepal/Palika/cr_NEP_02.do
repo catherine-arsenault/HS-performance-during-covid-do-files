@@ -114,7 +114,7 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	* Deliveries 2019
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_del_util.csv", clear 
 	drop organisationunitdescription
-	rename (disaggregationbysexcasteethnicit-v20) ///
+	rename (safemotherhoodprogramdeliveryser-v20) ///
 	(del_util1_19 del_util2_19	del_util3_19	del_util4_19	del_util5_19  del_util6_19 ///
 	del_util7_19	del_util8_19	del_util9_19	del_util10_19	del_util11_19 del_util12_19)
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid ///
@@ -131,7 +131,7 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	* Deliveries 2020
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_del_util.csv", clear 
 	drop organisationunitdescription
-	rename (disaggregationbysexcasteethnicit-v14) (del_util1_20 del_util2_20 del_util3_20 del_util4_20 ///
+	rename (safemotherhoodprogramdeliveryser-v14) (del_util1_20 del_util2_20 del_util3_20 del_util4_20 ///
 	del_util5_20 del_util6_20)
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid  		   		organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(del*), m

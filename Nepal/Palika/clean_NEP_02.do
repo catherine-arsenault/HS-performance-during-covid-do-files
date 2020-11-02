@@ -43,7 +43,7 @@ drop all_visits
 global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util live_births
 global quality tbdetect_qual hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual
 global mortality sb_mort mat_mort ipd_mort 
-global all $volumes $mortality
+global all $volumes $mortality $quality 
 
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS PALIKA
