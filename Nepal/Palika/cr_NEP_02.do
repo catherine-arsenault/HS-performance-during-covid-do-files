@@ -4,8 +4,8 @@
 * Palika level data analysis 
 clear all
 set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 ********************************************************************************
@@ -29,12 +29,18 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 								 v229 v241 v253 v265 v277 v289), m
 	egen fp_util6_19 = rowtotal(v14 v26 v38 v50 v62 v74 v86 v98 v110 v122 v134 v146 v158 v170 v182 v194 v206 v218 	///
 								 v230 v242 v254 v266 v278 v290), m
-	egen fp_util7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 								 v231 v243 v255 v267 v279 v291), m
-	egen fp_util8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220 								 v232 v244 v256 v268 v280 v292), m
-	egen fp_util9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221 								 v233 v245 v257 v269 v281 v293), m
-	egen fp_util10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 								v234 v246 v258 v270 v282 v294), m
-	egen fp_util11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 								v235 v247 v259 v271 v283 v295), m
-	egen fp_util12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 								v236 v248 v260 v272 v284 v296), m
+	egen fp_util7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 	///
+								v231 v243 v255 v267 v279 v291), m
+	egen fp_util8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220 ///
+								v232 v244 v256 v268 v280 v292), m
+	egen fp_util9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221 	///
+								v233 v245 v257 v269 v281 v293), m
+	egen fp_util10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 ///
+									v234 v246 v258 v270 v282 v294), m
+	egen fp_util11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 ///
+								v235 v247 v259 v271 v283 v295), m
+	egen fp_util12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 ///
+								v236 v248 v260 v272 v284 v296), m
 	keep org* fp* 
 	duplicates tag org* , gen(tag) 
 	egen total= rowtotal(fp*), m
@@ -111,11 +117,14 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	rename (disaggregationbysexcasteethnicit-v20) ///
 	(del_util1_19 del_util2_19	del_util3_19	del_util4_19	del_util5_19  del_util6_19 ///
 	del_util7_19	del_util8_19	del_util9_19	del_util10_19	del_util11_19 del_util12_19)
-	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid   			organisationunitname organisationunitcode, gen(tag)
+	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid ///
+	organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(del*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
-	merge 1:1  orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid   		  	organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
+	merge 1:1  orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid ///
+				organisationunitname organisationunitcode using ///
+				"$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
