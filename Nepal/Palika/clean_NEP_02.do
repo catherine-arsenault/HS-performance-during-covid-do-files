@@ -299,7 +299,7 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Nepal_Jan19-Jun20_fordashboard.csv", replace
+export delimited using "$user/$data/Nepal_palika_Jan19-Jun20_fordashboard.csv", replace
 
 
 
