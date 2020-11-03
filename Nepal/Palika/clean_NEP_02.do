@@ -47,7 +47,7 @@ drop all_visits
 
 global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
                sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
-			   pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual
+			   totaldel pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual
 global mortality sb_mort_num mat_mort_num ipd_mort_num peri_mort_num
 global all $volumes $mortality 
 				
@@ -177,7 +177,7 @@ foreach x of global all {
 			 }
 u "$user/$data/Data for analysis/tmpfp_util.dta", clear
 
-foreach x in  anc_util del_util cs_util pnc_util diarr_util pneum_util ///
+foreach x in  anc_util del_util cs_util pnc_util diarr_util pneum_util totaldel ///
                sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
 			   pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			   sb_mort_num mat_mort_num ipd_mort_num peri_mort_num {
@@ -207,7 +207,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 reshape long fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			 opd_util ipd_util er_util tbdetect_qual hivdiag_qual pent_qual bcg_qual ///
-			 measles_qual opv3_qual pneum_qual rota_qual sb_mort_num mat_mort_num ///
+			 totaldel measles_qual opv3_qual pneum_qual rota_qual sb_mort_num mat_mort_num ///
 			 ipd_mort_num peri_mort_num , i(org*) j(month) string	
 	
 * Month and year
@@ -256,7 +256,7 @@ order province
 reshape long  fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 			  sam_util opd_util ipd_util er_util tbdetect_qual hivdiag_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-			  sb_mort_num mat_mort_num ipd_mort_num peri_mort_num, ///
+			  totaldel sb_mort_num mat_mort_num ipd_mort_num peri_mort_num, ///
 			  i(province) j(month) string
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
