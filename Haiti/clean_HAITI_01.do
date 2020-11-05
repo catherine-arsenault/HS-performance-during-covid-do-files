@@ -8,10 +8,9 @@
 SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
  IN DHIS2. IT USES DATASET IN WIDE FORM (1 ROW PER HEALTH FACILITY)
 
-1 Impute 0s for missing values: 
-	- For volume data, missingness must be consistent
+1 Impute 0s instead of missing values: 
 	- For mortality, 0s are imputed if the facility offers the
-	  service it relates to.
+	  service it relates to that month.
 
 2 Identify extreme outliers and set them to missing
 
@@ -93,7 +92,7 @@ foreach x of global all {
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning2.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning4.xlsx", firstrow(variable) replace
 	
 /****************************************************************
                     CALCULATE COMPLETENESS
@@ -138,6 +137,16 @@ drop complete*
 * Investigate flags that remain 
 
 /***************************************************************
+      COUNT NUMBER OF FACILITY REPORTING EACH INDICATOR
+****************************************************************/
+foreach x of global all {
+	order `x'*_19 `x'*_20
+	egen `x'total= rowtotal(`x'1_19-`x'6_20), m
+	gen tag`x'=1 if `x'total!=.
+	drop `x'total
+	lab var tag`x' "Facility reported at least once"
+	}	
+/***************************************************************
                  COMPLETE CASE ANALYSIS
 ****************************************************************
 Completeness is an issue for April to June 2020. Facilities have
@@ -147,7 +156,7 @@ out of 18 months (incl the latest 2 months) This brings
 completeness up "generally" above 90% for all variables. */
 foreach x of global all {
 			 	preserve
-					keep org* `x'* 
+					keep org* `x'* tag`x'
 					egen total`x'= rownonmiss(`x'*)
 					keep if total`x'>14 & `x'5_20!=. & `x'6_20!=. // keep if at least 14 out of 18 months are reported & may/jun are reported
 					*keep if total`x'== 18
@@ -166,6 +175,10 @@ foreach x in pncm_util del_util dental_util fp_util anc_util cs_util diarr_util 
 foreach var of global all{ 
 			 rm "$user/$data/Data for analysis/tmp`var'.dta"
 			 }
+/****************************************************************
+EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning5.xlsx", firstrow(variable) replace
 
 /****************************************************************
                   RESHAPE TO LONG
