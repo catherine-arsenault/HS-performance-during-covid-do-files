@@ -927,7 +927,7 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
-	
+drop rota* 
 ********************************************************************************
 *END	
 ********************************************************************************	
