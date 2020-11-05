@@ -97,7 +97,11 @@ tmpc8_19	tmpc9_19	tmpc10_19	tmpc11_19	 tmpc12_19  tmpc1_20	///
 tmpc2_20	tmpc3_20	tmpc4_20	tmpc5_20	tmpc6_20	tmpc7_20)
 
 rename (visitesdesenfants1anrepartitiond-v320) ///
-(tmpd1_18	tmpd2_18	tmpd3_18	tmpd4_18	tmpd5_18	tmpd6_18 tmpd7_18	tmpd8_18	tmpd9_18	tmpd10_18	tmpd11_18	tmpd12_18 tmpd1_19	tmpd2_19	tmpd3_19	tmpd4_19	tmpd5_19	tmpd6_19	tmpd7_19	tmpd8_19	tmpd9_19	tmpd10_19	tmpd11_19	tmpd12_19 tmpd1_20	tmpd2_20	tmpd3_20	tmpd4_20	tmpd5_20	tmpd6_20	tmpd7_20					 )
+(tmpd1_18	tmpd2_18	tmpd3_18	tmpd4_18	tmpd5_18	tmpd6_18 tmpd7_18	///
+tmpd8_18	tmpd9_18	tmpd10_18	tmpd11_18	tmpd12_18 tmpd1_19	tmpd2_19	///
+tmpd3_19	tmpd4_19	tmpd5_19	tmpd6_19	tmpd7_19	tmpd8_19 tmpd9_19	///
+tmpd10_19	tmpd11_19	tmpd12_19 tmpd1_20	tmpd2_20	tmpd3_20	tmpd4_20	///
+tmpd5_20	tmpd6_20	tmpd7_20					 )
 
 rename (visitesdesjeunesadultes1519ansre-v382) ///
 (tmpe1_18	tmpe2_18	tmpe3_18	tmpe4_18	tmpe5_18	tmpe6_18	tmpe7_18	tmpe8_18	tmpe9_18	tmpe10_18	tmpe11_18	tmpe12_18 tmpe1_19	tmpe2_19	tmpe3_19	tmpe4_19	tmpe5_19	tmpe6_19	tmpe7_19	tmpe8_19	tmpe9_19	tmpe10_19	tmpe11_19	tmpe12_19 tmpe1_20	tmpe2_20	tmpe3_20	tmpe4_20	tmpe5_20	tmpe6_20	tmpe7_20					 )
