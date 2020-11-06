@@ -23,9 +23,10 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 ********************************************************************/
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Haiti)"
+
 
 u "$user/$data/Data for analysis/Haiti_Jan18-Jul20_WIDE.dta", clear
 
@@ -196,6 +197,8 @@ reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util d
 	lab var del_util "Number of facility deliveries"
 	lab var cs_util "Number of caesarean sections"
 	lab var diarr_util "Number children treated with ORS for diarrhea"
+	lab var pncc_util "Number of postantal care visits - child"
+	lab var pncm_util "Number of postantal care visits - mother"
 	*lab var pneum_util "Number of consultations for sick child care - pneumonia"
 	*lab var sam_util "Number of children screened for malnutrition"
 	*lab var pnc_util "Number of postnatal visits within 7 days of birth" 
@@ -208,15 +211,18 @@ reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util d
 	*lab var pneum_qual "Nb children vaccinated with pneumococcal vaccine"
 	*lab var rota_qual "Nb children vaccinated with rotavirus vaccine"
 * Volume other services	 TOTALS
+	lab var dental_util "Number of dental visits"
 	lab var diab_util "Number of diabetic patients enrolled"
-	lab var hyper_util "Number of hypertensive patients enrolled"
+	lab var hyper_util "Number of hypertensive patients visits"
 	*lab var art_util "Number of adult and children on ART "
 	lab var opd_util  "Nb outpatient visits"
 	*lab var er_util "Number of emergency room visits"
 	*lab var ipd_util "Number of inpatient admissions total"
 	*lab var road_util "Number of road traffic injuries"
 	*lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
-* Quality MEANS
+* Quality total 
+	lab var cerv_qual "% Women 25-65 screened with VIA for cervical cancer"
+*Quality means 
 	*lab var kmc_qual "% of LBW babies initiated on KMC"
 	*lab var cs_qual "Caesarean rates"
 	*lab var resus_qual "% asphyxiated neonates who were resuscitated and survived"
@@ -229,6 +235,7 @@ reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util d
 	lab var mat_mort_num "Institutional maternal deaths "
 	*lab var er_mort "Emergency room deaths per 1000"
 	*lab var ipd_mort "Inpatient (incl. ICU) deaths per 1000"
+	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" |	month=="6_20"  | ///
                 	month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" |	month=="11_20" |	month=="12_20"
