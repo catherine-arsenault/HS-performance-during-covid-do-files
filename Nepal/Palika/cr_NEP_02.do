@@ -4,8 +4,8 @@
 * Palika level data analysis 
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 ********************************************************************************
@@ -793,7 +793,7 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	* Maternal mortality 2019
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_mat_mort.csv", clear
 	drop organisationunitdescription
-	egen mat_mort_num1_19 = rowtotal( fchvprogrammaternaldeathpostpart fchvprogrammaternaldeathintrapar 								fchvprogrammaternaldeathpostpart ), m
+	egen mat_mort_num1_19 = rowtotal( safemotherhoodprogrammaternaldea v21 v33 ), m
 	egen mat_mort_num2_19 	= rowtotal(v10 v22 v34), m
 	egen mat_mort_num3_19	= rowtotal(v11 v23 v35), m
 	egen mat_mort_num4_19	= rowtotal(v12 v24 v36), m
@@ -818,7 +818,7 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	* Maternal mortality 2020 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_mat_mort", clear
 	drop organisationunitdescription
-	egen mat_mort_num1_20 = rowtotal(fchvprogrammaternaldeathantepart fchvprogrammaternaldeathintrapar 									fchvprogrammaternaldeathpostpart), m // magh
+	egen mat_mort_num1_20 = rowtotal(safemotherhoodprogrammaternaldea v15 v21), m // magh
 	egen mat_mort_num2_20 = rowtotal(v10 v16 v22), m // falgun
 	egen mat_mort_num3_20 = rowtotal(v11 v17 v23), m // chaitra
 	egen mat_mort_num4_20 = rowtotal(v12 v18 v24), m // baisakh
