@@ -4,7 +4,8 @@
 
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 
 import spss using "$user/$data/Raw/Indicators_IMSS_June_2020.sav", clear
@@ -138,20 +139,30 @@ drop _merge
 	lab var er_util "Number of emergency room visits"
 	lab var ipd_util "Number of inpatient admissions total"
 * Quality 
+	lab var cerv_util "Number of women 25-64 screened with VIA for cervical cancer"
+	lab var diab_qual_num "Number of diabetic patients aged 20+  with controlled blood sugar"
+	lab var diab_qual_denom "Number of diabetic patients aged 20+  visited primary care clinics"
+	lab var hyper_qual_num "Number of hypertisive patients aged 20+ with controlled blood"
+	lab var hyper_qual_denom "Number of hypertisive patients aged 20+ visited primary care clinics"
 	*lab var cerv_qual "% women 25-64 screened with VIA for cervical cancer"
 	*lab var diab_qual "% diabetic patients aged 20+  with controlled blood sugar"
 	*lab var hyper_qual "% hypertisive patients aged 20+ with controlled blood pressure" 
 	*lab var cs_qual "Caesarean section rate"
 * Institutional mortality 
-	*lab var newborn_mort "Institutional newborn mortality %"
-	*lab var sb_mort "Institutional stillbirth rate %"
-	*lab var mat_mort "Institutional maternal mortality rate %"
-	*lab var er_mort "Emergency room mortality  %"
-	*lab var ipd_mort "ICU and inpatient deaths (not ED) / inpatient admissions  %"
+	lab var newborn_mort_num "Number of institutional newborn deaths"
+	lab var totaldel "Total number of deliveries (facility + csections)"
+	lab var sb_mort_num "Number of institutional stillbirths"
+	lab var mat_mort_num "Number of institutional maternal deaths"
+	lab var er_mort_num "Number of emergency department deaths"
+	lab var ipd_mort_num "Number of deaths in ICU and inpatient deaths (not ED)"
 * Institutional Covid mortality 	
-	*lab var covid_mort "Covid mortality, confirmed"
-	*lab var covid_prob_mort "Covid mortality, probable"
-	*lab var  covid_pend_mort "Covid mortality, pending test"
+	lab var death_covid "Hospital deaths per month in patients with a positive COVID test"
+	lab var hospit_covid "Hospitalized IMSS patient with positive Covid test"
+	lab var death_negative "Hospital deaths per month in patients with a negative COVID test"
+	lab var hospit_negative "Hospitalized IMSS patient with probable COVID but with negative COVID test "
+	lab var death_pending "Hospital deaths per month in patients with a pending COVID test"
+	lab var hospit_pending "Hospitalized IMSS patients with pending COVID test "
+	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" | ///
 				   month=="5_20" |	month=="6_20"  | month=="7_20" | month=="8_20" | ///
