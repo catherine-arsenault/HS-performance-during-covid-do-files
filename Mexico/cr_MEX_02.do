@@ -23,13 +23,16 @@ egen fp_util4_20 = rowtotal(Indic1_PF1vez_april2020 Indic1_PFSub_april2020 ), m
 egen fp_util5_20 = rowtotal(Indic1_PF1vez_may2020 Indic1_PFSub_may2020 ), m
 egen fp_util6_20 = rowtotal( Indic1_PF1vez_jun2019 Indic1_PFSub_jun2020), m
 drop Indic1_*  
+
 * STI
 rename (Indic2_ETS_mar2020 Indic2_ETS_april2020 Indic2_ETS_may2020) (sti_util3_20 sti_util4_20 sti_util5_20	)
+
 * ANC
 egen anc_util3_20 = rowtotal(Indic3_AC1ravez_mar2020 Indic3_ACSub_mar2020), m
 egen anc_util4_20 = rowtotal( Indic3_AC1ravez_april2020 Indic3_ACSub_april2020), m
 egen anc_util5_20 = rowtotal( Indic3_AC1ravez_may2020 Indic3_ACSub_may2020), m
 drop Indic3_*
+
 * Deliveries
 rename(Indic4_FD_mar2020 Indic4_FD_april2020 Indic4_FD_may2020)  (del_util3_20 del_util4_20 del_util5_20)
 *Caesareans
@@ -62,31 +65,40 @@ rename (In16_HTA_ene20 In16_HTA_feb20 In16_HTA_mar20 In16_HTA_abr20 In16_HTA_may
        ( hyper_util1_20 hyper_util2_20 hyper_util3_20 hyper_util4_20 hyper_util5_20)
 * Mental health, attempted suicide
 rename (In17_sui_mar20 In17_sui_abr20 In17_sui_may20) (mental_util3_20 mental_util4_20 mental_util5_20)
+
 ********************************************************************************
 * QUALITY (just numerators)
 ********************************************************************************
 * Cervical cancer screening
 rename In21_EneDen20 cerv_denom2020
 rename (Indic21cacu_jan2020-Indic21cacu_may2020) (cerv_util1_20 cerv_util2_20 cerv_util3_20 cerv_util4_20 cerv_util5_20 ) 
+
+
 * DM blood sugar control 
 rename(Indic24_dmctrl_jan20 Indic24_dmctrl_feb20 Indic24_dmctrl_mar20 Indic24_dmctrl_abr20 Indic24_dmctrl_may20) ///
 		(diab_qual_num1_20 diab_qual_num2_20 diab_qual_num3_20 diab_qual_num4_20 diab_qual_num5_20 )
+
 rename(numberDM_jan20 numberDM_feb2020 numberDM_mar20 numberDM_abr20 numberDM_may20) ///
 		(diab_qual_denom1_20 diab_qual_denom2_20 diab_qual_denom3_20 diab_qual_denom4_20 diab_qual_denom5_20)
+		
 * HTN blood pressure control 
 rename( Indic25_htactrl_ene20 Indic25_htactrl_feb20 Indic25_htactrl_mar20 Indic25_htactrl_abr20 Indic25_htactrl_may20) ///
 	  (hyper_qual_num1_20 hyper_qual_num2_20 hyper_qual_num3_20 hyper_qual_num4_20 hyper_qual_num5_20)
-	 rename(numberHBP_ene20 numberHBP_feb20 numberHBP_mar20 numberHBP_apr20 numberHBP_may20) ///
+
+rename(numberHBP_ene20 numberHBP_feb20 numberHBP_mar20 numberHBP_apr20 numberHBP_may20) ///
 	 (hyper_qual_denom1_20 hyper_qual_denom2_20 hyper_qual_denom3_20 hyper_qual_denom4_20 hyper_qual_denom5_20) 
 * TB (only annual, drop for now)
 drop In20_tuber_total20
+
 ********************************************************************************
 * MORTALITY (just numerators)
 ********************************************************************************
 rename (In32_NMN_ene20 In32_NMN_feb20 In32_NMN_mar20) (newborn_mort_num1_20 newborn_mort_num2_20 newborn_mort_num3_20)
 replace newborn_mort_num2_20= 0 if newborn_mort_num2_20==. // there were no deliveries in 1 delegation in Feb 2020
+
 rename (In34_NMM_ene20 In34_NMM_feb20 In34_NMM_mar20 In34_NMM_abr20 In34_NMM_may20) (mat_mort_num1_20 mat_mort_num2_20 ///
 		mat_mort_num3_20 mat_mort_num4_20 mat_mort_num5_20)
+
 * ER and Inpatient were updated Sept 5th 2020
 drop In36* In37* In38* 
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
@@ -97,6 +109,7 @@ replace Deleg="México Poniente" if Deleg=="México  Poniente"
 rename (In36_MortServUrg_ene20 In36_MortServUrg_feb20 In36_MortServUrg_mar20 In36_MortServUrg_abr20 In36_MortServUrg_may20 /// 
 		In36_MortServUrg_jun20 In36_MortServUrg_jul20) (er_mort_num1_20 er_mort_num2_20 er_mort_num3_20 er_mort_num4_20 ///
 		er_mort_num5_20 er_mort_num6_20 er_mort_num7_20)
+		
 egen ipd_mort_num1_20 = rowtotal(In37_MortServCI_ene20 In38_MortHosp_ene20), m 
 egen ipd_mort_num2_20 = rowtotal(In37_MortServCI_feb20 In38_MortHosp_feb20), m
 egen ipd_mort_num3_20= rowtotal(In37_MortServCI_mar20 In38_MortHosp_mar20), m
@@ -117,7 +130,8 @@ save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Feb20_WIDE.dta"
 drop _merge VAR00001 
 
-order num_del Delegation HF_tot HF1level HF2level HF3level men2019 women2019 population2019 men2020 women2020 population2020
+order num_del Delegation HF_tot HF1level HF2level HF3level men2019 women2019 ///
+population2019 men2020 women2020 population2020
 sort Delegation
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 
@@ -148,9 +162,9 @@ rename (hospit_pending_march hospit_pending_april hospit_pending_may hospit_pend
 keep Deleg hospit_covid3_20-hospit_negative7_20 death_covid3_20-death_negative7_20
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta"
 drop _merge 
-set obs 36 
-replace Delegation = "National" if Delegation==""
-
+order num_del Delegation HF_tot HF1level HF2level HF3level men2019 women2019 ///
+population2019 men2020 women2020 population2020
+sort num_del
 save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 
 
