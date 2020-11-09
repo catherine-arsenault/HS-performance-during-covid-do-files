@@ -229,15 +229,17 @@ foreach x of global all {
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
-
+* Reshape for analyses
 reshape long fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			 opd_util ipd_util er_util tbdetect_qual hivdiag_qual pent_qual bcg_qual ///
 			 totaldel measles_qual opv3_qual pneum_qual  sb_mort_num mat_mort_num ///
 			 ipd_mort_num peri_mort_num , i(org*) j(month) string	
 	
 * Month and year
-gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" |	month=="6_20"  | ///
-                	month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" |	month=="11_20" |	month=="12_20"
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
+		month=="5_20" |	month=="6_20"  | month=="7_20" |	month=="8_20" |	///
+		month=="9_20" |	month=="10_20" | ///
+		month=="11_20" |	month=="12_20"
 replace year = 2019 if year==.
 gen mo = 1 if month =="1_19" | month =="1_20"
 replace mo = 2 if month =="2_19" | month =="2_20"
