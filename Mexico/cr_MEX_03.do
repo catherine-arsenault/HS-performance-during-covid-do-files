@@ -22,7 +22,7 @@ replace Delegation = "México Poniente" if Delegation== "México  Poniente"
 rename (Indic2_ETS_mar2020 Indic2_ETS_abr2020 Indic2_ETS_may2020 Indic2_ETS_jun2020) ///
 	  (sti_util3_20 sti_util4_20 sti_util5_20 sti_util6_20)
 
-	  * ANC
+* ANC
 egen anc_util3_20 = rowtotal(Indic3_mar_1raVez20 Indic3_mar_Subsec20), m
 egen anc_util4_20 = rowtotal( Indic3_abr_1raVez20 Indic3_abr_Subsec20), m
 egen anc_util5_20 = rowtotal( Indic3_may_1raVez20 Indic3_may_Subsec20), m
