@@ -1,17 +1,20 @@
 * HS performance during Covid
-* July 24, 2020 
+* November 9th 2020 
 * Mexico - IMSS, January 2019 - February 2020
 clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 * u "$user/$data/Data for analysis/IMSS_Jan19-Feb20_clean.dta", clear
-u "$user/$data/Data for analysis/IMSS_Jan19-May20_clean.dta", clear
+* u "$user/$data/Data for analysis/IMSS_Jan19-May20_clean.dta", clear
+
+u "$user/$data/Data for analysis/IMSS_Jan19-Aug20_clean.dta", clear
 **********************************************************************
 * DESCRIPTIVES
 **********************************************************************
-global volumes fp_util anc_util sti_util del_util cs_util diarr_util pneum_util ///
-	   malnu_util er_util opd_util ipd_util diab_util hyper_util dental_util mental_util 
+global rmnch fp_util anc_util sti_util del_util cs_util diarr_util pneum_util ///
+	   malnu_util 
+global others er_util opd_util ipd_util diab_util hyper_util dental_util mental_util 
 global vaccines pent_qual measles_qual bcg_qual opv3_qual pneum_qual rota_qual 
 global quality cs_qual cerv_qual diab_qual hyper_qual
 global mortality newborn_mort sb_mort mat_mort er_mort ipd_mort

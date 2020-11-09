@@ -8,6 +8,8 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 *global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 
+import spss using "$user/$data/Raw/3.Number_DM& hypertensive patients visited primary care clinics_2019-20years and older.sav", clear
+
 import spss using "$user/$data/Raw/7.Indicadores_IMSS_Agosto_2020_9Nov20.sav", clear
 
 rename Delegación Delegation
@@ -56,20 +58,27 @@ drop In12_*
 
 * Diabetes and hypertension visits among all (adult and children)
 rename (In15_DM_jul20 In15_DM_ago20 In15_DM_sept20 In16_HTA_jul20 ///
-In16_HTA_ago20 In16_HTA_sept20) ( diab_util7_20 diab_util8_20 diab_util9_20 ///
- hyper_util7_20  hyper_util8_20  hyper_util9_20 )
+In16_HTA_ago20 In16_HTA_sept20) ( diab_util7_20 diab_util8_20 ///
+diab_util9_20 hyper_util7_20  hyper_util8_20  hyper_util9_20 )
  
 rename Indic17_sui_ago20 mental_util8_20 
 
 rename Indic21cacu_aug2020 cerv_util8_20 
 
-rename( Indic24_dmctrl_ago20 Indic25_htactrl_ago20) (diab_qual_num8_20 hyper_qual_num8_20 )
+rename ( Indic24_dmctrl_ago20 Indic25_htactrl_ago20) (diab_qual_num8_20 hyper_qual_num8_20 )
 
 ********************************************************************************
 * MERGE TO DATA FROM FIRST AND SECOND ROUNDS (Jan19-Jul20)
 ********************************************************************************
 merge 1:1 Delegation using  "$user/$data/Data for analysis/IMSS_Jan19-Jul20_WIDE.dta"
 drop _merge
+order Deleg sti_util*  del_util*  cs_util*  diarr_util*  pneum_util*  malnu_util* ///
+	art_util*  er_util*  ipd_util*  dental_util* diab_util*   hyper_util*  mental_util* ///
+	opv3_qual*  pneum_qual*  rota_qual*  fp_util*  anc_util*  opd_util*  cerv_util*  ///
+	diab_qual_num*  hyper_qual_num*  pent_qual* bcg_qual*  measles_qual* ///
+	newborn_mort_num*  sb_mort_num* mat_mort_num*  er_mort_num* ///
+	ipd_mort_num* death_covid*  hospit_covid* death_negative* hospit_negative* ///
+	death_pending* hospit_pending* totaldel*
 save "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta", replace
 
 set obs 36
@@ -80,7 +89,7 @@ replace Delegation="National" if Deleg==""
 	reshape long  sti_util  del_util  cs_util  diarr_util  pneum_util  malnu_util ///
 	art_util  er_util  ipd_util  dental_util diab_util   hyper_util  mental_util ///
 	opv3_qual  pneum_qual  rota_qual  fp_util  anc_util  opd_util  cerv_util  ///
-	diab_qual_num diab_qual_denom hyper_qual_num hyper_qual_denom  pent_qual ///
+	diab_qual_num  hyper_qual_num hyper_qual_denom  pent_qual ///
 	bcg_qual  measles_qual newborn_mort_num  sb_mort_num mat_mort_num  er_mort_num ///
 	ipd_mort_num death_covid  hospit_covid death_negative hospit_negative ///
 	death_pending hospit_pending totaldel  , i(Deleg) j(month) string
@@ -104,8 +113,8 @@ replace Delegation="National" if Deleg==""
 	lab var rota_qual "Nb children vaccinated with rotavirus vaccine"
 * Volume other services	
 	lab var dental_util "Number of dental visits"
-	lab var diab_util "Number of diabetic patients visits PC clinics"
-	lab var hyper_util "Number of hypertensive patients visits PC clinics"
+	lab var diab_util "Number of diabetic patients aged 20+  visited primary care clinics"
+	lab var hyper_util "Number of hypertensive patients aged 20+  visited primary care clinics"
 	lab var art_util "Number of adult and children on ART "
 	lab var mental_util "Number consultations for attempted suicides"
 	lab var opd_util  "Nb outpatient (family medicine clinic  & opd specialty) visits"
@@ -114,9 +123,7 @@ replace Delegation="National" if Deleg==""
 * Quality 
 	lab var cerv_util "Number of women 25-64 screened with VIA for cervical cancer"
 	lab var diab_qual_num "Number of diabetic patients aged 20+  with controlled blood sugar"
-	lab var diab_qual_denom "Number of diabetic patients aged 20+  visited primary care clinics"
 	lab var hyper_qual_num "Number of hypertisive patients aged 20+ with controlled blood"
-	lab var hyper_qual_denom "Number of hypertisive patients aged 20+ visited primary care clinics"
 * Institutional mortality 
 	lab var newborn_mort_num "Number of institutional newborn deaths"
 	lab var totaldel "Total number of deliveries (facility + csections)"
@@ -158,8 +165,8 @@ rename mo month
 ********************************************************************************
 * CREATE NATIONAL TOTALS
 ********************************************************************************
-foreach v in cerv_denom2019 cerv_denom2020 diab_qual_denom hyper_qual_denom sti_util ///
-del_util cs_util diarr_util pneum_util malnu_util art_util er_util dental_util ///
+foreach v in cerv_denom2019 cerv_denom2020 sti_util del_util cs_util diarr_util ///
+pneum_util malnu_util art_util er_util dental_util ///
 ipd_util diab_util hyper_util mental_util cerv_util diab_qual_num hyper_qual_num /// 
 opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num er_mort_num /// 
 fp_util anc_util totaldel opd_util pent_qual bcg_qual measles_qual ipd_mort_num ///
@@ -168,14 +175,14 @@ death_covid hospit_covid death_negative hospit_negative death_pending hospit_pen
 	replace `v'= `v'tot if Delegation=="National"
 	drop `v'tot
 }
-save "$user/$data/Data for analysis/IMSS_Jan19-Jun20_clean.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Aug20_clean.dta", replace
 
 ********************************************************************************
 * RESHAPE FOR DASHBOARD
 ********************************************************************************
 preserve
 	keep if year == 2020
-	global varlist cerv_denom2019 cerv_denom2020 diab_qual_denom hyper_qual_denom ///
+	global varlist cerv_denom2019 cerv_denom2020 ///
 	sti_util del_util cs_util diarr_util pneum_util malnu_util art_util er_util ///
 	dental_util ipd_util diab_util hyper_util mental_util cerv_util diab_qual_num ///
 	hyper_qual_num opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num ///
@@ -198,7 +205,7 @@ drop year cerv_denom2020
 merge m:m  Delegation month using "$user/$data/temp.dta"
 drop  _merge 
 
-export delimited using "$user/$data/IMSS_Jan19-May20_fordashboard.csv", replace
+export delimited using "$user/$data/IMSS_Jan19-Aug20_fordashboard.csv", replace
 
 rm "$user/$data/temp.dta"
 

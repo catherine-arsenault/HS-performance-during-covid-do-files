@@ -35,34 +35,44 @@ drop Indic3_*
 
 * Deliveries
 rename(Indic4_FD_mar2020 Indic4_FD_april2020 Indic4_FD_may2020)  (del_util3_20 del_util4_20 del_util5_20)
+
 *Caesareans
 rename (Indic5_Cesa_mar2020 Indic5_Cesa_april2020 Indic5_Cesa_may2020 )(cs_util3_20 cs_util4_20 cs_util5_20)
+
 * Create total deliveries to calculate rates later on = number of deliveries + number of C-sections
 egen totaldel3_20= rowtotal(del_util3_20 cs_util3_20), m
 egen totaldel4_20= rowtotal(del_util4_20 cs_util4_20), m
 egen totaldel5_20= rowtotal(del_util5_20 cs_util5_20), m
+
 * Diarrhea , pneumonia, malnutrition
 rename (Indic7_Gastro_mar2020 Indic7_Gastro_april2020 Indic7_Gastro_may2020 Indic8_Neumo_mar2020 Indic8_Neumo_april2020 ///
 		Indic8_Neumo_may2020 Indic9_Desnu_mar2020 Indic9_Desnu_april2020 Indic9_Desnu_may2020) ///
 		(diarr_util3_20 diarr_util4_20 diarr_util5_20 pneum_util3_20 pneum_util4_20 ///
 		pneum_util5_20 malnu_util3_20 malnu_util4_20 malnu_util5_20)
-* OPD = (# of visits to family medicine) + (# of outpatient specialty consultations) 	
+
+		* OPD = (# of visits to family medicine) + (# of outpatient specialty consultations) 	
 egen opd_util3_20=rowtotal( Indic11_vmf_mar2020 Indic11_esp_mar2020), m
 egen opd_util4_20= rowtotal( Indic11_vmf_abr2020 Indic11_esp_abr2020) , m		
 egen opd_util5_20= rowtotal(Indic11_vmf_may2020 Indic11_esp_may2020 ) , m		
+
 * ER
 rename (Indic11_urg_mar2020 Indic11_urg_abr2020 Indic11_urg_may2020) (er_util3_20 er_util4_20 er_util5_20)
+
 * Dental 
 rename (Indic11_dntl_mar2020 Indic11_dntl_abr2020 Indic11_dntl_may2020) (dental_util3_20 dental_util4_20 dental_util5_20 )
 drop Indic11* 
+
 * IPD admissions total (scheduled + emergency)
 rename (In12_egrecc_mar20 In12_egrecc_abr20 In12_egrecc_may20) (ipd_util3_20 ipd_util4_20 ipd_util5_20)
 drop In12*
+
 * Diabetes and hypertension visits among all (adult and children)
-rename ( In15_DM_ene20 In15_DM_feb20 In15_DM_mar20 In15_DM_abr20 In15_DM_may20) ///
-       (diab_util1_20 diab_util2_20 diab_util3_20 diab_util4_20 diab_util5_20)
-rename (In16_HTA_ene20 In16_HTA_feb20 In16_HTA_mar20 In16_HTA_abr20 In16_HTA_may20 ) ///
-       ( hyper_util1_20 hyper_util2_20 hyper_util3_20 hyper_util4_20 hyper_util5_20)
+drop In15_DM* In16_HTA* 
+rename(numberDM_jan20 numberDM_feb2020 numberDM_mar20 numberDM_abr20 numberDM_may20) ///
+		(diab_util1_20 diab_util2_20 diab_util3_20 diab_util4_20 diab_util5_20)
+rename(numberHBP_ene20 numberHBP_feb20 numberHBP_mar20 numberHBP_apr20 numberHBP_may20) ///
+	 (hyper_util1_20 hyper_util2_20 hyper_util3_20 hyper_util4_20 hyper_util5_20) 
+	 
 * Mental health, attempted suicide
 rename (In17_sui_mar20 In17_sui_abr20 In17_sui_may20) (mental_util3_20 mental_util4_20 mental_util5_20)
 
@@ -73,20 +83,14 @@ rename (In17_sui_mar20 In17_sui_abr20 In17_sui_may20) (mental_util3_20 mental_ut
 rename In21_EneDen20 cerv_denom2020
 rename (Indic21cacu_jan2020-Indic21cacu_may2020) (cerv_util1_20 cerv_util2_20 cerv_util3_20 cerv_util4_20 cerv_util5_20 ) 
 
-
 * DM blood sugar control 
 rename(Indic24_dmctrl_jan20 Indic24_dmctrl_feb20 Indic24_dmctrl_mar20 Indic24_dmctrl_abr20 Indic24_dmctrl_may20) ///
 		(diab_qual_num1_20 diab_qual_num2_20 diab_qual_num3_20 diab_qual_num4_20 diab_qual_num5_20 )
-
-rename(numberDM_jan20 numberDM_feb2020 numberDM_mar20 numberDM_abr20 numberDM_may20) ///
-		(diab_qual_denom1_20 diab_qual_denom2_20 diab_qual_denom3_20 diab_qual_denom4_20 diab_qual_denom5_20)
-		
+	
 * HTN blood pressure control 
 rename( Indic25_htactrl_ene20 Indic25_htactrl_feb20 Indic25_htactrl_mar20 Indic25_htactrl_abr20 Indic25_htactrl_may20) ///
 	  (hyper_qual_num1_20 hyper_qual_num2_20 hyper_qual_num3_20 hyper_qual_num4_20 hyper_qual_num5_20)
 
-rename(numberHBP_ene20 numberHBP_feb20 numberHBP_mar20 numberHBP_apr20 numberHBP_may20) ///
-	 (hyper_qual_denom1_20 hyper_qual_denom2_20 hyper_qual_denom3_20 hyper_qual_denom4_20 hyper_qual_denom5_20) 
 * TB (only annual, drop for now)
 drop In20_tuber_total20
 
