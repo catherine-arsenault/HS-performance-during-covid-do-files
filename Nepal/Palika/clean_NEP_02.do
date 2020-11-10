@@ -3,24 +3,11 @@
 * Nepal, January 2019 - June 2020
 * Catherine Arsenault
 * Data cleaning 
-clear all
-set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Nepal)"
-
-u "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", clear
-
-order org* fp_util*_19  fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 del_util*_20 cs_util*_19 cs_util*_20  pnc_util*_19 pnc_util*_20 diarr_util*_19 diarr_util*_20 pneum_util*_19 pneum_util*_20 sam_util*_19 			  sam_util*_20 opd_util*_19 opd_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 er_util*_20 live_births*_19 live_births*_20 tbdetect_qual*_19 tbdetect_qual*_20 hivdiag_qual*_19 hivdiag_qual*_20 pent_qual*_19 pent_qual*_20 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 measles_qual*_20 opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20 rota_qual*19 rota_qual*20 sb_mort*_19 sb_mort*_20 mat_mort*_19 mat_mort*_20 ipd_mort*_19 ipd_mort*_20 
-	 
-*export excel using "$user/$data/Data cleaning/Nepal_palika_Jan19-Jun20_fordatacleaning0.xlsx", firstrow(variable) replace	 
-
 /********************************************************************
 SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
  IN DHIS2. IT USES DATASET IN WIDE FORM (1 ROW PER palika)
 
 1 Impute 0s for missing values: 
-	- For volume data, missingness must be consistent
 	- For mortality, 0s are imputed if the facility offers the
 	  service it relates to.
 
@@ -34,52 +21,66 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 5 Reshape dataset from wide to long.
 ********************************************************************/
 
-* 753 palika. Dropping all palika that don't report any indicators all year
-egen all_visits = rowtotal(fp_util1_19-live_births6_20), m
+clear all
+set more off	
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global data "/HMIS Data for Health System Performance Covid (Nepal)"
+
+u "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", clear
+
+order org* fp_util*_19  fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 del_util*_20 cs_util*_19 cs_util*_20 ///
+totaldel*19 totaldel*20  pnc_util*_19 pnc_util*_20 diarr_util*_19 diarr_util*_20 pneum_util*_19 pneum_util*_20 ///
+sam_util*_19  sam_util*_20 opd_util*_19 opd_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 er_util*_20  ///
+tbdetect_qual*_19 tbdetect_qual*_20 hivdiag_qual*_19 hivdiag_qual*_20 pent_qual*_19 pent_qual*_20 ///
+bcg_qual*_19 bcg_qual*_20 measles_qual*_19 measles_qual*_20 opv3_qual*_19 opv3_qual*_20 ///
+pneum_qual*_19 pneum_qual*_20  sb_mort*_19 sb_mort*_20 mat_mort*_19 ///
+ mat_mort*_20 ipd_mort*_19 ipd_mort*_20 peri_mort*19 peri_mort*20
+
+/****************************************************************
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+*export excel using "$user/$data/Data cleaning/Nepal_palika_Jan19-Jun20_fordatacleaning1.xlsx", firstrow(variable) replace	 
+
+******************************************************************
+* 862 palika. Dropping all palika that don't report any indicators all year
+egen all_visits = rowtotal(fp_util1_19-peri_mort_num6_20), m
 drop if all_visits==.
 drop all_visits 
-* 0 palika was dropped 
-
-global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util live_births
-global quality tbdetect_qual hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual
-global mortality sb_mort mat_mort ipd_mort 
-global all $volumes $mortality
-
+* 46 palikas with no data, 816 remaining
+******************************************************************
+global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
+               sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
+			   totaldel pent_qual bcg_qual measles_qual opv3_qual pneum_qual 
+global mortality sb_mort_num mat_mort_num ipd_mort_num peri_mort_num
+global all $volumes $mortality 
+******************************************************************
+* Fix issue with Province 1 
+	order org*
+	drop  organisationunitid organisationunitcode orgunitlevel4			 
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
 /*******************************************************************
-MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS PALIKA
-REPORTS SOME MORTAILITY DATA AT SOME POINT DURING THE PERIOD OR IF 
-THE SERVICE WAS >0 THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
+MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
+REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
 ********************************************************************	
-For mortality, if a palika reports a death (or a 0) at any point,
-then missings will be replaced by 0s for all other months
-Missingness doesnt need to be consistent since deaths are rare */
-foreach x of global mortality  {
-	egen total`x' = rowtotal(`x'*), m  // sums all the deaths and sets new var to . if all vars are missing
-	forval i = 1/12 {
-		replace `x'`i'_19=0 if `x'`i'_19==. & total`x'!=. // replaces to 0 all the missings if there was a value during period
-	}
-	forval i= 1/6 { 
-		replace `x'`i'_20=0 if `x'`i'_20==. & total`x'!=.
-	}
-	drop total`x'
-}
-/* We also need to put 0s for facilities that had deliveries, ER visits and Inpatient admissions during the period, 
-but no deaths. Otherwise, average mortality will be inflated 
-MK: I also added inpatient mortality rate*/
-egen somedeliveries= rowtotal(del_util*), m 
+For mortality, we inpute 0s if the facility had the service that the deaths
+relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
-	replace sb_mort`i'_19 = 0 	   if sb_mort`i'_19==. & somedeliveries>0 & somedeliveries<.
-	replace mat_mort`i'_19 = 0     if mat_mort`i'_19== . & somedeliveries>0 & somedeliveries<.
-	replace ipd_mort`i'_19 = 0     if ipd_mort`i'_19==. & somedeliveries>0 & somedeliveries<.
+	replace sb_mort_num`i'_19 = 0  if sb_mort_num`i'_19==. &  totaldel`i'_19!=.
+	replace peri_mort_num`i'_19 = 0  if peri_mort_num`i'_19==. &  totaldel`i'_19!=.
+	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & totaldel`i'_19!=.
+	replace ipd_mort_num`i'_19 = 0     if ipd_mort_num`i'_19== . & ipd_util`i'_19!=.
 }
-forval i= 1/6 { 
-	replace sb_mort`i'_20 = 0 	if sb_mort`i'_20==. & somedeliveries>0 & somedeliveries<. 
-	replace mat_mort`i'_20 = 0  if mat_mort`i'_20== . & somedeliveries>0 & somedeliveries<. 
-	replace ipd_mort`i'_20 = 0     if ipd_mort`i'_20==. & somedeliveries>0 & somedeliveries<.
+forval i= 1/6 { // For now ends at June in 2020
+	replace sb_mort_num`i'_20 = 0  if sb_mort_num`i'_20==. &  totaldel`i'_20!=.
+	replace peri_mort_num`i'_20 = 0  if peri_mort_num`i'_20==. &  totaldel`i'_20!=.
+	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & totaldel`i'_20!=.
+	replace ipd_mort_num`i'_20 = 0     if ipd_mort_num`i'_20== . & ipd_util`i'_20!=.
 }
-drop somedeliveries
 /****************************************************************
-EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using "$user/$data/Data cleaning/Nepal_palika_Jan19-Jun20_fordatacleaning1.xlsx", firstrow(variable) replace
 
@@ -137,9 +138,8 @@ foreach x of global all {
 	drop nb`x'* maxfac`x'
 }
 	tabstat complete*, c(s) s(min) 
-	// Review completeness here- let CA know what the completeness is like from the excel spreadsheet 
+	// Review completeness here (can't read labels right now)
 
-	
 * Create flags
 foreach v of varlist complete* {
 	gen flag`v' = 1 if `v'<0.90
@@ -154,141 +154,92 @@ foreach var of varlist flag* {
  }
 drop complete* 
 * Investigate flags that remain 
-
 /***************************************************************
-                 COMPLETE CASE ANALYSIS
-****************************************************************
-Completeness is an issue, particularly May and June 2020. Palikas have
-not reported yet. For each variable, keep only heath facilities that have reported at least 14 
-out of 18 months (incl the latest 2 months) This brings 
-completeness up "generally" above 90% for all variables. */
-drop flag* 
+      COUNT NUMBER OF FACILITY REPORTING EACH INDICATOR
+****************************************************************/
 foreach x of global all {
+	order `x'*_19 `x'*_20
+	egen `x'total= rowtotal(`x'1_19-`x'6_20), m // ends at june 2020
+	gen tag`x'=1 if `x'total!=.
+	drop `x'total
+	lab var tag`x' "Facility reported at least once"
+	}	
+save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_AN.dta", replace 
+/***************************************************************
+                    COMPLETE CASE ANALYSIS 
+                         FOR DASHBOARD 
+****************************************************************
+Completeness is an issue, particularly May and June 2020. Some palikas have
+not reported yet. For each variable, keep only heath facilities that 
+have reported at least 14 out of 18 months (incl the latest 2 months) 
+This brings completeness up "generally" above 90% for all variables. */
+drop flag* 
+	foreach x of global all {
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>14 & `x'5_20!=. & `x'6_20!=. /* keep if at least 14 out of 18 months are reported 
-																 & may/jun 2020 are reported */
-					*keep if total`x'== 18
+					keep if total`x'>14 & `x'5_20!=. & `x'6_20!=. 
+					/* keep if at least 14 out of 18 months are reported 
+					& may/jun 2020 are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
-			 }
-u "$user/$data/Data for analysis/tmpanc_util.dta", clear
-foreach x in fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util live_births tbdetect_qual hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual sb_mort mat_mort ipd_mort  {
+				}
+	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
+
+	foreach x in  anc_util del_util cs_util pnc_util diarr_util pneum_util totaldel ///
+               sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
+			   pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
+			   sb_mort_num mat_mort_num ipd_mort_num peri_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA.dta", replace
-	}
-foreach x in fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util live_births tbdetect_qual hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual sb_mort mat_mort ipd_mort  {
+				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_DB.dta", replace
+		}
+	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
-/****************************************************************
-EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
-****************************************************************/
-*export excel using "$user/$data/Data cleaning/Nepal_palika_Jan19-Jun20_fordatacleaning3.xlsx", firstrow(variable) replace
-
-/******************************************************************************
- CALCULATE INDICATORS (NUM/DENOM) HERE, ONCE DATA CLEANING COMPLETE
- QUALITY, AND MORTALITY RATES
-*******************************************************************************/
-forval i = 1/12 {
-	egen totaldel`i'_19 = rowtotal( del_util`i'_19  cs_util`i'_19), m
-	gen cs_qual`i'_19 = cs_util`i'_19 / totaldel`i'_19  // Csection %
-	gen sb_mort_rate`i'_19 = sb_mort`i'_19 / (totaldel`i'_19) // stillbirth rate per month per facility
-	gen mat_mort_rate`i'_19 = mat_mort`i'_19 / (totaldel`i'_19) // Maternal mortality 
-	*replace newborn_mort`i'_19 = newborn_mort`i'_19 / (totaldel`i'_19) // newborn mortality  
-}
-forval i = 1/6 { // ends in june for now
-	egen totaldel`i'_20 = rowtotal( del_util`i'_20  cs_util`i'_20), m
-	gen cs_qual`i'_20 = cs_util`i'_20 / totaldel`i'_20 // Csection %
-	gen sb_mort_rate`i'_20 = sb_mort`i'_20 / totaldel`i'_20 // stillbirth rate 
-	gen mat_mort_rate`i'_20 = mat_mort`i'_20 / totaldel`i'_20 // Maternal mortality 
-	*replace newborn_mort`i'_20 = newborn_mort`i'_20 / totaldel`i'_20 // newborn mortality 
-}
-*Replace to missing any %, rate indicator that is greater than 1 
-foreach x in cs_qual sb_mort_rate mat_mort_rate  {
-	forval i = 1/12 {
-		replace `x'`i'_19 = . if `x'`i'_19 >1
-	}
-	forval i = 1/6 {
-		replace `x'`i'_20 = . if `x'`i'_20 >1
-	}
-}
-drop totaldel*
-* Mortality per 1000
-forval i = 1/12 {
-	replace sb_mort_rate`i'_19 = sb_mort_rate`i'_19*1000
-	replace mat_mort_rate`i'_19 = mat_mort_rate`i'_19*1000
-	replace ipd_mort`i'_19 = ipd_mort`i'_19*1000
-}
-forval i = 1/6 {
-	replace sb_mort_rate`i'_20 = sb_mort_rate`i'_20*1000
-	replace mat_mort_rate`i'_20 = mat_mort_rate`i'_20*1000
-	replace ipd_mort`i'_20 = ipd_mort`i'_20*1000
-}
-save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA.dta", replace
-
-/****************************************************************
-                  RESHAPE FOR DASHBOARD
-*****************************************************************/
-reshape long  fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util live_births tbdetect_qual hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual sb_mort mat_mort ipd_mort sb_mort_rate mat_mort_rate cs_qual ipd_mort_rate  ///
-				, i(orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname organisationunitid organisationunitcode) j(month) string
-
-* Labels (And dashboard format)
-* Volume RMNCH services TOTALS
-	lab var fp_util "Number of new and current users of contraceptives"
-	*lab var sti_util "Number of consultations for STI care"
-	lab var anc_util "Total number of antenatal care visits"
-	lab var del_util "Number of facility deliveries"
-	lab var cs_util "Number of caesarean sections"
-	lab var pnc_util "Number of postnatal visits (at least 3 per protocol)" 
-	lab var diarr_util "Number children treated with ORS for diarrhea"
-	*lab var diarr_qual "Number of consultations for sick child care - diarrhea"
-	lab var pneum_util "Number of consultations for sick child care - pneumonia"
-	lab var sam_util "Number of children screened for malnutrition"
-	lab var opd_util "Number of outpatient visits"
-	lab var ipd_util "Number of inpatient admissions"
-	lab var er_util "Number of emergency room visits"
-	lab var live_births "Number of live births"
-* Vaccines TOTALS
-	*lab var vacc_qual "Number fully vaccinated by age 1"
-	lab var bcg_qual "Nb children vaccinated with bcg vaccine"
-	lab var pent_qual "Nb children vaccinated with 3rd dose pentavalent"
-	lab var measles_qual "Nb children vaccinated with measles vaccine"
-	lab var opv3_qual "Nb children vaccinated with 3rd dose oral polio vaccine"
-	lab var pneum_qual "Nb children vaccinated with pneumococcal vaccine"
-	lab var rota_qual "Nb children vaccinated with rotavirus vaccine"
-* Volume other services	 TOTALS
-	*lab var diab_util "Number of diabetic patients enrolled"
-	*lab var hyper_util "Number of hypertensive patients enrolled"
-	*lab var art_util "Number of adult and children on ART "
-	*lab var opd_util  "Nb outpatient visits"
-	*lab var er_util "Number of emergency room visits"
-	*lab var ipd_util "Number of inpatient admissions total"
-	*lab var road_util "Number of road traffic injuries"
-	*lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
-* Quality MEANS
-	lab var tbdetect_qual "Number of TB cases detected"
-	lab var hivdiag_qual "Number of new HIV cases diagnosed"
-	*lab var kmc_qual "% of LBW babies initiated on KMC"
-	lab var cs_qual "Caesarean rates"
-	*lab var resus_qual "% asphyxiated neonates who were resuscitated and survived"
-	*lab var diab_qual "% diabetic patients with controlled blood sugar"
-	*lab var hyper_qual "% hypertisive patients with controlled blood pressure" 
-	*lab var hivsupp_qual "% ART patients with undetect VL"
-* Institutional mortality MEANS
-	*lab var newborn_mort"Institutional newborn deaths per 1000"
-	lab var sb_mort_rate "Institutional stillbirths per 1000"
-	lab var mat_mort_rate "Institutional maternal deaths per 1000"
-	*lab var er_mort "Emergency room deaths per 1000"
-	lab var ipd_mort_rate "Inpatient deaths per 1000"
-
 	
+save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_DB.dta", replace
+/***************************************************************
+                 COMPLETE CASE ANALYSIS 
+				     FOR ANALYSES 
+****************************************************************
+For analyses (Quater comparisons), we keep only those facilities 
+that reported the months of interest) */
+
+u "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_AN.dta", clear
+foreach x of global all {
+			 	preserve
+					keep org* `x'*
+					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & ///
+							`x'4_20!=. & `x'5_20!=. & `x'6_20!=.
+					save "$user/$data/Data for analysis/tmp`x'.dta", replace
+				restore
+				}
+	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
+
+	foreach x in  anc_util del_util cs_util pnc_util diarr_util pneum_util totaldel ///
+               sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
+			   pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
+			   sb_mort_num mat_mort_num ipd_mort_num peri_mort_num {
+			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
+				drop _merge
+				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_AN.dta", replace
+		}
+	foreach x of global all {
+			 rm "$user/$data/Data for analysis/tmp`x'.dta"
+			 }
+* Reshape for analyses
+reshape long fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			 opd_util ipd_util er_util tbdetect_qual hivdiag_qual pent_qual bcg_qual ///
+			 totaldel measles_qual opv3_qual pneum_qual  sb_mort_num mat_mort_num ///
+			 ipd_mort_num peri_mort_num , i(org*) j(month) string	
 	
 * Month and year
-gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" |	month=="6_20"  | ///
-                	month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" |	month=="11_20" |	month=="12_20"
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
+		month=="5_20" |	month=="6_20"  | month=="7_20" |	month=="8_20" |	///
+		month=="9_20" |	month=="10_20" | ///
+		month=="11_20" |	month=="12_20"
 replace year = 2019 if year==.
 gen mo = 1 if month =="1_19" | month =="1_20"
 replace mo = 2 if month =="2_19" | month =="2_20"
@@ -303,36 +254,80 @@ replace mo = 10 if month =="10_19" | month =="10_20"
 replace mo = 11 if month =="11_19" | month =="11_20"
 replace mo = 12 if month =="12_19" | month =="12_20"
 drop month
-sort orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname organisationunitid organisationunitcode year mo 
+sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
-save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_clean.dta", replace
+
+save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_clean_AN.dta", replace
+
+/****************************************************************
+  COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
+*****************************************************************/
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_DB.dta", clear
+rename orgunitlevel2 province
+order province  org* 
+collapse (sum) fp_util1_19-peri_mort_num6_20 , by(province)
+encode province, gen(prv)
+drop province
+order prv
+set obs 8
+foreach x of var _all    {
+	egen `x'tot= total(`x'), m
+	replace `x'= `x'tot in 8
+	drop `x'tot
+}
+decode prv, gen(province)
+replace province="National" if province==""
+drop prv
+order province
 
 * Reshaping for data visualisations / dashboard
+reshape long  fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
+			  sam_util opd_util ipd_util er_util tbdetect_qual hivdiag_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
+			  totaldel sb_mort_num mat_mort_num ipd_mort_num peri_mort_num, ///
+			  i(province) j(month) string
+* Month and year
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
+				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
+replace year = 2019 if year==.
+gen mo = 1 if month =="1_19" | month =="1_20"
+replace mo = 2 if month =="2_19" | month =="2_20"
+replace mo = 3 if month =="3_19" | month =="3_20"
+replace mo = 4 if month =="4_19" | month =="4_20"
+replace mo = 5 if month =="5_19" | month =="5_20"
+replace mo = 6 if month =="6_19" | month =="6_20"
+replace mo = 7 if month =="7_19" | month =="7_20"
+replace mo = 8 if month =="8_19" | month =="8_20"
+replace mo = 9 if month =="9_19" | month =="9_20"
+replace mo = 10 if month =="10_19" | month =="10_20"
+replace mo = 11 if month =="11_19" | month =="11_20"
+replace mo = 12 if month =="12_19" | month =="12_20"
+drop month	
+rename mo month
+sort province year month
+order province year month 
+
+* Reshaping for data visualisations
 preserve
 	keep if year == 2020
-	global varlist fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util live_births tbdetect_qual hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual sb_mort mat_mort ipd_mort sb_mort_rate mat_mort_rate cs_qual ipd_mort_rate  
-	foreach v of global varlist {
+	foreach v of global all {
 		rename(`v')(`v'20)
 	}
 	drop year
 	save "$user/$data/temp.dta", replace
 restore
 keep if year==2019
-foreach v of global varlist {
+foreach v of global all {
 	rename(`v')(`v'19)
 	}
 drop year
-merge m:m orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname organisationunitid organisationunitcode mo using "$user/$data/temp.dta"
+merge m:m province month using "$user/$data/temp.dta"
 drop _merge
 
 
 rm "$user/$data/temp.dta"
-
-* Final dataset for dashboard
 export delimited using "$user/$data/Nepal_palika_Jan19-Jun20_fordashboard.csv", replace
-
-
-
 
 
 

@@ -8,10 +8,9 @@
 SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
  IN DHIS2. IT USES DATASET IN WIDE FORM (1 ROW PER HEALTH FACILITY)
 
-1 Impute 0s for missing values: 
-	- For volume data, missingness must be consistent
+1 Impute 0s instead of missing values: 
 	- For mortality, 0s are imputed if the facility offers the
-	  service it relates to.
+	  service it relates to that month.
 
 2 Identify extreme outliers and set them to missing
 
@@ -24,9 +23,10 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 ********************************************************************/
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Haiti)"
+
 
 u "$user/$data/Data for analysis/Haiti_Jan18-Jul20_WIDE.dta", clear
 
@@ -93,7 +93,7 @@ foreach x of global all {
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning2.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning4.xlsx", firstrow(variable) replace
 	
 /****************************************************************
                     CALCULATE COMPLETENESS
@@ -138,6 +138,16 @@ drop complete*
 * Investigate flags that remain 
 
 /***************************************************************
+      COUNT NUMBER OF FACILITY REPORTING EACH INDICATOR
+****************************************************************/
+foreach x of global all {
+	order `x'*_19 `x'*_20
+	egen `x'total= rowtotal(`x'1_19-`x'6_20), m
+	gen tag`x'=1 if `x'total!=.
+	drop `x'total
+	lab var tag`x' "Facility reported at least once"
+	}	
+/***************************************************************
                  COMPLETE CASE ANALYSIS
 ****************************************************************
 Completeness is an issue for April to June 2020. Facilities have
@@ -147,7 +157,7 @@ out of 18 months (incl the latest 2 months) This brings
 completeness up "generally" above 90% for all variables. */
 foreach x of global all {
 			 	preserve
-					keep org* `x'* 
+					keep org* `x'* tag`x'
 					egen total`x'= rownonmiss(`x'*)
 					keep if total`x'>14 & `x'5_20!=. & `x'6_20!=. // keep if at least 14 out of 18 months are reported & may/jun are reported
 					*keep if total`x'== 18
@@ -166,6 +176,10 @@ foreach x in pncm_util del_util dental_util fp_util anc_util cs_util diarr_util 
 foreach var of global all{ 
 			 rm "$user/$data/Data for analysis/tmp`var'.dta"
 			 }
+/****************************************************************
+EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning5.xlsx", firstrow(variable) replace
 
 /****************************************************************
                   RESHAPE TO LONG
@@ -183,6 +197,8 @@ reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util d
 	lab var del_util "Number of facility deliveries"
 	lab var cs_util "Number of caesarean sections"
 	lab var diarr_util "Number children treated with ORS for diarrhea"
+	lab var pncc_util "Number of postantal care visits - child"
+	lab var pncm_util "Number of postantal care visits - mother"
 	*lab var pneum_util "Number of consultations for sick child care - pneumonia"
 	*lab var sam_util "Number of children screened for malnutrition"
 	*lab var pnc_util "Number of postnatal visits within 7 days of birth" 
@@ -195,15 +211,18 @@ reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util d
 	*lab var pneum_qual "Nb children vaccinated with pneumococcal vaccine"
 	*lab var rota_qual "Nb children vaccinated with rotavirus vaccine"
 * Volume other services	 TOTALS
+	lab var dental_util "Number of dental visits"
 	lab var diab_util "Number of diabetic patients enrolled"
-	lab var hyper_util "Number of hypertensive patients enrolled"
+	lab var hyper_util "Number of hypertensive patients visits"
 	*lab var art_util "Number of adult and children on ART "
 	lab var opd_util  "Nb outpatient visits"
 	*lab var er_util "Number of emergency room visits"
 	*lab var ipd_util "Number of inpatient admissions total"
 	*lab var road_util "Number of road traffic injuries"
 	*lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
-* Quality MEANS
+* Quality total 
+	lab var cerv_qual "% Women 25-65 screened with VIA for cervical cancer"
+*Quality means 
 	*lab var kmc_qual "% of LBW babies initiated on KMC"
 	*lab var cs_qual "Caesarean rates"
 	*lab var resus_qual "% asphyxiated neonates who were resuscitated and survived"
@@ -216,6 +235,7 @@ reshape long  totaldel del_util pncm_util dental_util fp_util anc_util cs_util d
 	lab var mat_mort_num "Institutional maternal deaths "
 	*lab var er_mort "Emergency room deaths per 1000"
 	*lab var ipd_mort "Inpatient (incl. ICU) deaths per 1000"
+	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" |	month=="6_20"  | ///
                 	month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" |	month=="11_20" |	month=="12_20"

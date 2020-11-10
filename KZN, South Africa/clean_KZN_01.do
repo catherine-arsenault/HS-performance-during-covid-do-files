@@ -7,7 +7,6 @@ SUMMARY: This do file contains methods to address data quality issues
 in Dhis2. It uses a dataset in wide form (1 row per health facility)
 
 1 Impute 0s for missing values: 
-	- For volume data, missingness must be consistent
 	- For mortality, 0s are imputed if the facility offers the
 	  service the mortality indicator relates to.
 
@@ -143,7 +142,7 @@ foreach x of global all  {
 		egen total`x'= rownonmiss(`x'*)
 		keep if total`x'>14 & `x'17!=. & `x'18!=. & `x'19!=. 
 		* keep if at least 14 out of 18 months are reported & May-july 2020 are reported 
-		* keep if total`x'== 18
+		* keep if total`x'== 19
 		drop total`x'
 		save "$user/$data/Data for analysis/tmp`x'.dta", replace
 	restore
