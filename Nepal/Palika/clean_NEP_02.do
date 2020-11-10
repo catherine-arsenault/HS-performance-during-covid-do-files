@@ -23,8 +23,8 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 u "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", clear
@@ -60,7 +60,9 @@ global all $volumes $mortality
 	drop  organisationunitid organisationunitcode orgunitlevel4			 
 	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
 	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
-	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"	
+* Delete a duplicate Provice 5 
+	drop if orgunitlevel2=="5 Lumbini Province"
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
