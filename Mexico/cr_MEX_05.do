@@ -89,7 +89,7 @@ replace Delegation="National" if Deleg==""
 	reshape long  sti_util  del_util  cs_util  diarr_util  pneum_util  malnu_util ///
 	art_util  er_util  ipd_util  dental_util diab_util   hyper_util  mental_util ///
 	opv3_qual  pneum_qual  rota_qual  fp_util  anc_util  opd_util  cerv_util  ///
-	diab_qual_num  hyper_qual_num hyper_qual_denom  pent_qual ///
+	diab_qual_num  hyper_qual_num   pent_qual ///
 	bcg_qual  measles_qual newborn_mort_num  sb_mort_num mat_mort_num  er_mort_num ///
 	ipd_mort_num death_covid  hospit_covid death_negative hospit_negative ///
 	death_pending hospit_pending totaldel  , i(Deleg) j(month) string
