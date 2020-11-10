@@ -1,14 +1,15 @@
 * HS performance during Covid		
 * Analyses: Nepal - Palika level																						
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 **********************************************************************
 * DESCRIPTIVES
 **********************************************************************
-u "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_clean2.dta", clear 
-order org* tag* 
+u "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_clean_AN.dta", clear 
+order org*  
 
 * Counting number of palika reporting each indicator
 global all fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
