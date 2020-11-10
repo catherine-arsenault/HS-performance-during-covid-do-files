@@ -32,6 +32,13 @@ rename (Indic4_FD_mar2020-Indic4_FD_jul2020) ///
 rename (Indic5_Cesa_mar2020-Indic5_Cesa_jul2020) /// 
 (cs_util3_20 cs_util4_20 cs_util5_20 cs_util6_20 cs_util7_20 )
 
+* Total deliveries
+egen totaldel3_20= rowtotal(del_util3_20 cs_util3_20), m
+egen totaldel4_20= rowtotal(del_util4_20 cs_util4_20), m
+egen totaldel5_20= rowtotal(del_util5_20 cs_util5_20), m
+egen totaldel6_20= rowtotal(del_util6_20 cs_util6_20), m
+egen totaldel7_20= rowtotal(del_util7_20 cs_util7_20), m
+
 rename (Indic7_Gastro_jun2020 Indic7_Gastro_jul2020 Indic8_Neumo_jun2020 ///
 Indic8_Neumo_jul2020 Indic9_Desnu_jun2020 Indic9_Desnu_jul2020) ///
 ( diarr_util6_20 diarr_util7_20 pneum_util6_20 pneum_util7_20 malnu_util6_20 ///
