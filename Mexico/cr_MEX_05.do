@@ -8,8 +8,6 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 *global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 
-import spss using "$user/$data/Raw/3.Number_DM& hypertensive patients visited primary care clinics_2019-20years and older.sav", clear
-
 import spss using "$user/$data/Raw/7.Indicadores_IMSS_Agosto_2020_9Nov20.sav", clear
 
 rename Delegación Delegation
@@ -66,6 +64,53 @@ rename Indic17_sui_ago20 mental_util8_20
 rename Indic21cacu_aug2020 cerv_util8_20 
 
 rename ( Indic24_dmctrl_ago20 Indic25_htactrl_ago20) (diab_qual_num8_20 hyper_qual_num8_20 )
+
+* Error in delivery data - Edited Nov 10 2020 
+drop del_util*_20 cs_util*_20 totaldel*_20
+save "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta", replace
+
+import excel using "$user/$data/Raw/Punto 3_Partos atendidios  2020 enero - agosto.xlsx", sheet(Sheet1) firstrow clear
+drop Año
+rename Delegación Delegation
+replace Delegation = "México Oriente" if Delegation== "México Ote"
+replace Delegation = "México Poniente" if Delegation== "México Pte"
+replace Delegation = "D.F. Norte" if Delegation== "CDMX Norte"
+replace Delegation = "D.F. Sur" if Delegation== "CDMX Sur"
+replace Delegation = "Veracruz Norte" if Delegation== "Veracruz Nte"
+
+rename (Enero Febrero Marzo Abril Mayo Junio Julio Agosto) ///
+(del_util1_20 del_util2_20 del_util3_20 del_util4_20 del_util5_20 del_util6_20 ///
+del_util7_20 del_util8_20 )
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta"
+drop _merge 
+save "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta", replace
+
+* Error in caesarean data - Edited Nov 10 2020 
+import excel using "$user/$data/Raw/Punto 4_Césareas  2020 enero -agosto.xlsx", sheet(Sheet1) firstrow clear
+drop Año
+rename Delegación Delegation
+replace Delegation = "México Oriente" if Delegation== "México Ote"
+replace Delegation = "México Poniente" if Delegation== "México Pte"
+replace Delegation = "D.F. Norte" if Delegation== "CDMX Norte"
+replace Delegation = "D.F. Sur" if Delegation== "CDMX Sur"
+replace Delegation = "Veracruz Norte" if Delegation== "Veracruz Nte"
+rename (Enero Febrero Marzo Abril Mayo Junio Julio Agosto) ///
+(cs_util1_20 cs_util2_20 cs_util3_20 cs_util4_20 cs_util5_20 cs_util6_20 ///
+cs_util7_20 cs_util8_20 )
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta"
+drop _merge 
+
+* Total deliveries
+egen totaldel1_20= rowtotal(del_util1_20 cs_util1_20), m
+egen totaldel2_20= rowtotal(del_util2_20 cs_util2_20), m
+egen totaldel3_20= rowtotal(del_util3_20 cs_util3_20), m
+egen totaldel4_20= rowtotal(del_util4_20 cs_util4_20), m
+egen totaldel5_20= rowtotal(del_util5_20 cs_util5_20), m
+egen totaldel6_20= rowtotal(del_util6_20 cs_util6_20), m
+egen totaldel7_20= rowtotal(del_util7_20 cs_util7_20), m
+egen totaldel8_20= rowtotal(del_util8_20 cs_util8_20), m
+
+save "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta", replace
 
 ********************************************************************************
 * MERGE TO DATA FROM FIRST AND SECOND ROUNDS (Jan19-Jul20)
