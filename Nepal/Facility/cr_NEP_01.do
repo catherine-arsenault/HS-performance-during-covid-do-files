@@ -809,7 +809,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 *Import raw data: INSTITUTIONAL MORTALITY
 ********************************************************************************
 	* Maternal mortality 2019
-	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_mat_mort_num.csv", encoding(UTF-8)clear
+	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_mat_mort.csv", encoding(UTF-8)clear
 	egen mat_mort_num1_19 = rowtotal( magh2075safemotherhoodprogrammat v12 v13 ), m
 	egen mat_mort_num2_19 = rowtotal(falgun2075safemotherhoodprogramm v15 v16), m
 	egen mat_mort_num3_19	= rowtotal(chaitra2075safemotherhoodprogram v18 v19), m
@@ -828,7 +828,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
 	* Maternal mortality 2020 
-	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_mat_mort_num", encoding(UTF-8) clear 
+	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_mat_mort", encoding(UTF-8) clear 
 	*drop organisationunitdescription
 	egen mat_mort_num1_20 = rowtotal(magh2076safemotherhoodprogrammat v12 v13), m // magh
 	egen mat_mort_num2_20 = rowtotal(falgun2076safemotherhoodprogramm v15 v16), m // falgun
@@ -848,7 +848,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 	*Stillbirths 2019
-	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_sb_mort_num.csv", encoding(UTF-8)clear
+	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_sb_mort.csv", encoding(UTF-8)clear
 	*drop organisationunitdescription
 	drop fchvprogramsmhfphomedeliverytota-v22
 	egen sb_mort_num1_19 = rowtotal(safemotherhoodprogramnumberofsti v35), m
@@ -873,7 +873,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
 	*Stillbirths 2020 
-	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_sb_mort_num", encoding(UTF-8) clear 
+	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_sb_mort", encoding(UTF-8) clear 
 	*drop organisationunitdescription
 	drop fchvprogramsmhfphomedeliverytota-v16
 	egen sb_mort_num1_20 = rowtotal( safemotherhoodprogramnumberofsti v23), m
@@ -937,6 +937,21 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 
+
+******************************************************************
+* Fix issue with Province 1 
+	order org* 
+	encode organisationunitdescription, gen(orgdescr)
+	drop organisationunitdescription
+	replace orgunitlevel4= orgunitlevel3 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"
+
+	duplicates tag org*, gen(tag)
+	drop if tag 
+	// 2 duplicate facilities, reported no data
+	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 /********************************************************************************
 *END	
 ********************************************************************************	
