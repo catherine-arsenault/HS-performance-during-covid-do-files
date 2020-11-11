@@ -3,11 +3,7 @@
 * Nepal, January 2019 - June 2020
 * Palika level data analysis 
 clear all
-set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Nepal)"
-
+set more off
 ********************************************************************************
 ********************************************************************************
 *Import raw data: VOLUMES OF SERVICES

@@ -1,3 +1,4 @@
+
 * HS performance during Covid
 * November 11 2020
 * Nepal, January 2019 - June 2020, analyses at FACILITY LEVEL 
@@ -9,9 +10,9 @@ created in google data studio
 ****************************************************************
  
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
-*****************************************************************/
-use "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE_CCA_DB.dta", clear
 
+*****************************************************************/
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_DB.dta", clear
 rename orgunitlevel2 province
 order province  org* 
 collapse (sum) fp_util1_19-peri_mort_num6_20 , by(province)
@@ -76,7 +77,30 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Nepal_Jan19-Jun20_facility_fordashboard.csv", replace
+export delimited using "$user/$data/Nepal_palika_Jan19-Jun20_fordashboard.csv", replace
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

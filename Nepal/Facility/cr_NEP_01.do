@@ -8,10 +8,6 @@
 * Nepal, January 2019 - June 2020
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-*global user "/Users/byroncohen/Cohen Dropbox/Byron Cohen/Dropbox (HSPH)"
-global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 ********************************************************************************
 *Import raw data: VOLUMES OF RMNCH SERVICES

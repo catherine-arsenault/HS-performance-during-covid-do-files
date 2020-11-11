@@ -23,9 +23,6 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 u "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", clear
 

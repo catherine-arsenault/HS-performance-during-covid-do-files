@@ -20,12 +20,8 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
   
 5 Reshape dataset from wide to long.
 ********************************************************************/
-
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 u "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", clear
 
@@ -88,83 +84,32 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
          IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
 	               AND SET THEM TO MISSING 
 ***************************************************************** 
-Identifying extreme outliers over 12 months. Any value that is greater or smaller than 
-3SD from the mean 12-month trend is set to missing.
-This is only applied if the mean of the series is greater or equal to 1 
-This technique avoids flagging as outlier a value of 1 if facility reports: 
-0 0 0 0 0 1 0 0 0 0 0 0  which is common for mortality indicators.
-As there are only 6 months of data for 2020 right now, this is only applied to 2019 */
+Identifying extreme outliers over the period. Any value that is greater than 
+3.5SD from the mean  trend is set to missing.This is only applied if the mean 
+of the series is greater or equal to 1. This technique avoids flagging as 
+outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
+common for mortality indicators.  */
 foreach x of global all {
-	egen rowmean`x'= rowmean(`x'*_19)
-	egen rowsd`x'= rowsd(`x'*_19)
-	gen pos_out`x' = rowmean`x'+(3*(rowsd`x')) // + threshold
-	gen neg_out`x' = rowmean`x'-(3*(rowsd`x')) // - threshold
-	forval i = 1/12 {
-		gen flag_outlier_`x'`i'= 1 if `x'`i'_19>pos_out`x' & `x'`i'_19<.
-		replace flag_outlier_`x'`i'= 1 if `x'`i'_19 < neg_out`x'
-		replace flag_outlier_`x'`i'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less
-		replace `x'`i'_19=. if flag_outlier_`x'`i'==1 // replaces value to missing if flag is = 1
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				 1_20 2_20 3_20 4_20 5_20 6_20  {
+				 * 7_20 8_20 9_20 10_20 11_20 12_20
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
 	}
-	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x' flag_outlier_`x'*
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
 }
+
+save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_AN.dta", replace 
 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel  using "$user/$data/Data cleaning/Nepal_palika_Jan19-Jun20_fordatacleaning2.xlsx", firstrow(variable) replace	
-/****************************************************************
-                    CALCULATE COMPLETENESS
-****************************************************************
-Calculate completeness for each indicator-month. This calculates the % 
-of facilities reporting each indicator every month from the max facilities 
-that have reported over the period (since we dont have a census of facilities)
-Creates a flag variable if less than 90% of expected facilities are reporting */
-foreach x of global all {
-	forval i=1/12 {
-		egen nb`x'`i'_19 = count(`x'`i'_19) 
-	}
-	forval i=1/6 { // ends at june for now
-		egen nb`x'`i'_20 = count(`x'`i'_20) 
-	}
-	egen maxfac`x' = rowmax (nb`x'*)
-	forval i=1/12 {
-		gen complete19_`x'`i'= nb`x'`i'_19/maxfac`x' 
-		lab var complete19_`x'`i' "Proportion of facilities reporting indicator x in month i"
-	}
-	forval i=1/6 {
-		gen complete20_`x'`i'= nb`x'`i'_20/maxfac`x' 
-		lab var complete20_`x'`i' "Proportion of facilities reporting indicator x in month i"
-	}
-	drop nb`x'* maxfac`x'
-}
-	tabstat complete*, c(s) s(min) 
-	// Review completeness here (can't read labels right now)
 
-* Create flags
-foreach v of varlist complete* {
-	gen flag`v' = 1 if `v'<0.90
-	lab var flag`v' "Completeness < 90%"
-}
-*Drop all empty flags // remaining flags will identify the months < 95%
-foreach var of varlist flag* {
-     capture assert mi(`var')
-     if !_rc {
-        drop `var'
-     }
- }
-drop complete* 
-* Investigate flags that remain 
-/***************************************************************
-      COUNT NUMBER OF FACILITY REPORTING EACH INDICATOR
-****************************************************************/
-foreach x of global all {
-	order `x'*_19 `x'*_20
-	egen `x'total= rowtotal(`x'1_19-`x'6_20), m // ends at june 2020
-	gen tag`x'=1 if `x'total!=.
-	drop `x'total
-	lab var tag`x' "Facility reported at least once"
-	}	
-save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_AN.dta", replace 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
                          FOR DASHBOARD 
@@ -173,7 +118,6 @@ Completeness is an issue, particularly May and June 2020. Some palikas have
 not reported yet. For each variable, keep only heath facilities that 
 have reported at least 14 out of 18 months (incl the latest 2 months) 
 This brings completeness up "generally" above 90% for all variables. */
-drop flag* 
 	foreach x of global all {
 			 	preserve
 					keep org* `x'* 
@@ -258,100 +202,3 @@ sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo
 rename mo month
 
 save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_clean_AN.dta", replace
-
-/****************************************************************
-  COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
-*****************************************************************/
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_DB.dta", clear
-rename orgunitlevel2 province
-order province  org* 
-collapse (sum) fp_util1_19-peri_mort_num6_20 , by(province)
-encode province, gen(prv)
-drop province
-order prv
-set obs 8
-foreach x of var _all    {
-	egen `x'tot= total(`x'), m
-	replace `x'= `x'tot in 8
-	drop `x'tot
-}
-decode prv, gen(province)
-replace province="National" if province==""
-drop prv
-order province
-
-* Reshaping for data visualisations / dashboard
-reshape long  fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
-			  sam_util opd_util ipd_util er_util tbdetect_qual hivdiag_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
-			  totaldel sb_mort_num mat_mort_num ipd_mort_num peri_mort_num, ///
-			  i(province) j(month) string
-* Month and year
-gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
-				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
-				   month=="11_20" |	month=="12_20"
-replace year = 2019 if year==.
-gen mo = 1 if month =="1_19" | month =="1_20"
-replace mo = 2 if month =="2_19" | month =="2_20"
-replace mo = 3 if month =="3_19" | month =="3_20"
-replace mo = 4 if month =="4_19" | month =="4_20"
-replace mo = 5 if month =="5_19" | month =="5_20"
-replace mo = 6 if month =="6_19" | month =="6_20"
-replace mo = 7 if month =="7_19" | month =="7_20"
-replace mo = 8 if month =="8_19" | month =="8_20"
-replace mo = 9 if month =="9_19" | month =="9_20"
-replace mo = 10 if month =="10_19" | month =="10_20"
-replace mo = 11 if month =="11_19" | month =="11_20"
-replace mo = 12 if month =="12_19" | month =="12_20"
-drop month	
-rename mo month
-sort province year month
-order province year month 
-
-* Reshaping for data visualisations
-preserve
-	keep if year == 2020
-	foreach v of global all {
-		rename(`v')(`v'20)
-	}
-	drop year
-	save "$user/$data/temp.dta", replace
-restore
-keep if year==2019
-foreach v of global all {
-	rename(`v')(`v'19)
-	}
-drop year
-merge m:m province month using "$user/$data/temp.dta"
-drop _merge
-
-
-rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Nepal_palika_Jan19-Jun20_fordashboard.csv", replace
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

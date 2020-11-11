@@ -1,13 +1,11 @@
 * HS performance during Covid		
 * Analyses: Nepal - FACILITY LEVEL 																						
-set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 **********************************************************************
 * DESCRIPTIVES
 **********************************************************************
 u "$user/$data/Data for analysis/Nepal_Jan19-Jun20_clean_AN.dta", clear 
+
 global rmnch fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util  sam_util 
 global other opd_util ipd_util er_util tbdetect_qual hivdiag_qual 
 global vax pent_qual bcg_qual measles_qual opv3_qual pneum_qual 
