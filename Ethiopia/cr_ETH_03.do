@@ -9,7 +9,6 @@ import delimited using "$user/$data/Raw/2020/August/woreda/Ethiopia_2020_January
 
 *import delimited using "$user/$data/Raw/2020/August/woreda/Ethiopia_2020_January to August by zonal csv.csv", clear 
 
-
 * Recode variables
 * VOLUMES 
 * FP
@@ -162,7 +161,30 @@ order region zone organisationunitname unit_id
 
 merge 1:1  region zone organisationunitname using "$user/$data/Data for analysis/Ethiopia_Jan19-Dec19_WIDE.dta"
 drop _merge
+
+* Total deliveries
+	egen totaldel1_19 =  rowtotal(del_util1_19 cs_util1_19), m
+	egen totaldel2_19 =	rowtotal(del_util2_19 cs_util2_19), m
+	egen totaldel3_19 =	rowtotal(del_util3_19 cs_util3_19), m
+	egen totaldel4_19 =	rowtotal(del_util4_19 cs_util4_19), m
+	egen totaldel5_19=	rowtotal(del_util5_19 cs_util5_19), m
+	egen totaldel6_19=	rowtotal(del_util6_19 cs_util6_19), m
+	egen totaldel7_19=	rowtotal(del_util7_19 cs_util7_19), m
+	egen totaldel8_19=	rowtotal(del_util8_19 cs_util8_19), m
+	egen totaldel9_19=	rowtotal(del_util9_19 cs_util9_19), m 
+	egen totaldel10_19=	rowtotal(del_util10_19 cs_util10_19), m
+	egen totaldel11_19=	rowtotal(del_util11_19  cs_util11_19), m
+	egen totaldel12_19=	rowtotal(del_util12_19  cs_util12_19), m
+	egen totaldel1_20 =  rowtotal(del_util1_20  cs_util1_20), m
+	egen totaldel2_20 =	rowtotal(del_util2_20 cs_util2_20), m
+	egen totaldel3_20 =	rowtotal(del_util3_20 cs_util3_20), m
+	egen totaldel4_20 =	rowtotal(del_util4_20 cs_util4_20), m
+	egen totaldel5_20=	rowtotal(del_util5_20 cs_util5_20), m
+	egen totaldel6_20=	rowtotal(del_util6_20 cs_util6_20), m
+	egen totaldel7_20=	rowtotal(del_util7_20 cs_util7_20), m
+	egen totaldel8_20=	rowtotal(del_util8_20 cs_util8_20), m
 save "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta", replace
+
 
 /* By woreda, new TB cases, unable to read labels, waiting for Solomon to confirm
 import excel using "$user/$data/Raw/Ethiopia_Health system performance during Covid_data extraction_2019_January to December_03_08_2020_GC/Ethiopia_2019_January to December_all death & quarterly data_03_08_2020/Ethiopia_TB_Quarterly_2019_January to December_ by woreda.xlsx", firstrow clear
