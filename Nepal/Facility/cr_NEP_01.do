@@ -809,33 +809,33 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 *Import raw data: INSTITUTIONAL MORTALITY
 ********************************************************************************
 	* Maternal mortality 2019
-	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_mat_mort.csv", encoding(UTF-8)clear
-	egen mat_mort1_19 = rowtotal( magh2075safemotherhoodprogrammat v12 v13 ), m
-	egen mat_mort2_19 = rowtotal(falgun2075safemotherhoodprogramm v15 v16), m
-	egen mat_mort3_19	= rowtotal(chaitra2075safemotherhoodprogram v18 v19), m
-	egen mat_mort4_19	= rowtotal(baishak2076safemotherhoodprogram v21 v22), m
-	egen mat_mort5_19	= rowtotal(jestha2076safemotherhoodprogramm v24 v25), m
-	egen mat_mort6_19 = rowtotal(asar2076safemotherhoodprogrammat v27 v28  ), m
-	egen mat_mort7_19	= rowtotal(shrawan2076safemotherhoodprogram v30 v31 ), m
-	egen mat_mort8_19 = rowtotal(bhadra2076safemotherhoodprogramm v33 v34 ), m
-	egen mat_mort9_19 = rowtotal( ashwin2076safemotherhoodprogramm v36 v37), m
-	egen mat_mort10_19 = rowtotal(kartik2076safemotherhoodprogramm v39 v40), m
-	egen mat_mort11_19 = rowtotal(mangsir2076safemotherhoodprogram v42 v43), m
-	egen mat_mort12_19 = rowtotal( poush2076safemotherhoodprogramma v45 v46 ), m
+	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_mat_mort_num.csv", encoding(UTF-8)clear
+	egen mat_mort_num1_19 = rowtotal( magh2075safemotherhoodprogrammat v12 v13 ), m
+	egen mat_mort_num2_19 = rowtotal(falgun2075safemotherhoodprogramm v15 v16), m
+	egen mat_mort_num3_19	= rowtotal(chaitra2075safemotherhoodprogram v18 v19), m
+	egen mat_mort_num4_19	= rowtotal(baishak2076safemotherhoodprogram v21 v22), m
+	egen mat_mort_num5_19	= rowtotal(jestha2076safemotherhoodprogramm v24 v25), m
+	egen mat_mort_num6_19 = rowtotal(asar2076safemotherhoodprogrammat v27 v28  ), m
+	egen mat_mort_num7_19	= rowtotal(shrawan2076safemotherhoodprogram v30 v31 ), m
+	egen mat_mort_num8_19 = rowtotal(bhadra2076safemotherhoodprogramm v33 v34 ), m
+	egen mat_mort_num9_19 = rowtotal( ashwin2076safemotherhoodprogramm v36 v37), m
+	egen mat_mort_num10_19 = rowtotal(kartik2076safemotherhoodprogramm v39 v40), m
+	egen mat_mort_num11_19 = rowtotal(mangsir2076safemotherhoodprogram v42 v43), m
+	egen mat_mort_num12_19 = rowtotal( poush2076safemotherhoodprogramma v45 v46 ), m
 	keep org* mat* 
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
 	* Maternal mortality 2020 
-	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_mat_mort", encoding(UTF-8) clear 
+	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_mat_mort_num", encoding(UTF-8) clear 
 	*drop organisationunitdescription
-	egen mat_mort1_20 = rowtotal(magh2076safemotherhoodprogrammat v12 v13), m // magh
-	egen mat_mort2_20 = rowtotal(falgun2076safemotherhoodprogramm v15 v16), m // falgun
-	egen mat_mort3_20 = rowtotal(chaitra2076safemotherhoodprogram v18 v19 ), m // chaitra
-	egen mat_mort4_20 = rowtotal( baishak2077safemotherhoodprogram v21 v22), m // baisakh
-	egen mat_mort5_20 = rowtotal(jestha2077safemotherhoodprogramm v24 v25), m // jestha
-	egen mat_mort6_20 = rowtotal(asar2077safemotherhoodprogrammat v27 v28), m // asar
+	egen mat_mort_num1_20 = rowtotal(magh2076safemotherhoodprogrammat v12 v13), m // magh
+	egen mat_mort_num2_20 = rowtotal(falgun2076safemotherhoodprogramm v15 v16), m // falgun
+	egen mat_mort_num3_20 = rowtotal(chaitra2076safemotherhoodprogram v18 v19 ), m // chaitra
+	egen mat_mort_num4_20 = rowtotal( baishak2077safemotherhoodprogram v21 v22), m // baisakh
+	egen mat_mort_num5_20 = rowtotal(jestha2077safemotherhoodprogramm v24 v25), m // jestha
+	egen mat_mort_num6_20 = rowtotal(asar2077safemotherhoodprogrammat v27 v28), m // asar
 	keep org* mat* 
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 ///
 	orgunitlevel6 organisationunitname, gen(tag)
@@ -848,21 +848,21 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 	*Stillbirths 2019
-	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_sb_mort.csv", encoding(UTF-8)clear
+	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_sb_mort_num.csv", encoding(UTF-8)clear
 	*drop organisationunitdescription
 	drop fchvprogramsmhfphomedeliverytota-v22
-	egen sb_mort1_19 = rowtotal(safemotherhoodprogramnumberofsti v35), m
-	egen sb_mort2_19 = rowtotal(v24 v36), m
-	egen sb_mort3_19	= rowtotal(v25 v37  ), m
-	egen sb_mort4_19	= rowtotal(v26 v38 ), m
-	egen sb_mort5_19	= rowtotal(v27 v39 ), m
-	egen sb_mort6_19 	= rowtotal(v28 v40  ), m
-	egen sb_mort7_19	= rowtotal(v29 v41 ), m
-	egen sb_mort8_19 = rowtotal(v30 v42 ), m
-	egen sb_mort10_19 = rowtotal(v31 v43 ), m
-	egen sb_mort9_19 = rowtotal(v32 v44 ), m
-	egen sb_mort11_19 = rowtotal(v33 v45 ), m
-	egen sb_mort12_19 = rowtotal( v34 v46 ), m
+	egen sb_mort_num1_19 = rowtotal(safemotherhoodprogramnumberofsti v35), m
+	egen sb_mort_num2_19 = rowtotal(v24 v36), m
+	egen sb_mort_num3_19	= rowtotal(v25 v37  ), m
+	egen sb_mort_num4_19	= rowtotal(v26 v38 ), m
+	egen sb_mort_num5_19	= rowtotal(v27 v39 ), m
+	egen sb_mort_num6_19 	= rowtotal(v28 v40  ), m
+	egen sb_mort_num7_19	= rowtotal(v29 v41 ), m
+	egen sb_mort_num8_19 = rowtotal(v30 v42 ), m
+	egen sb_mort_num10_19 = rowtotal(v31 v43 ), m
+	egen sb_mort_num9_19 = rowtotal(v32 v44 ), m
+	egen sb_mort_num11_19 = rowtotal(v33 v45 ), m
+	egen sb_mort_num12_19 = rowtotal( v34 v46 ), m
 	keep org* sb* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(sb*), m
@@ -873,15 +873,15 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
 	*Stillbirths 2020 
-	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_sb_mort", encoding(UTF-8) clear 
+	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_sb_mort_num", encoding(UTF-8) clear 
 	*drop organisationunitdescription
 	drop fchvprogramsmhfphomedeliverytota-v16
-	egen sb_mort1_20 = rowtotal( safemotherhoodprogramnumberofsti v23), m
-	egen sb_mort2_20 = rowtotal(v18 v24), m
-	egen sb_mort3_20	= rowtotal(v19 v25 ), m
-	egen sb_mort4_20	= rowtotal(v20 v26 ), m
-	egen sb_mort5_20	= rowtotal(v21 v27 ), m
-	egen sb_mort6_20 	= rowtotal(v22 v28 ), m
+	egen sb_mort_num1_20 = rowtotal( safemotherhoodprogramnumberofsti v23), m
+	egen sb_mort_num2_20 = rowtotal(v18 v24), m
+	egen sb_mort_num3_20	= rowtotal(v19 v25 ), m
+	egen sb_mort_num4_20	= rowtotal(v20 v26 ), m
+	egen sb_mort_num5_20	= rowtotal(v21 v27 ), m
+	egen sb_mort_num6_20 	= rowtotal(v22 v28 ), m
 	keep org* sb* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(sb*), m
