@@ -79,8 +79,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 *export excel using "$user/$data/Data cleaning/Nepal_Jan19-Jun20_fordatacleaning1.xlsx", firstrow(variable) replace
 
 /****************************************************************
-         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
-	               AND SET THEM TO MISSING 
+         IDENTIFY OUTLIERS AND SET THEM TO MISSING 
 ***************************************************************** 
 Identifying extreme outliers over the period. Any value that is greater than 
 3.5SD from the mean  trend is set to missing.This is only applied if the mean 
