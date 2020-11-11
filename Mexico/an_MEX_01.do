@@ -25,10 +25,7 @@ global quality diab_qual_num hyper_qual_num cs_util totaldel
 * NATIONAL
 by year, sort: tabstat $rmnch if month>=3 & month<=8 , s(N sum) c(s)
 by year, sort: tabstat $vax if month>=3 & month<=8 , s(N sum) c(s)
-by year, sort: tabstat $mortality if month>=3 & month<=8 , s(N sum) c(s)
-
-by year, sort: tabstat $volumes if month>=3 & month<= 5, s(N sum) c(s) // March-May 2020 vs. 2019
-by year, sort: tabstat $quality if month>=3 & month<=5 , s(N mean) c(s) 
+by year, sort: tabstat $mortality if month>=3 & month<=6 , s(N sum) c(s) // march to june 
 
 * BY DELEGATION
 * Create a total for each category
@@ -42,7 +39,7 @@ table Delega year if month>=3 & month<=5, c(sum other_total)
 table Delega year if month>=3 & month<=5, c(sum vacc_total) 
 
 
-
+table year month, c( sum cs_util sum totaldel)
 /*********************************************************************
 *   GRAPHS
 **********************************************************************
