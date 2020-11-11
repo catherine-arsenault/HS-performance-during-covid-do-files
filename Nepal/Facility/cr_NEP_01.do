@@ -1,6 +1,6 @@
 * HS performance during Covid
 * Nepal, January 2019 - June 2020
-* Facility-level data analysis\ 
+* Facility-level data analysis
 * Created by Byron Cohen & MK Kim 
 
 * HS performance during Covid
@@ -8,8 +8,8 @@
 * Nepal, January 2019 - June 2020
 clear all
 set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/minkyungkim/Dropbox (Harvard University)"
 *global user "/Users/byroncohen/Cohen Dropbox/Byron Cohen/Dropbox (HSPH)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
@@ -21,6 +21,8 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	*drop organisationunitdescription
 	rename (familyplanningprogrampermanentfp familyplanningprogrampostpartumf familyplanningprogramtemporaryfp) (v11 v71 v107)  
 	//24 indicators 
+	* Magh 2075	Falgun 2075	Chaitra 2075 Baisakh 2076 Jestha 2076 Asadh 2076	
+	* Shrawan2076	Bhadra 2076	Ashwin 2076	Kartik 2076	Mangshir 2076	Poush 2076
 	egen fp_util1_19 = rowtotal(v11 v23 v35 v47 v59 v71 v83 v95 v107 v119 v131 v143 v155 v167 v179 v191 v203 v215 v227 v239 v251 v263 v275 v287), m
 	egen fp_util2_19 = rowtotal(v12 v24 v36 v48 v60 v72 v84 v96 v108 v120 v132 v144 v156 v168 v180 v192 v204 v216 v228 v240 v252 v264 v276 v288), m
 	egen fp_util3_19 = rowtotal(v13 v25 v37 v49 v61 v73 v85 v97 v109 v121 v133 v145 v157 v169 v181 v193 v205 v217 v229 v241 v253 v265 v277 v289), m
@@ -424,7 +426,6 @@ save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 ********************************************************************************
 *Import raw data: VACCINES
 ********************************************************************************
-
 	* BCG 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_bcg_qual.csv", encoding(UTF-8) clear 
 	egen bcg_qual1_19 = rowtotal(immunizationprogramvaccinetypech), m
@@ -539,8 +540,8 @@ save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*OPV3 Vaccines 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_opv3_qual.csv", encoding(UTF-8) clear 
-	drop immunizationprogramvaccinetypedo-v34
-	rename (v35-v46) ///
+	drop immunizationprogramvaccinetypedo-v22 v35-v46
+	rename (v23-v34) ///
 	(opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	///
 	 opv3_qual6_19	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	///
 	 opv3_qual11_19	opv3_qual12_19) 
@@ -554,10 +555,10 @@ save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
-	*Opv3 Vaccines 2020 Jan-Jun
+	*OPV3 Vaccines 2020 Jan-Jun
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_opv3_qual.csv", encoding(UTF-8) clear 
-	drop immunizationprogramvaccinetypedo-v22
-	rename(v23-v28) (opv3_qual1_20	opv3_qual2_20	opv3_qual3_20	opv3_qual4_20 ///
+	drop immunizationprogramvaccinetypedo-v16 v23-v28
+	rename(v17-v22) (opv3_qual1_20	opv3_qual2_20	opv3_qual3_20	opv3_qual4_20 ///
 	opv3_qual5_20 opv3_qual6_20)
 	keep org* opv3* 
 	duplicates tag org* , gen(tag)
@@ -598,39 +599,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
-*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
-	*Rotavirus Vaccines 2019
-	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_rota_qual.csv", encoding(UTF-8) clear 
-	drop immunizationprogramvaccinetypedo-v22
-	rename (v23-v34) ///
-	(rota_qual1_19	rota_qual2_19	rota_qual3_19	rota_qual4_19	rota_qual5_19 ///
-	rota_qual6_19	rota_qual7_19	rota_qual8_19	rota_qual9_19	rota_qual10_19 ///
-	rota_qual11_19	rota_qual12_19)
-	keep org* rota* 
-	duplicates tag org* , gen(tag) // there are X duplicate facilities, drop those with no rota data 
-	egen total= rowtotal(rota*), m
-	drop if tag==1 & total==.
-	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
-	drop _merge
-	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
-
-	*Rotavirus Vaccines Jan-Jun 2020
-	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_rota_qual.csv", encoding(UTF-8) clear 
-	drop immunizationprogramvaccinetypedo-v16
-	rename(v17-v22) ///
-	(rota_qual1_20	rota_qual2_20	rota_qual3_20	rota_qual4_20	rota_qual5_20 ///
-	rota_qual6_20)
-	keep org* rota* 
-	duplicates tag org* , gen(tag)
-	egen total= rowtotal(rota*), m
-	drop if tag==1 & total==.
-	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
-	drop _merge
-	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
-
-
 ********************************************************************************
 *Import raw data: VOLUME OF OTHER SERVICES
 ********************************************************************************
@@ -659,7 +627,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 
-
 	*Outpatient Visits Jan-Jun 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_opd_util.csv", encoding(UTF-8) clear 
 	*drop organisationunitdescription
@@ -678,7 +645,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
-
 	
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*ER Visits 2019
@@ -704,7 +670,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
-
 
 	*ER Visits Jan-Jun 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_er_util.csv", encoding(UTF-8) clear 
@@ -742,10 +707,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	egen ipd_util11_19 = rowtotal(v21), m
 	egen ipd_util12_19 = rowtotal(v22), m
 	keep org* ipd* 
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(ipd*), m
-	drop if tag==1 & total==.
-	drop tag total
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
@@ -760,10 +721,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	egen ipd_util5_20 = rowtotal(v15 ), m
 	egen ipd_util6_20 = rowtotal(v16 ), m
 	keep org* ipd* 
-	duplicates tag org* , gen(tag)
-	egen total= rowtotal(ipd*), m
-	drop if tag==1 & total==.
-	drop tag total
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
@@ -787,14 +744,9 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	egen tbdetect_qual11_19 = rowtotal(v21), m
 	egen tbdetect_qual12_19 = rowtotal(v22), m
 	keep org* tbdetect* 
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(tbdetect*), m
-	drop if tag==1 & total==.
-	drop tag total
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
-	
 	
 	*TB cases detected Jan-Jun 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_tbdetect_qual.csv", encoding(UTF-8) clear 
@@ -806,10 +758,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	egen tbdetect_qual5_20 = rowtotal(v15 ), m
 	egen tbdetect_qual6_20 = rowtotal(v16 ), m
 	keep org* tbdetect* 
-	duplicates tag org* , gen(tag)
-	egen total= rowtotal(tbdetect*), m
-	drop if tag==1 & total==.
-	drop tag total
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
@@ -839,7 +787,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
-	
 	*HIV cases diagnosed Jan-Jun 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_hivdiag_qual.csv", encoding(UTF-8) clear
 	rename disaggregationbysexcasteethnicit v11
@@ -863,7 +810,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 ********************************************************************************
 	* Maternal mortality 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_mat_mort.csv", encoding(UTF-8)clear
-	*drop organisationunitdescription
 	egen mat_mort1_19 = rowtotal( magh2075safemotherhoodprogrammat v12 v13 ), m
 	egen mat_mort2_19 = rowtotal(falgun2075safemotherhoodprogramm v15 v16), m
 	egen mat_mort3_19	= rowtotal(chaitra2075safemotherhoodprogram v18 v19), m
@@ -877,10 +823,6 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	egen mat_mort11_19 = rowtotal(mangsir2076safemotherhoodprogram v42 v43), m
 	egen mat_mort12_19 = rowtotal( poush2076safemotherhoodprogramma v45 v46 ), m
 	keep org* mat* 
-	duplicates tag org*, gen(tag)
-	egen total= rowtotal(mat*), m
-	drop if tag==1 & total==.
-	drop tag total
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
@@ -995,9 +937,40 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 
-********************************************************************************
+/********************************************************************************
 *END	
 ********************************************************************************	
+*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+	*Rotavirus Vaccines 2019
+	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_rota_qual.csv", encoding(UTF-8) clear 
+	drop immunizationprogramvaccinetypedo-v22
+	rename (v23-v34) ///
+	(rota_qual1_19	rota_qual2_19	rota_qual3_19	rota_qual4_19	rota_qual5_19 ///
+	rota_qual6_19	rota_qual7_19	rota_qual8_19	rota_qual9_19	rota_qual10_19 ///
+	rota_qual11_19	rota_qual12_19)
+	keep org* rota* 
+	duplicates tag org* , gen(tag) // there are X duplicate facilities, drop those with no rota data 
+	egen total= rowtotal(rota*), m
+	drop if tag==1 & total==.
+	drop tag total
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
+
+	*Rotavirus Vaccines Jan-Jun 2020
+	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_rota_qual.csv", encoding(UTF-8) clear 
+	drop immunizationprogramvaccinetypedo-v16
+	rename(v17-v22) ///
+	(rota_qual1_20	rota_qual2_20	rota_qual3_20	rota_qual4_20	rota_qual5_20 ///
+	rota_qual6_20)
+	keep org* rota* 
+	duplicates tag org* , gen(tag)
+	egen total= rowtotal(rota*), m
+	drop if tag==1 & total==.
+	drop tag total
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 orgunitlevel6 organisationunitid organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 
 
 
