@@ -22,6 +22,9 @@ do "$dofiles/cr_MEX_03.do"
 do "$dofiles/cr_MEX_04.do"
 
 /* Recodes data from August 2020, merges with prior data, corrects an error with 
-delivery/caesarean indicators. Calculates national totals, reshapes to long form,
-and creates the final csv file for the dashboard. */ 
+delivery/caesarean indicators. */
 do "$dofiles/cr_MEX_05.do"
+
+/*Reformats data for dashboard: Calculates national totals, reshapes to long form,
+and creates the final csv file for the dashboard. */ 
+do "$dofiles/format_MEX.do"
