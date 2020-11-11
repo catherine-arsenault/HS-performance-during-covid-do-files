@@ -3,9 +3,6 @@
 * Ethiopia, January - December 2019
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 
 *Import raw data
 import excel using "$user/$data/Raw/Ethiopia_Health system performance during Covid_data extraction_2019_January to December_03_08_2020_GC/Ethiopia_2019_January to December_by worda level & zonal Level_03_08_2020/Ethiopia_2019_January to December_ by woreda level.xlsx", firstrow clear

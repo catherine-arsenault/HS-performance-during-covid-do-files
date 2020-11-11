@@ -3,9 +3,6 @@
 * Ethiopia, January - August 2020
 clear all
 set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 
 *Import raw data
 import delimited using "$user/$data/Raw/2020/August/woreda/Ethiopia_2020_January to August_ by woreda csv.csv", clear 
