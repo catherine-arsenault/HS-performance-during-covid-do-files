@@ -25,7 +25,7 @@ global quality diab_qual_num hyper_qual_num cs_util totaldel
 * NATIONAL
 by year, sort: tabstat $rmnch if month>=3 & month<=8 , s(N sum) c(s)
 by year, sort: tabstat $vax if month>=3 & month<=8 , s(N sum) c(s)
-by year, sort: tabstat $mortality if month>=3 & month<=6 , s(N sum) c(s) // march to june 
+by year, sort: tabstat $mortality if month>=3 & month<=5 , s(N sum) c(s) // march to june 
 
 * BY DELEGATION
 * Create a total for each category
