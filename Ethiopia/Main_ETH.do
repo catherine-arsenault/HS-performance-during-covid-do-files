@@ -23,3 +23,4 @@ do "$dofiles/clean_ETH.do"
 do "$dofiles/format_ETH.do"
 
 * Analyses (2020 vs 2019 comparisons)
+do "$dofiles/an_ETH_01.do"
