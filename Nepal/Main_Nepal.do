@@ -31,10 +31,10 @@ Palika level
 do "$dofiles/Palika/cr_NEP_02.do"
 
 * Cleans the data (see cleaning protocol in shared folder)
-do "$dofiles/Facility/clean_NEP_02.do"
+do "$dofiles/Palika/clean_NEP_02.do"
 
 * Analysis: calculates changes between Q2 2020 and Q2 2019
-do "$dofiles/Facility/an_NEP_02.do"
+do "$dofiles/Palika/an_NEP_02.do"
 
 * Formats data for dashboard
-do "$dofiles/Facility/format_NEP_02.do"
+do "$dofiles/Palika/format_NEP_02.do"
