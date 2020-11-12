@@ -944,6 +944,12 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
 	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"
 
+* Fix issue with Province 5
+	order org*
+	//province 5 is divided into two - need to combine into 1 
+	
+	
+	
 	duplicates tag org*, gen(tag)
 	drop if tag 
 	// 2 duplicate facilities, reported no data
