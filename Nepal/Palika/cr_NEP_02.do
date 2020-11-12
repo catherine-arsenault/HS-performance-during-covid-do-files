@@ -928,7 +928,10 @@ drop rota*
 	drop  organisationunitid organisationunitcode orgunitlevel4			 
 	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
 	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
-	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"	
+	
+* Fix issue with Province 5
+	drop if orgunitlevel2=="5 Lumbini Province" 
 
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
