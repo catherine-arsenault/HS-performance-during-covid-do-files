@@ -19,7 +19,7 @@ do "$dofiles/Facility/clean_NEP_01.do"
 * Analysis: calculates changes between Q2 2020 and Q2 2019
 do "$dofiles/Facility/an_NEP_01.do"
 
-* Cleans the data (see cleaning protocol in shared folder)
+* Formats data for dashboard
 do "$dofiles/Facility/format_NEP_01.do"
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,5 +36,5 @@ do "$dofiles/Facility/clean_NEP_02.do"
 * Analysis: calculates changes between Q2 2020 and Q2 2019
 do "$dofiles/Facility/an_NEP_02.do"
 
-* Cleans the data (see cleaning protocol in shared folder)
+* Formats data for dashboard
 do "$dofiles/Facility/format_NEP_02.do"
