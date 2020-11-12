@@ -59,6 +59,7 @@ set more off
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~		
 	* ANC 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_anc_util", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	egen anc_util1_19  =rowtotal(safemotherhoodprogramantenatalch v23), m
 	egen anc_util2_19  =rowtotal(v12  v24), m
 	egen anc_util3_19	=rowtotal(v13 v25), m
@@ -82,6 +83,7 @@ set more off
 	
 	* ANC 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan_June_facility_anc_util.csv", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	egen anc_util1_20 = rowtotal(safemotherhoodprogramantenatalch v17), m
 	egen anc_util2_20 =	rowtotal(v12 v18 ), m
 	egen anc_util3_20	=rowtotal(v13 v19), m
@@ -100,6 +102,7 @@ set more off
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	* Facility Deliveries 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_del_util", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop organisationunitdescription organisationunitid organisationunitcode
 	rename (safemotherhoodprogramdeliveryser-v22) ///
 	(del_util1_19 del_util2_19	del_util3_19	del_util4_19	del_util5_19  del_util6_19 ///
@@ -115,6 +118,7 @@ set more off
 	
 	* Facility Deliveries 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_del_util", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop organisationunitdescription organisationunitid organisationunitcode
 	rename (safemotherhoodprogramdeliveryser-v16) (del_util1_20 del_util2_20 del_util3_20 del_util4_20 ///
 	del_util5_20 del_util6_20)
@@ -173,6 +177,7 @@ set more off
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	* C-sections 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_cs_util.csv", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop  organisationunitdescription organisationunitid organisationunitcode
 	rename safemotherhoodprogramtypeofdeliv v11 
 	egen cs_util1_19 =  rowtotal(v11 v23 v35), m
@@ -198,6 +203,7 @@ set more off
 	
 	* C-sections 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_cs_util", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop  organisationunitdescription organisationunitid organisationunitcode
 	egen cs_util1_20 = rowtotal(safemotherhoodprogramtypeofdeliv v17 v23), m
 	egen cs_util2_20 =	rowtotal(v12 v18 v24 ), m
@@ -234,7 +240,7 @@ set more off
 	egen totaldel4_20 =	rowtotal(del_util4_20 cs_util4_20), m
 	egen totaldel5_20=	rowtotal(del_util5_20 cs_util5_20), m
 	egen totaldel6_20=	rowtotal(del_util6_20 cs_util6_20), m
-	
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
@@ -351,6 +357,7 @@ save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 	*Child Pneumonia 2019 
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_util.csv", clear
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop  organisationunitdescription organisationunitid organisationunitcode
 	rename cbimci259monthsclassificationari v11
 	egen pneum_util1_19 = rowtotal(v11 v23)
@@ -376,6 +383,7 @@ save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
 	*Child Pneumonia 2020 
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_pneum_util.csv", clear
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop  organisationunitdescription organisationunitid organisationunitcode
 	rename cbimci259monthsclassificationari v11
 	egen pneum_util1_20 = rowtotal(v11 v17)
@@ -395,6 +403,7 @@ save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 	*Child malnutrition 2019 
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_sam_util.csv", clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop  organisationunitdescription organisationunitid organisationunitcode
 	rename (cbimci259monthsclassificationsev-v22) (sam_util1_19	sam_util2_19	sam_util3_19	sam_util4_19 ///
 	sam_util5_19 sam_util6_19 sam_util7_19	sam_util8_19 sam_util9_19 sam_util10_19	sam_util11_19 sam_util12_19)
@@ -408,6 +417,7 @@ save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 	
 	*Child malnutrition 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_sam_util", clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop  organisationunitdescription organisationunitid organisationunitcode
 	rename (cbimci259monthsclassificationsev-v16 ) (sam_util1_20 sam_util2_20 sam_util3_20	sam_util4_20 ///
 	sam_util5_20 sam_util6_20)
@@ -601,6 +611,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	
 	*Outpatient Visits 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_opd_util.csv", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop organisationunitdescription
 	egen opd_util1_19 = rowtotal(disaggregationbysexcasteethnicit ), m
 	egen opd_util2_19 = rowtotal(v12), m
@@ -625,6 +636,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 
 	*Outpatient Visits Jan-Jun 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_opd_util.csv", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop organisationunitdescription
 	rename disaggregationbysexcasteethnicit v11
 	egen opd_util1_20 = rowtotal(v11 ), m
@@ -689,6 +701,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*Inpatient Admissions 2019
 	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_ipd_util.csv", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop organisationunitdescription
 	egen ipd_util1_19 = rowtotal( disaggregationbysexcasteethnicit), m
 	egen ipd_util2_19 = rowtotal(v12), m
@@ -709,6 +722,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 
 	*Inpatient Admissions Jan-Jun 2020
 	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_ipd_util.csv", encoding(UTF-8) clear 
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
 	*drop organisationunitdescription
 	egen ipd_util1_20 = rowtotal(disaggregationbysexcasteethnicit ), m
 	egen ipd_util2_20 = rowtotal(v12), m
@@ -947,6 +961,7 @@ import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_pneum_qual.cs
 	duplicates tag org*, gen(tag)
 	drop if tag 
 	// 2 duplicate facilities, reported no data
+	
 	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
 /********************************************************************************
 *END	
