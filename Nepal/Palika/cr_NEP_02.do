@@ -921,9 +921,17 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	drop tag total
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
-	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
 drop rota* 
+* Fix issue with Province 1 
+	order org*
+	drop  organisationunitid organisationunitcode orgunitlevel4			 
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
+	
 ********************************************************************************
 *END	
 ********************************************************************************	

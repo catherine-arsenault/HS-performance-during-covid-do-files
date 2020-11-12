@@ -50,13 +50,6 @@ global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util 
 			   totaldel pent_qual bcg_qual measles_qual opv3_qual pneum_qual 
 global mortality sb_mort_num mat_mort_num ipd_mort_num peri_mort_num
 global all $volumes $mortality 
-******************************************************************
-* Fix issue with Province 1 
-	order org*
-	drop  organisationunitid organisationunitcode orgunitlevel4			 
-	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
-	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
-	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
