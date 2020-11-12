@@ -13,13 +13,13 @@ created in google data studio
 
 *****************************************************************/
 use "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_DB.dta", clear
-rename orgunitlevel2 province
-order province  org* 
-collapse (sum) fp_util1_19-peri_mort_num6_20 , by(province)
-encode province, gen(prv)
-drop province
-order prv
-set obs 8
+	rename orgunitlevel2 province
+	order province  org* 
+	collapse (sum) fp_util1_19-peri_mort_num6_20 , by(province)
+	encode province, gen(prv)
+	drop province
+	order prv
+	set obs 8
 foreach x of var _all    {
 	egen `x'tot= total(`x'), m
 	replace `x'= `x'tot in 8

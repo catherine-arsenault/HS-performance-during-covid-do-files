@@ -39,11 +39,10 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 *export excel using "$user/$data/Data cleaning/Nepal_palika_Jan19-Jun20_fordatacleaning1.xlsx", firstrow(variable) replace	 
 
 ******************************************************************
-* 862 palika. Dropping all palika that don't report any indicators all year
+* 753 palika. Dropping all palika that don't report any indicators all year
 egen all_visits = rowtotal(fp_util1_19-peri_mort_num6_20), m
 drop if all_visits==.
-drop all_visits 
-* 46 palikas with no data, 816 remaining
+drop all_visits // none dropped
 ******************************************************************
 global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
                sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
