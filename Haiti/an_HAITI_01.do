@@ -1,14 +1,26 @@
 * HS performance during Covid		
 * Analyses: Haiti 																							
+clear all 
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Haiti)"
 
 * First Covid case: March 20, 2020
 **********************************************************************
 * DESCRIPTIVES
 **********************************************************************
-u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean2.dta", clear 
+use "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean_AN.dta", clear
+
+global rmnch fp_util anc_util del_util cs_util pncm_util pncc_util diarr_util cerv_qual 
+global other dental_util opd_util diab_util hyper_util 	
+global mort mat_mort_num peri_mort_num
+			   
+* Comparing April-June 2020 vs. 2019
+by year, sort: tabstat $rmnch if month>=4 & month<= 6, s(N sum) c(s) 
+
+
+* By region
+table orgunitlevel2 year if month>=4 & month<=6 , c(sum opd_util)
+table orgunitlevel2 year if month>=4 & month<=6 , c(sum totaldel N totaldel)			   
+			   
 
 * Counting number of facilities included for each indicator
 global all fp_util anc_util totaldel cs_util pncm_util pncc_util diarr_util ///
@@ -19,18 +31,3 @@ foreach v of global all {
 					   	di "`v'"
 					   	table year month , c(N `v')
 					   }
-					   
-* Comparing April-June 2020 vs. 2019
-by year, sort: tabstat fp_util anc_util totaldel cs_util pncm_util pncc_util  ///
-					   diarr_util cerv_qual  if month>=4 & month<= 6, s(N sum) c(s) 
-			   
-by year, sort: tabstat dental_util opd_util diab_util hyper_util ///
-			   if month>=4 & month<= 6, s(N sum) c(s) 
-
-by year, sort: tabstat mat_mort_num peri_mort_num totaldel ///
-			   if month>=4 & month<= 6, s(N sum) c(s) 
-
-* By region
-table orgunitlevel2 year if month>=4 & month<=6 , c(sum opd_util)
-table orgunitlevel2 year if month>=4 & month<=6 , c(sum totaldel N totaldel)			   
-			   

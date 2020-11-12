@@ -31,3 +31,11 @@ table region year if month>=4 & month<=8 , c(sum opd_util) format(%20.10f)
 table region year if month>=4 & month<=8 , c(N del_util)
 table region year if month>=4 & month<=8 , c(sum del_util)
 
+table region year if month>=4 & month<=8 , c(N diarr_util)
+table region year if month>=4 & month<=8 , c(sum diarr_util)
+
+table region year if month>=4 & month<=8 , c(N ipd_util)
+table region year if month>=4 & month<=8 , c(sum ipd_util)
+
+table region year if month>=4 & month<=8 , c(N er_util)
+table region year if month>=4 & month<=8 , c(sum er_util)
