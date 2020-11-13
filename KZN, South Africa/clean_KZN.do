@@ -39,6 +39,28 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+****************************************************************/
+
+foreach var of global volumes {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/19=1)
+
+putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(Total facilities reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global volumes {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+
+/****************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS SOMETHING AT SOME POINT DURING THE YEAR
 ****************************************************************
