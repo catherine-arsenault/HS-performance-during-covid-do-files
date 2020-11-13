@@ -3,14 +3,10 @@
 * Nepal, January 2019 - June 2020
 * Palika level data analysis 
 clear all
-set more off	
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Nepal)"
-
+set more off
 ********************************************************************************
 ********************************************************************************
-*Import raw data: VOLUMES
+*Import raw data: VOLUMES OF SERVICES
 	*Family planning 2019 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_fp_util.csv", clear
 	drop organisationunitdescription
@@ -29,12 +25,18 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 								 v229 v241 v253 v265 v277 v289), m
 	egen fp_util6_19 = rowtotal(v14 v26 v38 v50 v62 v74 v86 v98 v110 v122 v134 v146 v158 v170 v182 v194 v206 v218 	///
 								 v230 v242 v254 v266 v278 v290), m
-	egen fp_util7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 								 v231 v243 v255 v267 v279 v291), m
-	egen fp_util8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220 								 v232 v244 v256 v268 v280 v292), m
-	egen fp_util9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221 								 v233 v245 v257 v269 v281 v293), m
-	egen fp_util10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 								v234 v246 v258 v270 v282 v294), m
-	egen fp_util11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 								v235 v247 v259 v271 v283 v295), m
-	egen fp_util12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 								v236 v248 v260 v272 v284 v296), m
+	egen fp_util7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 	///
+								v231 v243 v255 v267 v279 v291), m
+	egen fp_util8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220 ///
+								v232 v244 v256 v268 v280 v292), m
+	egen fp_util9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221 	///
+								v233 v245 v257 v269 v281 v293), m
+	egen fp_util10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 ///
+									v234 v246 v258 v270 v282 v294), m
+	egen fp_util11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 ///
+								v235 v247 v259 v271 v283 v295), m
+	egen fp_util12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 ///
+								v236 v248 v260 v272 v284 v296), m
 	keep org* fp* 
 	duplicates tag org* , gen(tag) 
 	egen total= rowtotal(fp*), m
@@ -108,21 +110,24 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	* Deliveries 2019
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_del_util.csv", clear 
 	drop organisationunitdescription
-	rename (disaggregationbysexcasteethnicit-v20) ///
+	rename (safemotherhoodprogramdeliveryser-v20) ///
 	(del_util1_19 del_util2_19	del_util3_19	del_util4_19	del_util5_19  del_util6_19 ///
 	del_util7_19	del_util8_19	del_util9_19	del_util10_19	del_util11_19 del_util12_19)
-	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid   			organisationunitname organisationunitcode, gen(tag)
+	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid ///
+	organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(del*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
-	merge 1:1  orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid   		  	organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
+	merge 1:1  orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid ///
+				organisationunitname organisationunitcode using ///
+				"$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
 	* Deliveries 2020
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_del_util.csv", clear 
 	drop organisationunitdescription
-	rename (disaggregationbysexcasteethnicit-v14) (del_util1_20 del_util2_20 del_util3_20 del_util4_20 ///
+	rename (safemotherhoodprogramdeliveryser-v14) (del_util1_20 del_util2_20 del_util3_20 del_util4_20 ///
 	del_util5_20 del_util6_20)
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid  		   		organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(del*), m
@@ -217,10 +222,57 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
-	
+*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+* Total deliveries
+	egen totaldel1_19 =  rowtotal(del_util1_19 cs_util1_19), m
+	egen totaldel2_19 =	rowtotal(del_util2_19 cs_util2_19), m
+	egen totaldel3_19 =	rowtotal(del_util3_19 cs_util3_19), m
+	egen totaldel4_19 =	rowtotal(del_util4_19 cs_util4_19), m
+	egen totaldel5_19=	rowtotal(del_util5_19 cs_util5_19), m
+	egen totaldel6_19=	rowtotal(del_util6_19 cs_util6_19), m
+	egen totaldel7_19=	rowtotal(del_util7_19 cs_util7_19), m
+	egen totaldel8_19=	rowtotal(del_util8_19 cs_util8_19), m
+	egen totaldel9_19=	rowtotal(del_util9_19 cs_util9_19), m 
+	egen totaldel10_19=	rowtotal(del_util10_19 cs_util10_19), m
+	egen totaldel11_19=	rowtotal(del_util11_19  cs_util11_19), m
+	egen totaldel12_19=	rowtotal(del_util12_19  cs_util12_19), m
+	egen totaldel1_20 =  rowtotal(del_util1_20  cs_util1_20), m
+	egen totaldel2_20 =	rowtotal(del_util2_20 cs_util2_20), m
+	egen totaldel3_20 =	rowtotal(del_util3_20 cs_util3_20), m
+	egen totaldel4_20 =	rowtotal(del_util4_20 cs_util4_20), m
+	egen totaldel5_20=	rowtotal(del_util5_20 cs_util5_20), m
+	egen totaldel6_20=	rowtotal(del_util6_20 cs_util6_20), m
+*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+* 	Perinatal mortality
+gen peri_mort_num1_19 = totaldel1_19 - live_births1_19
+gen peri_mort_num2_19 = totaldel2_19 -live_births2_19 
+gen peri_mort_num3_19 = totaldel3_19 -live_births3_19 
+gen peri_mort_num4_19 = totaldel4_19 -live_births4_19 
+gen peri_mort_num5_19 = totaldel5_19 -live_births5_19 
+gen peri_mort_num6_19 = totaldel6_19 -live_births6_19 
+gen peri_mort_num7_19 = totaldel7_19 -live_births7_19 
+gen peri_mort_num8_19 = totaldel8_19 -live_births8_19 
+gen peri_mort_num9_19 = totaldel9_19 -live_births9_19 
+gen peri_mort_num10_19 = totaldel10_19 -live_births10_19 
+gen peri_mort_num11_19 = totaldel11_19 -live_births11_19 
+gen peri_mort_num12_19 = totaldel12_19 -live_births12_19  
+gen peri_mort_num1_20 = totaldel1_20 - live_births1_20
+gen peri_mort_num2_20 = totaldel2_20 -live_births2_20 
+gen peri_mort_num3_20 = totaldel3_20 -live_births3_20 
+gen peri_mort_num4_20 = totaldel4_20 -live_births4_20 
+gen peri_mort_num5_20 = totaldel5_20 -live_births5_20 
+gen peri_mort_num6_20 = totaldel6_20 -live_births6_20
+forval i =1/12 {
+	replace peri_mort_num`i'_19 = 0 if peri_mort_num`i'_19 <0 & peri_mort_num`i'_19!=.
+}	
+forval i =1/6 {
+	replace peri_mort_num`i'_20 = 0 if peri_mort_num`i'_20 <0 & peri_mort_num`i'_20!=.
+}
+drop live_births*  
+save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 	* PNC 2019
-	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util.csv", clear 
+import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util.csv", clear 
 	drop organisationunitdescription
 	rename (safemotherhoodprogram3pncvisitsa-v20) (pnc_util1_19	pnc_util2_19	pnc_util3_19	pnc_util4_19 ///
 	pnc_util5_19 pnc_util6_19 pnc_util7_19 pnc_util8_19	pnc_util9_19 pnc_util10_19	pnc_util11_19 pnc_util12_19)
@@ -237,11 +289,13 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	drop organisationunitdescription
 	rename(outreachcliniccommunityhealthpro-v14) (pnc_util1_20 pnc_util2_20 ///
 			pnc_util3_20 pnc_util4_20 pnc_util5_20 pnc_util6_20)
-	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode, gen(tag)
+	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid ///
+	organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(pnc*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 	///
+	organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace 
 	
@@ -465,11 +519,14 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	
 ********************************************************************************	
 ********************************************************************************	
-*Import raw data: Health system competence/quality 
+*Import raw data: QUALITY
 	*TB cases detected 2019 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_tbdetect_qual.csv", clear 
 	drop organisationunitdescription
-	rename  (disaggregationbysexcasteethnicit v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20) (tbdetect_qual1_19 			  tbdetect_qual2_19 tbdetect_qual3_19 tbdetect_qual4_19 tbdetect_qual5_19 tbdetect_qual6_19 			  	tbdetect_qual7_19 tbdetect_qual8_19 tbdetect_qual9_19 tbdetect_qual10_19 tbdetect_qual11_19 			tbdetect_qual12_19 )
+	rename  (disaggregationbysexcasteethnicit-v20) ///
+	(tbdetect_qual1_19 	tbdetect_qual2_19 tbdetect_qual3_19 tbdetect_qual4_19 tbdetect_qual5_19 ///
+	tbdetect_qual6_19 tbdetect_qual7_19 tbdetect_qual8_19 tbdetect_qual9_19 tbdetect_qual10_19 ///
+	tbdetect_qual11_19 tbdetect_qual12_19 )
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(tb*), m
 	drop if tag==1 & total==. //no observation 
@@ -481,7 +538,8 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	*TB cases detected 2020 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_tbdetect_qual.csv", clear 
 	drop organisationunitdescription
-	rename  (disaggregationbysexcasteethnicit v10 v11 v12 v13 v14) (tbdetect_qual1_20 tbdetect_qual2_20 				tbdetect_qual3_20 tbdetect_qual4_20 tbdetect_qual5_20 tbdetect_qual6_20)	
+	rename  (disaggregationbysexcasteethnicit-v14) (tbdetect_qual1_20 tbdetect_qual2_20 ///
+	tbdetect_qual3_20 tbdetect_qual4_20 tbdetect_qual5_20 tbdetect_qual6_20)	
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(tb*), m
 	drop if tag==1 & total==. //no observation 
@@ -535,21 +593,13 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
-	*pentavalent 3rd dose 2019 
+	*Pentavalent 3rd dose 2019 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pent_qual.csv", clear 
-	drop organisationunitdescription
-	egen pent_qual1_19 	= rowtotal( immunizationprogramvaccinetypedo v21 v33), m
-	egen pent_qual2_19 	= rowtotal(v10 v22 v34), m
-	egen pent_qual3_19	= rowtotal(v11 v23 v35), m
-	egen pent_qual4_19	= rowtotal(v12 v24 v36), m
-	egen pent_qual5_19	= rowtotal(v13 v25 v37), m
-	egen pent_qual6_19	= rowtotal(v14 v26 v38), m
-	egen pent_qual7_19	= rowtotal(v15 v27 v39), m
-	egen pent_qual8_19 	= rowtotal(v16 v28 v40), m
-	egen pent_qual9_19 	= rowtotal(v17 v29 v41), m
-	egen pent_qual10_19 = rowtotal(v18 v30 v42), m
-	egen pent_qual11_19 = rowtotal(v19 v31 v43), m
-	egen pent_qual12_19 = rowtotal(v20 v32 v44), m
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v32
+	rename (v33-v44) ///
+	(pent_qual1_19 	pent_qual2_19 	pent_qual3_19	pent_qual4_19	pent_qual5_19 ///
+	 pent_qual6_19	pent_qual7_19	pent_qual8_19 	 pent_qual9_19 	pent_qual10_19 ///
+	 pent_qual11_19 pent_qual12_19)
 	keep org* pent* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(pent*), m
@@ -559,15 +609,11 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
-	*pentavalent 3rd dose 2020
+	*Pentavalent 3rd dose 2020
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_pent_qual.csv", clear 
-	drop organisationunitdescription
-	egen pent_qual1_20	= rowtotal( immunizationprogramvaccinetypedo v15 v21), m
-	egen pent_qual2_20 	= rowtotal(v10 v16 v22), m
-	egen pent_qual3_20	= rowtotal(v11 v17 v23), m
-	egen pent_qual4_20	= rowtotal(v12 v18 v24), m
-	egen pent_qual5_20	= rowtotal(v13 v19 v25), m
-	egen pent_qual6_20	= rowtotal(v14 v20 v26), m
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v20
+	rename (v21-v26) (pent_qual1_20 pent_qual2_20  pent_qual3_20 pent_qual4_20 ///
+	pent_qual5_20 pent_qual6_20)	
 	keep org* pent* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(pent*), m
@@ -581,7 +627,8 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	*BCG vaccine 2019
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_bcg_qual.csv", clear 
 	drop organisationunitdescription
-	rename  (immunizationprogramvaccinetypech v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20) (bcg_qual1_19 			  bcg_qual2_19 bcg_qual3_19 bcg_qual4_19 bcg_qual5_19 bcg_qual6_19 bcg_qual7_19 bcg_qual8_19 bcg_qual9_19 				bcg_qual10_19 bcg_qual11_19 bcg_qual12_19 )
+	rename  (immunizationprogramvaccinetypech v10 v11 v12 v13 v14 v15 v16 v17 v18 v19 v20) ///
+	(bcg_qual1_19 bcg_qual2_19 bcg_qual3_19 bcg_qual4_19 bcg_qual5_19 bcg_qual6_19 bcg_qual7_19 bcg_qual8_19 bcg_qual9_19 				bcg_qual10_19 bcg_qual11_19 bcg_qual12_19 )
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(bcg*), m
 	drop if tag==1 & total==. //no observation 
@@ -649,20 +696,11 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*OPV3 vaccine 2019 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_opv3_qual.csv", clear 
-	drop organisationunitdescription
-	egen opv3_qual1_19 	= rowtotal( immunizationprogramvaccinetypedo v21 v33), m
-	egen opv3_qual2_19 	= rowtotal(v10 v22 v34), m
-	egen opv3_qual3_19	= rowtotal(v11 v23 v35), m
-	egen opv3_qual4_19	= rowtotal(v12 v24 v36), m
-	egen opv3_qual5_19	= rowtotal(v13 v25 v37), m
-	egen opv3_qual6_19	= rowtotal(v14 v26 v38), m
-	egen opv3_qual7_19	= rowtotal(v15 v27 v39), m
-	egen opv3_qual8_19 	= rowtotal(v16 v28 v40), m
-	egen opv3_qual9_19 	= rowtotal(v17 v29 v41), m
-	egen opv3_qual10_19 = rowtotal(v18 v30 v42), m
-	egen opv3_qual11_19 = rowtotal(v19 v31 v43), m
-	egen opv3_qual12_19 = rowtotal(v20 v32 v44), m
-	keep org* opv3* 
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v20 v33-v44
+	rename (v21-v32) ///
+	(opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	///
+	 opv3_qual6_19	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	///
+	 opv3_qual11_19	opv3_qual12_19) 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(opv3*), m
 	drop if tag==1 & total==. //no observation 
@@ -673,14 +711,10 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	
 	*OPV3 vaccine 2020 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_opv3_qual.csv", clear 
-	drop organisationunitdescription
-	egen opv3_qual1_20	= rowtotal( immunizationprogramvaccinetypedo v15 v21), m
-	egen opv3_qual2_20 	= rowtotal(v10 v16 v22), m
-	egen opv3_qual3_20	= rowtotal(v11 v17 v23), m
-	egen opv3_qual4_20	= rowtotal(v12 v18 v24), m
-	egen opv3_qual5_20	= rowtotal(v13 v19 v25), m
-	egen opv3_qual6_20	= rowtotal(v14 v20 v26), m
-	keep org* opv3* 
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v14 ///
+	v21-v26
+	rename(v15-v20) (opv3_qual1_20	opv3_qual2_20	opv3_qual3_20	opv3_qual4_20 ///
+	opv3_qual5_20 opv3_qual6_20)
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(opv3*), m
 	drop if tag==1 & total==. //no observation 
@@ -692,20 +726,11 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*Pneumococcal vaccine 2019 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pneum_qual.csv", clear 
-	drop organisationunitdescription
-	egen pneum_qual1_19 = rowtotal( immunizationprogramvaccinetypedo v21 v33), m
-	egen pneum_qual2_19 = rowtotal(v10 v22 v34), m
-	egen pneum_qual3_19	= rowtotal(v11 v23 v35), m
-	egen pneum_qual4_19	= rowtotal(v12 v24 v36), m
-	egen pneum_qual5_19	= rowtotal(v13 v25 v37), m
-	egen pneum_qual6_19	= rowtotal(v14 v26 v38), m
-	egen pneum_qual7_19	= rowtotal(v15 v27 v39), m
-	egen pneum_qual8_19 = rowtotal(v16 v28 v40), m
-	egen pneum_qual9_19 = rowtotal(v17 v29 v41), m
-	egen pneum_qual10_19 = rowtotal(v18 v30 v42), m
-	egen pneum_qual11_19 = rowtotal(v19 v31 v43), m
-	egen pneum_qual12_19 = rowtotal(v20 v32 v44), m
-	keep org* pneum* 
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v20 v21-v32
+	rename (v33-v44) ///
+	(pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19 ///
+	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	///
+	pneum_qual11_19	pneum_qual12_19)
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(pneum*), m
 	drop if tag==1 & total==. //no observation 
@@ -716,14 +741,9 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 
 	*Pneumococcal vaccine 2020
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_pneum_qual.csv", clear 
-	drop organisationunitdescription
-	egen pneum_qual1_20	= rowtotal( immunizationprogramvaccinetypedo v15 v21), m
-	egen pneum_qual2_20 	= rowtotal(v10 v16 v22), m
-	egen pneum_qual3_20	= rowtotal(v11 v17 v23), m
-	egen pneum_qual4_20	= rowtotal(v12 v18 v24), m
-	egen pneum_qual5_20	= rowtotal(v13 v19 v25), m
-	egen pneum_qual6_20	= rowtotal(v14 v20 v26), m
-	keep org* pneum* 
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v20
+	rename (v21-v26) (pneum_qual1_20 pneum_qual2_20	pneum_qual3_20 pneum_qual4_20 ///
+	pneum_qual5_20 pneum_qual6_20)
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(pneum*), m
 	drop if tag==1 & total==. //no observation 
@@ -735,20 +755,11 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*Rotavirus 2019 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_rota_qual.csv", clear 
-	drop organisationunitdescription
-	egen rota_qual1_19 	= rowtotal( immunizationprogramvaccinetypedo v21), m
-	egen rota_qual2_19 	= rowtotal(v10 v22 ), m
-	egen rota_qual3_19	= rowtotal(v11 v23 ), m
-	egen rota_qual4_19	= rowtotal(v12 v24 ), m
-	egen rota_qual5_19	= rowtotal(v13 v25 ), m
-	egen rota_qual6_19	= rowtotal(v14 v26 ), m
-	egen rota_qual7_19	= rowtotal(v15 v27 ), m
-	egen rota_qual8_19 	= rowtotal(v16 v28 ), m
-	egen rota_qual9_19 	= rowtotal(v17 v29 ), m
-	egen rota_qual10_19 = rowtotal(v18 v30 ), m
-	egen rota_qual11_19 = rowtotal(v19 v31 ), m
-	egen rota_qual12_19 = rowtotal(v20 v32 ), m
-	keep org* rota* 
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v20
+	rename (v21-v32) ///
+	(rota_qual1_19	rota_qual2_19	rota_qual3_19	rota_qual4_19	rota_qual5_19 ///
+	rota_qual6_19	rota_qual7_19	rota_qual8_19	rota_qual9_19	rota_qual10_19 ///
+	rota_qual11_19	rota_qual12_19)
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(rota*), m
 	drop if tag==1 & total==. //no observation 
@@ -757,15 +768,12 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 
-	*Rotavirus 2020 - error (not sure why)
+	*Rotavirus 2020 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_rota_qual.csv", clear 
-	drop organisationunitdescription 
-	egen rota_qual1_20 	= rowtotal(immunizationprogramvaccinetypedo v15), m
-	egen rota_qual2_20 	= rowtotal(v10 v16 ), m
-	egen rota_qual3_20	= rowtotal(v11 v17 ), m
-	egen rota_qual4_20	= rowtotal(v12 v18 ), m
-	egen rota_qual5_20	= rowtotal(v13 v19 ), m
-	egen rota_qual6_20	= rowtotal(v14 v20 ), m
+	drop organisationunitdescription immunizationprogramvaccinetypedo-v14
+	rename(v15-v20) ///
+	(rota_qual1_20	rota_qual2_20	rota_qual3_20	rota_qual4_20	rota_qual5_20 ///
+	rota_qual6_20)
 	keep org* rota* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(rota*), m
@@ -775,48 +783,52 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
-
 ********************************************************************************	
 ********************************************************************************	
 *Import raw data: DEATHS
 	* Maternal mortality 2019
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_mat_mort.csv", clear
 	drop organisationunitdescription
-	egen mat_mort1_19 = rowtotal( fchvprogrammaternaldeathpostpart fchvprogrammaternaldeathintrapar 								fchvprogrammaternaldeathpostpart ), m
-	egen mat_mort2_19 	= rowtotal(v10 v22 v34), m
-	egen mat_mort3_19	= rowtotal(v11 v23 v35), m
-	egen mat_mort4_19	= rowtotal(v12 v24 v36), m
-	egen mat_mort5_19	= rowtotal(v13 v25 v37), m
-	egen mat_mort6_19	= rowtotal(v14 v26 v38), m
-	egen mat_mort7_19	= rowtotal(v15 v27 v39), m
-	egen mat_mort8_19 	= rowtotal(v16 v28 v40), m
-	egen mat_mort9_19 	= rowtotal(v17 v29 v41), m
-	egen mat_mort10_19 	= rowtotal(v18 v30 v42), m
-	egen mat_mort11_19 	= rowtotal(v19 v31 v43), m
-	egen mat_mort12_19 	= rowtotal(v20 v32 v44 ), m
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
+	egen mat_mort_num1_19 = rowtotal( safemotherhoodprogrammaternaldea v21 v33 ), m
+	egen mat_mort_num2_19 	= rowtotal(v10 v22 v34), m
+	egen mat_mort_num3_19	= rowtotal(v11 v23 v35), m
+	egen mat_mort_num4_19	= rowtotal(v12 v24 v36), m
+	egen mat_mort_num5_19	= rowtotal(v13 v25 v37), m
+	egen mat_mort_num6_19	= rowtotal(v14 v26 v38), m
+	egen mat_mort_num7_19	= rowtotal(v15 v27 v39), m
+	egen mat_mort_num8_19 	= rowtotal(v16 v28 v40), m
+	egen mat_mort_num9_19 	= rowtotal(v17 v29 v41), m
+	egen mat_mort_num10_19 	= rowtotal(v18 v30 v42), m
+	egen mat_mort_num11_19 	= rowtotal(v19 v31 v43), m
+	egen mat_mort_num12_19 	= rowtotal(v20 v32 v44 ), m
 	keep org* mat* 
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 					organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(mat*), m
-	drop if tag==1 & total==. //no observation 
+	drop if tag==1 & total==. 
 	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode using ///
+	"$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
+	
 	* Maternal mortality 2020 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_mat_mort", clear
 	drop organisationunitdescription
-	egen mat_mort1_20 = rowtotal(fchvprogrammaternaldeathantepart fchvprogrammaternaldeathintrapar 									fchvprogrammaternaldeathpostpart), m // magh
-	egen mat_mort2_20 = rowtotal(v10 v16 v22), m // falgun
-	egen mat_mort3_20 = rowtotal(v11 v17 v23), m // chaitra
-	egen mat_mort4_20 = rowtotal(v12 v18 v24), m // baisakh
-	egen mat_mort5_20 = rowtotal(v13 v19 v25), m // jestha
-	egen mat_mort6_20 = rowtotal(v14 v20 v26), m // asar
+	replace orgunitlevel2= "5 Province 5" if orgunitlevel2=="5 Lumbini Province"
+	egen mat_mort_num1_20 = rowtotal(safemotherhoodprogrammaternaldea v15 v21), m // magh
+	egen mat_mort_num2_20 = rowtotal(v10 v16 v22), m // falgun
+	egen mat_mort_num3_20 = rowtotal(v11 v17 v23), m // chaitra
+	egen mat_mort_num4_20 = rowtotal(v12 v18 v24), m // baisakh
+	egen mat_mort_num5_20 = rowtotal(v13 v19 v25), m // jestha
+	egen mat_mort_num6_20 = rowtotal(v14 v20 v26), m // asar
 	keep org* mat* 
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 					organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(mat*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 					organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 					organisationunitname organisationunitcode using ///
+	"$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
@@ -825,42 +837,44 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_sb_mort.csv", clear
 	drop organisationunitdescription
 	drop fchvprogramsmhfphomedeliverytota-v20 //home delivery was dropped 
-	egen sb_mort1_19 = rowtotal(safemotherhoodprogramnumberofsti v33), m
-	egen sb_mort2_19 = rowtotal(v22 v34), m
-	egen sb_mort3_19 = rowtotal(v23 v35), m
-	egen sb_mort4_19 = rowtotal(v24 v36), m
-	egen sb_mort5_19 = rowtotal(v25 v37), m
-	egen sb_mort6_19 = rowtotal(v26 v38), m
-	egen sb_mort7_19 = rowtotal(v27 v39), m
-	egen sb_mort8_19 = rowtotal(v28 v40), m
-	egen sb_mort9_19 = rowtotal(v29 v41), m //original code: this order was misplaced, need to check 
-	egen sb_mort10_19 = rowtotal(v30 v42), m
-	egen sb_mort11_19 = rowtotal(v31 v43), m
-	egen sb_mort12_19 = rowtotal(v32 v44), m
+	egen sb_mort_num1_19 = rowtotal(safemotherhoodprogramnumberofsti v33), m
+	egen sb_mort_num2_19 = rowtotal(v22 v34), m
+	egen sb_mort_num3_19 = rowtotal(v23 v35), m
+	egen sb_mort_num4_19 = rowtotal(v24 v36), m
+	egen sb_mort_num5_19 = rowtotal(v25 v37), m
+	egen sb_mort_num6_19 = rowtotal(v26 v38), m
+	egen sb_mort_num7_19 = rowtotal(v27 v39), m
+	egen sb_mort_num8_19 = rowtotal(v28 v40), m
+	egen sb_mort_num9_19 = rowtotal(v29 v41), m  
+	egen sb_mort_num10_19 = rowtotal(v30 v42), m
+	egen sb_mort_num11_19 = rowtotal(v31 v43), m
+	egen sb_mort_num12_19 = rowtotal(v32 v44), m
 	keep org* sb* 
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 					organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(sb*), m
 	drop if tag==1 & total==.
 	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode using ///
+	"$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	*Stillbirths 2020 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_sb_mort", clear 
 	drop organisationunitdescription
 	drop fchvprogramsmhfphomedeliverytota-v14 //home delivery was dropped 
-	egen sb_mort1_20 = rowtotal(safemotherhoodprogramnumberofsti v21), m
-	egen sb_mort2_20 = rowtotal(v16 v22), m
-	egen sb_mort3_20 = rowtotal(v17 v23), m
-	egen sb_mort4_20 = rowtotal(v18 v24), m
-	egen sb_mort5_20 = rowtotal(v19 v25), m
-	egen sb_mort6_20 = rowtotal(v20 v26), m
+	egen sb_mort_num1_20 = rowtotal(safemotherhoodprogramnumberofsti v21), m
+	egen sb_mort_num2_20 = rowtotal(v16 v22), m
+	egen sb_mort_num3_20 = rowtotal(v17 v23), m
+	egen sb_mort_num4_20 = rowtotal(v18 v24), m
+	egen sb_mort_num5_20 = rowtotal(v19 v25), m
+	egen sb_mort_num6_20 = rowtotal(v20 v26), m
 	keep org* sb* 
 	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 					organisationunitname organisationunitcode, gen(tag)
 	egen total= rowtotal(sb*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitid 				organisationunitname organisationunitcode using ///
+	"$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
@@ -870,18 +884,18 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	drop organisationunitdescription
 	rename (inpatientdeathsin48hoursofadmiss inpatientdeathsinâ48hoursofadmis) (v9 v129)  
 	//20 indicators 
-	egen ipd_mort1_19 = rowtotal(v9 v21 v33 v45 v57 v69 v81 v93 v105 v117 v129 v141 v153 v165 v177 v189 v201 v213 								v225 v237 ), m
-	egen ipd_mort2_19 = rowtotal(v10 v22 v34 v46 v58 v70 v82 v94 v106 v118 v130 v142 v154 v166 v178 v190 v202 v214 								 v226 v238 ), m
-	egen ipd_mort3_19 = rowtotal(v11 v23 v35 v47 v59 v71 v83 v95 v107 v119 v131 v143 v155 v167 v179 v191 v203 v215 								 v227 v239 ), m
-	egen ipd_mort4_19 = rowtotal(v12 v24 v36 v48 v60 v72 v84 v96 v108 v120 v132 v144 v156 v168 v180 v192 v204 v216 								 v228 v240 ), m
-	egen ipd_mort5_19 = rowtotal(v13 v25 v37 v49 v61 v73 v85 v97 v109 v121 v133 v145 v157 v169 v181 v193 v205 v217 								 v229 v241 ), m
-	egen ipd_mort6_19 = rowtotal(v14 v26 v38 v50 v62 v74 v86 v98 v110 v122 v134 v146 v158 v170 v182 v194 v206 v218 								 v230 v242 ), m
-	egen ipd_mort7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 								 v231 v243 ), m
-	egen ipd_mort8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220 								 v232 v244 ), m
-	egen ipd_mort9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221 								 v233 v245 ), m
-	egen ipd_mort10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 								v234 v246 ), m
-	egen ipd_mort11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 								v235 v247 ), m
-	egen ipd_mort12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 								v236 v248 ), m
+	egen ipd_mort_num1_19 = rowtotal(v9 v21 v33 v45 v57 v69 v81 v93 v105 v117 v129 v141 v153 v165 v177 v189 v201 v213 								v225 v237 ), m
+	egen ipd_mort_num2_19 = rowtotal(v10 v22 v34 v46 v58 v70 v82 v94 v106 v118 v130 v142 v154 v166 v178 v190 v202 v214 								 v226 v238 ), m
+	egen ipd_mort_num3_19 = rowtotal(v11 v23 v35 v47 v59 v71 v83 v95 v107 v119 v131 v143 v155 v167 v179 v191 v203 v215 								 v227 v239 ), m
+	egen ipd_mort_num4_19 = rowtotal(v12 v24 v36 v48 v60 v72 v84 v96 v108 v120 v132 v144 v156 v168 v180 v192 v204 v216 								 v228 v240 ), m
+	egen ipd_mort_num5_19 = rowtotal(v13 v25 v37 v49 v61 v73 v85 v97 v109 v121 v133 v145 v157 v169 v181 v193 v205 v217 								 v229 v241 ), m
+	egen ipd_mort_num6_19 = rowtotal(v14 v26 v38 v50 v62 v74 v86 v98 v110 v122 v134 v146 v158 v170 v182 v194 v206 v218 								 v230 v242 ), m
+	egen ipd_mort_num7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 								 v231 v243 ), m
+	egen ipd_mort_num8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220 								 v232 v244 ), m
+	egen ipd_mort_num9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221 								 v233 v245 ), m
+	egen ipd_mort_num10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 								v234 v246 ), m
+	egen ipd_mort_num11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 								v235 v247 ), m
+	egen ipd_mort_num12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 								v236 v248 ), m
 	keep org* ipd* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(ipd*), m
@@ -895,12 +909,13 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_ipd_mort.csv", clear
 	drop organisationunitdescription
 	rename (inpatientdeathsin48hoursofadmiss inpatientdeathsinâ48hoursofadmis) (v9 v69)
-	egen ipd_mort1_20 = rowtotal(v9 v15 v21 v27 v33 v39 v45 v51 v57 v63 v69 v75 v81 v87 v93 v99 v105 v111 v117 v123), m
-	egen ipd_mort2_20 = rowtotal(v10 v16 v22 v28 v34 v40 v46 v52 v58 v64 v70 v76 v82 v88 v94 v100 v106 v112 v118 v124) , m
-	egen ipd_mort3_20 = rowtotal(v11 v17 v23 v29 v35 v41 v47 v53 v59 v65 v71 v77 v83 v89 v95 v101 v107 v113 v119 v125), m
-	egen ipd_mort4_20 = rowtotal(v12 v18 v24 v30 v36 v42 v48 v54 v60 v66 v72 v78 v84 v90 v96 v107 v108 v114 v120 v126), m
-	egen ipd_mort5_20 = rowtotal(v13 v19 v25 v31 v37 v43 v49 v55 v61 v67 v73 v79 v85 v91 v97 v108 v109 v115 v121 v127), m
-	egen ipd_mort6_20 = rowtotal(v14 v20 v26 v32 v38 v44 v50 v56 v62 v68 v74 v80 v86 v92 v98 v109 v110 v116 v122 v128), m
+	egen ipd_mort_num1_20 = rowtotal(v9 v15 v21 v27 v33 v39 v45 v51 v57 v63 v69 v75 v81 v87 v93 v99 v105 v111 v117 v123), m
+	egen ipd_mort_num2_20 = rowtotal(v10 v16 v22 v28 v34 v40 v46 v52 v58 v64 v70 v76 ///
+								 v82 v88 v94 v100 v106 v112 v118 v124) , m
+	egen ipd_mort_num3_20 = rowtotal(v11 v17 v23 v29 v35 v41 v47 v53 v59 v65 v71 v77 v83 v89 v95 v101 v107 v113 v119 v125), m
+	egen ipd_mort_num4_20 = rowtotal(v12 v18 v24 v30 v36 v42 v48 v54 v60 v66 v72 v78 v84 v90 v96 v107 v108 v114 v120 v126), m
+	egen ipd_mort_num5_20 = rowtotal(v13 v19 v25 v31 v37 v43 v49 v55 v61 v67 v73 v79 v85 v91 v97 v108 v109 v115 v121 v127), m
+	egen ipd_mort_num6_20 = rowtotal(v14 v20 v26 v32 v38 v44 v50 v56 v62 v68 v74 v80 v86 v92 v98 v109 v110 v116 v122 v128), m
 	keep org* ipd* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(ipd*), m
@@ -908,43 +923,18 @@ global data "/HMIS Data for Health System Performance Covid (Nepal)"
 	drop tag total
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta"
 	drop _merge
-	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
+drop rota* 
+* Fix issue with Province 1 
+	order org*
+	drop  organisationunitid organisationunitcode orgunitlevel4			 
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE.dta", replace
 	
 ********************************************************************************
 *END	
 ********************************************************************************	
 	
-	
-	
-	
-	/* WRONG INDICATORS DOWNLOADED
-	* Newborn mortality 2019
-	import delimited "$user/$data/Raw data/Nepal_2019_Jan-Dec_facility_new_mort.csv", encoding(UTF-8)clear
-	rename (fchvprogramdeath28daysmagh2075-fchvprogramdeath28daysbhadra2076 ///
-	fchvprogramdeath28dayskartik2076 fchvprogramdeath28daysashwin2076 fchvprogramdeath28daysmangsir207 ///
-	fchvprogramdeath28dayspoush2076) (newborn_mort1_19	newborn_mort2_19 newborn_mort3_19 ///
-	newborn_mort4_19 newborn_mort5_19	newborn_mort6_19 newborn_mort7_19 newborn_mort8_19 ///
-	newborn_mort10_19 newborn_mort9_19 newborn_mort11_19 newborn_mort12_19  )
-	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 ///
-	orgunitlevel6 organisationunitname, gen(tag)
-	egen total= rowtotal(newb*), m
-	drop if tag==1 & total==.
-	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 ///
-	orgunitlevel6 organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
-	drop _merge
-	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace
-	* Newborn mortality 2020
-	import delimited "$user/$data/Raw data/Nepal_2020_Jan-June_facility_new_mort", encoding(UTF-8) clear 
-	rename(fchvprogramdeath28daysmagh2076-fchvprogramdeath28daysasar2077) (newborn_mort1_20	 ///
-	newborn_mort2_20	newborn_mort3_20	newborn_mort4_20	newborn_mort5_20	newborn_mort6_20)
-	duplicates tag orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 ///
-	orgunitlevel6 organisationunitname, gen(tag)
-	egen total= rowtotal(newb*), m
-	drop if tag==1 & total==.
-	drop tag total
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 orgunitlevel5 ///
-	orgunitlevel6 organisationunitname using "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta"
-	drop _merge
-	save "$user/$data/Data for analysis/Nepal_Jan19-Jun20_WIDE.dta", replace

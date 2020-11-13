@@ -37,6 +37,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning0.xlsx", firstrow(variable) replace
 
+
 /****************************************************************
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 ****************************************************************/
@@ -57,6 +58,7 @@ foreach var of global volumes {
 	putexcel B`i' = `r(sum)'
 }
 drop *report
+
 
 /****************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY

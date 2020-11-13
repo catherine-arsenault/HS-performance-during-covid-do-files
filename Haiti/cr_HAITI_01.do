@@ -2,9 +2,9 @@
 * Oct 21, 2020 
 * Haiti, January 2019 - June 2020
 * Data recoding, Catherine Arsenault
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Haiti)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+clear all 
+set more off 
 
 import delimited using "$user/$data/Raw data/Haiti_consolidated_data_elements_2018_2020_9_4_2020.csv", clear
 
@@ -97,7 +97,11 @@ tmpc8_19	tmpc9_19	tmpc10_19	tmpc11_19	 tmpc12_19  tmpc1_20	///
 tmpc2_20	tmpc3_20	tmpc4_20	tmpc5_20	tmpc6_20	tmpc7_20)
 
 rename (visitesdesenfants1anrepartitiond-v320) ///
-(tmpd1_18	tmpd2_18	tmpd3_18	tmpd4_18	tmpd5_18	tmpd6_18 tmpd7_18	tmpd8_18	tmpd9_18	tmpd10_18	tmpd11_18	tmpd12_18 tmpd1_19	tmpd2_19	tmpd3_19	tmpd4_19	tmpd5_19	tmpd6_19	tmpd7_19	tmpd8_19	tmpd9_19	tmpd10_19	tmpd11_19	tmpd12_19 tmpd1_20	tmpd2_20	tmpd3_20	tmpd4_20	tmpd5_20	tmpd6_20	tmpd7_20					 )
+(tmpd1_18	tmpd2_18	tmpd3_18	tmpd4_18	tmpd5_18	tmpd6_18 tmpd7_18	///
+tmpd8_18	tmpd9_18	tmpd10_18	tmpd11_18	tmpd12_18 tmpd1_19	tmpd2_19	///
+tmpd3_19	tmpd4_19	tmpd5_19	tmpd6_19	tmpd7_19	tmpd8_19 tmpd9_19	///
+tmpd10_19	tmpd11_19	tmpd12_19 tmpd1_20	tmpd2_20	tmpd3_20	tmpd4_20	///
+tmpd5_20	tmpd6_20	tmpd7_20					 )
 
 rename (visitesdesjeunesadultes1519ansre-v382) ///
 (tmpe1_18	tmpe2_18	tmpe3_18	tmpe4_18	tmpe5_18	tmpe6_18	tmpe7_18	tmpe8_18	tmpe9_18	tmpe10_18	tmpe11_18	tmpe12_18 tmpe1_19	tmpe2_19	tmpe3_19	tmpe4_19	tmpe5_19	tmpe6_19	tmpe7_19	tmpe8_19	tmpe9_19	tmpe10_19	tmpe11_19	tmpe12_19 tmpe1_20	tmpe2_20	tmpe3_20	tmpe4_20	tmpe5_20	tmpe6_20	tmpe7_20					 )
@@ -115,37 +119,37 @@ rename ( vistesdesautresadultesrepartitio-v506) ///
 (tmpi1_18	tmpi2_18	tmpi3_18	tmpi4_18	tmpi5_18	tmpi6_18	tmpi7_18	tmpi8_18	tmpi9_18	tmpi10_18	tmpi11_18	tmpi12_18 tmpi1_19	tmpi2_19	tmpi3_19	tmpi4_19	tmpi5_19	tmpi6_19	tmpi7_19	tmpi8_19	tmpi9_19	tmpi10_19	tmpi11_19	tmpi12_19 tmpi1_20	tmpi2_20	tmpi3_20	tmpi4_20	tmpi5_20	tmpi6_20	tmpi7_20					 )
 
 
-egen opd_util1_18 = rowtotal (fp_util1_18 tmpa1_18 tmpb1_18 tmpc1_18 tmpd1_18  tmpe1_18  tmpf1_18  tmpg1_18 tmph1_18 tmpi1_18 anc_util1_18 )
-egen opd_util2_18 = rowtotal (fp_util2_18 tmpa2_18	tmpb2_18	tmpc2_18	tmpd2_18	tmpe2_18	tmpf2_18	tmpg2_18	tmph2_18	anc_util2_18 ) , m 
-egen opd_util3_18 = rowtotal (fp_util3_18 tmpa3_18	tmpb3_18	tmpc3_18	tmpd3_18	tmpe3_18	tmpf3_18	tmpg3_18	tmph3_18	anc_util3_18 ) , m 
-egen opd_util4_18 = rowtotal (fp_util4_18  tmpa4_18	tmpb4_18	tmpc4_18	tmpd4_18	tmpe4_18	tmpf4_18	tmpg4_18	tmph4_18	anc_util4_18 ) , m 
-egen opd_util5_18 = rowtotal (fp_util5_18  tmpa5_18	tmpb5_18	tmpc5_18	tmpd5_18	tmpe5_18	tmpf5_18	tmpg5_18	tmph5_18	anc_util5_18) , m 
-egen opd_util6_18 = rowtotal (fp_util6_18 tmpa6_18	tmpb6_18	tmpc6_18	tmpd6_18	tmpe6_18	tmpf6_18	tmpg6_18	tmph6_18	anc_util6_18 ) , m 
-egen opd_util7_18 = rowtotal (fp_util7_18 tmpa7_18	tmpb7_18	tmpc7_18	tmpd7_18	tmpe7_18	tmpf7_18	tmpg7_18	tmph7_18	anc_util7_18 ) , m 
-egen opd_util8_18 = rowtotal (fp_util8_18  tmpa8_18	tmpb8_18	tmpc8_18	tmpd8_18	tmpe8_18	tmpf8_18	tmpg8_18	tmph8_18	anc_util8_18) , m 
-egen opd_util9_18 = rowtotal (fp_util9_18 tmpa9_18	tmpb9_18	tmpc9_18	tmpd9_18	tmpe9_18	tmpf9_18	tmpg9_18	tmph9_18	anc_util9_18 ) , m 
-egen opd_util10_18 = rowtotal (fp_util10_18  tmpa10_18	tmpb10_18	tmpc10_18	tmpd10_18	tmpe10_18	tmpf10_18	tmpg10_18	tmph10_18	anc_util10_18) , m 
-egen opd_util11_18 = rowtotal (fp_util11_18 tmpa11_18	tmpb11_18	tmpc11_18	tmpd11_18	tmpe11_18	tmpf11_18	tmpg11_18	tmph11_18	anc_util11_18 ) , m 
-egen opd_util12_18 = rowtotal (fp_util12_18 tmpa12_18	tmpb12_18	tmpc12_18	tmpd12_18	tmpe12_18	tmpf12_18	tmpg12_18	tmph12_18	anc_util12_18 ) , m 
-egen opd_util1_19 = rowtotal (fp_util1_19 tmpa1_19	tmpb1_19	tmpc1_19	tmpd1_19	tmpe1_19	tmpf1_19	tmpg1_19	tmph1_19	anc_util1_19 ) , m 
-egen opd_util2_19 = rowtotal (fp_util2_19 tmpa2_19	tmpb2_19	tmpc2_19	tmpd2_19	tmpe2_19	tmpf2_19	tmpg2_19	tmph2_19	anc_util2_19) , m 
-egen opd_util3_19 = rowtotal (fp_util3_19 tmpa3_19	tmpb3_19	tmpc3_19	tmpd3_19	tmpe3_19	tmpf3_19	tmpg3_19	tmph3_19	anc_util3_19 ) , m 
-egen opd_util4_19 = rowtotal (fp_util4_19  tmpa4_19	tmpb4_19	tmpc4_19	tmpd4_19	tmpe4_19	tmpf4_19	tmpg4_19	tmph4_19	anc_util4_19) , m 
-egen opd_util5_19 = rowtotal (fp_util5_19 tmpa5_19	tmpb5_19	tmpc5_19	tmpd5_19	tmpe5_19	tmpf5_19	tmpg5_19	tmph5_19	anc_util5_19 ) , m 
-egen opd_util6_19 = rowtotal (fp_util6_19 tmpa6_19	tmpb6_19	tmpc6_19	tmpd6_19	tmpe6_19	tmpf6_19	tmpg6_19	tmph6_19	anc_util6_19 ) , m 
-egen opd_util7_19 = rowtotal (fp_util7_19 tmpa7_19	tmpb7_19	tmpc7_19	tmpd7_19	tmpe7_19	tmpf7_19	tmpg7_19	tmph7_19	anc_util7_19 ) , m 
-egen opd_util8_19 = rowtotal (fp_util8_19  tmpa8_19	tmpb8_19	tmpc8_19	tmpd8_19	tmpe8_19	tmpf8_19	tmpg8_19	tmph8_19	anc_util8_19) , m 
-egen opd_util9_19 = rowtotal (fp_util9_19  tmpa9_19	tmpb9_19	tmpc9_19	tmpd9_19	tmpe9_19	tmpf9_19	tmpg9_19	tmph9_19	anc_util9_19) , m 
-egen opd_util10_19 = rowtotal (fp_util10_19 tmpa10_19	tmpb10_19	tmpc10_19	tmpd10_19	tmpe10_19	tmpf10_19	tmpg10_19	tmph10_19	anc_util10_19 ) , m 
-egen opd_util11_19 = rowtotal (fp_util11_19 tmpa11_19	tmpb11_19	tmpc11_19	tmpd11_19	tmpe11_19	tmpf11_19	tmpg11_19	tmph11_19	anc_util11_19 ) , m 
-egen opd_util12_19 = rowtotal (fp_util12_19  tmpa12_19	tmpb12_19	tmpc12_19	tmpd12_19	tmpe12_19	tmpf12_19	tmpg12_19	tmph12_19	anc_util12_19) , m 
-egen opd_util1_20 = rowtotal (fp_util1_20  tmpa1_20	tmpb1_20	tmpc1_20	tmpd1_20	tmpe1_20	tmpf1_20	tmpg1_20	tmph1_20	anc_util1_20) , m 
-egen opd_util2_20 = rowtotal (fp_util2_20 tmpa2_20	tmpb2_20	tmpc2_20	tmpd2_20	tmpe2_20	tmpf2_20	tmpg2_20	tmph2_20	anc_util2_20) , m 
-egen opd_util3_20 = rowtotal (fp_util3_20 tmpa3_20	tmpb3_20	tmpc3_20	tmpd3_20	tmpe3_20	tmpf3_20	tmpg3_20	tmph3_20	anc_util3_20 ) , m 
-egen opd_util4_20 = rowtotal (fp_util4_20  tmpa4_20	tmpb4_20	tmpc4_20	tmpd4_20	tmpe4_20	tmpf4_20	tmpg4_20	tmph4_20	anc_util4_20) , m 
-egen opd_util5_20 = rowtotal (fp_util5_20 tmpa5_20	tmpb5_20	tmpc5_20	tmpd5_20	tmpe5_20	tmpf5_20	tmpg5_20	tmph5_20	anc_util5_20 ) , m 
-egen opd_util6_20 = rowtotal (fp_util6_20  tmpa6_20	tmpb6_20	tmpc6_20	tmpd6_20	tmpe6_20	tmpf6_20	tmpg6_20	tmph6_20	anc_util6_20) , m 
-egen opd_util7_20 = rowtotal (fp_util7_20 tmpa7_20	tmpb7_20	tmpc7_20	tmpd7_20	tmpe7_20	tmpf7_20	tmpg7_20	tmph7_20	anc_util7_20 ) , m 
+egen opd_util1_18 = rowtotal (fp_util1_18 tmpa1_18  tmpb1_18    tmpc1_18    tmpd1_18    tmpe1_18    tmpf1_18    tmpg1_18    tmph1_18    tmpi1_18  anc_util1_18 )
+egen opd_util2_18 = rowtotal (fp_util2_18 tmpa2_18	tmpb2_18	tmpc2_18	tmpd2_18	tmpe2_18	tmpf2_18	tmpg2_18	tmph2_18	tmpi2_18  anc_util2_18 ) , m 
+egen opd_util3_18 = rowtotal (fp_util3_18 tmpa3_18	tmpb3_18	tmpc3_18	tmpd3_18	tmpe3_18	tmpf3_18	tmpg3_18	tmph3_18	tmpi3_18  anc_util3_18 ) , m 
+egen opd_util4_18 = rowtotal (fp_util4_18  tmpa4_18	tmpb4_18	tmpc4_18	tmpd4_18	tmpe4_18	tmpf4_18	tmpg4_18	tmph4_18	tmpi4_18  anc_util4_18 ) , m 
+egen opd_util5_18 = rowtotal (fp_util5_18  tmpa5_18	tmpb5_18	tmpc5_18	tmpd5_18	tmpe5_18	tmpf5_18	tmpg5_18	tmph5_18	tmpi5_18  anc_util5_18) , m 
+egen opd_util6_18 = rowtotal (fp_util6_18 tmpa6_18	tmpb6_18	tmpc6_18	tmpd6_18	tmpe6_18	tmpf6_18	tmpg6_18	tmph6_18	tmpi6_18  anc_util6_18 ) , m 
+egen opd_util7_18 = rowtotal (fp_util7_18 tmpa7_18	tmpb7_18	tmpc7_18	tmpd7_18	tmpe7_18	tmpf7_18	tmpg7_18	tmph7_18	tmpi7_18  anc_util7_18 ) , m 
+egen opd_util8_18 = rowtotal (fp_util8_18  tmpa8_18	tmpb8_18	tmpc8_18	tmpd8_18	tmpe8_18	tmpf8_18	tmpg8_18	tmph8_18	tmpi8_18  anc_util8_18) , m 
+egen opd_util9_18 = rowtotal (fp_util9_18 tmpa9_18	tmpb9_18	tmpc9_18	tmpd9_18	tmpe9_18	tmpf9_18	tmpg9_18	tmph9_18	tmpi9_18  anc_util9_18 ) , m 
+egen opd_util10_18 = rowtotal (fp_util10_18  tmpa10_18	tmpb10_18	tmpc10_18	tmpd10_18	tmpe10_18	tmpf10_18	tmpg10_18	tmph10_18	tmpi10_18 anc_util10_18) , m 
+egen opd_util11_18 = rowtotal (fp_util11_18 tmpa11_18	tmpb11_18	tmpc11_18	tmpd11_18	tmpe11_18	tmpf11_18	tmpg11_18	tmph11_18	tmpi11_18 anc_util11_18 ) , m 
+egen opd_util12_18 = rowtotal (fp_util12_18 tmpa12_18	tmpb12_18	tmpc12_18	tmpd12_18	tmpe12_18	tmpf12_18	tmpg12_18	tmph12_18	tmpi12_18 anc_util12_18 ) , m 
+egen opd_util1_19 = rowtotal (fp_util1_19 tmpa1_19	tmpb1_19	tmpc1_19	tmpd1_19	tmpe1_19	tmpf1_19	tmpg1_19	tmph1_19	tmpi1_19  anc_util1_19 ) , m 
+egen opd_util2_19 = rowtotal (fp_util2_19 tmpa2_19	tmpb2_19	tmpc2_19	tmpd2_19	tmpe2_19	tmpf2_19	tmpg2_19	tmph2_19	tmpi2_19  anc_util2_19) , m 
+egen opd_util3_19 = rowtotal (fp_util3_19 tmpa3_19	tmpb3_19	tmpc3_19	tmpd3_19	tmpe3_19	tmpf3_19	tmpg3_19	tmph3_19	tmpi3_19  anc_util3_19 ) , m 
+egen opd_util4_19 = rowtotal (fp_util4_19  tmpa4_19	tmpb4_19	tmpc4_19	tmpd4_19	tmpe4_19	tmpf4_19	tmpg4_19	tmph4_19	tmpi4_19  anc_util4_19) , m 
+egen opd_util5_19 = rowtotal (fp_util5_19 tmpa5_19	tmpb5_19	tmpc5_19	tmpd5_19	tmpe5_19	tmpf5_19	tmpg5_19	tmph5_19	tmpi5_19  anc_util5_19 ) , m 
+egen opd_util6_19 = rowtotal (fp_util6_19 tmpa6_19	tmpb6_19	tmpc6_19	tmpd6_19	tmpe6_19	tmpf6_19	tmpg6_19	tmph6_19	tmpi6_19  anc_util6_19 ) , m 
+egen opd_util7_19 = rowtotal (fp_util7_19 tmpa7_19	tmpb7_19	tmpc7_19	tmpd7_19	tmpe7_19	tmpf7_19	tmpg7_19	tmph7_19	tmpi7_19  anc_util7_19 ) , m 
+egen opd_util8_19 = rowtotal (fp_util8_19  tmpa8_19	tmpb8_19	tmpc8_19	tmpd8_19	tmpe8_19	tmpf8_19	tmpg8_19	tmph8_19	tmpi8_19  anc_util8_19) , m 
+egen opd_util9_19 = rowtotal (fp_util9_19  tmpa9_19	tmpb9_19	tmpc9_19	tmpd9_19	tmpe9_19	tmpf9_19	tmpg9_19	tmph9_19	tmpi9_19  anc_util9_19) , m 
+egen opd_util10_19 = rowtotal (fp_util10_19 tmpa10_19	tmpb10_19	tmpc10_19	tmpd10_19	tmpe10_19	tmpf10_19	tmpg10_19	tmph10_19	tmpi10_19  anc_util10_19 ) , m 
+egen opd_util11_19 = rowtotal (fp_util11_19 tmpa11_19	tmpb11_19	tmpc11_19	tmpd11_19	tmpe11_19	tmpf11_19	tmpg11_19	tmph11_19	tmpi11_19  anc_util11_19 ) , m 
+egen opd_util12_19 = rowtotal (fp_util12_19  tmpa12_19	tmpb12_19	tmpc12_19	tmpd12_19	tmpe12_19	tmpf12_19	tmpg12_19	tmph12_19	tmpi12_19  anc_util12_19) , m 
+egen opd_util1_20 = rowtotal (fp_util1_20  tmpa1_20	tmpb1_20	tmpc1_20	tmpd1_20	tmpe1_20	tmpf1_20	tmpg1_20	tmph1_20	tmpi1_20  anc_util1_20) , m 
+egen opd_util2_20 = rowtotal (fp_util2_20 tmpa2_20	tmpb2_20	tmpc2_20	tmpd2_20	tmpe2_20	tmpf2_20	tmpg2_20	tmph2_20	tmpi2_20  anc_util2_20) , m 
+egen opd_util3_20 = rowtotal (fp_util3_20 tmpa3_20	tmpb3_20	tmpc3_20	tmpd3_20	tmpe3_20	tmpf3_20	tmpg3_20	tmph3_20	tmpi3_20  anc_util3_20 ) , m 
+egen opd_util4_20 = rowtotal (fp_util4_20  tmpa4_20	tmpb4_20	tmpc4_20	tmpd4_20	tmpe4_20	tmpf4_20	tmpg4_20	tmph4_20	tmpi4_20  anc_util4_20) , m 
+egen opd_util5_20 = rowtotal (fp_util5_20 tmpa5_20	tmpb5_20	tmpc5_20	tmpd5_20	tmpe5_20	tmpf5_20	tmpg5_20	tmph5_20	tmpi5_20  anc_util5_20 ) , m 
+egen opd_util6_20 = rowtotal (fp_util6_20  tmpa6_20	tmpb6_20	tmpc6_20	tmpd6_20	tmpe6_20	tmpf6_20	tmpg6_20	tmph6_20	tmpi6_20  anc_util6_20) , m 
+egen opd_util7_20 = rowtotal (fp_util7_20 tmpa7_20	tmpb7_20	tmpc7_20	tmpd7_20	tmpe7_20	tmpf7_20	tmpg7_20	tmph7_20	tmpi7_20  anc_util7_20 ) , m 
 
 drop tmp* 
 drop decesjanvier2018-decesjuillet2020

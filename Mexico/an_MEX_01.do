@@ -1,26 +1,34 @@
 * HS performance during Covid
-* July 24, 2020 
+* November 9th 2020 
 * Mexico - IMSS, January 2019 - February 2020
 clear all
 set more off	
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 * u "$user/$data/Data for analysis/IMSS_Jan19-Feb20_clean.dta", clear
-u "$user/$data/Data for analysis/IMSS_Jan19-May20_clean.dta", clear
+* u "$user/$data/Data for analysis/IMSS_Jan19-May20_clean.dta", clear
+
+u "$user/$data/Data for analysis/IMSS_Jan19-Aug20_clean.dta", clear
+
+keep if Deleg=="National"
 **********************************************************************
 * DESCRIPTIVES
 **********************************************************************
-global volumes fp_util anc_util sti_util del_util cs_util diarr_util pneum_util ///
-	   malnu_util er_util opd_util ipd_util diab_util hyper_util dental_util mental_util 
-global vaccines pent_qual measles_qual bcg_qual opv3_qual pneum_qual rota_qual 
-global quality cs_qual cerv_qual diab_qual hyper_qual
-global mortality newborn_mort sb_mort mat_mort er_mort ipd_mort
+global rmnch  fp_util anc_util sti_util del_util cs_util diarr_util pneum_util malnu_util  cerv_util 
+global vax  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual
+global other  opd_util diab_util hyper_util art_util er_util ipd_util dental_util mental_util
+global mortality mat_mort_num  newborn_mort_num sb_mort_num totaldel er_mort_num er_util ipd_mort_num ipd_util 
+global quality diab_qual_num hyper_qual_num cs_util totaldel
+
+* death_covid hospit_covid death_negative hospit_negative death_pending hospit_pending 
+
 * NATIONAL
-by year, sort: tabstat $vaccines if month>=3 & month<=5 , s(N sum) c(s)
-by year, sort: tabstat $volumes if month>=3 & month<= 5, s(N sum) c(s) // March-May 2020 vs. 2019
-by year, sort: tabstat $quality if month>=3 & month<=5 , s(N mean) c(s) 
-by year, sort: tabstat mat_mort er_mort ipd_mort if month>=3 & month<=5, s(N mean) c(s) 
-by year, sort: tabstat newborn_mort if  month==3  , s(N mean) c(s) 
+by year, sort: tabstat $rmnch if month>=3 & month<=8 , s(N sum) c(s)
+by year, sort: tabstat $vax if month>=3 & month<=8 , s(N sum) c(s)
+by year, sort: tabstat mat_mort_num totaldel if month>=3 & month<=8 , s(N sum) c(s) 
+by year, sort: tabstat newborn_mort_num totaldel if month>=3 & month<=6 , s(N sum) c(s) 
+by year, sort: tabstat sb_mort_num totaldel if month>=3 & month<=6 , s(N sum) c(s) 
+
 * BY DELEGATION
 * Create a total for each category
 egen rmnch_total = rowtotal(fp_util	anc_util	sti_util	del_util	cs_util	diarr_util	pneum_util	malnu_util ), m
@@ -33,7 +41,7 @@ table Delega year if month>=3 & month<=5, c(sum other_total)
 table Delega year if month>=3 & month<=5, c(sum vacc_total) 
 
 
-
+table year month, c( sum cs_util sum totaldel)
 /*********************************************************************
 *   GRAPHS
 **********************************************************************
