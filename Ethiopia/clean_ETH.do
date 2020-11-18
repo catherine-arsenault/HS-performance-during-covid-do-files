@@ -22,14 +22,22 @@ clear all
 set more off	
 
 u "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta", clear
+//drop all resus_qual and kmc_qual
+//new data for resus_qual_num and resus_qual_denom and kmc_qual_num and kmc_qual_denom are available
+drop resus_qual1_20 resus_qual2_20 resus_qual3_20 resus_qual4_20 resus_qual5_20 resus_qual6_20 resus_qual7_20 resus_qual8_20 resus_qual1_19 resus_qual2_19 resus_qual3_19 resus_qual4_19 resus_qual5_19 resus_qual6_19 resus_qual7_19 resus_qual8_19 resus_qual9_19 resus_qual10_19 resus_qual11_19 resus_qual12_19
+
+drop kmc_qual1_20 kmc_qual2_20 kmc_qual3_20 kmc_qual4_20 kmc_qual5_20 kmc_qual6_20 kmc_qual7_20 kmc_qual8_20 kmc_qual1_19 kmc_qual2_19 kmc_qual3_19 kmc_qual4_19 kmc_qual5_19 kmc_qual6_19 kmc_qual7_19 kmc_qual8_19 kmc_qual9_19 kmc_qual10_19 kmc_qual11_19 kmc_qual12_19
+
+
 
 order  region zone org unit_id fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 ///
 	  del_util*_20 cs_util*_19 cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 ///
 	  diarr_util*_19  diarr_util*_20  pneum_util*_19 pneum_util*_20 art_util*_19 art_util*_20  ///
 	  sam_util*_19 sam_util*_20 opd_util*_19 opd_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 ///
-	  er_util*_20 road_util*_19 ///
-	  road_util*_20 diab_util*_19 diab_util*_20 hyper_util*_19 hyper_util*_20 kmc_qual*_19 ///
-	  kmc_qual*_20 resus_qual*_19 resus_qual*_20  cerv_qual*_19 cerv_qual*_20 hivsupp_qual_num*_19 ///
+	  er_util*_20 road_util*_19 road_util*_20 diab_util*_19 diab_util*_20 hyper_util*_19 ///
+	  hyper_util*_20 kmc_qual_num*_19 kmc_qual_num*_20 kmc_qual_denom*19 kmc_qual_denom*20 ///
+	  resus_qual_num*_19 resus_qual_num*_20 resus_qual_denom*_19 resus_qual_denom*_20 ///
+	  cerv_qual*_19 cerv_qual*_20 hivsupp_qual_num*_19 ///
 	  hivsupp_qual_num*_20  diab_qual_num*_19 diab_qual_num*_20 hyper_qual_num*_19 hyper_qual_num*_20  ///
 	  vacc_qual*_19 vacc_qual*_20 pent_qual*_19 pent_qual*_20 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 ///
 	  measles_qual*_20 opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20 rota_qual*_19 ///
@@ -37,18 +45,19 @@ order  region zone org unit_id fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_2
 	  mat_mort*_20 er_mort_num*19 er_mort_num*20 icu_mort_num*19  icu_mort_num*20 ipd_mort_num*19 ///
 	  ipd_mort_num*20
 ********************************************************************
-* 3664 woreda/facilities 
+* 3669 woreda/facilities 
 * Dropping all woreda/facilities that don't report any indicators all period
 egen all_visits = rowtotal(fp_util1_19-ipd_mort_num8_20), m
 drop if all_visits==.
 drop all_visits 
-* Retains 2374 woreda/facilities with some data from Jan19-Aug20
+* Retains 2376 woreda/facilities with some data from Jan19-Aug20
 ********************************************************************
 
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util diab_util hyper_util  cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util
+				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom
 
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
@@ -82,7 +91,7 @@ forval i = 1/8 {
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel region org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning1.xlsx", firstrow(variable) replace
+*export excel region org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning1.xlsx", firstrow(variable) replace
 
 /****************************************************************
          IDENTIFY OUTLIERS AND SET THEM TO MISSING 
@@ -94,13 +103,15 @@ outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is
 common for mortality indicators.  
 
 We do not assess outliers for diabetes and hypertension because they were 
-not collected until October 2019 */
+not collected until October 2019 
+MK: KMC and newborn resus was added 11/18/20*/
 
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util   cerv_qual ///
 			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num  {
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
@@ -118,6 +129,7 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning2.xlsx", firstrow(variable) replace
+
 
 /****************************************************************
 Diabetes and hypertension were only collected starting OCT 2019
@@ -152,7 +164,8 @@ This brings completeness up "generally" above 90% for all variables. */
 			  totaldel ipd_util er_util road_util   cerv_qual ///
 			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num {
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom {
 			  preserve
 					keep region zone org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
@@ -176,7 +189,8 @@ This brings completeness up "generally" above 90% for all variables. */
 			  totaldel ipd_util er_util road_util   cerv_qual ///
 			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num  {
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom {
 			 	merge 1:1 region  zone org using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 				save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", replace
@@ -193,6 +207,7 @@ forval i = 1/8 {
 	drop icu_mort_num`i'_20
 }
 
+
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", replace
 
 /***************************************************************
@@ -207,7 +222,8 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 			  totaldel ipd_util er_util road_util   cerv_qual ///
 			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num totalipd_mort {
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom totalipd_mort {
 			 	preserve
 					keep region zone org* `x'*
 					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & `x'7_19!=. & `x'8_19!=. & ///
@@ -229,7 +245,8 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 			  totaldel ipd_util er_util road_util   cerv_qual ///
 			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num totalipd_mort {
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom totalipd_mort {
 			 	merge 1:1 region zone org using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 			  }
@@ -238,7 +255,8 @@ reshape long fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 			  totaldel ipd_util er_util road_util diab_util hyper_util  cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util newborn_mort_num sb_mort_num ///
-				mat_mort_num er_mort_num icu_mort_num ipd_mort_num totalipd_mort , i(region zone org) j(month) string	
+				mat_mort_num er_mort_num icu_mort_num ipd_mort_num kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom totalipd_mort, i(region zone org) j(month) string	
 	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
