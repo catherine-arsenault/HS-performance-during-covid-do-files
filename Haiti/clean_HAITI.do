@@ -47,6 +47,30 @@ global volumes totaldel del_util  pncm_util dental_util fp_util anc_util cs_util
 global mortality mat_mort_num peri_mort_num 
 global all $volumes $mortality 
 
+
+
+/****************************************************************
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+****************************************************************/
+
+foreach var of global volumes {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/19=1) //19mts : Jan19-July20
+
+putexcel set "$user/$data/Analyses/Haiti Apr-Jun comparisons.xlsx", sheet(Total facilities reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global volumes {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
