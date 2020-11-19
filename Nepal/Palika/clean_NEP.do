@@ -44,11 +44,38 @@ egen all_visits = rowtotal(fp_util1_19-peri_mort_num6_20), m
 drop if all_visits==.
 drop all_visits // none dropped
 ******************************************************************
+
 global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
                sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
 			   totaldel pent_qual bcg_qual measles_qual opv3_qual pneum_qual 
 global mortality sb_mort_num mat_mort_num ipd_mort_num peri_mort_num
 global all $volumes $mortality 
+
+
+/****************************************************************
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+****************************************************************/
+
+foreach var of global volumes {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/18=1) //18mts : Jan19-June20
+
+putexcel set "$user/$data/Analyses/Nepal_changes_2020_2019.xlsx", sheet(palika-total N, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global volumes {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+
+
+
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
