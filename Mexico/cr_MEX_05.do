@@ -4,9 +4,6 @@
 
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Mexico)"
 
 import spss using "$user/$data/Raw/7.Indicadores_IMSS_Agosto_2020_9Nov20.sav", clear
 
@@ -128,6 +125,8 @@ save "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta", replace
 
 set obs 36
 replace Delegation="National" if Deleg==""
+
+/*Move this part to cr_MEX_06.do
 ********************************************************************************
 * RESHAPE TO LONG FORM
 ********************************************************************************

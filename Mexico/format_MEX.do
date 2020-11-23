@@ -2,7 +2,7 @@
 * Nov 9, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
-use "$user/$data/Data for analysis/IMSS_Jan19-Aug20_clean.dta", clear
+use "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", clear
 
 
 ********************************************************************************
@@ -46,7 +46,7 @@ drop year cerv_denom2020
 merge m:m  Delegation month using "$user/$data/temp.dta"
 drop  _merge 
 
-export delimited using "$user/$data/IMSS_Jan19-Aug20_fordashboard.csv", replace
+export delimited using "$user/$data/IMSS_Jan19-Oct20_fordashboard.csv", replace
 
 rm "$user/$data/temp.dta"
 
