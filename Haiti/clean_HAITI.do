@@ -53,16 +53,16 @@ global all $volumes $mortality
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 ****************************************************************/
 
-foreach var of global volumes {
+foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
-recode *_report (0=0) (1/19=1) //19mts : Jan19-July20
+recode *_report (0=0) (1/18=1) //18mts : Jan19-June20
 
 putexcel set "$user/$data/Analyses/Haiti Apr-Jun comparisons.xlsx", sheet(Total facilities reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
-foreach var of global volumes {	
+foreach var of global all {	
 	local i = `i'+1
 	putexcel A`i' = "`var'"
 	qui sum `var'_report
