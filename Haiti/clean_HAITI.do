@@ -47,8 +47,6 @@ global volumes totaldel del_util  pncm_util dental_util fp_util anc_util cs_util
 global mortality mat_mort_num peri_mort_num 
 global all $volumes $mortality 
 
-
-
 /****************************************************************
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 ****************************************************************/
@@ -174,7 +172,8 @@ foreach x of global all {
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
-			 
+
+		 
 * Reshape for analyses
 reshape long fp_util totaldel del_util  pncm_util dental_util  anc_util cs_util diarr_util ///
 			 cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num ///
