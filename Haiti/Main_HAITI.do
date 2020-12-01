@@ -11,7 +11,7 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 * Imports raw data and renames variables for January 2018-July 2020
 do "$dofiles/cr_HAITI_01.do"
 
-* Cleans data (see cleaning protocol in shared folder)
+* Cleans data (see cleaning protocol in shared folder) and creates a dataset for analyses
 do "$dofiles/clean_HAITI.do"
 
 * Formats data for dashboard
