@@ -132,6 +132,32 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
+Newborn resuscitation and KMC intitatied
+Drop observations if numberator is greater than denominator 
+to remove any observations above 100% 
+****************************************************************/
+//2376 observations 
+
+forval i=1/12 {
+	replace kmc_qual_denom`i'_19 = kmc_qual_num`i'_19 if kmc_qual_denom`i'_19 ==. 
+	replace resus_qual_denom`i'_19 = resus_qual_num`i'_19 if resus_qual_denom`i'_19 ==. 
+}
+
+
+forval i=1/12 {
+	drop if kmc_qual_num`i'_19 > kmc_qual_denom`i'_19 
+	drop if resus_qual_num`i'_19 > resus_qual_denom`i'_19 
+}
+
+forval i=1/8 {
+	drop if kmc_qual_num`i'_20 > kmc_qual_denom`i'_20
+	drop if resus_qual_num`i'_20 > resus_qual_denom`i'_20
+}
+
+*1494 remained (882 observations dropped - 37% of observations dropped) 
+
+
+/****************************************************************
 Diabetes and hypertension were only collected starting OCT 2019
 Drop any values for utilisation and quality from Jan to Sep 2019
 ****************************************************************/
