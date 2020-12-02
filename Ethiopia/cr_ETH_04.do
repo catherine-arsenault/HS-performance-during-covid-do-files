@@ -7,7 +7,7 @@ updated by MK Kim
 *Import raw data
 import delimited "$user/$data/Raw/2020/Ethiopia_2020_January to August_ by woreda csv_14_11_2020.csv", clear
 
-
+*months in data are in correct order 
 *rename variables 
 *Total number of neonates resuscitated 
 rename totalnumberofneonatesresuscitate v6
@@ -51,8 +51,10 @@ order region zone organisationunitname
 
 
 *MERGE TO LATEST DATASET
+sort region zone organisationunitname 
 merge 1:1  region zone organisationunitname using "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta"
-//35 out of 3669 not matched 
+drop _merge
+*53 observations not merged. Merging data have additional 53 observations that are missing from the new data. 
 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta", replace
 

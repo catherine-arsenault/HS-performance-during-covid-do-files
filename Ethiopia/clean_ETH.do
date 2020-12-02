@@ -22,14 +22,8 @@ clear all
 set more off	
 
 u "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta", clear
-//drop all resus_qual and kmc_qual
-//new data for resus_qual_num and resus_qual_denom and kmc_qual_num and kmc_qual_denom are available
-drop resus_qual1_20 resus_qual2_20 resus_qual3_20 resus_qual4_20 resus_qual5_20 resus_qual6_20 resus_qual7_20 resus_qual8_20 resus_qual1_19 resus_qual2_19 resus_qual3_19 resus_qual4_19 resus_qual5_19 resus_qual6_19 resus_qual7_19 resus_qual8_19 resus_qual9_19 resus_qual10_19 resus_qual11_19 resus_qual12_19
 
-drop kmc_qual1_20 kmc_qual2_20 kmc_qual3_20 kmc_qual4_20 kmc_qual5_20 kmc_qual6_20 kmc_qual7_20 kmc_qual8_20 kmc_qual1_19 kmc_qual2_19 kmc_qual3_19 kmc_qual4_19 kmc_qual5_19 kmc_qual6_19 kmc_qual7_19 kmc_qual8_19 kmc_qual9_19 kmc_qual10_19 kmc_qual11_19 kmc_qual12_19
-
-
-
+*new data for resus_qual_num and resus_qual_denom and kmc_qual_num and kmc_qual_denom are available
 order  region zone org unit_id fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 ///
 	  del_util*_20 cs_util*_19 cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 ///
 	  diarr_util*_19  diarr_util*_20  pneum_util*_19 pneum_util*_20 art_util*_19 art_util*_20  ///
@@ -43,7 +37,14 @@ order  region zone org unit_id fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_2
 	  measles_qual*_20 opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20 rota_qual*_19 ///
 	  rota_qual*_20 sb_mort*_19 sb_mort*_20 newborn_mort_num*_19 newborn_mort_num*_20 mat_mort*_19 ///
 	  mat_mort*_20 er_mort_num*19 er_mort_num*20 icu_mort_num*19  icu_mort_num*20 ipd_mort_num*19 ///
-	  ipd_mort_num*20
+	  ipd_mort_num*20 totaldel*_19 totaldel*_20 resus_qual*_19 resus_qual*_20 kmc_qual*_19 kmc_qual*_20 
+
+*drop all resus_qual and kmc_qual
+drop resus_qual1_19-resus_qual8_20 
+drop kmc_qual1_19-kmc_qual8_20
+
+
+
 ********************************************************************
 * 3669 woreda/facilities 
 * Dropping all woreda/facilities that don't report any indicators all period
@@ -57,11 +58,36 @@ global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pn
 			  totaldel ipd_util er_util road_util diab_util hyper_util  cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom
+				resus_qual_num resus_qual_denom art_util totaldel
 
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
 global all $volumes $mortality
+
+
+/****************************************************************
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+****************************************************************/
+
+foreach var of global all {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/20=1) 
+
+putexcel set "$user/$data/Analyses/Ethiopia changes 2019 2020.xlsx", sheet(Total facilities reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+
+
 
 /****************************************************************
 EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
@@ -133,28 +159,19 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 /****************************************************************
 Newborn resuscitation and KMC intitatied
-Drop observations if numberator is greater than denominator 
-to remove any observations above 100% 
+Replace numberator as missing if is greater than denominator 
 ****************************************************************/
-//2376 observations 
 
 forval i=1/12 {
-	replace kmc_qual_denom`i'_19 = kmc_qual_num`i'_19 if kmc_qual_denom`i'_19 ==. 
-	replace resus_qual_denom`i'_19 = resus_qual_num`i'_19 if resus_qual_denom`i'_19 ==. 
-}
-
-
-forval i=1/12 {
-	drop if kmc_qual_num`i'_19 > kmc_qual_denom`i'_19 
-	drop if resus_qual_num`i'_19 > resus_qual_denom`i'_19 
+	replace kmc_qual_num`i'_19 = . if kmc_qual_num`i'_19 > kmc_qual_denom`i'_19 & kmc_qual_num`i'_19 !=.
+	replace resus_qual_num`i'_19 = . if resus_qual_num`i'_19 > resus_qual_denom`i'_19 & resus_qual_num`i'_19 !=.
 }
 
 forval i=1/8 {
-	drop if kmc_qual_num`i'_20 > kmc_qual_denom`i'_20
-	drop if resus_qual_num`i'_20 > resus_qual_denom`i'_20
+	replace kmc_qual_num`i'_20 = . if kmc_qual_num`i'_20 > kmc_qual_denom`i'_20 & kmc_qual_num`i'_20 !=.
+	replace resus_qual_num`i'_20 = . if resus_qual_num`i'_20 > resus_qual_denom`i'_20 & resus_qual_num`i'_20 !=.
 }
 
-*1494 remained (882 observations dropped - 37% of observations dropped) 
 
 
 /****************************************************************
