@@ -1,6 +1,7 @@
 * HS performance during Covid
 * Nov 9, 2020 
 * Mexico - IMSS, Update the mortality data 
+* Recode COVID mortality data from June20 to Oct 20 and merge with pervious dataset 
 * by MK Kim 
 
 clear all
@@ -9,10 +10,10 @@ set more off
 import excel using "$user/$data/Raw/link.xlsx", firstrow clear
 save "$user/$data/Raw/link.dta", replace
 import spss using "$user/$data/Raw/4. Hospital_mortality_June_October2020.sav", clear
-drop if delegacion==""
 sort delegacion
 merge 1:1 delegacion using "$user/$data/Raw/link.dta"
-drop if _merge==2 //not found in the mortality data 
+*3 delegacion is not found in the COVID mortality data 
+drop if _merge==2 
 drop _merge 
 
 rename (hospit_covid_june hospit_covid_juliy hospit_covid_august hospit_covid_september hospit_covid_october) (hospit_covid6_20 hospit_covid7_20 hospit_covid8_20 hospit_covid9_20 hospit_covid10_20)
@@ -29,27 +30,20 @@ rename (death_negative_june death_negative_july death_negative_august death_nega
 
 
 keep Delegation hospit_covid6_20-death_negative10_20
-save "$user/$data/Data for analysis/IMSS_June20-Oct20_mortality_WIDE.dta", replace
+
 
 ********************************************************************************
 * MERGE TO DATA FROM FIRST, SECOND, AND THRID ROUNDS (Jan19-Aug20)
 ********************************************************************************
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta"
 drop _merge 
+
 order num_del Delegation HF_tot HF1level HF2level HF3level men2019 women2019 ///
-population2019 men2020 women2020 population2020 sti_util6_20-ipd_mort_num12_19 ///
-hospit_covid3_20 hospit_covid4_20 hospit_covid5_20 hospit_covid6_20 hospit_covid7_20 ///
-hospit_covid8_20 hospit_covid9_20 hospit_covid10_20 hospit_pending3_20 ///
-hospit_pending4_20 hospit_pending5_20 hospit_pending6_20 hospit_pending7_20 ///
-hospit_pending8_20 hospit_pending9_20 hospit_pending10_20 hospit_negative3_20 ///
-hospit_negative4_20 hospit_negative5_20 hospit_negative6_20 hospit_negative7_20 ///
-hospit_negative8_20 hospit_negative9_20 hospit_negative10_20 death_covid3_20 ///
-death_covid4_20 death_covid5_20 death_covid6_20 death_covid7_20 death_covid8_20 ///
-death_covid9_20 death_covid10_20 death_negative3_20 death_negative4_20 ///
-death_negative5_20 death_negative6_20 death_negative7_20 death_negative8_20 ///
-death_negative9_20 death_negative10_20 death_pending4_20 death_pending5_20 ///
-death_pending6_20 death_pending7_20 death_pending8_20 death_pending9_20 death_pending10_20
+men2020 women2020 population2019 population2020 sti_util6_20-ipd_mort_num12_19 ///
+hospit_covid*_20  hospit_pending*_20 hospit_negative*_20 ///
+death_covid*_20 death_negative*_20 death_pending*_20 
 sort num_del
+
 save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", replace
 
 set obs 36
@@ -134,19 +128,6 @@ order Delegation year mo
 sort  year mo 
 rename mo month
 
-********************************************************************************
-* CREATE NATIONAL TOTALS
-********************************************************************************
-foreach v in cerv_denom2019 cerv_denom2020 sti_util del_util cs_util diarr_util ///
-pneum_util malnu_util art_util er_util dental_util ///
-ipd_util diab_util hyper_util mental_util cerv_util diab_qual_num hyper_qual_num /// 
-opv3_qual pneum_qual rota_qual newborn_mort_num sb_mort_num mat_mort_num er_mort_num /// 
-fp_util anc_util totaldel opd_util pent_qual bcg_qual measles_qual ipd_mort_num ///
-death_covid hospit_covid death_negative hospit_negative death_pending hospit_pending {
-	by year month, sort: egen `v'tot= total(`v'), m
-	replace `v'= `v'tot if Delegation=="National"
-	drop `v'tot
-}
 save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", replace
 
 

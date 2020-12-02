@@ -123,8 +123,6 @@ order Deleg sti_util*  del_util*  cs_util*  diarr_util*  pneum_util*  malnu_util
 	death_pending* hospit_pending* totaldel*
 save "$user/$data/Data for analysis/IMSS_Jan19-Aug20_WIDE.dta", replace
 
-set obs 36
-replace Delegation="National" if Deleg==""
 
 /*Move this part to cr_MEX_06.do
 ********************************************************************************

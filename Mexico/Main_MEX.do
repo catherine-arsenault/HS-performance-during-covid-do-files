@@ -27,7 +27,7 @@ do "$dofiles/cr_MEX_04.do"
 delivery/caesarean indicators. */
 do "$dofiles/cr_MEX_05.do"
 
-/* Add mortality data from June20 to Oct20, merges with prior data. */
+* Recodes COVID mortality data from June 2020 to Oct 2020
 do "$dofiles/cr_MEX_06.do"
 
 /*Reformats data for dashboard: Calculates national totals, reshapes to long form,
