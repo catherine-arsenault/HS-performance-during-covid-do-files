@@ -42,7 +42,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 * 753 palika. Dropping all palika that don't report any indicators all year
 egen all_visits = rowtotal(fp_util1_19-peri_mort_num6_20), m
 drop if all_visits==.
-drop all_visits // none dropped
+drop all_visits 
 ******************************************************************
 
 global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
@@ -56,7 +56,7 @@ global all $volumes $mortality
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 ****************************************************************/
 
-foreach var of global volumes {
+foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/18=1) //18mts : Jan19-June20
@@ -65,7 +65,7 @@ putexcel set "$user/$data/Analyses/Nepal_changes_2020_2019.xlsx", sheet(palika-t
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
-foreach var of global volumes {	
+foreach var of global all {	
 	local i = `i'+1
 	putexcel A`i' = "`var'"
 	qui sum `var'_report
