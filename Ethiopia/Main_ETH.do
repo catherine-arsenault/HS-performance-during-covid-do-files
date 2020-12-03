@@ -19,7 +19,8 @@ do "$dofiles/cr_ETH_01.do"
 * Updates the 2020 data to more recently extracted so we no longer use cr_ETH_02
 do  "$dofiles/cr_ETH_03.do"
 
-* Edits to KMC and newborn resuscitation indicators (Jan 2019-August2020), imports raw data, recode and merge with latest dataset
+* Edits to KMC and newborn resuscitation indicators (Jan 2019-August2020)
+* Imports raw data, recodes and merge with latest dataset
 do  "$dofiles/cr_ETH_04.do"
 
 * Cleans data (see cleaning protocol in shared folder)
