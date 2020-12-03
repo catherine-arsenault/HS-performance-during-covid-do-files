@@ -58,7 +58,7 @@ global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pn
 			  totaldel ipd_util er_util road_util diab_util hyper_util  cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom art_util totaldel
+				resus_qual_num resus_qual_denom 
 
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
