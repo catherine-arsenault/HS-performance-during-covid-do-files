@@ -1,14 +1,11 @@
 /* Imports raw data and renames variables for Jan 2019 - August 2020 for 
 newborn resuscitation and KMC initiated, merge with other data 
-updated by MK Kim 
-11/18/20 
-*/
+updated by MK Kim 11/18/20 */
 
 *Import raw data
 import delimited "$user/$data/Raw/2020/Ethiopia_2020_January to August_ by woreda csv_14_11_2020.csv", clear
 
-*months in data are in correct order 
-*rename variables 
+
 *Total number of neonates resuscitated 
 rename totalnumberofneonatesresuscitate v6
 rename (v6-v25) (resus_qual_denom1_19	resus_qual_denom2_19	resus_qual_denom3_19	resus_qual_denom4_19	resus_qual_denom5_19	resus_qual_denom6_19	resus_qual_denom7_19	resus_qual_denom8_19	resus_qual_denom9_19	resus_qual_denom10_19	resus_qual_denom11_19	resus_qual_denom12_19 resus_qual_denom1_20	resus_qual_denom2_20	resus_qual_denom3_20	resus_qual_denom4_20	resus_qual_denom5_20	resus_qual_denom6_20	resus_qual_denom7_20	resus_qual_denom8_20)
@@ -51,7 +48,7 @@ order region zone organisationunitname
 sort region zone organisationunitname 
 merge 1:1  region zone organisationunitname using "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta"
 drop _merge
-*58 / 3669 observations not merged. 
+*53 / 3669 observations not merged. 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta", replace
 
 
