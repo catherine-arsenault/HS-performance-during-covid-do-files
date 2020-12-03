@@ -178,7 +178,7 @@ save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_AN.dta", repla
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning2.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning3.xlsx", firstrow(variable) replace
 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
@@ -224,7 +224,6 @@ This brings completeness up "generally" above 90% for all variables. */
 				drop _merge
 				save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", replace
 		}
-
 * Calculate total inpatients
 forval i = 1/12 {
 	egen totalipd_mort`i'_19= rowtotal(ipd_mort_num`i'_19 icu_mort_num`i'_19), m	
