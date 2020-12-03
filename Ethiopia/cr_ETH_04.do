@@ -1,29 +1,34 @@
+/* Imports raw data and renames variables for Jan 2019 - August 2020 for 
+newborn resuscitation and KMC initiated, merge with other data 
+updated by MK Kim 
+11/18/20 
+*/
 
-* info here 
+*Import raw data
+import delimited "$user/$data/Raw/2020/Ethiopia_2020_January to August_ by woreda csv_14_11_2020.csv", clear
 
-import excel " Ethiopia_2020_January to August_ by woreda csv_14_11_2020"
+*months in data are in correct order 
+*rename variables 
+*Total number of neonates resuscitated 
+rename totalnumberofneonatesresuscitate v6
+rename (v6-v25) (resus_qual_denom1_19	resus_qual_denom2_19	resus_qual_denom3_19	resus_qual_denom4_19	resus_qual_denom5_19	resus_qual_denom6_19	resus_qual_denom7_19	resus_qual_denom8_19	resus_qual_denom9_19	resus_qual_denom10_19	resus_qual_denom11_19	resus_qual_denom12_19 resus_qual_denom1_20	resus_qual_denom2_20	resus_qual_denom3_20	resus_qual_denom4_20	resus_qual_denom5_20	resus_qual_denom6_20	resus_qual_denom7_20	resus_qual_denom8_20)
 
-rename 
+*Total number of neonates resuscitated and survived 
+rename (v26-v45) (resus_qual_num1_19	resus_qual_num2_19	resus_qual_num3_19	resus_qual_num4_19	resus_qual_num5_19	resus_qual_num6_19	resus_qual_num7_19	resus_qual_num8_19	resus_qual_num9_19	resus_qual_num10_19	resus_qual_num11_19	resus_qual_num12_19 resus_qual_num1_20	resus_qual_num2_20	resus_qual_num3_20	resus_qual_num4_20	resus_qual_num5_20	resus_qual_num6_20	resus_qual_num7_20	resus_qual_num8_20)
 
+*Total number of newborns weighing <2000gm and/or premature 
+rename totalnumberofnewbornsweighing200 v46
+rename (v46-v65) (kmc_qual_denom1_19	kmc_qual_denom2_19	kmc_qual_denom3_19	kmc_qual_denom4_19	kmc_qual_denom5_19	kmc_qual_denom6_19	kmc_qual_denom7_19	kmc_qual_denom8_19	kmc_qual_denom9_19	kmc_qual_denom10_19	kmc_qual_denom11_19	kmc_qual_denom12_19 kmc_qual_denom1_20	kmc_qual_denom2_20	kmc_qual_denom3_20	kmc_qual_denom4_20	kmc_qual_denom5_20	kmc_qual_denom6_20	kmc_qual_denom7_20	kmc_qual_denom8_20)
 
-/* resus_qual_num
-Total number of neonates resuscitated and survived 
+*Total number of newborns weighing <2000gm and/or premature newborns for which KMC initiated 
+rename (v66-v85) (kmc_qual_num1_19	kmc_qual_num2_19	kmc_qual_num3_19	kmc_qual_num4_19	kmc_qual_num5_19	kmc_qual_num6_19	kmc_qual_num7_19	kmc_qual_num8_19	kmc_qual_num9_19	kmc_qual_num10_19	kmc_qual_num11_19	kmc_qual_num12_19 kmc_qual_num1_20	kmc_qual_num2_20	kmc_qual_num3_20	kmc_qual_num4_20	kmc_qual_num5_20	kmc_qual_num6_20	kmc_qual_num7_20	kmc_qual_num8_20)
 
-resus_qual_denom
-Total number of neonates resuscitated 
-
-kmc_qual_num
-Total number of newborns weighing <2000gm and/or premature newborns for which KMC initiated 
-
-kmc_qual_denom
-Total number of newborns weighing <2000gm and/or premature 
-
-
-drop 
-Total death in ICU in the reporting period 
+/*drop Total death in ICU in the reporting period 
 Total discharges from ICU 
 Total neonates admitted to NICU 
-Total neonates discharged from NICU */
+Total neonates discharged from NICU 
+due to now relevant to our study */ 
+drop totaldeathinicuinthereportingper-v169
 
 * Region names
 drop orgunitlevel1 orgunitlevel4  
@@ -42,20 +47,23 @@ replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname
 
-
 *MERGE TO LATEST DATASET
+sort region zone organisationunitname 
 merge 1:1  region zone organisationunitname using "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta"
+drop _merge
+*58 / 3669 observations not merged. 
+save "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta", replace
 
 
-** UPDATE MASTER DO FILE 
+** UPDATE MASTER DO FILE - done 
 
-** UPDATE CLEANING AND RE-RUN
+** UPDATE CLEANING AND RE-RUN - done 
 		* -- 4 NEW VARS 
 		
-** UPDATE FORMAT DO FILE AND RE-RUN 
+** UPDATE FORMAT DO FILE AND RE-RUN - done 
 
 ** NEW .CSV FOR THE DASBOARD 
-		*  CHECK THAT NUM IS NOT GREAT THAN DENOM
-** UPDATE CODEBOOK 
+		*  CHECK THAT NUM IS NOT GREAT THAN DENOM - need to discuss with CA 
+** UPDATE CODEBOOK -done 
 
 ** NEENA TO RELINK AND CREATE 2 NEW INDICATORS 
