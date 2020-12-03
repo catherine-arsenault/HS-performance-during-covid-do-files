@@ -43,8 +43,6 @@ order  region zone org unit_id fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_2
 drop resus_qual1_19-resus_qual8_20 
 drop kmc_qual1_19-kmc_qual8_20
 
-
-
 ********************************************************************
 * 3669 woreda/facilities 
 * Dropping all woreda/facilities that don't report any indicators all period
@@ -53,24 +51,21 @@ drop if all_visits==.
 drop all_visits 
 * Retains 2376 woreda/facilities with some data from Jan19-Aug20
 ********************************************************************
-
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util diab_util hyper_util  cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom art_util totaldel
-
+				resus_qual_num resus_qual_denom  
+				
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
 global all $volumes $mortality
 
-
 /****************************************************************
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 ****************************************************************/
-
 foreach var of global all {
-egen `var'_report = rownonmiss(`var'*)
+	egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/20=1) 
 
@@ -85,9 +80,6 @@ foreach var of global all {
 	putexcel B`i' = `r(sum)'
 }
 drop *report
-
-
-
 
 /****************************************************************
 EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
@@ -151,17 +143,11 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
 }
 
-/****************************************************************
-EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
-****************************************************************/
-*export excel using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning2.xlsx", firstrow(variable) replace
-
-
-/****************************************************************
-Newborn resuscitation and KMC intitatied
-Replace numberator as missing if is greater than denominator 
-****************************************************************/
-
+****************************************************************
+* 					OTHER EDITS
+****************************************************************
+*Newborn resuscitation and KMC intitatied
+*Replace numberator as missing if it is greater than denominator 
 forval i=1/12 {
 	replace kmc_qual_num`i'_19 = . if kmc_qual_num`i'_19 > kmc_qual_denom`i'_19 & kmc_qual_num`i'_19 !=.
 	replace resus_qual_num`i'_19 = . if resus_qual_num`i'_19 > resus_qual_denom`i'_19 & resus_qual_num`i'_19 !=.
@@ -171,13 +157,8 @@ forval i=1/8 {
 	replace kmc_qual_num`i'_20 = . if kmc_qual_num`i'_20 > kmc_qual_denom`i'_20 & kmc_qual_num`i'_20 !=.
 	replace resus_qual_num`i'_20 = . if resus_qual_num`i'_20 > resus_qual_denom`i'_20 & resus_qual_num`i'_20 !=.
 }
-
-
-
-/****************************************************************
-Diabetes and hypertension were only collected starting OCT 2019
-Drop any values for utilisation and quality from Jan to Sep 2019
-****************************************************************/
+*Diabetes and hypertension were only collected starting OCT 2019
+*Drop variables for utilisation and quality from Jan to Sep 2019
 foreach x in diab_util diab_qual_num hyper_util hyper_qual_num {
 	forval i = 1/9 {
 		drop `x'`i'_19
@@ -193,6 +174,11 @@ forval i = 1/8 {
 }
 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_AN.dta", replace 
+
+/****************************************************************
+EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
+****************************************************************/
+*export excel using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning2.xlsx", firstrow(variable) replace
 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
@@ -249,7 +235,6 @@ forval i = 1/8 {
 	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m
 	drop icu_mort_num`i'_20
 }
-
 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", replace
 
