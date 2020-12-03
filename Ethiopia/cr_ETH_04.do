@@ -30,8 +30,6 @@ Total neonates discharged from NICU
 due to now relevant to our study */ 
 drop totaldeathinicuinthereportingper-v169
 
-
-
 * Region names
 drop orgunitlevel1 orgunitlevel4  
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
@@ -49,13 +47,11 @@ replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname
 
-
 *MERGE TO LATEST DATASET
 sort region zone organisationunitname 
 merge 1:1  region zone organisationunitname using "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta"
 drop _merge
-*53 observations not merged. Merging data have additional 53 observations that are missing from the new data. 
-
+*58 / 3669 observations not merged. 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-August20_WIDE.dta", replace
 
 
