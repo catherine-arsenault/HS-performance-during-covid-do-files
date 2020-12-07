@@ -1,6 +1,7 @@
 * HS performance during Covid - Thailand
 * Master do file 
 * PI Catherine Arsenault
+* Analyst MK Kim
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Thailand)"
