@@ -18,9 +18,13 @@ death_covid hospit_covid death_negative hospit_negative death_pending hospit_pen
 	replace `v'= `v'tot if Delegation=="National"
 	drop `v'tot
 }
+<<<<<<< Updated upstream
 
 save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", replace 
 
+=======
+save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", replace
+>>>>>>> Stashed changes
 ********************************************************************************
 * RESHAPE FOR DASHBOARD
 ********************************************************************************

@@ -34,5 +34,9 @@ do "$dofiles/cr_MEX_06.do"
 and creates the final csv file for the dashboard. */ 
 do "$dofiles/format_MEX.do"
 
+<<<<<<< Updated upstream
 * Analyzes data from March-August 2019 and March-August2020
+=======
+* Analysis: calculates changes between March-August 2020 and March-August 2019 
+>>>>>>> Stashed changes
 do "$dofiles/an_MEX_01.do"
