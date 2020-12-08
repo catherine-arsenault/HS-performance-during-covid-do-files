@@ -33,3 +33,6 @@ do "$dofiles/cr_MEX_06.do"
 /*Reformats data for dashboard: Calculates national totals, reshapes to long form,
 and creates the final csv file for the dashboard. */ 
 do "$dofiles/format_MEX.do"
+
+* Analyzes data from March-August 2019 and March-August2020
+do "$dofiles/an_MEX_01.do"
