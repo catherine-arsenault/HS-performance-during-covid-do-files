@@ -5,28 +5,28 @@
 clear all
 set more off	
 
-* Jan-Jul 2020
-import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_2020_Jan-Jul_Facility.xlsx", firstrow clear
-rename (orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4) (Province District SubDistrict Facility)
+* Jan-Sept 2020
+import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South_Africa_2020_Jan_Sept_Facility.xlsx", firstrow clear
+rename (orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 OPDheadcountsum) (Province District SubDistrict Facility OPDheadcounttotal)
 drop organisationunitname Hospitalpublic NonFixedfacilitysatellitehe
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta", replace 
-	*OPD was missing from original 2020 data-- need to merge in separately
+	/*OPD was missing from original 2020 data-- need to merge in separately--NO LONGER NEED TO DO WITH UPDATED 2020 DATA
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/Missing Facility Data Element - 18Oct2020.xls", firstrow clear
 rename (organisationunitname) (Facility)
 drop orgunitlevel1-orgunitlevel4 Admissions I
-save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta", replace 
+save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta", replace */
 
 * Jan-Dec 2019
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_2019_Jan-Dec_Facility.xlsx", firstrow clear
 
 *Append in additional months
 append using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta"
-merge 1:1 Facility periodname using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta"
-drop _merge
+/*merge 1:1 Facility periodname using "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta"
+drop _merge */
 
 *Months
 encode periodname, gen(month)
-recode month (1 2=4) (3=8) (4=12) (5 6=2) (7 8=1) (9 10=7) (11 12 =6) (13 14=3) (15 16=5) (17=11) (18=10) (19=9)
+recode month (1 2=4) (3 4=8) (5=12) (6 7=2) (8 9=1) (10 11=7) (12 13=6) (14 15=3) (16 17=5) (18=11) (19=10) (20 21=9)
 lab def mlbl 1 "January" 2 "February" 3 "March" 4 "April" 5 "May" 6 "June" 7 "July" 8 "August" 9 "September" 10 "October" 11 "November" 12 "December"
 lab val month mlbl
 gen year = 2019 if regexm(periodname,"2019")
@@ -95,7 +95,7 @@ rename (Antenatal1stvisittotal Deliveryinfacilitysum Deliverybycaesareansection 
 		hyper_util er_util)
 		
 egen road_util = rowtotal(EmergencycaseMotorVehicleA AF AH AI), missing
-replace opd_util = OPDheadcountsum if opd_util==. & OPDheadcountsum!=.
+*replace opd_util = OPDheadcountsum if opd_util==. & OPDheadcountsum!=.
 
 replace totaldel = cs_util if cs_util>totaldel & cs_util<.
 gen del_util = totaldel-cs_util
@@ -119,7 +119,7 @@ rename (Deathinfacility06days Stillbirthinfacility Maternaldeathinfacility Inpat
 		
 * Mortality (denominators)
 
-replace AdmissionsTotal = BK if rmonth>12
+*replace AdmissionsTotal = BK if rmonth>12
 rename ( AdmissionsTotal AdmissionsTrauma AdmissionICU)	( ipd_util trauma_util icu_util)
 
 lab var fp_util "Number of new and current users of contraceptives THROUGH MARCH 2020 ONLY"
@@ -129,7 +129,7 @@ lab var totaldel "Total of deliveries and c-sections"
 
 drop FamilyPlanningAcceptor1019y FamilyPlanningAcceptor2035y FamilyPlanningAcceptor36year ///
 	 Deliveryinfacilitytotal Motherpostnatalvisitwithin6 EmergencycaseMotorVehicleA AF ///
-	 PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st Livebirthinfacility Totalbirthsinfacilitysum AH AI Clientsscreen Cervicalcancer* Diabetesclient BK Casualty
+	 PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st Livebirthinfacility Totalbirthsinfacilitysum AH AI Clientsscreen Cervicalcancer* Diabetesclient Casualty
 
 order fp_util anc1_util totaldel del_util cs_util-opd_util ipd_util er_util icu_util road_util trauma_util diab_util-tbtreat_qual vacc_qual pent_qual-rota_qual newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num  icu_mort_num trauma_mort_num, after(factype)	
 
@@ -139,18 +139,18 @@ save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data fo
 * Reshape to wide
 reshape wide fp_util-trauma_mort_num, i(Facility factype Province dist subdist) j(rmonth)
 
-*2833 "facilities", though many are pharmacies, non-medical, etc. Dropping all facilities that don't report any data all year
-egen all_visits =rowtotal(fp_util1-trauma_mort_num19), missing
+*2852 "facilities", though many are pharmacies, non-medical, etc. Dropping all facilities that don't report any data
+egen all_visits =rowtotal(fp_util1-trauma_mort_num21), missing
 drop if all_visits==.
 drop all_visits
-*Retains 1021 facilities with some data during 2019-2020
+*Retains 1068 facilities with some data during 2019-2020
 
 order Province dist subdist Facility factype fp_util* anc*_util* totaldel* del_util* cs_util* pnc_util* diarr_util* pneum_util* sam_util* art_util* opd_util* ipd_util* er_util* road_util* diab_util* hyper_util* kmcn_qual* cerv_qual* tbscreen_qual* tbdetect_qual* tbtreat_qual* vacc_qual* pent_qual* bcg_qual* measles_qual* pneum_qual* rota_qual* newborn_mort_num* sb_mort_num*  mat_mort_num* ipd_mort_num*  icu_mort_num* icu_util* trauma_mort_num*
 
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", replace
 
 rm "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta"
-rm "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta"
+*rm "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020_2.dta"
 
 
 
