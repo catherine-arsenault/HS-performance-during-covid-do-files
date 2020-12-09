@@ -1,3 +1,9 @@
+* Do file created by Anagaw Derseh, AAU
+* Dec 9 2020
+* Creates graphs by facility type
+* Uses the dataset: Ethiopia_Jan19-Aug20_WIDE_CCA_DB
+
+
 ***CREATING IMPORTANT VARIABLES AND RESHAPE THE DATA INTO LONG FORM
 **FIRST COPY AND PASTE THE DATA FROM EXCEL INTO STATA DATA EDITOR SHEET
 rename organisationunitname facility
