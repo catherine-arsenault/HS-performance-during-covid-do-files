@@ -3,20 +3,20 @@
 * Analyst MK Kim
 	
 global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
-
+global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
 
 
 * Imports raw data extracted from dhis2, renames variables
-do "$dofiles/Palika/cr_NEP_02.do"
+do "$dofiles/Palika/cr_NEP_01.do"
 
 * Cleans the data (see cleaning protocol in shared folder)
-do "$dofiles/Palika/clean_NEP_02.do"
+do "$dofiles/Palika/clean_NEP.do"
 
 * Analysis: calculates changes between Q2 2020 and Q2 2019
-do "$dofiles/Palika/an_NEP_02.do"
+do "$dofiles/Palika/an_NEP_01.do"
 
 * Formats data for dashboard
-do "$dofiles/Palika/format_NEP_02.do"
+do "$dofiles/Palika/format_NEP.do"
