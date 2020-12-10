@@ -6,27 +6,28 @@
 u  "$user/$data/Data for analysis/Thailand_Oct18-Oct20_clean.dta", clear
 
 ********************************************************************************
-* CREATE NATIONAL TOTALS
+* CREATE SEPARATE DATA FOR MONTHLY DATA
 ********************************************************************************
-foreach v in anc_util bcg_qual tbdiag_qual opd_util dental_util ipd_util mal_qual pneum_qual {
+* Monthly data 
+keep Province year month opd_util dental_util ipd_util mal_qual pneum_qual
+drop if month==. 
+
+********************************************************************************
+* CREATE NATIONAL TOTALS FOR MONTHLY DATA
+******************************************************************************** 
+foreach v in opd_util dental_util ipd_util mal_qual pneum_qual {
 	by year month, sort: egen `v'tot= total(`v'), m
 	replace `v'= `v'tot if Province=="National"
 	drop `v'tot
 }
 
-foreach v in anc_util bcg_qual tbdiag_qual opd_util dental_util ipd_util mal_qual pneum_qual {
-	by year quarter, sort: egen `v'tot= total(`v'), m
-	replace `v'= `v'tot if Province=="National"
-	drop `v'tot
-}
-
+save "$user/$data/Data for analysis/Thailand_Oct18-Oct20_monthly_clean.dta", replace
 
 ********************************************************************************
-* RESHAPE FOR DASHBOARD - monthly data 
+* RESHAPE FOR DASHBOARD FOR MONTHLY DATA 
 ********************************************************************************
-*Stuck - not sure how to rename 2018-2020 
+u "$user/$data/Data for analysis/Thailand_Oct18-Oct20_monthly_clean.dta", clear 
 
-keep Province year month opd_util dental_util ipd_util mal_qual pneum_qual
 global varlist opd_util dental_util ipd_util mal_qual pneum_qual			   
 
 preserve
@@ -34,7 +35,7 @@ preserve
 	foreach v of global varlist {
 		rename(`v')(`v'20)
 	}
-	save "$user/$data/temp20.dta", replace
+	save "$user/$data/Data for analysis/temp20.dta", replace
 restore 
 
 preserve
@@ -42,7 +43,7 @@ preserve
 	foreach v of global varlist {
 	rename(`v')(`v'19)
 	}
-	save "$user/$data/temp19.dta", replace
+	save "$user/$data/Data for analysis/temp19.dta", replace
 restore 
 
 preserve 
@@ -50,24 +51,91 @@ preserve
 	foreach v of global varlist {
 	rename(`v')(`v'18)
 	}
-	save "$user/$data/temp18.dta", replace
+	save "$user/$data/Data for analysis/temp18.dta", replace
 restore 
 
-u "$user/$data/temp20.dta", clear 
-merge m:m Province month using "$user/$data/temp19.dta"
-drop _merge 
-save "$user/$data/temp19_20.dta", replace
 
-u "$user/$data/temp19_20.dta", clear 
-merge m:m Province month using "$user/$data/temp18.dta"
-drop _merge 
+u "$user/$data/Data for analysis/temp20.dta", clear 
+append using "$user/$data/Data for analysis/temp19.dta"
+save "$user/$data/Data for analysis/temp19_20.dta", replace
+append using "$user/$data/Data for analysis/temp18.dta"
 
-export delimited using "$user/$data/Thailand_Oct18-Oct20_month_dashboard.csv", replace
+export delimited using "$user/$data/Thailand_Oct18-Oct20_monthly_dashboard.csv", replace
 
-rm "$user/$data/temp20.dta"
-rm "$user/$data/temp19.dta"
-rm "$user/$data/temp18.dta"
-rm "$user/$data/temp19_20.dta"
+rm "$user/$data/Data for analysis/temp20.dta"
+rm "$user/$data/Data for analysis/temp19.dta"
+rm "$user/$data/Data for analysis/temp18.dta"
+rm "$user/$data/Data for analysis/temp19_20.dta"
+
+
+
+u  "$user/$data/Data for analysis/Thailand_Oct18-Oct20_clean.dta", clear
+********************************************************************************
+* CREATE SEPARATE DATA FOR MONTHLY DATA
+********************************************************************************
+keep Province year quarter anc_util bcg_qual tbdiag_qual 
+drop if quarter==. 
+
+
+********************************************************************************
+* CREATE NATIONAL TOTALS
+********************************************************************************
+
+foreach v in anc_util bcg_qual tbdiag_qual  {
+	by year quarter, sort: egen `v'tot= total(`v'), m
+	replace `v'= `v'tot if Province=="National"
+	drop `v'tot
+}
+
+save "$user/$data/Data for analysis/Thailand_Oct18-Oct20_quarter_clean.dta", replace
+
+********************************************************************************
+* RESHAPE FOR DASHBOARD FOR MONTHLY DATA 
+********************************************************************************
+u "$user/$data/Data for analysis/Thailand_Oct18-Oct20_quarter_clean.dta", clear 
+
+global varlist anc_util bcg_qual tbdiag_qual		   
+
+preserve
+	keep if year==2020
+	foreach v of global varlist {
+		rename(`v')(`v'20)
+	}
+	save "$user/$data/Data for analysis/temp20.dta", replace
+restore 
+
+preserve
+	keep if year==2019
+	foreach v of global varlist {
+	rename(`v')(`v'19)
+	}
+	save "$user/$data/Data for analysis/temp19.dta", replace
+restore 
+
+preserve 
+	keep if year==2018
+	foreach v of global varlist {
+	rename(`v')(`v'18)
+	}
+	save "$user/$data/Data for analysis/temp18.dta", replace
+restore 
+
+
+u "$user/$data/Data for analysis/temp20.dta", clear 
+append using "$user/$data/Data for analysis/temp19.dta"
+save "$user/$data/Data for analysis/temp19_20.dta", replace
+append using "$user/$data/Data for analysis/temp18.dta"
+
+export delimited using "$user/$data/Thailand_Oct18-Oct20_quarter_dashboard.csv", replace
+
+rm "$user/$data/Data for analysis/temp20.dta"
+rm "$user/$data/Data for analysis/temp19.dta"
+rm "$user/$data/Data for analysis/temp18.dta"
+rm "$user/$data/Data for analysis/temp19_20.dta"
+
+
+
+
 
 
 
