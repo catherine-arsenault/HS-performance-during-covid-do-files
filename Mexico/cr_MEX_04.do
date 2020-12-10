@@ -5,9 +5,7 @@
 
 clear all
 set more off	
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global data "/HMIS Data for Health System Performance Covid (Mexico)"
+
 
 import spss using "$user/$data/Raw/6.Indicators_IMSS_June_July_2020.sav", clear
 
@@ -120,6 +118,16 @@ mat_mort_num8_20 mat_mort_num9_20)
 rename (In36_MortServUrg_ene20-In36_MortServUrg_ago20) (er_mort_num1_20 ///
 er_mort_num2_20 er_mort_num3_20 er_mort_num4_20 er_mort_num5_20 er_mort_num6_20 ///
 er_mort_num7_20 er_mort_num8_20)
+
+save "$user/$data/Data for analysis/IMSS_Jan19-Jul20_WIDE.dta", replace
+
+* Corections to March and April inpatient deaths made December 10, 2020 
+import spss using "$user/$data/Raw/8.Indicadores_IMSS_Septiembre2020_complete.sav", clear
+keep Deleg In38*
+replace Deleg= "D.F. Norte" if Deleg=="CDMX Norte"
+replace Deleg = "D.F. Sur" if Deleg=="CDMX Sur"
+merge 1:1 Deleg using "$user/$data/Data for analysis/IMSS_Jan19-Jul20_WIDE.dta"
+drop _merge In38_MortHosp_sept20
 
 egen ipd_mort_num1_20 = rowtotal(In37_MortServCI_ene20 In38_MortHosp_ene20 ), m 
 egen ipd_mort_num2_20 = rowtotal( In37_MortServCI_feb20  In38_MortHosp_feb20), m
