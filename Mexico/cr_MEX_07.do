@@ -8,7 +8,8 @@ set more off
 import spss using "$user/$data/Raw/8.Indicadores_IMSS_Septiembre2020_complete.sav", clear
 
 * 35 delegations, data in wide form
-
+replace Deleg= "D.F. Norte" if Deleg=="CDMX Norte"
+replace Deleg = "D.F. Sur" if Deleg=="CDMX Sur"
 *FP 
 egen fp_util9_20 = rowtotal(Indic1_PF1vez_sept2020 Indic1_PFSub_sept2020), m
 drop Indic1_PF*
@@ -93,17 +94,17 @@ mat_mort_num10_20 mat_mort_num11_20)
 
 *ER deaths
 rename (In36_MortServUrg_may20 In36_MortServUrg_jun20 In36_MortServUrg_jul20 ///
-In36_MortServUrg_sept20 (er_mort_num5_20 er_mort_num6_20 er_mort_num7_20 er_mort_num9_20)
+In36_MortServUrg_sept20) (er_mort_num5_20 er_mort_num6_20 er_mort_num7_20 er_mort_num9_20)
 
 * Inpatient deaths 
 egen ipd_mort_num9_20  = rowtotal( In37_MortServCI_sept20 In38_MortHosp_sept20), m  
-
+drop In37* In38*
+* March & April 2020 corrected in cr_MEX_04
 
 ********************************************************************************
 * MERGE TO DATA FROM PRIOR ROUNDS (Jan19-Aug20)
 ********************************************************************************
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Sep20_WIDE.dta"
-
 drop _merge 
 
 order num_del Delegation HF_tot HF1level HF2level HF3level men2019 women2019 ///
@@ -112,7 +113,7 @@ hospit_covid*_20  hospit_pending*_20 hospit_negative*_20 ///
 death_covid*_20 death_negative*_20 death_pending*_20 
 sort num_del
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Sep20_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", replace
 
 
 set obs 36
@@ -197,7 +198,7 @@ order Delegation year mo
 sort  year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Sep20_clean.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", replace
 
 
 ***END***
