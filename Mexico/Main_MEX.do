@@ -23,14 +23,13 @@ do "$dofiles/cr_MEX_03.do"
 * Recodes data from July 2020, merges with prior data
 do "$dofiles/cr_MEX_04.do"
 
-/* Recodes data from August 2020, merges with prior data, corrects an error with 
-delivery/caesarean indicators. */
+* Recodes data from August 2020 and corrects deliveries-c-sections
 do "$dofiles/cr_MEX_05.do"
 
 * Recodes COVID mortality data from June 2020 to Oct 2020
 do "$dofiles/cr_MEX_06.do"
 
-* Recodes data from September 2020
+* Recodes data from September 2020 and merges with prior data
 do "$dofiles/cr_MEX_07.do"
 ********************************************************************************
 * Format do files
