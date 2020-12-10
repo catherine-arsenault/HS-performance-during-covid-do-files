@@ -2,13 +2,13 @@
 * PI Catherine Arsenault
 * Analyst MK Kim
 
-
 global user "/Users/acatherine/Dropbox (Harvard University)"
 *global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
 *global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
 
+********************************************************************************
 * Creation do files
 * Recodes data from January 2019 to Feb 2020
 do "$dofiles/cr_MEX_01.do"
@@ -30,10 +30,17 @@ do "$dofiles/cr_MEX_05.do"
 * Recodes COVID mortality data from June 2020 to Oct 2020
 do "$dofiles/cr_MEX_06.do"
 
+* Recodes data from September 2020
+do "$dofiles/cr_MEX_07.do"
+********************************************************************************
+* Format do files
+
 /*Reformats data for dashboard: Calculates national totals, reshapes to long form,
 and creates the final csv file for the dashboard. */ 
 do "$dofiles/format_MEX.do"
 
+********************************************************************************
+* Analyses do files
 
 * Analysis: calculates changes between March-August 2020 and March-August 2019 
 do "$dofiles/an_MEX_01.do"
