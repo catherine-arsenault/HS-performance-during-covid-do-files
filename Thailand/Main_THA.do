@@ -10,7 +10,7 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Thailand"
 
 
-* Imports raw data and renames variables 
+* Imports raw data (Oct 2018 to Nov 2020) and renames variables 
 do "$dofiles/cr_THA_01.do"
 
 

@@ -24,21 +24,6 @@ drop _merge
 save  "$user/$data/Data for analysis/Thailand_Oct18-Oct20_WIDE.dta", replace
 
 
-*Dental services 
-import excel using "$user/$data/Raw data/Provincial - Dental services 2018 to 2020.xlsx", firstrow clear
-drop AA
-drop if Province == "at all" | Province == "dry" | Province == "saber" | Province == "spread"
-rename (B-Z) (dental_util10_18	dental_util11_18 dental_util12_18 dental_util1_19	///
-dental_util2_19	dental_util3_19	dental_util4_19	dental_util5_19	dental_util6_19	///
-dental_util7_19	dental_util8_19	dental_util9_19	dental_util10_19	dental_util11_19 ///
-dental_util12_19 dental_util1_20	dental_util2_20	dental_util3_20	dental_util4_20	///
-dental_util5_20	dental_util6_20	dental_util7_20	dental_util8_20	dental_util9_20	///
-dental_util10_20)
-merge 1:1 Province using "$user/$data/Data for analysis/Thailand_Oct18-Oct20_WIDE.dta"
-drop _merge
-save  "$user/$data/Data for analysis/Thailand_Oct18-Oct20_WIDE.dta", replace
-
-
 *BCG vaccinations 
 import excel using "$user/$data/Raw data/Provincial - BCG Vaccination in neonates 2018 to 2020.xlsx", firstrow clear
 rename (Q4_2018-Q3_2020) (bcg_qualQ4_18 bcg_qualQ1_19 bcg_qualQ2_19 bcg_qualQ3_19 ///
@@ -84,10 +69,24 @@ drop _merge
 save  "$user/$data/Data for analysis/Thailand_Oct18-Oct20_WIDE.dta", replace
 
 
+*Dental services 
+import excel using "$user/$data/Raw data/Provincial - Dental services 2018 to 2020 (revised).xlsx", firstrow clear
+drop AA
+rename (B-Z) (dental_util10_18	dental_util11_18 dental_util12_18 dental_util1_19	///
+dental_util2_19	dental_util3_19	dental_util4_19	dental_util5_19	dental_util6_19	///
+dental_util7_19	dental_util8_19	dental_util9_19	dental_util10_19	dental_util11_19 ///
+dental_util12_19 dental_util1_20	dental_util2_20	dental_util3_20	dental_util4_20	///
+dental_util5_20	dental_util6_20	dental_util7_20	dental_util8_20	dental_util9_20	///
+dental_util10_20)
+merge 1:1 Province using "$user/$data/Data for analysis/Thailand_Oct18-Oct20_WIDE.dta"
+drop _merge
+save  "$user/$data/Data for analysis/Thailand_Oct18-Oct20_WIDE.dta", replace
+
+
 order Province opd_util* dental_util* ipd_util* mal_qual* pneum_qual* anc_util* bcg_qual* tbdiag_qual* 
 save  "$user/$data/Data for analysis/Thailand_Oct18-Oct20_WIDE.dta", replace
 
-set obs 80
+set obs 78
 replace Province="National" if Province==""
 
 *******************************************************************************
