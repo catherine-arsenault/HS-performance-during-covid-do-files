@@ -1,5 +1,7 @@
-* HS performance during Covid
-* Nov 9, 2020 
+* Master do file: Health system performance during Covid-19 - IMSS
+* PI Catherine Arsenault
+* Analyst MK Kim
+* Updated Dec 10, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
 use "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", clear
