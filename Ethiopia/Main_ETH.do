@@ -37,5 +37,8 @@ do "$dofiles/clean_ETH.do"
 * Formats data for dashboard
 do "$dofiles/format_ETH.do"
 
+********************************************************************************
+* Analyses do files
+
 * Analyses (2020 vs 2019 comparisons)
 do "$dofiles/an_ETH_01.do"
