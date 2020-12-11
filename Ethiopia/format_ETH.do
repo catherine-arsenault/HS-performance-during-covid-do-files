@@ -1,44 +1,52 @@
 clear all 
 set more off
 use "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", clear
-/****************************************************************
-  CREATE FACILITY TYPES AND REGION TYPES
-*****************************************************************/
-gen factype = 1 if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
-replace factype =2 if factype==.
-lab def factype 1"Hospitals" 2"Non-Hospitals"
-lab val factype factype
 
-gen regtype = 1 if region=="Addis Ababa" | region=="Dire Dawa" | region=="Harari"
-replace regtype = 2 if region == "Amhara" | | region=="Oromiya" ///
-                              | region== "SNNP" | region=="Tigray"
-replace regtype = 3 if region == "Afar" | region=="Ben Gum" ///
-                              | region=="Gambella" | region=="Somali" 
-lab def regtype 1"Urban" 2"Agrarian" 3"Pastoral"
-lab val regtype regtype
 /****************************************************************
-  COLLAPSE  AND RESHAPE FOR DASHBOARD
+ COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
 *****************************************************************/
+* Totals by facility types
+	gen factype = "Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
+	replace factype ="Non-Hospitals" if factype==""
 preserve
 	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(factype)
+	rename factype region
 	save "$user/$data/Data for analysis/tmpfactype.dta", replace
 restore
-	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(region)
+* Totals by region type
+	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(region)	
+	gen regtype = "Region type: Urban" if region=="Addis Ababa" ///
+	                          | region=="Dire Dawa" | region=="Harari"
+	replace regtype = "Region type: Agrarian" if region == "Amhara" | region=="Oromiya" ///
+                              | region== "SNNP" | region=="Tigray"
+	replace regtype = "Region type: Pastoral" if region == "Afar" | region=="Ben Gum" ///
+                              | region=="Gambella" | region=="Somali" 
+preserve
+	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(regtype)	
+	rename regtype region
+	save "$user/$data/Data for analysis/tmpregtype.dta", replace
+restore
+* Totals at national level 
 	encode region, gen(reg)
-	drop region
-	reg
-	set obs 17 // number of regions 11 + National + Urban + Agraria + Pastoral
-
-foreach x of var _all    {
-	egen `x'tot= total(`x'), m
-	replace `x'= `x'tot in 12
-	drop `x'tot
+	drop region regtype
+	order reg 
+	set obs 12 // number of regions  + National 
+	foreach x of var _all    {
+		egen `x'tot= total(`x'), m
+		replace `x'= `x'tot in 12
+		drop `x'tot
 }
-decode reg, gen(region)
-replace region="National" if region==""
-drop reg
-order region
+	decode reg, gen(region)
+	replace region="National" if region==""
+	drop reg
+	order region
 
+append using "$user/$data/Data for analysis/tmpfactype.dta"
+append using "$user/$data/Data for analysis/tmpregtype.dta"
+
+/****************************************************************
+ RESHAPE FOR DASHBAORD
+*****************************************************************/
 reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util anc_util ///
 			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
 			  er_util road_util  cerv_qual art_util hivsupp_qual_num  ///
@@ -93,7 +101,8 @@ merge m:m region month using "$user/$data/Data for analysis/temp.dta"
 drop _merge
 
 rm "$user/$data/Data for analysis/temp.dta"
-
+rm "$user/$data/Data for analysis/tmpfactype.dta"
+rm "$user/$data/Data for analysis/tmpregtype.dta"
 ********************************************************************************
 * THIS IS THE CSV FILE FOR GOOGLE DATA STUDIO
 export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Aug20_fordashboard.csv", replace
