@@ -8,6 +8,8 @@ global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 *global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 
+********************************************************************************
+* Creation do files
 
 * Imports raw data and renames variables for January 2019-December 2019
 do "$dofiles/cr_ETH_01.do"
@@ -23,8 +25,14 @@ do  "$dofiles/cr_ETH_03.do"
 * Imports raw indicators, recodes and merge with latest dataset
 do  "$dofiles/cr_ETH_04.do"
 
+********************************************************************************
+* Cleaning do files
+
 * Cleans data (see cleaning protocol in shared folder)
 do "$dofiles/clean_ETH.do"
+
+********************************************************************************
+* Format do files
 
 * Formats data for dashboard
 do "$dofiles/format_ETH.do"
