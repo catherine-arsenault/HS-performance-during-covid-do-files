@@ -1,16 +1,34 @@
 clear all 
 set more off
 use "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", clear
-
 /****************************************************************
-  COLLAPSE TO REGION TOTALS AND RESHAPE FOR DASHBOARD
+  CREATE FACILITY TYPES AND REGION TYPES
 *****************************************************************/
+gen factype = 1 if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
+replace factype =2 if factype==.
+lab def factype 1"Hospitals" 2"Non-Hospitals"
+lab val factype factype
 
-collapse (sum) fp_util1_19-totalipd_mort8_20 , by(region)
-encode region, gen(reg)
-drop region
-order reg
-set obs 12 // number of regions + 1
+gen regtype = 1 if region=="Addis Ababa" | region=="Dire Dawa" | region=="Harari"
+replace regtype = 2 if region == "Amhara" | | region=="Oromiya" ///
+                              | region== "SNNP" | region=="Tigray"
+replace regtype = 3 if region == "Afar" | region=="Ben Gum" ///
+                              | region=="Gambella" | region=="Somali" 
+lab def regtype 1"Urban" 2"Agrarian" 3"Pastoral"
+lab val regtype regtype
+/****************************************************************
+  COLLAPSE  AND RESHAPE FOR DASHBOARD
+*****************************************************************/
+preserve
+	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(factype)
+	save "$user/$data/Data for analysis/tmpfactype.dta", replace
+restore
+	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(region)
+	encode region, gen(reg)
+	drop region
+	reg
+	set obs 17 // number of regions 11 + National + Urban + Agraria + Pastoral
+
 foreach x of var _all    {
 	egen `x'tot= total(`x'), m
 	replace `x'= `x'tot in 12
@@ -82,7 +100,14 @@ export delimited using "$user/HMIS Data for Health System Performance Covid (Eth
 
 
 
-
+/* Code to identify clinics (private) 
+replace factype =2 if regexm(organ, "[Cc]linic") | regexm(organ, "CLINIC") | ///
+                           regexm(organ, "CLINIK")  |  regexm(organ, "[Cc]linik") | ///
+						   regexm(organ, "[Nn]GO") | regexm(organ, "[Cc]linc") | ///
+						   regexm(organ, "[Cc]LINC") | regexm(organ, "[Cc]ilinik") | ///
+						   regexm(organ, "[Kk]linik") | regexm(organ, "[Kk]ilinik") | ///
+						   regexm(organ, "[Cc]ilinic") | regexm(organ, " [Nn]go") | ///
+						   regexm(organ, "[Cc]LIINC") | regexm(organ, "[Cc]lnic") 
 
 
 
