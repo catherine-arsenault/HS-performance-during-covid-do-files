@@ -3,7 +3,7 @@
 * Mexico - IMSS, January 2019 - February 2020
 
 
-u "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", clear
+u "$user/$data/Data for analysis/IMSS_Jan19-Sep20_clean.dta", clear
 
 keep if Deleg=="National"
 **********************************************************************

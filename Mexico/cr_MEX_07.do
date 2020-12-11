@@ -6,6 +6,8 @@ clear all
 set more off	
 
 import spss using "$user/$data/Raw/8.Indicadores_IMSS_Septiembre2020_complete.sav", clear
+replace Del = "D.F. Norte" if Del == "CDMX Norte" 
+replace Del = "D.F. Sur" if Del=="CDMX Sur" 
 
 * 35 delegations, data in wide form
 
@@ -93,7 +95,7 @@ mat_mort_num10_20 mat_mort_num11_20)
 
 *ER deaths
 rename (In36_MortServUrg_may20 In36_MortServUrg_jun20 In36_MortServUrg_jul20 ///
-In36_MortServUrg_sept20 (er_mort_num5_20 er_mort_num6_20 er_mort_num7_20 er_mort_num9_20)
+In36_MortServUrg_sept20) (er_mort_num5_20 er_mort_num6_20 er_mort_num7_20 er_mort_num9_20)
 
 * Inpatient deaths 
 egen ipd_mort_num9_20  = rowtotal( In37_MortServCI_sept20 In38_MortHosp_sept20), m  
