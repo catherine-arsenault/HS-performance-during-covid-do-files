@@ -15,29 +15,31 @@ gen cerv_denom = cerv_denom2019 if year==2019
 replace cerv_denom = cerv_denom2020 if year==2020
 drop cerv_denom2019 cerv_denom2020 
 
-global rmnch  fp_util anc_util sti_util del_util cs_util diarr_util pneum_util malnu_util  cerv_util 
+global rmnch  fp_util anc_util sti_util del_util cs_util diarr_util pneum_util malnu_util  
 global vax  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual
 global other  opd_util diab_util hyper_util art_util er_util ipd_util dental_util mental_util
 global quality cs_util totaldel cerv_util cerv_denom diab_qual_num diab_util hyper_qual_num hyper_util
-
+global mortality 
 
 * death_covid hospit_covid death_negative hospit_negative death_pending hospit_pending 
 
 * NATIONAL
-by year, sort: tabstat $rmnch if month>=3 & month<=8 , s(N sum) c(s)
-by year, sort: tabstat $vax if month>=3 & month<=8 , s(N sum) c(s)
-by year, sort: tabstat $other if month>=3 & month<=8 , s(N sum) c(s)
-by year, sort: tabstat $quality if month>=3 & month<=8 , s(N sum) c(s)
-by year, sort: tabstat newborn_mort_num sb_mort_num totaldel if month>=3 & month<=6 , s(N sum) c(s) 
-by year, sort: tabstat mat_mort_num totaldel er_mort_num er_util ipd_mort_num ipd_util if month>=3 & month<=8 , s(N sum) c(s) 
-
+by year, sort: tabstat $rmnch if month>=3 & month<=8 , s(N sum) c(s) format(%20.0f)
+by year, sort: tabstat $vax if month>=3 & month<=8 , s(N sum) c(s) format(%20.0f)
+by year, sort: tabstat $other if month>=3 & month<=8 , s(N sum) c(s) format(%20.0f)
+by year, sort: tabstat $quality if month>=3 & month<=8 , s(N sum) c(s) format(%20.0f)
+by year, sort: tabstat newborn_mort_num sb_mort_num totaldel if month>=3 & month<=6 , s(N sum) c(s)  format(%20.0f)
+by year, sort: tabstat mat_mort_num sb_mort_num newborn_mort_num totaldel er_mort_num er_util ipd_mort_num ipd_util if month>=3 & month<=8 , s(N sum) c(s)  format(%20.0f)
 
 
 * BY DELEGATION 
 * Create a total for each category
 u "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", clear
-
 keep if Deleg !="National"
+
+table Deleg year if month>=3 & month<=8, c (sum totaldel )
+table Deleg year if month>=3 & month<=8, c (sum opd_util )
+
 egen rmnch_total = rowtotal(fp_util	anc_util sti_util del_util cs_util	diarr_util	pneum_util	malnu_util ), m 
 egen other_total = rowtotal(opd_util diab_util hyper_util art_util er_util ipd_util dental_util mental_util ), m
 egen vacc_total = rowtotal(pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ), m
