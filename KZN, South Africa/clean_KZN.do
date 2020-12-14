@@ -67,7 +67,7 @@ preserve
 
 	reshape long `volumes', i(Facility factype Province dist subdist) j(rmonth)
 	drop newborn_mort_num1-icu_mort_num21 trauma_mort_num1-trauma_mort_num21
-	recode `volumes' (0=0) (1/999999999=1)
+	recode `volumes' (.=0) (1/999999999=1)
 	collapse (sum) `volumes', by(rmonth)
 	putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(MinMax facilities reporting, replace)  modify
 	putexcel A2 = "Variable"
