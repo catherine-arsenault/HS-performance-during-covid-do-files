@@ -6,8 +6,8 @@ use "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", clear
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
 *****************************************************************/
 * Totals by facility types
-	gen factype = "Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
-	replace factype ="Non-Hospitals" if factype==""
+	gen factype = "Facility type: Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
+	replace factype ="Facility type: Non-Hospitals" if factype==""
 preserve
 	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(factype)
 	rename factype region
