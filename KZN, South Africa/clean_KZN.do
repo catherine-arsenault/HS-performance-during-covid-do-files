@@ -45,7 +45,7 @@ TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 foreach var of global volumes {
 egen `var'_report = rownonmiss(`var'*)
 }
-recode *_report (0=0) (1/19=1)
+recode *_report (0=0) (1/21=1) //Jan19-Sep20 = 21 months 
 
 putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(Total facilities reporting, replace)  modify
 putexcel A2 = "Variable"
@@ -66,7 +66,7 @@ REPORTS SOMETHING AT SOME POINT DURING THE YEAR
 ****************************************************************
 For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
-forval i = 1/19 {
+forval i = 1/21 {
 	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. &  totaldel`i'!=.
 	replace sb_mort_num`i' = 0 	    if sb_mort_num`i' ==.  & totaldel`i'!=.
 	replace mat_mort_num`i' = 0     if mat_mort_num`i' == .  &  totaldel`i'!=.
@@ -98,7 +98,7 @@ foreach x of global all {
 	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
 }
 
-save "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA_AN.dta", replace 
+save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", replace 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
@@ -111,14 +111,16 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 Completeness is an issue, particularly May and June 2020. Some palikas have
 not reported yet. For each variable, keep only heath facilities that 
 have reported at least 14 out of 18 months (incl the latest 2 months) 
-This brings completeness up "generally" above 90% for all variables. */
+This brings completeness up "generally" above 90% for all variables.
+MK: updated dataset from Jan19-Oct20; keep only health facilities that have reported
+at least 19 out of 21 months (incl the latest 2 months) 12/14/20 */
 	foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>15 & `x'18!=. & `x'19!=. 
-					/* keep if at least 15 out of 19 months are reported 
-					& jun/jul 2020 are reported */
+					keep if total`x'>19 & `x'20!=. & `x'21!=. 
+					/* keep if at least 19 out of 21 months are reported 
+					& Aug/Sep 2020 are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
@@ -131,13 +133,13 @@ This brings completeness up "generally" above 90% for all variables. */
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 				merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA_DB.dta", replace
+				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
 	
-save "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA_DB.dta", replace
+save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", replace
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
 				     FOR ANALYSES 
@@ -145,7 +147,7 @@ save "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA_DB.dta", replace
 For analyses (Quater comparisons), we keep only those facilities 
 that reported the months of interest) */
 
-u "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA_AN.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
 
 foreach x of global all {
 			 	preserve
@@ -164,7 +166,7 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-JuL20_WIDE_CCA_AN.dta", replace
+				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -183,7 +185,7 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-JuL20_WIDE_CCA_AN.dta", replace
+save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", replace
 
 
 
