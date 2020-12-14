@@ -3,10 +3,40 @@
 * Haiti, January 2019 - June 2020
 * PI Catherine Arsenault, Analyst MK Kim
 * Formating for google data studio dashboard
+
 /****************************************************************
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
-****************************************************************
+****************************************************************/
+
+/****************************************************************
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA 
+****************************************************************/
+u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA_DB.dta", clear
+
+global all fp_util totaldel del_util pncm_util dental_util anc_util cs_util ///
+		   diarr_util cerv_qual pncc_util opd_util diab_util hyper_util ///
+		   mat_mort_num peri_mort_num 
+
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/18=1) //Jan19-June20: 18 months 
+
+putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(Total facilities reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+
+/****************************************************************
  
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
