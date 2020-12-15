@@ -3,6 +3,36 @@
 * Haiti, January 2019 - June 2020
 * PI Catherine Arsenault, Analyst MK Kim
 * Formating for google data studio dashboard
+
+/****************************************************************
+TOTAL NUMBER OF FACILITIES REPORTING EVERY MONTH
+****************************************************************/
+
+u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA_DB.dta", clear
+
+preserve
+	local all fp_util anc_util del_util cs_util diarr_util pncc_util pncm_util ///
+			   dental_util diab_util hyper_util opd_util cerv_qual mat_mort_num ///
+			   totaldel peri_mort_num 
+
+	reshape long `all', i(org*) j(month, string)
+	recode `all' (.=0) (1/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(MinMax facilities reporting, replace)  modify
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+
+
 /****************************************************************
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
