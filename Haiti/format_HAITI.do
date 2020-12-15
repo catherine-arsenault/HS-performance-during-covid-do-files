@@ -10,6 +10,11 @@ TOTAL NUMBER OF FACILITIES REPORTING EVERY MONTH
 
 u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA_DB.dta", clear
 
+global volumes totaldel del_util  pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+			   cerv_qual pncc_util opd_util diab_util hyper_util 
+global mortality mat_mort_num peri_mort_num 
+global all $volumes $mortality 
+
 preserve
 	local all fp_util anc_util del_util cs_util diarr_util pncc_util pncm_util ///
 			   dental_util diab_util hyper_util opd_util cerv_qual mat_mort_num ///
