@@ -16,17 +16,17 @@ global quality kmcn_qual cerv_qual tbscreen_qual tbdetect_qual tbtreat_qual
 global mortality newborn_mort_num sb_mort_num mat_mort_num totaldel ipd_mort_num ipd_util ///
 	   icu_mort_num  icu_util trauma_mort_num trauma_util 
 
-*Compare April-July 2020 vs April-July 2019 
+*Compare July-Sep 2020 vs July-Sep 2019 
 
-by year, sort: tabstat  $rmnch if month>=4 & month<= 7, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat  $rmnch if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
 
-by year, sort: tabstat $vax if month>=4 & month<= 7, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat $vax if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
 
-by year, sort: tabstat  $other if month>=4 & month<= 7, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat  $other if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
 
-by year, sort: tabstat  $quality if month>=4 & month<= 7, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat  $quality if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
 
-by year, sort: tabstat  $mortality if month>=4 & month<= 7, s(N sum) c(s) 
+by year, sort: tabstat  $mortality if month>=7 & month<= 9, s(N sum) c(s) format(%20.10f)
 
  
 
