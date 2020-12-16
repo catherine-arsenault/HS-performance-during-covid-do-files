@@ -12,7 +12,7 @@ created in google data studio
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
 *****************************************************************/
-u "$user/$data/Data for analysis/KZN_Jan19-Jul20_WIDE_CCA_DB.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", clear
 	drop Province
 	encode Facility, gen(facname)
 	collapse (sum) anc1_util1-trauma_mort_num19 , by(dist)
@@ -68,7 +68,7 @@ drop _merge
 
 rm "$user/$data/Data for analysis/temp.dta"
 
-export delimited using "$user/HMIS Data for Health System Performance Covid (South Africa)/KZN_Jan19-Jul20_fordashboard.csv", replace
+export delimited using "$user/HMIS Data for Health System Performance Covid (South Africa)/KZN_Jan19-Sep20_fordashboard.csv", replace
 
 
 
