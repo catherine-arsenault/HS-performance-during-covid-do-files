@@ -113,13 +113,13 @@ not reported yet. For each variable, keep only heath facilities that
 have reported at least 14 out of 18 months (incl the latest 2 months) 
 This brings completeness up "generally" above 90% for all variables.
 MK: updated dataset from Jan19-Oct20; keep only health facilities that have reported
-at least 19 out of 21 months (incl the latest 2 months) 12/14/20 */
+at least 15 out of 21 months (incl the latest 2 months) 12/14/20 */
 	foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>19 & `x'20!=. & `x'21!=. 
-					/* keep if at least 19 out of 21 months are reported 
+					keep if total`x'>15 & `x'20!=. & `x'21!=. 
+					/* keep if at least 15 out of 21 months are reported 
 					& Aug/Sep 2020 are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
