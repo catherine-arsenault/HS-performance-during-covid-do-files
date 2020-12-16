@@ -47,13 +47,13 @@ set more off
 	*Family planning 2020 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_fp_util.csv", clear
 	drop organisationunitdescription
-	rename (familyplanningprogrampermanentfp familyplanningprogrampostpartumf familyplanningprogramtemporaryfp) (v9 			v39 v57)
-	egen fp_util1_20 = rowtotal(v9 v15 v21 v27 v33 v39 v45 v51 v57 v63 v69 v75 v81 v87 v93 v99 v105 v111 v117 v123 									v129 v135 v141 v147), m
-	egen fp_util2_20 = rowtotal(v10 v16 v22 v28 v34 v40 v46 v52 v58 v64 v70 v76 v82 v88 v94 v100 v106 v112 v118 v124 									v130 v136 v142 v148), m
-	egen fp_util3_20 = rowtotal(v11 v17 v23 v29 v35 v41 v47 v53 v59 v65 v71 v77 v83 v89 v95 v101 v107 v113 v119 v125 									v131 v137 v143 v149), m
-	egen fp_util4_20 = rowtotal(v12 v18 v24 v30 v36 v42 v48 v54 v60 v66 v72 v78 v84 v90 v96 v107 v108 v114 v120 v126 									v132 v138 v144 v150), m
-	egen fp_util5_20 = rowtotal(v13 v19 v25 v31 v37 v43 v49 v55 v61 v67 v73 v79 v85 v91 v97 v108 v109 v115 v121 v127 									v133 v139 v145 v151), m
-	egen fp_util6_20 = rowtotal(v14 v20 v26 v32 v38 v44 v50 v56 v62 v68 v74 v80 v86 v92 v98 v109 v110 v116 v122 v128 									v134 v140 v146 v152), m
+	rename (familyplanningprogrampermanentfp familyplanningprogrampostpartumf familyplanningprogramtemporaryfp) (v9 v39 v57)
+	egen fp_util1_20 = rowtotal(v9  v15 v21 v27 v33 v39 v45 v51 v57 v63 v69 v75 v81 v87 v93  v99 v105 v111 v117 v123 v129 v135 v141 v147), m
+	egen fp_util2_20 = rowtotal(v10 v16 v22 v28 v34 v40 v46 v52 v58 v64 v70 v76 v82 v88 v94 v100 v106 v112 v118 v124 v130 v136 v142 v148), m
+	egen fp_util3_20 = rowtotal(v11 v17 v23 v29 v35 v41 v47 v53 v59 v65 v71 v77 v83 v89 v95 v101 v107 v113 v119 v125 v131 v137 v143 v149), m
+	egen fp_util4_20 = rowtotal(v12 v18 v24 v30 v36 v42 v48 v54 v60 v66 v72 v78 v84 v90 v96 v102 v108 v114 v120 v126 v132 v138 v144 v150), m
+	egen fp_util5_20 = rowtotal(v13 v19 v25 v31 v37 v43 v49 v55 v61 v67 v73 v79 v85 v91 v97 v103 v109 v115 v121 v127 v133 v139 v145 v151), m
+	egen fp_util6_20 = rowtotal(v14 v20 v26 v32 v38 v44 v50 v56 v62 v68 v74 v80 v86 v92 v98 v104 v110 v116 v122 v128 v134 v140 v146 v152), m
 	keep org* fp* 
 	duplicates tag org* , gen(tag)
 	egen total= rowtotal(fp*), m
@@ -884,18 +884,18 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	drop organisationunitdescription
 	rename (inpatientdeathsin48hoursofadmiss inpatientdeathsinâ48hoursofadmis) (v9 v129)  
 	//20 indicators 
-	egen ipd_mort_num1_19 = rowtotal(v9 v21 v33 v45 v57 v69 v81 v93 v105 v117 v129 v141 v153 v165 v177 v189 v201 v213 								v225 v237 ), m
-	egen ipd_mort_num2_19 = rowtotal(v10 v22 v34 v46 v58 v70 v82 v94 v106 v118 v130 v142 v154 v166 v178 v190 v202 v214 								 v226 v238 ), m
-	egen ipd_mort_num3_19 = rowtotal(v11 v23 v35 v47 v59 v71 v83 v95 v107 v119 v131 v143 v155 v167 v179 v191 v203 v215 								 v227 v239 ), m
-	egen ipd_mort_num4_19 = rowtotal(v12 v24 v36 v48 v60 v72 v84 v96 v108 v120 v132 v144 v156 v168 v180 v192 v204 v216 								 v228 v240 ), m
-	egen ipd_mort_num5_19 = rowtotal(v13 v25 v37 v49 v61 v73 v85 v97 v109 v121 v133 v145 v157 v169 v181 v193 v205 v217 								 v229 v241 ), m
-	egen ipd_mort_num6_19 = rowtotal(v14 v26 v38 v50 v62 v74 v86 v98 v110 v122 v134 v146 v158 v170 v182 v194 v206 v218 								 v230 v242 ), m
-	egen ipd_mort_num7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 								 v231 v243 ), m
-	egen ipd_mort_num8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220 								 v232 v244 ), m
-	egen ipd_mort_num9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221 								 v233 v245 ), m
-	egen ipd_mort_num10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 								v234 v246 ), m
-	egen ipd_mort_num11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 								v235 v247 ), m
-	egen ipd_mort_num12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 								v236 v248 ), m
+	egen ipd_mort_num1_19 = rowtotal(v9 v21 v33 v45 v57 v69 v81 v93 v105 v117 v129 v141 v153 v165 v177 v189 v201 v213 v225 v237 ), m
+	egen ipd_mort_num2_19 = rowtotal(v10 v22 v34 v46 v58 v70 v82 v94 v106 v118 v130 v142 v154 v166 v178 v190 v202 v214 	v226 v238 ), m
+	egen ipd_mort_num3_19 = rowtotal(v11 v23 v35 v47 v59 v71 v83 v95 v107 v119 v131 v143 v155 v167 v179 v191 v203 v215 	v227 v239 ), m
+	egen ipd_mort_num4_19 = rowtotal(v12 v24 v36 v48 v60 v72 v84 v96 v108 v120 v132 v144 v156 v168 v180 v192 v204 v216 	v228 v240 ), m
+	egen ipd_mort_num5_19 = rowtotal(v13 v25 v37 v49 v61 v73 v85 v97 v109 v121 v133 v145 v157 v169 v181 v193 v205 v217  v229 v241 ), m
+	egen ipd_mort_num6_19 = rowtotal(v14 v26 v38 v50 v62 v74 v86 v98 v110 v122 v134 v146 v158 v170 v182 v194 v206 v218 	v230 v242 ), m
+	egen ipd_mort_num7_19 = rowtotal(v15 v27 v39 v51 v63 v75 v87 v99 v111 v123 v135 v147 v159 v171 v183 v195 v207 v219 	 v231 v243 ), m
+	egen ipd_mort_num8_19 = rowtotal(v16 v28 v40 v52 v64 v76 v88 v100 v112 v124 v136 v148 v160 v172 v184 v196 v208 v220  v232 v244 ), m
+	egen ipd_mort_num9_19 = rowtotal(v17 v29 v41 v53 v65 v77 v89 v101 v113 v125 v137 v149 v161 v173 v185 v197 v209 v221  v233 v245 ), m
+	egen ipd_mort_num10_19 = rowtotal(v18 v30 v42 v54 v66 v78 v90 v102 v114 v126 v138 v150 v162 v174 v186 v198 v210 v222 v234 v246 ), m
+	egen ipd_mort_num11_19 = rowtotal(v19 v31 v43 v55 v67 v79 v91 v103 v115 v127 v139 v151 v163 v175 v187 v199 v211 v223 	v235 v247 ), m
+	egen ipd_mort_num12_19 = rowtotal(v20 v32 v44 v56 v68 v80 v92 v104 v116 v128 v140 v152 v164 v176 v188 v200 v212 v224 v236 v248 ), m
 	keep org* ipd* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(ipd*), m
@@ -909,13 +909,12 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-June_palika_ipd_mort.csv", clear
 	drop organisationunitdescription
 	rename (inpatientdeathsin48hoursofadmiss inpatientdeathsinâ48hoursofadmis) (v9 v69)
-	egen ipd_mort_num1_20 = rowtotal(v9 v15 v21 v27 v33 v39 v45 v51 v57 v63 v69 v75 v81 v87 v93 v99 v105 v111 v117 v123), m
-	egen ipd_mort_num2_20 = rowtotal(v10 v16 v22 v28 v34 v40 v46 v52 v58 v64 v70 v76 ///
-								 v82 v88 v94 v100 v106 v112 v118 v124) , m
+	egen ipd_mort_num1_20 = rowtotal(v9  v15 v21 v27 v33 v39 v45 v51 v57 v63 v69 v75 v81 v87 v93 v99  v105 v111 v117 v123), m
+	egen ipd_mort_num2_20 = rowtotal(v10 v16 v22 v28 v34 v40 v46 v52 v58 v64 v70 v76 v82 v88 v94 v100 v106 v112 v118 v124), m
 	egen ipd_mort_num3_20 = rowtotal(v11 v17 v23 v29 v35 v41 v47 v53 v59 v65 v71 v77 v83 v89 v95 v101 v107 v113 v119 v125), m
-	egen ipd_mort_num4_20 = rowtotal(v12 v18 v24 v30 v36 v42 v48 v54 v60 v66 v72 v78 v84 v90 v96 v107 v108 v114 v120 v126), m
-	egen ipd_mort_num5_20 = rowtotal(v13 v19 v25 v31 v37 v43 v49 v55 v61 v67 v73 v79 v85 v91 v97 v108 v109 v115 v121 v127), m
-	egen ipd_mort_num6_20 = rowtotal(v14 v20 v26 v32 v38 v44 v50 v56 v62 v68 v74 v80 v86 v92 v98 v109 v110 v116 v122 v128), m
+	egen ipd_mort_num4_20 = rowtotal(v12 v18 v24 v30 v36 v42 v48 v54 v60 v66 v72 v78 v84 v90 v96 v102 v108 v114 v120 v126), m
+	egen ipd_mort_num5_20 = rowtotal(v13 v19 v25 v31 v37 v43 v49 v55 v61 v67 v73 v79 v85 v91 v97 v103 v109 v115 v121 v127), m
+	egen ipd_mort_num6_20 = rowtotal(v14 v20 v26 v32 v38 v44 v50 v56 v62 v68 v74 v80 v86 v92 v98 v104 v110 v116 v122 v128), m
 	keep org* ipd* 
 	duplicates tag org*, gen(tag)
 	egen total= rowtotal(ipd*), m
