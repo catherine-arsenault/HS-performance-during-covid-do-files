@@ -7,7 +7,7 @@ set more off
 ********************************************************************************
 * Preliminary analyses: comparing April-July 2020 to 2019
 ********************************************************************************
-u "$user/$data/Data for analysis/KZN_Jan19-JuL20_WIDE_CCA_AN.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
 
 global rmnch anc1_util  del_util cs_util pnc_util diarr_util pneum_util sam_util  
 global vax vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual 
