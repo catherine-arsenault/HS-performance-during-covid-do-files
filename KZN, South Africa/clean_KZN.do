@@ -39,13 +39,15 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+TOTAL NUMBER OF FACILITIES REPORTING EVERY MONTH
 ****************************************************************/
 
 foreach var of global volumes {
 egen `var'_report = rownonmiss(`var'*)
 }
+
 recode *_report (0=0) (1/21=1) //Jan19-Sep20 = 21 months 
+
 
 putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(Total facilities reporting, replace)  modify
 putexcel A2 = "Variable"
@@ -59,6 +61,29 @@ foreach var of global volumes {
 }
 drop *report
 
+preserve
+	local volumes anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
+			   trauma_util
+
+	reshape long `volumes', i(Facility factype Province dist subdist) j(rmonth)
+	drop newborn_mort_num1-icu_mort_num21 trauma_mort_num1-trauma_mort_num21
+	recode `volumes' (.=0) (1/999999999=1)
+	collapse (sum) `volumes', by(rmonth)
+	putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(MinMax facilities reporting, replace)  modify
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global volumes {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
 
 /****************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
@@ -152,9 +177,11 @@ u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
 foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'*
-					keep if `x'4!=. & `x'5!=. & `x'6!=. & `x'7!=. & ///
-							`x'16!=. & `x'17!=. & `x'18!=. & `x'19!=.
-					* Currently April to July 2020 vs 2019 is what we compare
+					keep if `x'4!=. & `x'5!=. & `x'6!=. & ///
+							`x'7!=. & `x'8!=. & `x'9!=. & ///
+							`x'16!=. & `x'17!=. & `x'18!=. & ///
+							`x'19!=. & `x'20!=. & `x'21!=. 
+					* Policy brief: Q2 (April-June) Q3 (July-Sep) 
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
