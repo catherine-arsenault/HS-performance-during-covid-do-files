@@ -17,6 +17,7 @@ global mortality newborn_mort_num sb_mort_num mat_mort_num totaldel ipd_mort_num
 	   icu_mort_num  icu_util trauma_mort_num trauma_util 
 
 
+
 by year, sort: tabstat  $rmnch if month>=4 & month<= 6, s(N sum) c(s)  format(%20.10f)
 by year, sort: tabstat  $rmnch if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
 
@@ -30,7 +31,6 @@ by year, sort: tabstat  $quality if month>=4 & month<= 6, s(N sum) c(s)  format(
 by year, sort: tabstat  $quality if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
 
 by year, sort: tabstat  $mortality if month>=4 & month<= 6, s(N sum) c(s)  format(%20.10f)
-by year, sort: tabstat  $mortality if month>=7 & month<= 9, s(N sum) c(s) format(%20.10f)
 
  
 

@@ -182,6 +182,7 @@ foreach x of global all {
 							`x'16!=. & `x'17!=. & `x'18!=. & ///
 							`x'19!=. & `x'20!=. & `x'21!=. 
 					* Policy brief: Q2 (April-June) Q3 (July-Sep) 
+
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
