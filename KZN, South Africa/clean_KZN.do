@@ -177,9 +177,12 @@ u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
 foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'*
-					keep if `x'7!=. & `x'8!=. & `x'9!=. & ///
+					keep if `x'4!=. & `x'5!=. & `x'6!=. & ///
+							`x'7!=. & `x'8!=. & `x'9!=. & ///
+							`x'16!=. & `x'17!=. & `x'18!=. & ///
 							`x'19!=. & `x'20!=. & `x'21!=. 
-					* Policy brief: July - Sep 2019 vs 2020
+					* Policy brief: Q2 (April-June) Q3 (July-Sep) 
+
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
