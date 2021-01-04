@@ -12,3 +12,7 @@ do "$dofiles/Palika/cr_NEP_01.do"
 
 * Cleans the data 
 do "$dofiles/Analysis_easing policies/clean_easing.do"
+
+* Descriptives
+
+* Regression analyses
