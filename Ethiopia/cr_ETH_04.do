@@ -3,7 +3,7 @@ newborn resuscitation and KMC initiated, merge with other data
 updated by MK Kim 11/18/20 */
 
 *Import raw data
-import delimited "$user/$data/Raw/2020/Ethiopia_2020_January to August_ by woreda csv_14_11_2020.csv", clear
+import delimited "$user/$data/Raw/2020/August/Ethiopia_2020_January to August_ by woreda csv_14_11_2020.csv", clear
 
 
 *Total number of neonates resuscitated 

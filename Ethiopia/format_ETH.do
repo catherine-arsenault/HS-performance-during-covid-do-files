@@ -1,6 +1,6 @@
 clear all 
 set more off
-use "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", clear
+use "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", clear
 
 /****************************************************************
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
@@ -9,12 +9,12 @@ use "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", clear
 	gen factype = "Facility type: Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
 	replace factype ="Facility type: Non-Hospitals" if factype==""
 preserve
-	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(factype)
+	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(factype)
 	rename factype region
 	save "$user/$data/Data for analysis/tmpfactype.dta", replace
 restore
 * Totals by region type
-	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(region)	
+	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(region)	
 	gen regtype = "Region type: Urban" if region=="Addis Ababa" ///
 	                          | region=="Dire Dawa" | region=="Harari"
 	replace regtype = "Region type: Agrarian" if region == "Amhara" | region=="Oromiya" ///
@@ -22,7 +22,7 @@ restore
 	replace regtype = "Region type: Pastoral" if region == "Afar" | region=="Ben Gum" ///
                               | region=="Gambella" | region=="Somali" 
 preserve
-	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(regtype)	
+	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(regtype)	
 	rename regtype region
 	save "$user/$data/Data for analysis/tmpregtype.dta", replace
 restore
@@ -98,16 +98,14 @@ foreach v of global varlist {
 	}
 drop year
 merge m:m region month using "$user/$data/Data for analysis/temp.dta"
-drop _merge
+drop _merge //34 not merging becuase they are November and December months which are missing in 2020 data
 
 rm "$user/$data/Data for analysis/temp.dta"
 rm "$user/$data/Data for analysis/tmpfactype.dta"
 rm "$user/$data/Data for analysis/tmpregtype.dta"
 ********************************************************************************
 * THIS IS THE CSV FILE FOR GOOGLE DATA STUDIO
-export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Aug20_fordashboard.csv", replace
-
-
+export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Oct20_fordashboard.csv", replace
 
 /* Code to identify clinics (private) 
 replace factype =2 if regexm(organ, "[Cc]linic") | regexm(organ, "CLINIC") | ///
