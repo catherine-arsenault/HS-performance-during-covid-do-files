@@ -10,6 +10,9 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 * Imports raw data extracted from dhis2, renames variables
 do "$dofiles/Palika/cr_NEP_01.do"
 
+* Links containment policy data to dhis2 dataset
+* do "$dofiles/Analysis_easing policies/cr_easing_01.do"
+
 * Cleans the data 
 do "$dofiles/Analysis_easing policies/clean_easing.do"
 
