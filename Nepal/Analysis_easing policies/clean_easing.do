@@ -85,15 +85,14 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************
 Completeness is an issue, particularly for the latest months. Some palikas have
 not reported yet. For each variable, keep only heath facilities that 
-have reported at least 14 out of 18 months (incl the latest 2 months) 
-This brings completeness up "generally" above 90% for all variables. */
+have reported at least 14 out of 18 months. This brings completeness up "generally" 
+above 90% for all variables. */
 	foreach x of global volumes {
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>14 & `x'5_20!=. & `x'6_20!=. 
-					/* keep if at least 14 out of 18 months are reported 
-					& may/jun 2020 are reported */
+					keep if total`x'>14  
+					/* keep if at least 14 out of 18 months are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
