@@ -5,32 +5,38 @@ clear all
 set more off	
 
 ********************************************************************************
-* Preliminary analyses: comparing April-June and July-Sep
+* Policy brief: Q2 (April-June)
 ********************************************************************************
-u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", clear
 
 global rmnch anc1_util  del_util cs_util pnc_util diarr_util pneum_util sam_util  
 global vax vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual 
 global other art_util opd_util ipd_util road_util diab_util  trauma_util  icu_util
 global quality kmcn_qual cerv_qual tbscreen_qual tbdetect_qual tbtreat_qual
-global mortality newborn_mort_num sb_mort_num mat_mort_num totaldel ipd_mort_num ipd_util ///
-	   icu_mort_num  icu_util trauma_mort_num trauma_util 
-
-
+global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num  icu_mort_num trauma_mort_num
+global denominator totaldel ipd_util icu_util trauma_util
+	   
 
 by year, sort: tabstat  $rmnch if month>=4 & month<= 6, s(N sum) c(s)  format(%20.10f)
-by year, sort: tabstat  $rmnch if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
-
 by year, sort: tabstat $vax if month>=4 & month<=6 , s(N sum) c(s)  format(%20.10f)
-by year, sort: tabstat $vax if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
-
 by year, sort: tabstat $other if month>=4 & month<=6 , s(N sum) c(s)  format(%20.10f)
-by year, sort: tabstat $other if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
-
 by year, sort: tabstat  $quality if month>=4 & month<= 6, s(N sum) c(s)  format(%20.10f)
-by year, sort: tabstat  $quality if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
-
 by year, sort: tabstat  $mortality if month>=4 & month<= 6, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat  $denominator if month>=4 & month<= 6, s(N sum) c(s)  format(%20.10f)
+
+
+********************************************************************************
+* Policy brief: Q3 (July-Sep)
+********************************************************************************
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", clear
+
+by year, sort: tabstat  $rmnch if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat $vax if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat $other if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat  $quality if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat  $mortality if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
+by year, sort: tabstat  $denominator if month>=7 & month<= 9, s(N sum) c(s)  format(%20.10f)
+
 
  
 

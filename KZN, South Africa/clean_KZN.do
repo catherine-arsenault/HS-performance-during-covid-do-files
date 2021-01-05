@@ -174,15 +174,13 @@ that reported the months of interest) */
 
 u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
 
+*Q2 (April-June) Policy brief 
 foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'*
 					keep if `x'4!=. & `x'5!=. & `x'6!=. & ///
-							`x'7!=. & `x'8!=. & `x'9!=. & ///
-							`x'16!=. & `x'17!=. & `x'18!=. & ///
-							`x'19!=. & `x'20!=. & `x'21!=. 
-					* Policy brief: Q2 (April-June) Q3 (July-Sep) 
-
+							`x'16!=. & `x'17!=. & `x'18!=. 
+							//April-June 2019 vs 2020 
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
@@ -194,7 +192,7 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", replace
+				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -213,9 +211,50 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", replace
+save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", replace
 
+***********************************************************************************************
+*Q3 (July-Sep) Calculation 
 
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
+
+foreach x of global all {
+			 	preserve
+					keep Province dist subdist Facility factype `x'*
+					keep if `x'7!=. & `x'8!=. & `x'9!=. & ///
+							`x'19!=. & `x'20!=. & `x'21!=. 
+							//July-Sep 2019 vs 2020 
+					save "$user/$data/Data for analysis/tmp`x'.dta", replace
+				restore
+				}
+	u "$user/$data/Data for analysis/tmpanc1_util.dta", clear
+
+	foreach x in  totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
+			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
+			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
+				drop _merge
+				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", replace
+		}
+	foreach x of global all {
+			 rm "$user/$data/Data for analysis/tmp`x'.dta"
+			 }
+			 
+* Reshape for analyses
+reshape long anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
+			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num ///
+			   , i(Province dist subdist Facility factype) j(month) 
+	
+rename month rmonth
+gen month= rmonth
+replace month=month-12 if month>=13
+gen year = 2019
+replace year= 2020 if rmonth>=13	
+
+save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", replace
 
 
 /*************************************************************
