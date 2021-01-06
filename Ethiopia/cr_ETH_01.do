@@ -5,7 +5,7 @@ clear all
 set more off	
 
 *Import raw data
-import excel using "$user/$data/Raw/Ethiopia_Health system performance during Covid_data extraction_2019_January to December_03_08_2020_GC/Ethiopia_2019_January to December_by worda level & zonal Level_03_08_2020/Ethiopia_2019_January to December_ by woreda level.xlsx", firstrow clear
+import excel using "$user/$data/Raw/2019/Ethiopia_2019_January to December_by worda level & zonal Level_03_08_2020/Ethiopia_2019_January to December_ by woreda level.xlsx", firstrow clear
 * Recode variables
 * VOLUMES 
 * FP
