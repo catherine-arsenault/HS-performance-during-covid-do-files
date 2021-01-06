@@ -53,6 +53,7 @@ reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
+			  tbnum_qual tbdenom_qual tbdetect_qual ///
 			  totalipd_mort, i(region ) j(month) string
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
@@ -84,7 +85,7 @@ preserve
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 	newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel totalipd_mort ///
 	diab_util hyper_util diab_qual_num hyper_qual_num kmc_qual_num kmc_qual_denom ///
-	resus_qual_num resus_qual_denom
+	tbnum_qual tbdenom_qual tbdetect_qual resus_qual_num resus_qual_denom
 	
 	foreach v of global varlist {
 		rename(`v')(`v'20)
