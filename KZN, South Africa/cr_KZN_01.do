@@ -118,6 +118,7 @@ rename (Deathinfacility06days Stillbirthinfacility Maternaldeathinfacility Inpat
 		(newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num trauma_mort_num icu_mort_num) 
 		
 * Mortality (denominators)
+rename Totalbirthsinfacilitysum mort_denom
 
 *replace AdmissionsTotal = BK if rmonth>12
 rename ( AdmissionsTotal AdmissionsTrauma AdmissionICU)	( ipd_util trauma_util icu_util)
@@ -129,9 +130,9 @@ lab var totaldel "Total of deliveries and c-sections"
 
 drop FamilyPlanningAcceptor1019y FamilyPlanningAcceptor2035y FamilyPlanningAcceptor36year ///
 	 Deliveryinfacilitytotal Motherpostnatalvisitwithin6 EmergencycaseMotorVehicleA AF ///
-	 PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st Livebirthinfacility Totalbirthsinfacilitysum AH AI Clientsscreen Cervicalcancer* Diabetesclient Casualty
+	 PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st Livebirthinfacility  AH AI Clientsscreen Cervicalcancer* Diabetesclient Casualty
 
-order fp_util anc1_util totaldel del_util cs_util-opd_util ipd_util er_util icu_util road_util trauma_util diab_util-tbtreat_qual vacc_qual pent_qual-rota_qual newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num  icu_mort_num trauma_mort_num, after(factype)	
+order fp_util anc1_util totaldel del_util mort_denom cs_util-opd_util ipd_util er_util icu_util road_util trauma_util diab_util-tbtreat_qual vacc_qual pent_qual-rota_qual newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num  icu_mort_num trauma_mort_num, after(factype)	
 
 keep Province Facility rmonth-dist
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/2019_fac_long.dta", replace 
