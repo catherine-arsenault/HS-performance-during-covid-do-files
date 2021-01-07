@@ -22,7 +22,7 @@ set more off
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
 
-global volumes anc1_util totaldel del_util mort_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+global volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util
@@ -62,7 +62,7 @@ foreach var of global volumes {
 drop *report
 
 preserve
-	local volumes anc1_util totaldel del_util mort_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+	local volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util
@@ -92,9 +92,9 @@ REPORTS SOMETHING AT SOME POINT DURING THE YEAR
 For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/21 {
-	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. &  mort_denom`i'!=.
-	replace sb_mort_num`i' = 0 	    if sb_mort_num`i' ==.  & mort_denom`i'!=.
-	replace mat_mort_num`i' = 0     if mat_mort_num`i' == .  &  mort_denom`i'!=.
+	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. &  livebirths_denom`i'!=.
+	replace sb_mort_num`i' = 0 	    if sb_mort_num`i' ==.  & sb_mort_denom`i'!=.
+	replace mat_mort_num`i' = 0     if mat_mort_num`i' == .  & livebirths_denom`i'!=.
 	replace trauma_mort_num`i' = 0  if trauma_mort_num`i' ==. & trauma_util`i'!=.
 	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' !=. 
 	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' !=. 	
@@ -152,7 +152,7 @@ at least 15 out of 21 months (incl the latest 2 months) 12/14/20 */
 				}
 	u "$user/$data/Data for analysis/tmpanc1_util.dta", clear
 
-	foreach x in totaldel del_util mort_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+	foreach x in totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
@@ -186,7 +186,7 @@ foreach x of global all {
 				}
 	u "$user/$data/Data for analysis/tmpanc1_util.dta", clear
 
-	foreach x in  totaldel del_util mort_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+	foreach x in  totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
@@ -199,7 +199,7 @@ foreach x of global all {
 			 }
 			 
 * Reshape for analyses
-reshape long anc1_util totaldel del_util mort_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+reshape long anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num ///
@@ -229,7 +229,7 @@ foreach x of global all {
 				}
 	u "$user/$data/Data for analysis/tmpanc1_util.dta", clear
 
-	foreach x in  totaldel del_util mort_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+	foreach x in  totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
@@ -242,7 +242,7 @@ foreach x of global all {
 			 }
 			 
 * Reshape for analyses
-reshape long anc1_util totaldel del_util mort_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+reshape long anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num ///
