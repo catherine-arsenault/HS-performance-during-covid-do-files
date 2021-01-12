@@ -131,7 +131,7 @@ lab var totaldel "Total of deliveries and c-sections"
 drop FamilyPlanningAcceptor1019y FamilyPlanningAcceptor2035y FamilyPlanningAcceptor36year ///
 	 Deliveryinfacilitytotal Motherpostnatalvisitwithin6 EmergencycaseMotorVehicleA AF ///
 	 PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st  AH AI Clientsscreen Cervicalcancer* Diabetesclient Casualty
-	 PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st  AH AI Clientsscreen Cervicalcancer* Diabetesclient Casualty
+	 *PHCheadcount5yearsandolder  TBsymptomatic5yearsandolder TBinvestigationdone5yearsan OPV1st  AH AI Clientsscreen Cervicalcancer* Diabetesclient Casualty
 
 order fp_util anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util-opd_util ipd_util er_util icu_util road_util trauma_util diab_util-tbtreat_qual vacc_qual pent_qual-rota_qual newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num  icu_mort_num trauma_mort_num, after(factype)	
 
