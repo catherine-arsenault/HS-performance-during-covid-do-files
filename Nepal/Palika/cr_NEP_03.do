@@ -28,40 +28,42 @@ set more off
 	egen fp_perm_util11_20 = rowtotal(v19 v30 v41 v52 v63), m 
 	
 *2) Short acting method (fp_sa)
-	rename familyplanningprogramtemporaryfp v64
-	egen fp_sa_util1_20 = rowtotal(v64 v75 v86 v97 v108 v119 v130 v141), m
-	egen fp_sa_util2_20 = rowtotal(v65 v76 v87 v98 v109 v120 v131 v142), m
-	egen fp_sa_util3_20 = rowtotal(v66 v77 v88 v99 v110 v121 v132 v143), m
-	egen fp_sa_util4_20 = rowtotal(v67 v78 v89 v100 v111 v122 v133 v144), m
-	egen fp_sa_util5_20 = rowtotal(v68 v79 v90 v101 v112 v123 v134 v145), m
-	egen fp_sa_util6_20 = rowtotal(v69 v80 v91 v102 v113 v124 v135 v146), m
-	egen fp_sa_util7_20 = rowtotal(v70 v81 v92 v103 v114 v125 v136 v147), m
-	egen fp_sa_util8_20 = rowtotal(v71 v82 v93 v104 v115 v126 v137 v148), m
-	egen fp_sa_util9_20 = rowtotal(v72 v83 v94 v105 v116 v127 v138 v149), m
-	egen fp_sa_util10_20 = rowtotal(v73 v84 v95 v106 v117 v128 v139 v150), m
-	egen fp_sa_util11_20 = rowtotal(v74 v85 v96 v107 v118 v129 v140 v151), m
+	rename (familyplanningprogramtemporaryfp ) (v64 )
+	egen fp_sa_util1_20 = rowtotal(v64 v75 v86 v97 v108 v119 v130 v141 v295 v306), m
+	egen fp_sa_util2_20 = rowtotal(v65 v76 v87 v98 v109 v120 v131 v142 v296 v307), m
+	egen fp_sa_util3_20 = rowtotal(v66 v77 v88 v99 v110 v121 v132 v143 v297 v308), m
+	egen fp_sa_util4_20 = rowtotal(v67 v78 v89 v100 v111 v122 v133 v144 v298 v309), m
+	egen fp_sa_util5_20 = rowtotal(v68 v79 v90 v101 v112 v123 v134 v145 v299 v310), m
+	egen fp_sa_util6_20 = rowtotal(v69 v80 v91 v102 v113 v124 v135 v146 v300 v311), m
+	egen fp_sa_util7_20 = rowtotal(v70 v81 v92 v103 v114 v125 v136 v147 v301 v312), m
+	egen fp_sa_util8_20 = rowtotal(v71 v82 v93 v104 v115 v126 v137 v148 v302 v313), m
+	egen fp_sa_util9_20 = rowtotal(v72 v83 v94 v105 v116 v127 v138 v149 v303 v314), m
+	egen fp_sa_util10_20 = rowtotal(v73 v84 v95 v106 v117 v128 v139 v150 v304 v315), m
+	egen fp_sa_util11_20 = rowtotal(v74 v85 v96 v107 v118 v129 v140 v151 v305 v316), m
 
 *3) Long acting method (fp_la)
-	rename familyplanningprogrampostpartumf v152
-	egen fp_la_util1_20 = rowtotal(v152 v163 v174 v185 v196 v207 v218 v229 v240 v251 v262), m
-	egen fp_la_util2_20 = rowtotal(v153 v164 v175 v186 v197 v208 v219 v230 v241 v252 v263), m
-	egen fp_la_util3_20 = rowtotal(v154 v165 v176 v187 v198 v209 v220 v231 v242 v253 v264), m
-	egen fp_la_util4_20 = rowtotal(v155 v166 v177 v188 v199 v210 v221 v232 v243 v254 v265), m
-	egen fp_la_util5_20 = rowtotal(v156 v167 v178 v189 v200 v211 v222 v233 v244 v255 v266), m
-	egen fp_la_util6_20 = rowtotal(v157 v168 v179 v190 v201 v212 v223 v234 v245 v256 v267), m
-	egen fp_la_util7_20 = rowtotal(v158 v169 v180 v191 v202 v213 v224 v235 v246 v257 v268), m
-	egen fp_la_util8_20 = rowtotal(v159 v170 v181 v192 v203 v214 v225 v236 v247 v258 v269), m
-	egen fp_la_util9_20 = rowtotal(v160 v171 v182 v193 v204 v215 v226 v237 v248 v259 v270), m
-	egen fp_la_util10_20 = rowtotal(v161 v172 v183 v194 v205 v216 v227 v238 v249 v260 v271), m
-	egen fp_la_util11_20 = rowtotal(v162 v173 v184 v195 v206 v217 v228 v239 v250 v261 v272), m
+	rename (familyplanningprogrampostpartumf safemotherhoodprogramsafeabortio) (v152 v273)
+	egen fp_la_util1_20 = rowtotal(v152 v163 v174 v185 v196 v207 v218 v229 v240 v251 v262 v273 v284), m
+	egen fp_la_util2_20 = rowtotal(v153 v164 v175 v186 v197 v208 v219 v230 v241 v252 v263 v274 v285), m
+	egen fp_la_util3_20 = rowtotal(v154 v165 v176 v187 v198 v209 v220 v231 v242 v253 v264 v275 v286), m
+	egen fp_la_util4_20 = rowtotal(v155 v166 v177 v188 v199 v210 v221 v232 v243 v254 v265 v276 v287), m
+	egen fp_la_util5_20 = rowtotal(v156 v167 v178 v189 v200 v211 v222 v233 v244 v255 v266 v277 v288), m
+	egen fp_la_util6_20 = rowtotal(v157 v168 v179 v190 v201 v212 v223 v234 v245 v256 v267 v278 v289), m
+	egen fp_la_util7_20 = rowtotal(v158 v169 v180 v191 v202 v213 v224 v235 v246 v257 v268 v279 v290), m
+	egen fp_la_util8_20 = rowtotal(v159 v170 v181 v192 v203 v214 v225 v236 v247 v258 v269 v280 v291), m
+	egen fp_la_util9_20 = rowtotal(v160 v171 v182 v193 v204 v215 v226 v237 v248 v259 v270 v281 v292), m
+	egen fp_la_util10_20 = rowtotal(v161 v172 v183 v194 v205 v216 v227 v238 v249 v260 v271 v282 v293), m
+	egen fp_la_util11_20 = rowtotal(v162 v173 v184 v195 v206 v217 v228 v239 v250 v261 v272 v283 v294), m
 	
-*4) Safe Abortion Service 
-//need verification from Amit, sent email (1/11/21)
-
-
 	keep org* fp* 
 	duplicates tag org* , gen(tag)
 	egen total= rowtotal(fp*), m
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	drop if tag==1 & total==. //no observation 
 	drop tag total
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
@@ -148,11 +150,17 @@ set more off
 	egen totaldel11_20=	rowtotal(del_util11_20 cs_util11_20), m
 	
 
-	keep org* anc* del* cs* diarr* pneum* totaldel*
+	keep org* anc* del* cs* diarr* pneum* totaldel* pnc* sam*
 	duplicates tag org* , gen(tag)
 	egen total= rowtotal(anc* del* cs* diarr* pneum* totaldel*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
@@ -196,6 +204,12 @@ set more off
 	egen total= rowtotal(bcg* pent* measles* opv3* pneum*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
@@ -233,6 +247,12 @@ set more off
 	egen total= rowtotal(opd* er* ipd* ), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
@@ -264,6 +284,12 @@ set more off
 	egen total= rowtotal(tbdetect* hivdiag* ), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
@@ -321,6 +347,12 @@ set more off
 	egen total= rowtotal(sb_mort* mat_mort* live_births* ), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
 	drop _merge
 	
@@ -340,30 +372,35 @@ set more off
 forval i =1/11 {
 	replace peri_mort_num`i'_20 = 0 if peri_mort_num`i'_20 <0 & peri_mort_num`i'_20!=.
 }
-	
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
 
 *Neonatal deaths 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-Nov_palika_neonatal_mort_num.csv", clear
 	drop organisationunitdescription
 	rename (totallateneonataldeathsinthehosp totalearlyneonataldeathsinthehos safemotherhoodprogrammaternaldea) (v9 v20 v31)
-	egen neonatal_mort_num1_20 = rowtotal(v9  v20 v31)
-	egen neonatal_mort_num2_20 = rowtotal(v10 v21 v32)
-	egen neonatal_mort_num3_20 = rowtotal(v11 v22 v33)
-	egen neonatal_mort_num4_20 = rowtotal(v12 v23 v34)
-	egen neonatal_mort_num5_20 = rowtotal(v13 v24 v35)
-	egen neonatal_mort_num6_20 = rowtotal(v14 v25 v36)
-	egen neonatal_mort_num7_20 = rowtotal(v15 v26 v37)
-	egen neonatal_mort_num8_20 = rowtotal(v16 v27 v38)
-	egen neonatal_mort_num9_20 = rowtotal(v17 v28 v39)
-	egen neonatal_mort_num10_20 = rowtotal(v18 v29 v40)
-	egen neonatal_mort_num11_20 = rowtotal(v19 v30 v41)
+	egen neo_mort_num1_20 = rowtotal(v9  v20 v31)
+	egen neo_mort_num2_20 = rowtotal(v10 v21 v32)
+	egen neo_mort_num3_20 = rowtotal(v11 v22 v33)
+	egen neo_mort_num4_20 = rowtotal(v12 v23 v34)
+	egen neo_mort_num5_20 = rowtotal(v13 v24 v35)
+	egen neo_mort_num6_20 = rowtotal(v14 v25 v36)
+	egen neo_mort_num7_20 = rowtotal(v15 v26 v37)
+	egen neo_mort_num8_20 = rowtotal(v16 v27 v38)
+	egen neo_mort_num9_20 = rowtotal(v17 v28 v39)
+	egen neo_mort_num10_20 = rowtotal(v18 v29 v40)
+	egen neo_mort_num11_20 = rowtotal(v19 v30 v41)
 	
-	keep org* neonatal*
+	keep org* neo*
 	duplicates tag org* , gen(tag)
-	egen total= rowtotal(neonatal* ), m
+	egen total= rowtotal(neo* ), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
@@ -390,15 +427,38 @@ forval i =1/11 {
 	egen total= rowtotal(ipd_mort* ), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
-	drop _merge
+	drop _merge orgunitlevel4	
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
 	
+* Fix issue with Provinces
+	order org*
+	drop  organisationunitid organisationunitcode 		 
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"
+	
+	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace	
+
 ********************************************************************************
-*END
+*END OF coding for Jan20-Nov20 data 
 ********************************************************************************	
-	
-	
+
+*Merge with Jan19-Dec19 data 
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta"
+	drop _merge
+
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta", replace
+
+
+
 	
 	
 	
