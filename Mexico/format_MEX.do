@@ -4,7 +4,7 @@
 * Updated Jan 8, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
-use "$user/$data/Data for analysis/IMSS_Jan19-Oct20c_clean.dta", clear
+use "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", clear
 
 ********************************************************************************
 * CREATE NATIONAL TOTALS
@@ -21,7 +21,7 @@ death_negative hospit_negative death_pending hospit_pending {
 	drop `v'tot
 }
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20c_clean.dta", replace 
+save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", replace 
 
 
 ********************************************************************************
