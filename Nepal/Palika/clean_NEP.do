@@ -25,7 +25,8 @@ set more off
 
 u "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta", clear
 
-order org* fp_perm_util*_19 fp_perm_util*_20 fp_sa_util*_19 fp_sa_util*_20 fp_la_util*_19 fp_la_util*_20 anc_util*_19 anc_util*_20 del_util*_19 del_util*_20 cs_util*_19 cs_util*_20 ///
+order org* fp_perm_util*_19 fp_perm_util*_20 fp_sa_util*_19 fp_sa_util*_20 ///
+fp_la_util*_19 fp_la_util*_20 anc_util*_19 anc_util*_20 del_util*_19 del_util*_20 cs_util*_19 cs_util*_20 ///
 totaldel*19 totaldel*20  pnc_util*_19 pnc_util*_20 diarr_util*_19 diarr_util*_20 pneum_util*_19 ///
 pneum_util*_20 sam_util*_19  sam_util*_20 opd_util*_19 opd_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 er_util*_20  ///
 tbdetect_qual*_19 tbdetect_qual*_20 hivdiag_qual*_19 hivdiag_qual*_20 pent_qual*_19 pent_qual*_20 ///
@@ -47,9 +48,9 @@ drop all_visits
 ******************************************************************
 
 global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util diarr_util pneum_util ///
-               sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
-			   totaldel pent_qual bcg_qual measles_qual opv3_qual pneum_qual 
+			   pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util ////
+			   tbdetect_qual  hivdiag_qual totaldel pent_qual bcg_qual ///
+			   measles_qual opv3_qual pneum_qual 
 global mortality sb_mort_num mat_mort_num ipd_mort_num neo_mort_num
 global all $volumes $mortality 
 
@@ -142,7 +143,7 @@ This brings completeness up "generally" above 90% for all variables. */
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>18 & `x'10_20!=. & `x'11_20!=. 
+					keep if total`x'>=18 & `x'10_20!=. & `x'11_20!=. 
 					/* keep if at least 18 out of 23 months are reported 
 					& Oct/Nov 2020 are reported */
 					drop total`x'
@@ -164,6 +165,7 @@ This brings completeness up "generally" above 90% for all variables. */
 			 }
 	
 save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_DB.dta", replace
+
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
 				     FOR ANALYSES 
