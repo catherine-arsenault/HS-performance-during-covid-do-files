@@ -35,7 +35,6 @@ rename(Indic7_Gastro_oct2020 Indic8_Neumo_oct2020 Indic9_Desnu_oct2020) ///
 * Outpatients
 egen opd_util10_20= rowtotal(Indic11_vmf_oct2020 Indic11_esp_oct2020), m
 
-
 *ER, dental 
 rename (Indic11_urg_oct2020 Indic11_dntl_oct2020) (er_util10_20 dental_util10_20)	
 drop Indic11* 
@@ -57,30 +56,6 @@ rename Indic21cacu_oct2020 cerv_util10_20
 *Diabetic and hypertensive patients screening 
 rename ( Indic24_dmctrl_oct20 Indic25_htactrl_oct20) (diab_qual_num10_20 hyper_qual_num10_20 )
 
-/* Vaccine indicators are not available 
-Penta vaccine 
-egen pent_qual9_20 =rowtotal (Indic26_penta*sept20) , m
-drop Indic26_penta*
-
-* BCG 
-egen bcg_qual9_20 =rowtotal(Indic27_BCG_U_sept20 Indic27_BCG_P_sept20 Indic27_BCG_S_sept20 Indic27_BCG_T_sept20 Indic27_BCG_R_sept20 Indic27_BCG_A_sept20) , m
-drop Indic27_BCG*
-
-* MCV 
-egen measles_qual9_20 =rowtotal ( Indic28_srp_sept20 Indic28_SR_sept20) , m
-drop Indic28*
-
-* OPV3 #
-rename Indic29_SABIN_T_sept20 opv3_qual9_20
-drop Indic29_SABIN* 
-
-* Pneumococcal #
-rename Indic30_ANC_sept20 pneum_qual9_20
-
-* Rotavirus #
-rename Indic31_RV_sept20 rota_qual9_20
-*/
-
 *Newborn deaths - Sep2020
 rename Indic32_NMN_sept20 newborn_mort_num9_20
 
@@ -98,7 +73,7 @@ egen ipd_mort_num10_20  = rowtotal( In37_MortServCI_oct20 In38_MortHosp_oct20), 
 drop In37* In38*
 
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Oct20d_WIDE.dta", replace
 
 ********************************************************************************
 * MERGE TO DATA FROM PRIOR ROUNDS (Jan19-Oct20)
@@ -197,10 +172,33 @@ order Delegation year mo
 sort  year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", replace
 
 
+/* Will add these codes once the data are available:
 
+Penta vaccine 
+egen pent_qual9_20 =rowtotal (Indic26_penta*sept20) , m
+drop Indic26_penta*
+
+* BCG 
+egen bcg_qual9_20 =rowtotal(Indic27_BCG_U_sept20 Indic27_BCG_P_sept20 Indic27_BCG_S_sept20 Indic27_BCG_T_sept20 Indic27_BCG_R_sept20 Indic27_BCG_A_sept20) , m
+drop Indic27_BCG*
+
+* MCV 
+egen measles_qual9_20 =rowtotal ( Indic28_srp_sept20 Indic28_SR_sept20) , m
+drop Indic28*
+
+* OPV3 #
+rename Indic29_SABIN_T_sept20 opv3_qual9_20
+drop Indic29_SABIN* 
+
+* Pneumococcal #
+rename Indic30_ANC_sept20 pneum_qual9_20
+
+* Rotavirus #
+rename Indic31_RV_sept20 rota_qual9_20
+*/
 
 
 

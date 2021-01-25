@@ -4,7 +4,7 @@
 * Updated Jan 8, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
-use "$user/$data/Data for analysis/IMSS_Jan19-Oct20_clean.dta", clear
+use "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", clear
 
 ********************************************************************************
 * CREATE NATIONAL TOTALS
