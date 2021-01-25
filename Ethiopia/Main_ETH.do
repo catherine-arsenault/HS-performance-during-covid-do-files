@@ -3,10 +3,10 @@
 * PI Catherine Arsenault
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
-*global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
+global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 
 ********************************************************************************
 * Creation do files
@@ -24,6 +24,9 @@ do  "$dofiles/cr_ETH_03.do"
 * Edits to KMC and newborn resuscitation indicators (Jan 2019-August2020)
 * Imports raw indicators, recodes and merge with latest dataset
 do  "$dofiles/cr_ETH_04.do"
+
+* Imports raw data and renames variables for January 2019-Oct 2020 
+do "$dofiles/cr_ETH_05.do"
 
 ********************************************************************************
 * Cleaning do files
