@@ -45,7 +45,7 @@ drop _merge
 ********************************************************************************
 * MERGE TO DATA FROM PRIOR ROUNDS (Jan19-Oct20)
 ********************************************************************************
-merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta"
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Sep20v2_WIDE.dta"
 drop _merge 
 
 order num_del Delegation HF_tot HF1level HF2level HF3level men2019 women2019 ///
