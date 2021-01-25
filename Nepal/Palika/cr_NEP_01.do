@@ -60,7 +60,10 @@ set more off
 	egen total= rowtotal(fp*), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+
+*To merge with previous dataset, province 5 name was changed. 
 	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"
+*Amit review needed: 3 municipalities names have changed. We have renamed them to merge with previous data. 
 	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
 	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
 	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
@@ -181,28 +184,11 @@ set more off
 	egen totaldel10_19=	rowtotal(del_util10_19 cs_util10_19), m
 	egen totaldel11_19=	rowtotal(del_util11_19  cs_util11_19), m
 	egen totaldel12_19=	rowtotal(del_util12_19  cs_util12_19), m
-	
-*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
-* 	Perinatal mortality
-	gen peri_mort_num1_19 = totaldel1_19 - live_births1_19
-	gen peri_mort_num2_19 = totaldel2_19 -live_births2_19 
-	gen peri_mort_num3_19 = totaldel3_19 -live_births3_19 
-	gen peri_mort_num4_19 = totaldel4_19 -live_births4_19 
-	gen peri_mort_num5_19 = totaldel5_19 -live_births5_19 
-	gen peri_mort_num6_19 = totaldel6_19 -live_births6_19 
-	gen peri_mort_num7_19 = totaldel7_19 -live_births7_19 
-	gen peri_mort_num8_19 = totaldel8_19 -live_births8_19 
-	gen peri_mort_num9_19 = totaldel9_19 -live_births9_19 
-	gen peri_mort_num10_19 = totaldel10_19 -live_births10_19 
-	gen peri_mort_num11_19 = totaldel11_19 -live_births11_19 
-	gen peri_mort_num12_19 = totaldel12_19 -live_births12_19  
-
-	forval i =1/12 {
-	replace peri_mort_num`i'_19 = 0 if peri_mort_num`i'_19 <0 & peri_mort_num`i'_19!=.
-	}	
-
-	drop live_births*  
+	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta"
+	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta", replace
+	
+	
 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 	* PNC 2019
 import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util.csv", clear 
@@ -611,18 +597,23 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	egen total= rowtotal(neo* ), m
 	drop if tag==1 & total==. //no observation 
 	drop tag total
+
+*To merge with previous dataset, province 5 name was changed. 
 	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"
+*To merge with previous dataset, 3 municipalities names have changed. We confirmed that they are the same municipalieis by matching the number and the data. 	
 	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
 	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
 	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
 	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta"
-	*drop _merge 
+	drop _merge 
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta", replace
 	
 drop rota* 
 
-* Fix issue with Provincces
+* Fix issue with Province 1 - province 1 was included in the orgunitlevel1 instead of orgunilevel2. Thus, these codes renames orgunitlevel2 to province 1 and orgunitlevel1 to Nepal. 
 	order org*
 	drop  organisationunitid organisationunitcode orgunitlevel4			 
 	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
@@ -635,7 +626,7 @@ drop rota*
 *END	
 ********************************************************************************	
 /*Old codes
-*Family planning 2019 
+*Family planning 2019 - We downloaded a new set of family planning into 3 categories 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_fp_util.csv", clear
 	drop organisationunitdescription
 	rename (familyplanningprogrampermanentfp familyplanningprogrampostpartumf ///
@@ -671,3 +662,25 @@ drop rota*
 	drop if tag==1 & total==. //no observation 
 	drop tag total
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta", replace	
+	
+	* 	Perinatal mortality - we have removed this indicator because we added a neonatal mortality indicator. 
+	gen peri_mort_num1_19 = totaldel1_19 - live_births1_19
+	gen peri_mort_num2_19 = totaldel2_19 -live_births2_19 
+	gen peri_mort_num3_19 = totaldel3_19 -live_births3_19 
+	gen peri_mort_num4_19 = totaldel4_19 -live_births4_19 
+	gen peri_mort_num5_19 = totaldel5_19 -live_births5_19 
+	gen peri_mort_num6_19 = totaldel6_19 -live_births6_19 
+	gen peri_mort_num7_19 = totaldel7_19 -live_births7_19 
+	gen peri_mort_num8_19 = totaldel8_19 -live_births8_19 
+	gen peri_mort_num9_19 = totaldel9_19 -live_births9_19 
+	gen peri_mort_num10_19 = totaldel10_19 -live_births10_19 
+	gen peri_mort_num11_19 = totaldel11_19 -live_births11_19 
+	gen peri_mort_num12_19 = totaldel12_19 -live_births12_19  
+
+	forval i =1/12 {
+	replace peri_mort_num`i'_19 = 0 if peri_mort_num`i'_19 <0 & peri_mort_num`i'_19!=.
+	}	
+
+	drop live_births*  
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta", replace
+*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	

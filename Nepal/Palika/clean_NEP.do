@@ -31,7 +31,7 @@ pneum_util*_20 sam_util*_19  sam_util*_20 opd_util*_19 opd_util*_20 ipd_util*_19
 tbdetect_qual*_19 tbdetect_qual*_20 hivdiag_qual*_19 hivdiag_qual*_20 pent_qual*_19 pent_qual*_20 ///
 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 measles_qual*_20 opv3_qual*_19 opv3_qual*_20 ///
 pneum_qual*_19 pneum_qual*_20  sb_mort*_19 sb_mort*_20 mat_mort*_19 ///
- mat_mort*_20 ipd_mort*_19 ipd_mort*_20 peri_mort*19 peri_mort*20 neo_mort_num*_19 neo_mort_num*_20
+ mat_mort*_20 ipd_mort*_19 ipd_mort*_20 neo_mort_num*_19 neo_mort_num*_20
 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
@@ -50,7 +50,7 @@ global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util diarr_util pneum_util ///
                sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
 			   totaldel pent_qual bcg_qual measles_qual opv3_qual pneum_qual 
-global mortality sb_mort_num mat_mort_num ipd_mort_num peri_mort_num neo_mort_num
+global mortality sb_mort_num mat_mort_num ipd_mort_num neo_mort_num
 global all $volumes $mortality 
 
 
@@ -85,14 +85,12 @@ For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
 	replace sb_mort_num`i'_19 = 0  if sb_mort_num`i'_19==. &  totaldel`i'_19!=.
-	replace peri_mort_num`i'_19 = 0  if peri_mort_num`i'_19==. &  totaldel`i'_19!=.
 	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & totaldel`i'_19!=.
 	replace ipd_mort_num`i'_19 = 0     if ipd_mort_num`i'_19== . & ipd_util`i'_19!=.
 	replace neo_mort_num`i'_19 = 0  if neo_mort_num`i'_19==. &  totaldel`i'_19!=.
 }
 forval i= 1/11 { // For now ends in Nov 20
 	replace sb_mort_num`i'_20 = 0  if sb_mort_num`i'_20==. &  totaldel`i'_20!=.
-	replace peri_mort_num`i'_20 = 0  if peri_mort_num`i'_20==. &  totaldel`i'_20!=.
 	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & totaldel`i'_20!=.
 	replace ipd_mort_num`i'_20 = 0     if ipd_mort_num`i'_20== . & ipd_util`i'_20!=.
 	replace neo_mort_num`i'_20 = 0  if neo_mort_num`i'_20==. &  totaldel`i'_20!=.
@@ -156,7 +154,7 @@ This brings completeness up "generally" above 90% for all variables. */
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util pneum_util totaldel ///
                sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
 			   pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
-			   sb_mort_num mat_mort_num ipd_mort_num peri_mort_num neo_mort_num {
+			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_DB.dta", replace
@@ -187,7 +185,7 @@ foreach x of global all {
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util ///
 				pneum_util totaldel sam_util opd_util ipd_util er_util  tbdetect_qual  ///
 				hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
-			   sb_mort_num mat_mort_num ipd_mort_num peri_mort_num neo_mort_num {
+			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_AN.dta", replace
@@ -200,7 +198,7 @@ reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util pnc_ut
 			diarr_util pneum_util sam_util opd_util ipd_util er_util tbdetect_qual ///
 			hivdiag_qual pent_qual bcg_qual totaldel measles_qual opv3_qual pneum_qual ///
 			sb_mort_num mat_mort_num neo_mort_num ///
-			 ipd_mort_num peri_mort_num , i(org*) j(month) string	
+			 ipd_mort_num, i(org*) j(month) string	
 	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///

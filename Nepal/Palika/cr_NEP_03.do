@@ -58,6 +58,8 @@ set more off
 	keep org* fp* 
 	duplicates tag org* , gen(tag)
 	egen total= rowtotal(fp*), m
+
+*Amit review needed: 3 municipalities names have changed. We have renamed them to merge with previous data. 
 	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
 	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
 	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
@@ -355,23 +357,6 @@ set more off
 	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta"
 	drop _merge
-	
-*Perinatal mortality = totaldel-livebirth 	
-	gen peri_mort_num1_20 = totaldel1_20 - live_births1_20
-	gen peri_mort_num2_20 = totaldel2_20 -live_births2_20 
-	gen peri_mort_num3_20 = totaldel3_20 -live_births3_20 
-	gen peri_mort_num4_20 = totaldel4_20 -live_births4_20 
-	gen peri_mort_num5_20 = totaldel5_20 -live_births5_20 
-	gen peri_mort_num6_20 = totaldel6_20 -live_births6_20	
-	gen peri_mort_num7_20 = totaldel7_20 -live_births7_20	
-	gen peri_mort_num8_20 = totaldel8_20 -live_births8_20	
-	gen peri_mort_num9_20 = totaldel9_20 -live_births9_20	
-	gen peri_mort_num10_20 = totaldel10_20 -live_births10_20	
-	gen peri_mort_num11_20 = totaldel11_20 -live_births11_20
-	
-forval i =1/11 {
-	replace peri_mort_num`i'_20 = 0 if peri_mort_num`i'_20 <0 & peri_mort_num`i'_20!=.
-}
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
 
 *Neonatal deaths 
@@ -457,9 +442,26 @@ forval i =1/11 {
 
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta", replace
 
-
-
+/*old codes - we have removed this indicator because we added a neonatal mortality indicator. 
+*Perinatal mortality = totaldel-livebirth 	
+	gen peri_mort_num1_20 = totaldel1_20 - live_births1_20
+	gen peri_mort_num2_20 = totaldel2_20 -live_births2_20 
+	gen peri_mort_num3_20 = totaldel3_20 -live_births3_20 
+	gen peri_mort_num4_20 = totaldel4_20 -live_births4_20 
+	gen peri_mort_num5_20 = totaldel5_20 -live_births5_20 
+	gen peri_mort_num6_20 = totaldel6_20 -live_births6_20	
+	gen peri_mort_num7_20 = totaldel7_20 -live_births7_20	
+	gen peri_mort_num8_20 = totaldel8_20 -live_births8_20	
+	gen peri_mort_num9_20 = totaldel9_20 -live_births9_20	
+	gen peri_mort_num10_20 = totaldel10_20 -live_births10_20	
+	gen peri_mort_num11_20 = totaldel11_20 -live_births11_20
 	
+forval i =1/11 {
+	replace peri_mort_num`i'_20 = 0 if peri_mort_num`i'_20 <0 & peri_mort_num`i'_20!=.
+}
+	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace
+
+*/	
 	
 	
 	
