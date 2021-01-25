@@ -1,7 +1,7 @@
 
 * HS performance during Covid
 * November 11 2020
-* Nepal, January 2019 - June 2020, analyses at FACILITY LEVEL 
+* Nepal, January 2019 - Nov 2020, analyses at Palika LEVEL 
 * PI Catherine Arsenault, Analyst MK Kim
 * Formating for google data studio dashboard
 /****************************************************************
@@ -12,10 +12,10 @@ created in google data studio
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
 *****************************************************************/
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_WIDE_CCA_DB.dta", clear
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_DB.dta", clear
 	rename orgunitlevel2 province
 	order province  org* 
-	collapse (sum) fp_util1_19-peri_mort_num6_20 , by(province)
+	collapse (sum) fp_perm_util1_19-neo_mort_num11_20 , by(province)
 	encode province, gen(prv)
 	drop province
 	order prv
@@ -31,10 +31,11 @@ drop prv
 order province
 
 * Reshaping for data visualisations / dashboard
-reshape long  fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
+reshape long  fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
+			  pnc_util diarr_util pneum_util ///
 			  sam_util opd_util ipd_util er_util tbdetect_qual hivdiag_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
-			  totaldel sb_mort_num mat_mort_num ipd_mort_num peri_mort_num, ///
+			  totaldel sb_mort_num mat_mort_num ipd_mort_num neo_mort_num, ///
 			  i(province) j(month) string
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
@@ -77,7 +78,7 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Nepal_palika_Jan19-Jun20_fordashboard.csv", replace
+export delimited using "$user/$data/Nepal_palika_Jan19-Nov20_fordashboard.csv", replace
 
 
 
