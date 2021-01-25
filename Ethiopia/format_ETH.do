@@ -5,14 +5,33 @@ use "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", clear
 /****************************************************************
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
 *****************************************************************/
+* Region names
+drop orgunitlevel1 orgunitlevel4  
+rename (orgunitlevel3 orgunitlevel2) (zone region) 
+replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
+replace region ="Afar"  if region== "Afar Regional Health Bureau"
+replace region ="Amhara"  if region== "Amhara Regional Health Bureau"
+replace region ="Ben Gum" if region==  "Beneshangul Gumuz Regional Health Bureau"
+replace region ="Dire Dawa" if region==  "Dire Dawa Regional Health Bureau"
+replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
+replace region ="Harari"  if region== "Harari Regional Health Bureau"
+replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
+replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
+replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
+replace region ="Somali"  if region== "Somali Regional Health Bureau"
+replace region ="Tigray" if region== "Tigray Regional Health Bureau"
+order region zone organisationunitname
+
 * Totals by facility types
 	gen factype = "Facility type: Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
 	replace factype ="Facility type: Non-Hospitals" if factype==""
+	
 preserve
 	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(factype)
 	rename factype region
 	save "$user/$data/Data for analysis/tmpfactype.dta", replace
 restore
+
 * Totals by region type
 	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(region)	
 	gen regtype = "Region type: Urban" if region=="Addis Ababa" ///
@@ -44,6 +63,7 @@ restore
 append using "$user/$data/Data for analysis/tmpfactype.dta"
 append using "$user/$data/Data for analysis/tmpregtype.dta"
 
+
 /****************************************************************
  RESHAPE FOR DASHBAORD
 *****************************************************************/
@@ -51,7 +71,7 @@ reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util
 			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
 			  er_util road_util  cerv_qual art_util hivsupp_qual_num  ///
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel ///
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
 			  totalipd_mort, i(region ) j(month) string
 * Month and year
@@ -82,7 +102,7 @@ preserve
 	global varlist fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 	sam_util opd_util ipd_util er_util road_util  cerv_qual art_util ///
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-	newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel totalipd_mort ///
+	newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort ///
 	diab_util hyper_util diab_qual_num hyper_qual_num kmc_qual_num kmc_qual_denom ///
 	resus_qual_num resus_qual_denom
 	

@@ -9,12 +9,12 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 	- For mortality, 0s are imputed if the facility offers the
 	  service it relates to.
 
-2 Identify extreme outliers and set them to missing
+2 Identify extreme positive outliers and set them to missing
 
 3 Calculate completeness for each indicator-month 
 
 4 Complete case analysis: keep only health facilities that have 
-  reported every month (or nearly every month) 
+  reported consistently (nearly) every month
   
 5 Reshape dataset from wide to long.
 ********************************************************************/
@@ -23,33 +23,16 @@ set more off
 
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE.dta", clear
 
-
-order  region zone org* unit_id fp_util*_19 fp_util*_20  anc_util*_19 anc_util*_20 del_util*_19 ///
-	  del_util*_20 cs_util*_19 cs_util*_20 sti_util*_19 sti_util*_20  pnc_util*_19 pnc_util*_20 ///
-	  diarr_util*_19  diarr_util*_20  pneum_util*_19 pneum_util*_20 art_util*_19 art_util*_20  ///
-	  sam_util*_19 sam_util*_20 opd_util*_19 opd_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 ///
-	  er_util*_20 road_util*_19 road_util*_20 diab_util*_19 diab_util*_20 hyper_util*_19 ///
-	  hyper_util*_20 kmc_qual_num*_19 kmc_qual_num*_20 kmc_qual_denom*19 kmc_qual_denom*20 ///
-	  resus_qual_num*_19 resus_qual_num*_20 resus_qual_denom*_19 resus_qual_denom*_20 ///
-	  cerv_qual*_19 cerv_qual*_20 hivsupp_qual_num*_19 ///
-	  hivsupp_qual_num*_20  diab_qual_num*_19 diab_qual_num*_20 hyper_qual_num*_19 hyper_qual_num*_20  ///
-	  vacc_qual*_19 vacc_qual*_20 pent_qual*_19 pent_qual*_20 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 ///
-	  measles_qual*_20 opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20 rota_qual*_19 ///
-	  rota_qual*_20 sb_mort*_19 sb_mort*_20 newborn_mort_num*_19 newborn_mort_num*_20 mat_mort*_19 ///
-	  mat_mort*_20 er_mort_num*19 er_mort_num*20 icu_mort_num*19  icu_mort_num*20 ipd_mort_num*19 ///
-	  ipd_mort_num*20 totaldel*_19 totaldel*_20 
-
-
 ********************************************************************
 * 3616 woreda/facilities 
 * Dropping all woreda/facilities that don't report any indicators all period
-egen all_visits = rowtotal(fp_util1_19-ipd_mort_num10_20), m
+egen all_visits = rowtotal(fp_util1_19-totaldel10_20), m
 drop if all_visits==.
 drop all_visits 
-* Retains 2335 woreda/facilities with some data from Jan19-Oct20
+* Retains 2336 woreda/facilities with some data from Jan19-Oct20
 ********************************************************************
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util diab_util hyper_util  cerv_qual ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom  
@@ -96,21 +79,23 @@ forval i = 1/12 {
 	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & totaldel`i'_19!=. 
 	replace er_mort_num`i'_19 = 0      if er_mort_num`i'_19==. & er_util`i'_19!=.
 	replace ipd_mort_num`i'_19 = 0     if ipd_mort_num`i'_19==. & ipd_util`i'_19!=.
+	replace icu_mort_num`i'_19 = 0     if icu_mort_num`i'_19==. & ipd_util`i'_19!=. // we don't have ICU admissions so we use inpatient
 }
 forval i = 1/10 {
 	replace newborn_mort_num`i'_20 = 0 if newborn_mort_num`i'_20==. & totaldel`i'_20!=. 
 	replace sb_mort_num`i'_20 = 0 	   if sb_mort_num`i'_20==. & totaldel`i'_20!=. 
 	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & totaldel`i'_20!=. 
 	replace er_mort_num`i'_20 = 0      if er_mort_num`i'_20==. & er_util`i'_20!=. 
-	replace ipd_mort_num`i'_20 = 0     if ipd_mort_num`i'_20==. & ipd_util`i'_20!=. 
+	replace ipd_mort_num`i'_20 = 0     if ipd_mort_num`i'_20==. & ipd_util`i'_20!=.
+	replace icu_mort_num`i'_20 = 0     if icu_mort_num`i'_20==. & ipd_util`i'_20!=. // we don't have ICU admissions so we use inpatient
 }
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel region org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning2.xlsx", firstrow(variable) replace
+*export excel org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning2.xlsx", firstrow(variable) replace
 
 /****************************************************************
-         IDENTIFY OUTLIERS AND SET THEM TO MISSING 
+         IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
 ***************************************************************** 
 Identifying extreme outliers over the period. Any value that is greater than 
 3.5SD from the mean  trend is set to missing.This is only applied if the mean 
@@ -118,22 +103,21 @@ of the series is greater or equal to 1. This technique avoids flagging as
 outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
 common for mortality indicators.  
 
-We do not assess outliers for diabetes and hypertension because they were 
-not collected until October 2019 
-MK: KMC and newborn resus was added 11/18/20*/
+We do not assess outliers for diabetes and hypertension because they were not 
+collected until October 2019 
+*/
 
-foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util   cerv_qual ///
-			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom {
+foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+				icu_mort_num ipd_mort_num {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
-	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
-	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 {  // until Oct 2020 
-				 *  11_20 12_20
+			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
+			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 {  // until Oct 2020 
+				         *  11_20 12_20
 		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
 		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
 		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
@@ -142,7 +126,7 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 }
 
 ****************************************************************
-* 					OTHER EDITS
+* 			OTHER DATA QUALITY EDITS
 ****************************************************************
 *Newborn resuscitation and KMC intitatied
 *Replace numberator as missing if it is greater than denominator 
@@ -156,21 +140,23 @@ forval i=1/10 { // until Oct 2020
 	replace resus_qual_num`i'_20 = . if resus_qual_num`i'_20 > resus_qual_denom`i'_20 & resus_qual_num`i'_20 !=.
 }
 
-*Diabetes and hypertension were only collected starting July 2019
+*Diabetes and hypertension were only collected starting October 2019
 *Drop variables for utilisation and quality from Jan to Sep 2019
-*Same implication applies for Jan19-Oct20 data (MK - 1/4/21)
-foreach x in diab_util diab_qual_num hyper_util hyper_qual_num {
+foreach x in diab_util diab_qual_num hyper_util hyper_qual_num ///
+			 diab_detec hyper_detec {
 	forval i = 1/9 {
 		drop `x'`i'_19
 	}
 }
-* Calculate total inpatients
+* Calculate total inpatients deaths
 forval i = 1/12 {
 	egen totalipd_mort`i'_19= rowtotal(ipd_mort_num`i'_19 icu_mort_num`i'_19), m	
+	drop ipd_mort_num`i'_19 icu_mort_num`i'_19
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
 forval i = 1/10 {
 	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m
+	drop ipd_mort_num`i'_20 icu_mort_num`i'_20
 }
 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", replace 
@@ -184,29 +170,31 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
                     COMPLETE CASE ANALYSIS 
                          FOR DASHBOARD 
 ****************************************************************
-Completeness is an issue, particularly for the latest month (there are important
+Completeness is an issue, particularly for the latest months (there are important
 delays in reporting). For each variable, keep only heath facilities that 
-have reported at least 18 out of 22 months (incl the latest 2 months) 
-This brings completeness up "generally" above 90% for all variables. */
+have reported at least 17 out of 22 months (incl the latest 2 months) 
+This brings completeness up "generally" above 90% for all variables.
 
-	foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util   cerv_qual ///
-			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom {
+Lines 180-194 below ignore  diabetes and hypertension because they were not 
+collected until October 2019  */
+	
+	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+				totalipd_mort {
 			  preserve
-					keep region zone org* `x'* 
+					keep  org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>18 & `x'9_20!=. & `x'10_20!=. 
-					/* keep if at least 18 out of 22 months are reported 
+					keep if total`x'>=17 & `x'9_20!=. & `x'10_20!=. 
+					/* keep if at least 17 out of 22 months are reported 
 					& Sep/Oct 2020 are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
 	preserve 
-		keep region zone org* diab* hyper* 
+		keep  org* diab* hyper* 
 		egen total = rowtotal(diab_util10_19-hyper_qual_num10_20), m // until Oct 2020
 		drop if total==.
 		drop total 
@@ -214,42 +202,36 @@ This brings completeness up "generally" above 90% for all variables. */
 	restore 
 	
 	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
-	foreach x in diab_hyper sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util   cerv_qual ///
-			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom {
-			 	merge 1:1 region  zone org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
+		* all variables except the first (fp_util) and diabetes hypertension
+		* diabetes and hypertension are saved under diab_hyper
+		foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+					totaldel ipd_util er_util road_util  cerv_qual diab_hyper ///
+					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
+					measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort  {
+			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 				save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", replace
 		}
-* Calculate total inpatients
-forval i = 1/12 {
-	egen totalipd_mort`i'_19= rowtotal(ipd_mort_num`i'_19 icu_mort_num`i'_19), m	
-	drop icu_mort_num`i'_19
-	* total of Inpatient and ICU deaths since we don't have ICU utilisation
-}
-forval i = 1/10 {
-	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m
-	drop icu_mort_num`i'_20
-}
-
+		
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", replace
 
+
+
+* We are not comparing quarters for now
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-				     FOR ANALYSES 
+				    TO COMPARE QUARTERS
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
-that reported the months of interest) */
+that reported the months of interest) 
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util   cerv_qual ///
 			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom totalipd_mort {
 			 	preserve
 					keep region zone org* `x'*

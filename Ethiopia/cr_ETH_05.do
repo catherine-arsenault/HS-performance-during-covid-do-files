@@ -105,22 +105,33 @@ rename (numberofroadtrafficinjurycasesdi-v313) ///
 		road_util1_20	road_util2_20	road_util3_20	road_util4_20	road_util5_20	road_util6_20 ///
 		road_util7_20   road_util8_20   road_util9_20   road_util10_20)
 		
-* Diabetes visits 
+* Diabetes patients enrolled in care 6 months prior to report
 rename (totalnumberofdiabeticpatientsenr-v335) ///
 (		diab_util1_19	diab_util2_19	diab_util3_19	diab_util4_19	diab_util5_19	diab_util6_19 ///
 	    diab_util7_19	diab_util8_19	diab_util9_19	diab_util10_19  diab_util11_19	diab_util12_19 ///
 		diab_util1_20	diab_util2_20	diab_util3_20	diab_util4_20	diab_util5_20	diab_util6_20 ///
 		diab_util7_20   diab_util8_20   diab_util9_20   diab_util10_20)
 		
-* Hypertension screen 
+* Hypertension patients enrolled in care 6 months prior to report
 rename (totalnumberofhypertensivepatient-v357) ///
 (	hyper_util1_19	hyper_util2_19	hyper_util3_19	hyper_util4_19	hyper_util5_19	hyper_util6_19	///
 	hyper_util7_19 	hyper_util8_19	hyper_util9_19	hyper_util10_19	hyper_util11_19	hyper_util12_19 ///
 	hyper_util1_20	hyper_util2_20	hyper_util3_20	hyper_util4_20	hyper_util5_20	hyper_util6_20 ///
 	hyper_util7_20  hyper_util8_20  hyper_util9_20  hyper_util10_20)
-	
-drop totalnumberofindividualsscreened-v401 // screened for diabetes or hypertension, not needed
 
+* Diabetes screen	
+rename (totalnumberofindividualsscreened-v379) ///
+(		diab_detec1_19	diab_detec2_19	diab_detec3_19	diab_detec4_19	diab_detec5_19	diab_detec6_19 ///
+	    diab_detec7_19	diab_detec8_19	diab_detec9_19	diab_detec10_19  diab_detec11_19	diab_detec12_19 ///
+		diab_detec1_20	diab_detec2_20	diab_detec3_20	diab_detec4_20	diab_detec5_20	diab_detec6_20 ///
+		diab_detec7_20   diab_detec8_20   diab_detec9_20   diab_detec10_20)
+
+* Hypertension screen 
+rename ( v380-v401)	///
+(	hyper_detec1_19	hyper_detec2_19	hyper_detec3_19	hyper_detec4_19	hyper_detec5_19	hyper_detec6_19	///
+	hyper_detec7_19 	hyper_detec8_19	hyper_detec9_19	hyper_detec10_19	hyper_detec11_19	hyper_detec12_19 ///
+	hyper_detec1_20	hyper_detec2_20	hyper_detec3_20	hyper_detec4_20	hyper_detec5_20	hyper_detec6_20 ///
+	hyper_detec7_20  hyper_detec8_20  hyper_detec9_20  hyper_detec10_20)
 * QUALITY 
 * KMC %
 * Separate denominator and numerator variables are available 
@@ -129,7 +140,6 @@ drop proportionoflowbirthweightandorp-v423
 * Newborn resuscitation %
 * Separate denominator and numerator variables are available 
 drop proportionofasphyxiatedneonatesw-v445
-
 
 * Cervical cancer screening # 
 rename (numberofwomenaged3049screenedwit-v467) ///
@@ -147,13 +157,12 @@ rename (numberofadultandpediatricpatient-v489) ///
 	hivsupp_qual_num5_20	hivsupp_qual_num6_20	hivsupp_qual_num7_20    hivsupp_qual_num8_20 ///
 	hivsupp_qual_num9_20    hivsupp_qual_num10_20)
 	
-* Diabetes enrolled 
+* Diabetes control 
 rename (v490-v511 ) ///
 (diab_qual_num1_19	diab_qual_num2_19	diab_qual_num3_19	diab_qual_num4_19	diab_qual_num5_19	diab_qual_num6_19	diab_qual_num7_19	diab_qual_num8_19	diab_qual_num9_19	diab_qual_num10_19	diab_qual_num11_19	diab_qual_num12_19  diab_qual_num1_20	diab_qual_num2_20	diab_qual_num3_20	diab_qual_num4_20	diab_qual_num5_20   diab_qual_num6_20	diab_qual_num7_20   diab_qual_num8_20 ///
 diab_qual_num9_20   diab_qual_num10_20)
 
-
-* Hypertension enrolled 
+* Hypertension control
 rename (v512-v533 ) ///
 (hyper_qual_num1_19	hyper_qual_num2_19	hyper_qual_num3_19	hyper_qual_num4_19	hyper_qual_num5_19	hyper_qual_num6_19	hyper_qual_num7_19	hyper_qual_num8_19	hyper_qual_num9_19	hyper_qual_num10_19	hyper_qual_num11_19	hyper_qual_num12_19 hyper_qual_num1_20	hyper_qual_num2_20	hyper_qual_num3_20	hyper_qual_num4_20	hyper_qual_num5_20 ///
 	hyper_qual_num6_20	hyper_qual_num7_20 hyper_qual_num8_20 hyper_qual_num9_20 hyper_qual_num10_20)
@@ -173,7 +182,7 @@ rename (v578-v599) ///
 (bcg_qual1_19	bcg_qual2_19	bcg_qual3_19	bcg_qual4_19	bcg_qual5_19	bcg_qual6_19	bcg_qual7_19	bcg_qual8_19	bcg_qual9_19	bcg_qual10_19	bcg_qual11_19	bcg_qual12_19 ///
 bcg_qual1_20	bcg_qual2_20	bcg_qual3_20	bcg_qual4_20	bcg_qual5_20	bcg_qual6_20 bcg_qual7_20    bcg_qual8_20    bcg_qual9_20    bcg_qual10_20)
 
-* Measles
+* Measles 1st dose
 rename (v600-v621) ///
 (measles_qual1_19	measles_qual2_19	measles_qual3_19	measles_qual4_19	measles_qual5_19	measles_qual6_19	measles_qual7_19	measles_qual8_19	measles_qual9_19	measles_qual10_19	measles_qual11_19	measles_qual12_19 measles_qual1_20	measles_qual2_20	measles_qual3_20	measles_qual4_20	measles_qual5_20 ///
 	measles_qual6_20	measles_qual7_20 measles_qual8_20 measles_qual9_20 measles_qual10_20)
@@ -270,7 +279,7 @@ rename (v908-v929) ///
 	egen totaldel10_20=	rowtotal(del_util10_20 cs_util10_20), m
 
 
-/*Remaining indicators: 
+/*Remaining indicators not recoded for now : 
 Infants 0-2 months treated for sepsis 
 Infants 0-2 months treated for local bacterial infection 
 Total discharges from ICU 
@@ -279,7 +288,7 @@ Total number of units of blood transfused
 Total units of blood received from NBTs & regional blood banks 
 Number of safe abortions performed 
 Total number of pregnant women tested for syphilis 
-Total number of pregnant women treated for Hepatitis 
+Total number of pregnant women treated for Hepatitis (B&C)
 Total number of teenage girls positive for pregnancy 
 Total number of women tested positive pregnancy 
 */
@@ -287,23 +296,6 @@ Total number of women tested positive pregnancy
 drop numberofsickyounginfants02months-v1171
 	
 	
-* Create unique facility id
-rename (orgunitlevel3 orgunitlevel2) (zone region) 
-replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
-replace region ="Afar"  if region== "Afar Regional Health Bureau"
-replace region ="Amhara"  if region== "Amhara Regional Health Bureau"
-replace region ="Ben Gum" if region==  "Beneshangul Gumuz Regional Health Bureau"
-replace region ="Dire Dawa" if region==  "Dire Dawa Regional Health Bureau"
-replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
-replace region ="Harari"  if region== "Harari Regional Health Bureau"
-replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
-replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
-replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
-replace region ="Somali"  if region== "Somali Regional Health Bureau"
-replace region ="Tigray" if region== "Tigray Regional Health Bureau"
-
-egen unit_id = concat(region zone organisationunitname)
-
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE.dta", replace	
 	
 
