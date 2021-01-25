@@ -18,13 +18,8 @@ drop Indic1_PF*
 rename (Indic2_ETS_sept2020) (sti_util9_20 )
 
 *ANC
-egen anc_util3_20 = rowtotal(Indic3_mar_1raVez20 Indic3_mar_Total20 ), m
-egen anc_util4_20 = rowtotal(Indic3_abr_1raVez20 Indic3_abr_Total20), m
-egen anc_util5_20 = rowtotal( Indic3_may_1raVez20 Indic3_may_Total20 ), m
-egen anc_util6_20 = rowtotal(Indic3_jun_1raVez20 Indic3_jun_Total20), m 
-egen anc_util7_20 = rowtotal( Indic3_jul_1raVez20 Indic3_jul_Total20 ), m 
-egen anc_util8_20 = rowtotal(Indic3_ago_1raVez20 Indic3_ago_Total20 ), m 
-egen anc_util9_20= rowtotal(Indic3_sept_1raVez20 Indic3_sept_Total20), m
+rename(Indic3_mar_Total20 Indic3_abr_Total20 Indic3_may_Total20 Indic3_jun_Total20 Indic3_jul_Total20 Indic3_ago_Total20 Indic3_sept_Total20 ) (anc_util3_20 ///
+anc_util4_20 anc_util5_20 anc_util6_20 anc_util7_20 anc_util8_20 anc_util9_20 )
 drop Indic3_*
 
 * Deliveries , csections
@@ -113,5 +108,5 @@ hospit_covid*_20  hospit_pending*_20 hospit_negative*_20 ///
 death_covid*_20 death_negative*_20 death_pending*_20 
 sort num_del
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Sep20v2_WIDE.dta", replace
 
