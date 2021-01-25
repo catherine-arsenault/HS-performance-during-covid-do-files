@@ -10,24 +10,31 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 
 **********************************************************************
 * Creation do files
+
 * Imports 2019 raw data extracted from dhis2 , renames variables
 do "$dofiles/Palika/cr_NEP_01.do"
 
 * Imports Jan 2020 - June 2020 raw data extracted from dhis2, renames variables
 * do "$dofiles/Palika/cr_NEP_02.do"
 
-* Imports Jan 2020 - June 2020 raw data extracted from dhis2, renames variables
+* Imports Jan 2020- Nov 2020 raw data extracted from dhis2, renames variables 
 do "$dofiles/Palika/cr_NEP_03.do"
 
 **********************************************************************
 * Data cleaning
+
 * Cleans the data (see cleaning protocol in shared folder)
 do "$dofiles/Palika/clean_NEP.do"
 
 **********************************************************************
-* Analysis
-* Analysis: calculates changes between Q2 2020 and Q2 2019
-do "$dofiles/Palika/an_NEP_01.do"
+* Format 
 
 * Formats data for dashboard
 do "$dofiles/Palika/format_NEP.do"
+
+**********************************************************************
+* Analysis
+
+* Calculates changes between Q2 2020 and Q2 2019 for policy brief
+do "$dofiles/Palika/an_NEP_01.do"
+

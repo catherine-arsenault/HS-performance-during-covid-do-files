@@ -39,7 +39,15 @@ replace breast_util5_20=  breast_util5_20- breast_util4_20
 replace breast_util4_20=  breast_util4_20- breast_util3_20
 replace breast_util3_20=  breast_util3_20- breast_util2_20
 replace breast_util2_20=  breast_util2_20- breast_util1_20
-merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta"
+
+
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Oct20c_WIDE.dta"
+drop _merge 
+
+********************************************************************************
+* MERGE TO DATA FROM PRIOR ROUNDS (Jan19-Oct20)
+********************************************************************************
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Sep20v2_WIDE.dta"
 drop _merge 
 
 save "$user/$data/Data for analysis/IMSS_Jan19-Oct20c_WIDE.dta", replace
