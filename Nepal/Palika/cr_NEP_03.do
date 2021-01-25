@@ -59,7 +59,8 @@ set more off
 	duplicates tag org* , gen(tag)
 	egen total= rowtotal(fp*), m
 
-*Amit review needed: 3 municipalities names have changed. We have renamed them to merge with previous data. 
+/*Review from Amit is needed: 3 Palikas/municipalities names have changed since 
+we last extracted the data. We have renamed them to merge with previous data. */
 	replace orgunitlevel3 = "10507 Diprung Rural Municipality" if orgunitlevel3 =="10507 Diprung Chuichumma Rural Municipality"
 	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
 	replace orgunitlevel4 = "60904 Dhorchaur Rural Municipality" if orgunitlevel4 =="60904 Siddha Kumakh Rural Municipality"
@@ -442,6 +443,23 @@ set more off
 
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta", replace
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 /*old codes - we have removed this indicator because we added a neonatal mortality indicator. 
 *Perinatal mortality = totaldel-livebirth 	
 	gen peri_mort_num1_20 = totaldel1_20 - live_births1_20
