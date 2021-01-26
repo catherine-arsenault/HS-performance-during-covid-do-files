@@ -3,12 +3,12 @@
 * Lao, January 2019 - October 2020
 * Facility level analysis 
 * Created by MK Kim 
-* Each dataset has separate District Health Offices (DO) file 
+
 clear all
 set more off
 ********************************************************************************
 ********************************************************************************
-*Import raw data: VOLUMES OF SERVICES
+*Import raw data: VOLUMES OF SERVICES, ALL FACILITIES
 
 *Family planning 2019 
 	 import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_1 Modern contraceptive use.csv", clear
@@ -69,11 +69,11 @@ set more off
 	keep org* fp* 
 	duplicates tag org* , gen(tag) 
 	egen total= rowtotal(fp*), m
-	drop if tag==1 & total==. //no observation 
+	drop if tag==1 & total==. //no duplicate observations 
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace 
 
-*Family Planning DC 2019 
+*Family Planning District Health office totals 2019 
 	 import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_1 Modern contraceptive use_DC.csv", clear
 	 rename ïorgunitlevel1 country 
 	*1) permanent method 
@@ -203,7 +203,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace 
 	
-*Family Planning DC 2020 
+*Family Planning district health office (DC) 2020 
 	 import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_1 Modern contraceptive use_DC.csv", clear
 	rename ïorgunitlevel1 country 
 	*1) permanent method 
@@ -284,7 +284,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
-*Antenatal care DC 2019 
+*Antenatal care district-DC 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_3 Antenatal care_DC.csv", clear
 	rename ïorgunitlevel1 country 
 	rename (january2019anc1stvisitbyhealthfa-december2019anc1stvisitbyhealthf) (anc_util1_19	anc_util2_19	anc_util3_19	anc_util4_19	anc_util5_19	anc_util6_19	anc_util7_19	anc_util8_19	anc_util9_19	anc_util10_19	anc_util11_19	anc_util12_19)	
@@ -841,7 +841,7 @@ set more off
 ****************************************************************************************************	
 ****************************************************************************************************
 *VOLUME OF OTHER SERVICES 
-* OPD diabates 2019 
+* OPD diabetes 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_15 Care for diabetes.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019opddiabetes-december2019opddiabetes) (diab_util1_19	diab_util2_19	diab_util3_19	diab_util4_19	diab_util5_19	diab_util6_19	diab_util7_19	diab_util8_19	diab_util9_19	diab_util10_19	diab_util11_19	diab_util12_19)
@@ -1016,7 +1016,7 @@ set more off
 
 ****************************************************************************************************
 ****************************************************************************************************	
-* Inpatinet admissions 2019 
+* Inpatient admissions 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_12 Inpatient visits.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019ipdinpatientvisits-december2019ipdinpatientvisits) (ipd_util1_19	ipd_util2_19	ipd_util3_19	ipd_util4_19	ipd_util5_19	ipd_util6_19	ipd_util7_19	ipd_util8_19	ipd_util9_19	ipd_util10_19	ipd_util11_19	ipd_util12_19)
@@ -1174,7 +1174,7 @@ set more off
 
 ****************************************************************************************************	
 ****************************************************************************************************		* MORTALITY 
-* Neonatal mortality 2019 						
+* Neonatal deaths 2019 						
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_31 Neonatal mortality.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019deathneonatal07days-december2019deathneonatal07days) (neo_mort_num1_19	neo_mort_num2_19	neo_mort_num3_19	neo_mort_num4_19	neo_mort_num5_19	neo_mort_num6_19	neo_mort_num7_19	neo_mort_num8_19	neo_mort_num9_19	neo_mort_num10_19	neo_mort_num11_19	neo_mort_num12_19)
@@ -1186,7 +1186,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
-* Neonatal mortality DC 2019 
+* Neonatal deaths DC 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_31 Neonatal mortality_DC.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019deathneonatal07days-december2019deathneonatal07days) (neo_mort_num1_19	neo_mort_num2_19	neo_mort_num3_19	neo_mort_num4_19	neo_mort_num5_19	neo_mort_num6_19	neo_mort_num7_19	neo_mort_num8_19	neo_mort_num9_19	neo_mort_num10_19	neo_mort_num11_19	neo_mort_num12_19)
@@ -1203,7 +1203,7 @@ set more off
 	rm "$user/$data/Data for analysis/tmp.dta"
 
 ****************************************************************************************************	
-* Neonatal mortality 2020 
+* Neonatal deaths 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_31 Neonatal mortality.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2020deathneonatal07days-october2020deathneonatal07days) (neo_mort_num1_20	neo_mort_num2_20	neo_mort_num3_20	neo_mort_num4_20	neo_mort_num5_20	neo_mort_num6_20	neo_mort_num7_20	neo_mort_num8_20	neo_mort_num9_20	neo_mort_num10_20)
@@ -1215,7 +1215,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
-* Neonatal mortality DC 2020 
+* Neonatal deaths DC 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_31 Neonatal mortality_DC.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2020deathneonatal07days-october2020deathneonatal07days) (neo_mort_num1_20	neo_mort_num2_20	neo_mort_num3_20	neo_mort_num4_20	neo_mort_num5_20	neo_mort_num6_20	neo_mort_num7_20	neo_mort_num8_20	neo_mort_num9_20	neo_mort_num10_20)
@@ -1233,7 +1233,7 @@ set more off
 
 ****************************************************************************************************
 ****************************************************************************************************	
-* Stillbirth rate 2019 
+* Stillbirths 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_32 Stillbirth rate.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019stillbirth28weeks-december2019stillbirth28weeks) (sb_mort_num1_19	sb_mort_num2_19	sb_mort_num3_19	sb_mort_num4_19	sb_mort_num5_19	sb_mort_num6_19	sb_mort_num7_19	sb_mort_num8_19	sb_mort_num9_19	sb_mort_num10_19	sb_mort_num11_19	sb_mort_num12_19)
@@ -1245,7 +1245,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
-* Stillbirth rate DC 2019 
+* Stillbirths DC 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_32 Stillbirth rate_DC.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019stillbirth28weeks-december2019stillbirth28weeks) (sb_mort_num1_19	sb_mort_num2_19	sb_mort_num3_19	sb_mort_num4_19	sb_mort_num5_19	sb_mort_num6_19	sb_mort_num7_19	sb_mort_num8_19	sb_mort_num9_19	sb_mort_num10_19	sb_mort_num11_19	sb_mort_num12_19)
@@ -1262,7 +1262,7 @@ set more off
 	rm "$user/$data/Data for analysis/tmp.dta"
 	
 ****************************************************************************************************	
-* Stillbirth rate 2020
+* Stillbirths 2020
 	import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_32 Stillbirth rate.csv", clear	
 	rename ïorgunitlevel1 country
 	rename (january2020stillbirth28weeks-october2020stillbirth28weeks) (sb_mort_num1_20	sb_mort_num2_20	sb_mort_num3_20	sb_mort_num4_20	sb_mort_num5_20	sb_mort_num6_20	sb_mort_num7_20	sb_mort_num8_20	sb_mort_num9_20	sb_mort_num10_20)
@@ -1274,7 +1274,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
-* Stillbirth rate DC 2020 
+* Stillbirths DC 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_32 Stillbirth rate_DC.csv", clear	
 	rename ïorgunitlevel1 country
 	rename (january2020stillbirth28weeks-october2020stillbirth28weeks) (sb_mort_num1_20	sb_mort_num2_20	sb_mort_num3_20	sb_mort_num4_20	sb_mort_num5_20	sb_mort_num6_20	sb_mort_num7_20	sb_mort_num8_20	sb_mort_num9_20	sb_mort_num10_20)
@@ -1292,7 +1292,7 @@ set more off
 	
 ****************************************************************************************************
 ****************************************************************************************************
-* Maternal mortality 2019 
+* Maternal deaths 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_33 Maternal mortality.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019maternaldeaths-december2019maternaldeaths) (mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19	mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19	mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19)
@@ -1304,7 +1304,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
-* Maternal mortality DC 2019 
+* Maternal deaths DC 2019 
 	import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_33 Maternal mortality_DC.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2019maternaldeaths-december2019maternaldeaths) (mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19	mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19	mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19)
@@ -1321,7 +1321,7 @@ set more off
 	rm "$user/$data/Data for analysis/tmp.dta"
 
 ****************************************************************************************************	
-* Maternal mortality 2020 
+* Maternal deaths 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_33 Maternal mortality.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2020maternaldeaths-october2020maternaldeaths) (mat_mort_num1_20	mat_mort_num2_20	mat_mort_num3_20	mat_mort_num4_20	mat_mort_num5_20	mat_mort_num6_20	mat_mort_num7_20	mat_mort_num8_20	mat_mort_num9_20	mat_mort_num10_20)
@@ -1333,7 +1333,7 @@ set more off
 	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
-* Maternal mortality DC 2020 
+* Maternal deaths DC 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_33 Maternal mortality_DC.csv", clear
 	rename ïorgunitlevel1 country
 	rename (january2020maternaldeaths-october2020maternaldeaths) (mat_mort_num1_20	mat_mort_num2_20	mat_mort_num3_20	mat_mort_num4_20	mat_mort_num5_20	mat_mort_num6_20	mat_mort_num7_20	mat_mort_num8_20	mat_mort_num9_20	mat_mort_num10_20)
