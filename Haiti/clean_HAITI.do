@@ -32,7 +32,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 * FOR NOW WE WILL NOT INCLUDE DATA FROM 2018!
 drop *_18
-* We will also drop July 2020 as it was too incomplete
+* We will also drop July 2020 as it was too incomplete at the time data was received
 drop *7_20
 * 897 facilities. Dropping all facilities that don't report any indicators all 18 months
 egen all_visits = rowtotal(totaldel1_19-del_util6_20), m
@@ -48,7 +48,7 @@ global mortality mat_mort_num peri_mort_num
 global all $volumes $mortality 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
 ****************************************************************/
 
 foreach var of global all {
@@ -56,7 +56,7 @@ egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/18=1) //18mts : Jan19-June20
 
-putexcel set "$user/$data/Analyses/Haiti Apr-Jun comparisons.xlsx", sheet(Total facilities reporting, replace)  modify
+putexcel set "$user/$data/Analyses/Codebook for Haiti.xlsx", sheet(Tot fac reporting 18mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -68,7 +68,6 @@ foreach var of global all {
 }
 drop *report
 
-
 preserve
 	local all totaldel del_util  pncm_util dental_util fp_util anc_util cs_util diarr_util ///
 			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num
@@ -76,9 +75,9 @@ preserve
 	reshape long `all', i(org*) j(month, string)
 	recode `all' (.=0) (1/999999999=1)
 	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(MinMax facilities reporting, replace)  modify
+	putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(MinMax fac reporting 18mos, replace)  modify
 
-	putexcel A1 = "Total number of facilities = 833"
+	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
 	putexcel B2 = "Min month report data"	
 	putexcel C2 = "Max month report data"
@@ -91,8 +90,6 @@ foreach var of global all {
 	putexcel C`i' = `r(max)'
 }
 restore
-
-
 
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
@@ -135,7 +132,7 @@ save "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA_AN.dta", replace
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning4.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Haiti_Jan19-Jun20_fordatacleaning5.xlsx", firstrow(variable) replace
 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
