@@ -69,6 +69,31 @@ foreach var of global all {
 drop *report
 
 
+preserve
+	local all totaldel del_util  pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num
+			   
+	reshape long `all', i(org*) j(month, string)
+	recode `all' (.=0) (1/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(MinMax facilities reporting, replace)  modify
+
+	putexcel A1 = "Total number of facilities = 833"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+
+
+
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
