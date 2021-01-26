@@ -303,10 +303,6 @@ set more off
 	rename (january2019deliveryathf-december2019deliveryathf) (del_util1_19	del_util2_19	del_util3_19	del_util4_19	del_util5_19	del_util6_19	del_util7_19	del_util8_19	del_util9_19	del_util10_19	del_util11_19	del_util12_19)
 	
 	keep org* del*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(del*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *Facility delivery DC 2019 
@@ -315,10 +311,6 @@ set more off
 	rename (january2019deliveryathf-december2019deliveryathf) (del_util1_19	del_util2_19	del_util3_19	del_util4_19	del_util5_19	del_util6_19	del_util7_19	del_util8_19	del_util9_19	del_util10_19	del_util11_19	del_util12_19)
 	
 	keep org* del*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(del*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta"
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -332,10 +324,6 @@ set more off
 	rename (january2020deliveryathf-october2020deliveryathf) (del_util1_20	del_util2_20	del_util3_20	del_util4_20	del_util5_20	del_util6_20	del_util7_20	del_util8_20	del_util9_20	del_util10_20)
 	
 	keep org* del*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(del*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *Facility delivery DC 2020 
@@ -344,10 +332,6 @@ set more off
 	rename (january2020deliveryathf-october2020deliveryathf) (del_util1_20	del_util2_20	del_util3_20	del_util4_20	del_util5_20	del_util6_20	del_util7_20	del_util8_20	del_util9_20	del_util10_20)
 	
 	keep org* del*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(del*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta"
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -362,10 +346,6 @@ set more off
 	rename (january2019caesareandelivery-december2019caesareandelivery) (cs_util1_19	cs_util2_19	cs_util3_19	cs_util4_19	cs_util5_19	cs_util6_19	cs_util7_19	cs_util8_19	cs_util9_19	cs_util10_19	cs_util11_19	cs_util12_19)
 	
 	keep org* cs*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(cs*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *C-sections DC 2019 
@@ -374,10 +354,6 @@ set more off
 	rename (january2019caesareandelivery-december2019caesareandelivery) (cs_util1_19	cs_util2_19	cs_util3_19	cs_util4_19	cs_util5_19	cs_util6_19	cs_util7_19	cs_util8_19	cs_util9_19	cs_util10_19	cs_util11_19	cs_util12_19)
 	
 	keep org* cs*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(cs*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -391,10 +367,6 @@ set more off
 	rename (january2020caesareandelivery-october2020caesareandelivery) (cs_util1_20	cs_util2_20	cs_util3_20	cs_util4_20	cs_util5_20	cs_util6_20	cs_util7_20	cs_util8_20	cs_util9_20	cs_util10_20)
 	
 	keep org* cs*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(cs*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *C-sections DC 2020 
@@ -403,10 +375,6 @@ set more off
 	rename (january2020caesareandelivery-october2020caesareandelivery) (cs_util1_20	cs_util2_20	cs_util3_20	cs_util4_20	cs_util5_20	cs_util6_20	cs_util7_20	cs_util8_20	cs_util9_20	cs_util10_20)
 	
 	keep org* cs*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(cs*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -432,10 +400,6 @@ set more off
 	egen pnc_util12_19 = rowtotal(december2019pncwithin2days december2019pnc342days), mi 
 	
 	keep org* pnc*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pnc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace	
 	
 *Postnatal care DC 2019 
@@ -455,10 +419,6 @@ set more off
 	egen pnc_util12_19 = rowtotal(december2019pncwithin2days december2019pnc342days), mi 
 	
 	keep org* pnc*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(pnc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -481,10 +441,6 @@ set more off
 	egen pnc_util10_20 = rowtotal(october2020pncwithin2days october2020pnc342days), mi 
 	
 	keep org* pnc*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pnc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace	
 	
 *Postnatal care DC 2020 
@@ -502,10 +458,6 @@ set more off
 	egen pnc_util10_20 = rowtotal(october2020pncwithin2days october2020pnc342days), mi 
 	
 	keep org* pnc*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pnc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -520,10 +472,6 @@ set more off
 	rename (january2019monthlybcg-december2019monthlybcg) (bcg_qual1_19	bcg_qual2_19	bcg_qual3_19	bcg_qual4_19	bcg_qual5_19	bcg_qual6_19	bcg_qual7_19	bcg_qual8_19	bcg_qual9_19	bcg_qual10_19	bcg_qual11_19	bcg_qual12_19)		 
 	
 	keep org* bcg*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(bcg*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *BCG DC 2019 
@@ -532,10 +480,6 @@ set more off
 	rename (january2019monthlybcg-december2019monthlybcg) (bcg_qual1_19	bcg_qual2_19	bcg_qual3_19	bcg_qual4_19	bcg_qual5_19	bcg_qual6_19	bcg_qual7_19	bcg_qual8_19	bcg_qual9_19	bcg_qual10_19	bcg_qual11_19	bcg_qual12_19)		 
 	
 	keep org* bcg*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(bcg*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -549,10 +493,6 @@ set more off
 	rename (january2020monthlybcg-october2020monthlybcg) (bcg_qual1_20	bcg_qual2_20	bcg_qual3_20	bcg_qual4_20	bcg_qual5_20	bcg_qual6_20	bcg_qual7_20	bcg_qual8_20	bcg_qual9_20	bcg_qual10_20)
 	
 	keep org* bcg*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(bcg*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *BCG DC 2020 
@@ -561,10 +501,6 @@ set more off
 	rename (january2020monthlybcg-october2020monthlybcg) (bcg_qual1_20	bcg_qual2_20	bcg_qual3_20	bcg_qual4_20	bcg_qual5_20	bcg_qual6_20	bcg_qual7_20	bcg_qual8_20	bcg_qual9_20	bcg_qual10_20)
 	
 	keep org* bcg*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(bcg*), m
-	drop if tag==1 & total==. 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -579,10 +515,6 @@ set more off
 	rename (january2019monthlypenta3-december2019monthlypenta3) (pent_qual1_19	pent_qual2_19	pent_qual3_19	pent_qual4_19	pent_qual5_19	pent_qual6_19	pent_qual7_19	pent_qual8_19	pent_qual9_19	pent_qual10_19	pent_qual11_19	pent_qual12_19)
 	
 	keep org* pent*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pent*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *Penta3 DC 2019 
@@ -591,10 +523,6 @@ set more off
 	rename (january2019monthlypenta3-december2019monthlypenta3) (pent_qual1_19	pent_qual2_19	pent_qual3_19	pent_qual4_19	pent_qual5_19	pent_qual6_19	pent_qual7_19	pent_qual8_19	pent_qual9_19	pent_qual10_19	pent_qual11_19	pent_qual12_19)
 	
 	keep org* pent*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pent*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -608,10 +536,6 @@ set more off
 	rename (january2020monthlypenta3-october2020monthlypenta3) (pent_qual1_20	pent_qual2_20	pent_qual3_20	pent_qual4_20	pent_qual5_20	pent_qual6_20	pent_qual7_20	pent_qual8_20	pent_qual9_20	pent_qual10_20)
 	
 	keep org* pent*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pent*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *Penta3 DC 2020 
@@ -620,10 +544,6 @@ set more off
 	rename (january2020monthlypenta3-october2020monthlypenta3) (pent_qual1_20	pent_qual2_20	pent_qual3_20	pent_qual4_20	pent_qual5_20	pent_qual6_20	pent_qual7_20	pent_qual8_20	pent_qual9_20	pent_qual10_20)
 	
 	keep org* pent*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pent*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -638,10 +558,6 @@ set more off
 	rename (january2019monthlymcv2-december2019monthlymcv2) (measles_qual1_19	measles_qual2_19	measles_qual3_19	measles_qual4_19	measles_qual5_19	measles_qual6_19	measles_qual7_19	measles_qual8_19	measles_qual9_19	measles_qual10_19	measles_qual11_19	measles_qual12_19)
 	
 	keep org* measles*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(measles*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace	
 	
 *Measles vaccine DC 2019 
@@ -650,10 +566,6 @@ set more off
 	rename (january2019monthlymcv2-december2019monthlymcv2) (measles_qual1_19	measles_qual2_19	measles_qual3_19	measles_qual4_19	measles_qual5_19	measles_qual6_19	measles_qual7_19	measles_qual8_19	measles_qual9_19	measles_qual10_19	measles_qual11_19	measles_qual12_19)
 	
 	keep org* measles*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(measles*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -667,10 +579,6 @@ set more off
 	rename (january2020monthlymcv2-october2020monthlymcv2) (measles_qual1_20	measles_qual2_20	measles_qual3_20	measles_qual4_20	measles_qual5_20	measles_qual6_20	measles_qual7_20	measles_qual8_20	measles_qual9_20	measles_qual10_20)
 	 
 	keep org* measles*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(measles*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace		
 	
 *Measles vaccine DC 2020 
@@ -679,10 +587,6 @@ set more off
 	rename (january2020monthlymcv2-october2020monthlymcv2) (measles_qual1_20	measles_qual2_20	measles_qual3_20	measles_qual4_20	measles_qual5_20	measles_qual6_20	measles_qual7_20	measles_qual8_20	measles_qual9_20	measles_qual10_20)
 	 
 	keep org* measles*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(measles*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 	
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -697,10 +601,6 @@ set more off
 	rename (january2019monthlychildrengotipv-december2019monthlychildrengotip) (opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	opv3_qual6_19	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	opv3_qual11_19	opv3_qual12_19)
 
 	keep org* opv3*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opv3*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace		
 	
 *OPV3 vaccine DC 2019 
@@ -709,10 +609,6 @@ set more off
 	rename (january2019monthlychildrengotipv-december2019monthlychildrengotip) (opv3_qual1_19	opv3_qual2_19	opv3_qual3_19	opv3_qual4_19	opv3_qual5_19	opv3_qual6_19	opv3_qual7_19	opv3_qual8_19	opv3_qual9_19	opv3_qual10_19	opv3_qual11_19	opv3_qual12_19)
 
 	keep org* opv3*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opv3*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 	
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -726,10 +622,6 @@ set more off
 	rename (january2020monthlychildrengotipv-october2020monthlychildrengotipv) (opv3_qual1_20	opv3_qual2_20	opv3_qual3_20	opv3_qual4_20	opv3_qual5_20	opv3_qual6_20	opv3_qual7_20	opv3_qual8_20	opv3_qual9_20	opv3_qual10_20)
 
 	keep org* opv3*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opv3*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 
 *OPV3 vaccine DC 2020 
@@ -738,10 +630,6 @@ set more off
 	rename (january2020monthlychildrengotipv-october2020monthlychildrengotipv) (opv3_qual1_20	opv3_qual2_20	opv3_qual3_20	opv3_qual4_20	opv3_qual5_20	opv3_qual6_20	opv3_qual7_20	opv3_qual8_20	opv3_qual9_20	opv3_qual10_20)
 
 	keep org* opv3*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opv3*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 		
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -756,10 +644,6 @@ set more off
 	rename (january2019monthlypcv3-december2019monthlypcv3) (pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19)
 
 	keep org* pneum*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(pneum*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace	
 	
 *PCV3 vaccine DC 2019 
@@ -768,10 +652,6 @@ set more off
 	rename (january2019monthlypcv3-december2019monthlypcv3) (pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19)
 
 	keep org* pneum*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(pneum*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 			
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -785,10 +665,6 @@ set more off
 	rename (january2020monthlypcv3-october2020monthlypcv3) (pneum_qual1_20	pneum_qual2_20	pneum_qual3_20	pneum_qual4_20	pneum_qual5_20	pneum_qual6_20	pneum_qual7_20	pneum_qual8_20	pneum_qual9_20	pneum_qual10_20)
 
 	keep org* pneum*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(pneum*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace	
 
 * PCV3 vaccine DC 2020 
@@ -797,10 +673,6 @@ set more off
 	rename (january2020monthlypcv3-october2020monthlypcv3) (pneum_qual1_20	pneum_qual2_20	pneum_qual3_20	pneum_qual4_20	pneum_qual5_20	pneum_qual6_20	pneum_qual7_20	pneum_qual8_20	pneum_qual9_20	pneum_qual10_20)
 
 	keep org* pneum*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(pneum*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 		
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -816,10 +688,6 @@ set more off
 	rename (january2019opddiabetes-december2019opddiabetes) (diab_util1_19	diab_util2_19	diab_util3_19	diab_util4_19	diab_util5_19	diab_util6_19	diab_util7_19	diab_util8_19	diab_util9_19	diab_util10_19	diab_util11_19	diab_util12_19)
 
 	keep org* diab*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(diab*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace	
 
 * OPD diabetes DC 2019 
@@ -828,10 +696,6 @@ set more off
 	rename (january2019opddiabetes-december2019opddiabetes) (diab_util1_19	diab_util2_19	diab_util3_19	diab_util4_19	diab_util5_19	diab_util6_19	diab_util7_19	diab_util8_19	diab_util9_19	diab_util10_19	diab_util11_19	diab_util12_19)
 
 	keep org* diab*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(diab*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 		
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -845,10 +709,6 @@ set more off
 	rename (january2020opddiabetes-october2020opddiabetes) (diab_util1_20	diab_util2_20	diab_util3_20	diab_util4_20	diab_util5_20	diab_util6_20	diab_util7_20	diab_util8_20	diab_util9_20	diab_util10_20)
 
 	keep org* diab*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(diab*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace		
 
 * OPD diabetes DC 2020 
@@ -857,10 +717,6 @@ set more off
 	rename (january2020opddiabetes-october2020opddiabetes) (diab_util1_20	diab_util2_20	diab_util3_20	diab_util4_20	diab_util5_20	diab_util6_20	diab_util7_20	diab_util8_20	diab_util9_20	diab_util10_20)
 
 	keep org* diab*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(diab*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 		
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -875,10 +731,6 @@ set more off
 	rename (january2019opdhypertension-december2019opdhypertension) (hyper_util1_19	hyper_util2_19	hyper_util3_19	hyper_util4_19	hyper_util5_19	hyper_util6_19	hyper_util7_19	hyper_util8_19	hyper_util9_19	hyper_util10_19	hyper_util11_19	hyper_util12_19)
 	
 	keep org* hyper*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(hyper*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace	
 	
 * Hypertension visits DC 2019 
@@ -887,10 +739,6 @@ set more off
 	rename (january2019opdhypertension-december2019opdhypertension) (hyper_util1_19	hyper_util2_19	hyper_util3_19	hyper_util4_19	hyper_util5_19	hyper_util6_19	hyper_util7_19	hyper_util8_19	hyper_util9_19	hyper_util10_19	hyper_util11_19	hyper_util12_19)
 	
 	keep org* hyper*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(hyper*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 			
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -904,10 +752,6 @@ set more off
 	rename (january2020opdhypertension-october2020opdhypertension) (hyper_util1_20	hyper_util2_20	hyper_util3_20	hyper_util4_20	hyper_util5_20	hyper_util6_20	hyper_util7_20	hyper_util8_20	hyper_util9_20	hyper_util10_20)
 	
 	keep org* hyper*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(hyper*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace		
 
 * Hypertension visits DC 2020 - new file is needed (discuss with Catherine)
@@ -916,10 +760,6 @@ set more off
 	rename (january2020opdhypertension-october2020opdhypertension) (hyper_util1_20	hyper_util2_20	hyper_util3_20	hyper_util4_20	hyper_util5_20	hyper_util6_20	hyper_util7_20	hyper_util8_20	hyper_util9_20	hyper_util10_20)
 	
 	keep org* hyper*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(hyper*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -932,10 +772,6 @@ set more off
 	rename (january2019opdoutpatientvisits-december2019opdoutpatientvisits) (opd_util1_19	opd_util2_19	opd_util3_19	opd_util4_19	opd_util5_19	opd_util6_19	opd_util7_19	opd_util8_19	opd_util9_19	opd_util10_19	opd_util11_19	opd_util12_19)
 	
 	keep org* opd*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace		
 	
 * Outpatient visits DC 2019 
@@ -944,10 +780,6 @@ set more off
 	rename (january2019opdoutpatientvisits-december2019opdoutpatientvisits) (opd_util1_19	opd_util2_19	opd_util3_19	opd_util4_19	opd_util5_19	opd_util6_19	opd_util7_19	opd_util8_19	opd_util9_19	opd_util10_19	opd_util11_19	opd_util12_19)
 	
 	keep org* opd*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -961,10 +793,6 @@ set more off
 	rename (january2020opdoutpatientvisits-october2020opdoutpatientvisits) (opd_util1_20	opd_util2_20	opd_util3_20	opd_util4_20	opd_util5_20	opd_util6_20	opd_util7_20	opd_util8_20	opd_util9_20	opd_util10_20) 
 	
 	keep org* opd*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace		
 	
 * Outpatient visits DC 2020 
@@ -973,10 +801,6 @@ set more off
 	rename (january2020opdoutpatientvisits-october2020opdoutpatientvisits) (opd_util1_20	opd_util2_20	opd_util3_20	opd_util4_20	opd_util5_20	opd_util6_20	opd_util7_20	opd_util8_20	opd_util9_20	opd_util10_20) 
 	
 	keep org* opd*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(opd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -991,10 +815,6 @@ set more off
 	rename (january2019ipdinpatientvisits-december2019ipdinpatientvisits) (ipd_util1_19	ipd_util2_19	ipd_util3_19	ipd_util4_19	ipd_util5_19	ipd_util6_19	ipd_util7_19	ipd_util8_19	ipd_util9_19	ipd_util10_19	ipd_util11_19	ipd_util12_19)
 	
 	keep org* ipd*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(ipd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Inpatient admissions DC 2019 
@@ -1003,10 +823,6 @@ set more off
 	rename (january2019ipdinpatientvisits-december2019ipdinpatientvisits) (ipd_util1_19	ipd_util2_19	ipd_util3_19	ipd_util4_19	ipd_util5_19	ipd_util6_19	ipd_util7_19	ipd_util8_19	ipd_util9_19	ipd_util10_19	ipd_util11_19	ipd_util12_19)
 	
 	keep org* ipd*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(ipd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1020,10 +836,6 @@ set more off
 	rename (january2020ipdinpatientvisits-october2020ipdinpatientvisits) (ipd_util1_20	ipd_util2_20	ipd_util3_20	ipd_util4_20	ipd_util5_20	ipd_util6_20	ipd_util7_20	ipd_util8_20	ipd_util9_20	ipd_util10_20)
 	
 	keep org* ipd*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(ipd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Inpatient admissions DC 2020 
@@ -1032,10 +844,6 @@ set more off
 	rename (january2020ipdinpatientvisits-october2020ipdinpatientvisits) (ipd_util1_20	ipd_util2_20	ipd_util3_20	ipd_util4_20	ipd_util5_20	ipd_util6_20	ipd_util7_20	ipd_util8_20	ipd_util9_20	ipd_util10_20)
 	
 	keep org* ipd*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(ipd*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1061,10 +869,6 @@ set more off
 	egen road_util12_19 = rowtotal(december2019opdroadtrafficinjury december2019ipdroadtrafficinjury), mi 
 	
 	keep org* road*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(road*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Road traffic injuries DC 2019 
@@ -1084,10 +888,6 @@ set more off
 	egen road_util12_19 = rowtotal(december2019opdroadtrafficinjury december2019ipdroadtrafficinjury), mi 
 	
 	keep org* road*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(road*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1110,10 +910,6 @@ set more off
 	egen road_util10_20 = rowtotal(october2020opdroadtrafficinjury october2020ipdroadtrafficinjury), mi 
 	
 	keep org* road*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(road*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Road traffic injuries DC 2020 
@@ -1131,10 +927,6 @@ set more off
 	egen road_util10_20 = rowtotal(october2020opdroadtrafficinjury october2020ipdroadtrafficinjury), mi 
 	
 	keep org* road*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(road*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1149,10 +941,6 @@ set more off
 	rename (january2019deathneonatal07days-december2019deathneonatal07days) (neo_mort_num1_19	neo_mort_num2_19	neo_mort_num3_19	neo_mort_num4_19	neo_mort_num5_19	neo_mort_num6_19	neo_mort_num7_19	neo_mort_num8_19	neo_mort_num9_19	neo_mort_num10_19	neo_mort_num11_19	neo_mort_num12_19)
 									
 	keep org* neo*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(neo*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Neonatal deaths DC 2019 
@@ -1161,10 +949,6 @@ set more off
 	rename (january2019deathneonatal07days-december2019deathneonatal07days) (neo_mort_num1_19	neo_mort_num2_19	neo_mort_num3_19	neo_mort_num4_19	neo_mort_num5_19	neo_mort_num6_19	neo_mort_num7_19	neo_mort_num8_19	neo_mort_num9_19	neo_mort_num10_19	neo_mort_num11_19	neo_mort_num12_19)
 									
 	keep org* neo*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(neo*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1178,10 +962,6 @@ set more off
 	rename (january2020deathneonatal07days-october2020deathneonatal07days) (neo_mort_num1_20	neo_mort_num2_20	neo_mort_num3_20	neo_mort_num4_20	neo_mort_num5_20	neo_mort_num6_20	neo_mort_num7_20	neo_mort_num8_20	neo_mort_num9_20	neo_mort_num10_20)
 	
 	keep org* neo*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(neo*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Neonatal deaths DC 2020 
@@ -1190,10 +970,6 @@ set more off
 	rename (january2020deathneonatal07days-october2020deathneonatal07days) (neo_mort_num1_20	neo_mort_num2_20	neo_mort_num3_20	neo_mort_num4_20	neo_mort_num5_20	neo_mort_num6_20	neo_mort_num7_20	neo_mort_num8_20	neo_mort_num9_20	neo_mort_num10_20)
 	
 	keep org* neo*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(neo*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1208,10 +984,6 @@ set more off
 	rename (january2019stillbirth28weeks-december2019stillbirth28weeks) (sb_mort_num1_19	sb_mort_num2_19	sb_mort_num3_19	sb_mort_num4_19	sb_mort_num5_19	sb_mort_num6_19	sb_mort_num7_19	sb_mort_num8_19	sb_mort_num9_19	sb_mort_num10_19	sb_mort_num11_19	sb_mort_num12_19)
 	
 	keep org* sb*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(sb*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Stillbirths DC 2019 
@@ -1220,10 +992,6 @@ set more off
 	rename (january2019stillbirth28weeks-december2019stillbirth28weeks) (sb_mort_num1_19	sb_mort_num2_19	sb_mort_num3_19	sb_mort_num4_19	sb_mort_num5_19	sb_mort_num6_19	sb_mort_num7_19	sb_mort_num8_19	sb_mort_num9_19	sb_mort_num10_19	sb_mort_num11_19	sb_mort_num12_19)
 	
 	keep org* sb*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(sb*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1237,10 +1005,6 @@ set more off
 	rename (january2020stillbirth28weeks-october2020stillbirth28weeks) (sb_mort_num1_20	sb_mort_num2_20	sb_mort_num3_20	sb_mort_num4_20	sb_mort_num5_20	sb_mort_num6_20	sb_mort_num7_20	sb_mort_num8_20	sb_mort_num9_20	sb_mort_num10_20)
 	
 	keep org* sb*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(sb*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Stillbirths DC 2020 
@@ -1249,10 +1013,6 @@ set more off
 	rename (january2020stillbirth28weeks-october2020stillbirth28weeks) (sb_mort_num1_20	sb_mort_num2_20	sb_mort_num3_20	sb_mort_num4_20	sb_mort_num5_20	sb_mort_num6_20	sb_mort_num7_20	sb_mort_num8_20	sb_mort_num9_20	sb_mort_num10_20)
 	
 	keep org* sb*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(sb*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta" 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1267,10 +1027,6 @@ set more off
 	rename (january2019maternaldeaths-december2019maternaldeaths) (mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19	mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19	mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19)
 	
 	keep org* mat*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(mat*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Maternal deaths DC 2019 
@@ -1279,10 +1035,6 @@ set more off
 	rename (january2019maternaldeaths-december2019maternaldeaths) (mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19	mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19	mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19)
 	
 	keep org* mat*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(mat*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta"
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -1296,10 +1048,6 @@ set more off
 	rename (january2020maternaldeaths-october2020maternaldeaths) (mat_mort_num1_20	mat_mort_num2_20	mat_mort_num3_20	mat_mort_num4_20	mat_mort_num5_20	mat_mort_num6_20	mat_mort_num7_20	mat_mort_num8_20	mat_mort_num9_20	mat_mort_num10_20)
 	
 	keep org* mat*
-	duplicates tag org* , gen(tag)  
-	egen total= rowtotal(mat*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 * Maternal deaths DC 2020 
@@ -1308,10 +1056,6 @@ set more off
 	rename (january2020maternaldeaths-october2020maternaldeaths) (mat_mort_num1_20	mat_mort_num2_20	mat_mort_num3_20	mat_mort_num4_20	mat_mort_num5_20	mat_mort_num6_20	mat_mort_num7_20	mat_mort_num8_20	mat_mort_num9_20	mat_mort_num10_20)
 	
 	keep org* mat*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(mat*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta"
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
