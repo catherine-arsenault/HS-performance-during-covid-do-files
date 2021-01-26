@@ -8,7 +8,7 @@ clear all
 set more off
 ********************************************************************************
 ********************************************************************************
-*Import raw data: VOLUMES OF SERVICES, ALL FACILITIES
+*Import raw data: VOLUMES OF SERVICES (all facilities + district health offices (DC))
 
 *Family planning 2019 
 	 import delimited "$user/$data/Raw data/2019/facility/Lao_2019_Jan to Dec_facility_1 Modern contraceptive use.csv", clear
@@ -67,10 +67,6 @@ set more off
 	 egen fp_la_util12_19 = rowtotal(december2019iudnewusers december2019iudcontinueusers december2019implantnewusers december2019implantcontinueusers), mi 
 	 
 	keep org* fp* 
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(fp*), m
-	drop if tag==1 & total==. //no duplicate observations 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace 
 
 *Family Planning District Health office totals 2019 
@@ -130,10 +126,6 @@ set more off
 	 egen fp_la_util12_19 = rowtotal(december2019iudnewusers december2019iudcontinueusers december2019implantnewusers december2019implantcontinueusers), mi 
 	
 	keep org* fp* 
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(fp*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta"
 	save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta", replace
 	rm "$user/$data/Data for analysis/tmp.dta"
@@ -197,10 +189,6 @@ set more off
 	 egen fp_la_util10_20 = rowtotal(october2020iudnewusers october2020iudcontinueusers october2020implantnewusers october2020implantcontinueusers), mi 
 	
 	keep org* fp* 
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(fp*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace 
 	
 *Family Planning district health office (DC) 2020 
@@ -261,10 +249,6 @@ set more off
 	 egen fp_la_util10_20 = rowtotal(october2020iudnewusers october2020iudcontinueusers october2020implantnewusers october2020implantcontinueusers), mi 
 	
 	keep org* fp* 
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(fp*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta"
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -278,10 +262,6 @@ set more off
 	rename ïorgunitlevel1 country 
 	rename (january2019anc1stvisitbyhealthfa-december2019anc1stvisitbyhealthf) (anc_util1_19	anc_util2_19	anc_util3_19	anc_util4_19	anc_util5_19	anc_util6_19	anc_util7_19	anc_util8_19	anc_util9_19	anc_util10_19	anc_util11_19	anc_util12_19)
 	keep org* anc*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(anc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 	
 *Antenatal care district-DC 2019 
@@ -289,10 +269,6 @@ set more off
 	rename ïorgunitlevel1 country 
 	rename (january2019anc1stvisitbyhealthfa-december2019anc1stvisitbyhealthf) (anc_util1_19	anc_util2_19	anc_util3_19	anc_util4_19	anc_util5_19	anc_util6_19	anc_util7_19	anc_util8_19	anc_util9_19	anc_util10_19	anc_util11_19	anc_util12_19)	
 	keep org* anc*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(anc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	append using "$user/$data/Data for analysis/tmp.dta"
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
@@ -305,21 +281,14 @@ set more off
 	rename ïorgunitlevel1 country 
 	rename (january2020anc1stvisitbyhealthfa-october2020anc1stvisitbyhealthfa)	(anc_util1_20	anc_util2_20	anc_util3_20	anc_util4_20	anc_util5_20	anc_util6_20	anc_util7_20	anc_util8_20	anc_util9_20	anc_util10_20)	
 	keep org* anc*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(anc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
 	save "$user/$data/Data for analysis/tmp.dta", replace
 
 *Antenatal care DC 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Lao_2020_Jan to Dec_facility_3 Antenatal care_DC.csv", clear
 	rename ïorgunitlevel1 country 
-	rename (january2020anc1stvisitbyhealthfa-october2020anc1stvisitbyhealthfa)	(anc_util1_20	anc_util2_20	anc_util3_20	anc_util4_20	anc_util5_20	anc_util6_20	anc_util7_20	anc_util8_20	anc_util9_20	anc_util10_20)	
-	keep org* anc*
-	duplicates tag org* , gen(tag) 
-	egen total= rowtotal(anc*), m
-	drop if tag==1 & total==. //no observation 
-	drop tag total
+	rename (january2020anc1stvisitbyhealthfa-october2020anc1stvisitbyhealthfa) ///
+	(anc_util1_20	anc_util2_20	anc_util3_20	anc_util4_20	anc_util5_20	anc_util6_20	///
+	anc_util7_20	anc_util8_20	anc_util9_20	anc_util10_20)	
 	append using "$user/$data/Data for analysis/tmp.dta"
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
