@@ -53,26 +53,33 @@ global denominator sb_mort_denom livebirths_denom
 global all $rmnch $vax $other $quality $mortality $denominator
 
 preserve 
-keep if month>=4 & month<= 6
-collapse (sum) $all, by(dist year)
-
-gen newborn_mort = newborn_mort_num/livebirths_denom
-gen sb_mort = sb_mort_num/sb_mort_denom
-gen mat_mort = mat_mort_num/livebirths_denom
-gen ipd_mort = ipd_mort_num/ipd_util
-gen icu_mort= icu_mort_num/icu_util
-gen trauma_mort = trauma_mort_num/trauma_util
-drop $mortality $denominator
-
-global revall $rmnch $vax $other $quality newborn_mort sb_mort mat_mort ipd_mort icu_mort trauma_mort
-
-reshape wide $revall, i(dist) j(year)
-
-foreach var in $revall {
-	gen `var'change = (`var'2020-`var'2019)/`var'2019
-	}
+	*keeps Q2 only
+	keep if month>=4 & month<= 6
 	
-gen opd_wt = opd_util2019
+	* collapse at district
+	collapse (sum) $all, by(dist year)
+	
+	*calculates mortality rates
+	gen newborn_mort = newborn_mort_num/livebirths_denom
+	gen sb_mort = sb_mort_num/sb_mort_denom
+	gen mat_mort = mat_mort_num/livebirths_denom
+	gen ipd_mort = ipd_mort_num/ipd_util
+	gen icu_mort= icu_mort_num/icu_util
+	gen trauma_mort = trauma_mort_num/trauma_util
+	drop $mortality $denominator
+
+	global revall $rmnch $vax $other $quality newborn_mort sb_mort mat_mort ///
+	ipd_mort icu_mort trauma_mort
+	
+	* reshares to wide
+	reshape wide $revall, i(dist) j(year)
+	
+	* Calculate % change for Q2 2020 2019
+	foreach var in $revall {
+		gen `var'change = (`var'2020-`var'2019)/`var'2019
+	}
+	* Weight var
+	gen opd_wt = opd_util2019
 
 putexcel set "$user/$data/Analyses/KZN policymemo intervals.xlsx", sheet(Intervals, replace)  modify
 putexcel A2 = "Variable"
@@ -90,6 +97,13 @@ foreach var in $revall {
 	putexcel D`i' = `r(mean)'-`r(min)'
 	putexcel E`i' = `r(max)'-`r(mean)'
 	}	
+	
+	putexcel A35 ="KMC_no outliers"
+	qui sum kmcn_qualchange [aweight = opd_util2019] if dist!=8 &  dist!=11
+	putexcel B35 =`r(mean)'
+	putexcel C35 =2*`r(sd)'
+	putexcel D35 = `r(mean)'-`r(min)'
+	putexcel E35 = `r(max)'-`r(mean)'
 restore	
 
 /********************************************************************************
