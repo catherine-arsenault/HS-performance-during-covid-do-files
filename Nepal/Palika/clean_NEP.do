@@ -225,3 +225,65 @@ sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo
 rename mo month
 
 save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_AN.dta", replace
+
+
+/***************************************************************
+                 COMPLETE CASE ANALYSIS 
+			FOR MULTI-COUNTRY COMPARISON
+****************************************************************
+For analyses (Quater comparisons), we keep only those facilities 
+that reported the months of interest) */
+
+u "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_AN.dta", clear
+foreach x of global all {
+			 	preserve
+					keep org* `x'*
+					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & ///
+							`x'4_20!=. & `x'5_20!=. & `x'6_20!=.
+					save "$user/$data/Data for analysis/tmp`x'.dta", replace
+				restore
+				}
+	u "$user/$data/Data for analysis/tmpfp_perm_util.dta", clear
+
+	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util ///
+				pneum_util totaldel sam_util opd_util ipd_util er_util  tbdetect_qual  ///
+				hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
+			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num live_births {
+			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
+				drop _merge
+				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_AN.dta", replace
+		}
+	foreach x of global all {
+			 rm "$user/$data/Data for analysis/tmp`x'.dta"
+			 }
+* Reshape for analyses
+reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util pnc_util ///
+			diarr_util pneum_util sam_util opd_util ipd_util er_util tbdetect_qual ///
+			hivdiag_qual pent_qual bcg_qual totaldel measles_qual opv3_qual pneum_qual ///
+			sb_mort_num mat_mort_num neo_mort_num live_births ///
+			 ipd_mort_num, i(org*) j(month) string	
+	
+* Month and year
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
+		month=="5_20" |	month=="6_20"  | month=="7_20" |	month=="8_20" |	///
+		month=="9_20" |	month=="10_20" | ///
+		month=="11_20" |	month=="12_20"
+replace year = 2019 if year==.
+gen mo = 1 if month =="1_19" | month =="1_20"
+replace mo = 2 if month =="2_19" | month =="2_20"
+replace mo = 3 if month =="3_19" | month =="3_20"
+replace mo = 4 if month =="4_19" | month =="4_20"
+replace mo = 5 if month =="5_19" | month =="5_20"
+replace mo = 6 if month =="6_19" | month =="6_20"
+replace mo = 7 if month =="7_19" | month =="7_20"
+replace mo = 8 if month =="8_19" | month =="8_20"
+replace mo = 9 if month =="9_19" | month =="9_20"
+replace mo = 10 if month =="10_19" | month =="10_20"
+replace mo = 11 if month =="11_19" | month =="11_20"
+replace mo = 12 if month =="12_19" | month =="12_20"
+drop month
+sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo 
+rename mo month
+
+save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_MULTI.dta", replace
+
