@@ -51,7 +51,7 @@ global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util ////
 			   tbdetect_qual  hivdiag_qual totaldel pent_qual bcg_qual ///
 			   measles_qual opv3_qual pneum_qual 
-global mortality sb_mort_num mat_mort_num ipd_mort_num neo_mort_num
+global mortality sb_mort_num mat_mort_num ipd_mort_num neo_mort_num live_births
 global all $volumes $mortality 
 
 
@@ -155,7 +155,7 @@ This brings completeness up "generally" above 90% for all variables. */
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util pneum_util totaldel ///
                sam_util opd_util ipd_util er_util  tbdetect_qual  hivdiag_qual ///
 			   pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
-			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num {
+			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num live_births {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_DB.dta", replace
@@ -187,7 +187,7 @@ foreach x of global all {
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util ///
 				pneum_util totaldel sam_util opd_util ipd_util er_util  tbdetect_qual  ///
 				hivdiag_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
-			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num {
+			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num live_births {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_AN.dta", replace
@@ -199,7 +199,7 @@ foreach x of global all {
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util pnc_util ///
 			diarr_util pneum_util sam_util opd_util ipd_util er_util tbdetect_qual ///
 			hivdiag_qual pent_qual bcg_qual totaldel measles_qual opv3_qual pneum_qual ///
-			sb_mort_num mat_mort_num neo_mort_num ///
+			sb_mort_num mat_mort_num neo_mort_num live_births ///
 			 ipd_mort_num, i(org*) j(month) string	
 	
 * Month and year
