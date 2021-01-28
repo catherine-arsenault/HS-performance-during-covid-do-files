@@ -59,7 +59,7 @@ global all $volumes $mortality
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
 ****************************************************************/
 
 foreach var of global all {
@@ -67,8 +67,7 @@ egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/22=1) //22mts : Jan19-Oct20
 
-putexcel set "$user/$data/Analyses/Lao_changes_2020_2019.xlsx", sheet(facility-total N, replace)  modify
-putexcel A1 = "Jan19-Oct20 (N=1245)" //indicate the months and total facilities 
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot fac reporting 22mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -79,6 +78,32 @@ foreach var of global all {
 	putexcel B`i' = `r(sum)'
 }
 drop *report
+
+preserve
+	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
+			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   diab_util hyper_util opd_util ipd_util road_util neo_mort_num ///
+			   sb_mort_num mat_mort_num
+			   
+	reshape long `all', i(org*) j(month, string)
+	recode `all' (.=0) (1/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(MinMax fac reporting 22mos, replace)  modify
+
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+
 
 
 /*******************************************************************
