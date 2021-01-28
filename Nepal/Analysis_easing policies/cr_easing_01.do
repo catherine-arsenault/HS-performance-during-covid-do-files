@@ -3,6 +3,8 @@
 * Creation do file
 * Created by Catherine Arsenault and Neena Kappoor
 
+global user "/Users/neenakapoor/Dropbox (Harvard University)/HMIS Data for Health System Performance Covid (Nepal)"
+
 clear all
 
 *Import policy data 
@@ -41,19 +43,44 @@ drop month
 sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
 
+
 *******************************************************************************
 * Creates exposure variables (policies eased or continued)
 
 
-*Create pre/post indicator for DID 	- this is for placebo test, not real analysis 		
-gen time = 0
-replace time = 1 if year == 2020 & month == 4 | year == 2020 & month == 5 | year == 2020 & month == 6
+*Create pre/post indicator for placebo test and DID analysis
+gen post_plac = .
+replace post_plac = 0 if year == 2020 & month == 1 | year == 2020 & month == 2 | year == 2020 & month == 3
+replace post_plac = 1 if year == 2020 & month == 4 | year == 2020 & month == 5 | year == 2020 & month == 6
 
-* Treatment is eased_8_20
+gen post = .
+replace post = 0 if year == 2020 
+** Not sure about month 7 
+replace post = 1 if year == 2020 & month == 8 | year == 2020 & month == 9 | year == 2020 & month == 10 | year == 2020 & month == 11 
+
+**** IF TREATMENT WERE EASED_8_20, month of August as Treatment 
+* Create interaction term - Placebo DID 
+gen did_eased_8_20_plac = post_plac*eased_8_20
+
 * Create interaction term - DID 
-gen did_eased_8_20 = time*eased_8_20
+gen did_eased_8_20 = post*eased_8_20
 
+**** FOR MULTIPLE POST PERIODS
+gen did_eased_9_20 = post*eased_9_20
+gen did_eased_10_20 = post*eased_10_20
+gen did_eased_11_20 = post*eased_11_20
 
+**** IF TREATMENT CHANGED OVER TIME 
+gen eased_treated = .
+replace eased_treated = 0 if year == 2020
+** Not sure about month 7 
+replace eased_treated = 1 if year == 2020 & month == 8 & eased_8_20 == 1
+replace eased_treated = 1 if year == 2020 & month == 9 & eased_9_20 == 1
+replace eased_treated = 1 if year == 2020 & month == 10 & eased_10_20 == 1
+replace eased_treated = 1 if year == 2020 & month == 11 & eased_11_20 == 1
+
+* Create interaction term - DID 
+gen did_eased = post*eased_treated
 
 save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta", replace
 

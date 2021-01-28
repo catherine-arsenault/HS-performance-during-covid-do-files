@@ -7,13 +7,13 @@ clear all
 
 global user "/Users/neenakapoor/Dropbox (Harvard University)/HMIS Data for Health System Performance Covid (Nepal)"
 
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Jun20_easing_an_011320.dta"
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta"
 
 *Parrallel trends graphs 
 
-collapse (sum) fp_util anc_util del_util cs_util pnc_util, by(month eased_8_20)
+collapse (sum) fp_sa_util anc_util del_util cs_util pnc_util, by(month eased_8_20)
 
-line fp_util month if eased_8_20 == 0 || line fp_util month if eased_8_20 == 1, sort 
+line fp_sa_util month if eased_8_20 == 0 || line fp_sa_util month if eased_8_20 == 1, sort 
 
 line anc_util month if eased_8_20 == 0 || line anc_util month if eased_8_20 == 1, sort
 
