@@ -32,9 +32,10 @@ preserve
 	gen mat_mort = mat_mort_num/totaldel
 	gen ipd_mort = ipd_mort_num/ipd_util
 	gen neo_mort = neo_mort_num/totaldel
+	gen cs_qual = cs_util/totaldel 
 	drop $mortality 
 
-	global revall $rmnch $vax $other sb_mort mat_mort ipd_mort neo_mort
+	global revall $rmnch $vax $other sb_mort mat_mort ipd_mort neo_mort cs_qual 
 
 	reshape wide $revall, i(orgunitlevel1) j(year)
 
