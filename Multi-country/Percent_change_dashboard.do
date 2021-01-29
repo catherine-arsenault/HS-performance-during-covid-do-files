@@ -80,10 +80,11 @@ preserve
 	gen ipd_mort = ipd_mort_num/ipd_util
 	gen icu_mort= icu_mort_num/icu_util
 	gen trauma_mort = trauma_mort_num/trauma_util
+	gen cs_qual = cs_util/totaldel 
 	drop $mortality $denominator
 
 	global revall $rmnch $vax $other $quality newborn_mort sb_mort mat_mort ///
-	              ipd_mort icu_mort trauma_mort
+	              ipd_mort icu_mort trauma_mort cs_qual 
 
 	reshape wide $revall, i(Province) j(year)
 
