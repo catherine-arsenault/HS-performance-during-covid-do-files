@@ -1,4 +1,3 @@
-
 * HS performance during Covid
 * November 11 2020
 * Nepal, January 2019 - Nov 2020, analyses at Palika LEVEL 
@@ -7,7 +6,7 @@
 /****************************************************************
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
-****************************************************************
+*****************************************************************
  
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
@@ -32,8 +31,8 @@ order province
 
 * Reshaping for data visualisations / dashboard
 reshape long  fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			  pnc_util diarr_util pneum_util ///
-			  sam_util opd_util ipd_util er_util tbdetect_qual hivdiag_qual ///
+			  pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
+			  er_util tbdetect_qual hivdiag_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
 			  totaldel sb_mort_num mat_mort_num ipd_mort_num neo_mort_num, ///
 			  i(province) j(month) string
@@ -77,7 +76,16 @@ merge m:m province month using "$user/$data/temp.dta"
 drop _merge
 
 
+* Recoding months to match Nepali calendar
+* January 2019 is Magh 20175 (Jan 15 to Feb 15 2019) 
+* January 2020 is Magh 2076 (Jan 15 to Feb 15 2020)
+* to identify the last day on the month on the dashboard, we move months forward
+gen month2 = month+1
+recode month2 (13=1)
+drop month 
+rename month2 month
 rm "$user/$data/temp.dta"
+
 export delimited using "$user/$data/Nepal_palika_Jan19-Nov20_fordashboard.csv", replace
 
 
