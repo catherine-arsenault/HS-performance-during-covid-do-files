@@ -4,10 +4,40 @@
 * Created by Catherine Arsenault and Neena Kappoor
 
 clear all
-
-global user "/Users/neenakapoor/Dropbox (Harvard University)/HMIS Data for Health System Performance Covid (Nepal)"
-
+set more off
 use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta"
+
+* DID estimates fixed policy change
+reg fp_sa_util post eased_8_20  did_eased_8_20 , r
+reg anc_util post eased_8_20  did_eased_8_20 , r
+reg del_util post eased_8_20  did_eased_8_20 , r
+reg cs_util post eased_8_20  did_eased_8_20 , r
+reg pnc_util post eased_8_20  did_eased_8_20 , r
+* could also do reg anc_util post##eased_8_20
+
+
+*DID estimates with variable policy changes
+quietly reg fp_sa_util i.palikaid i.month eased_ , r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+reg anc_util i.palikaid i.month eased_ , r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+reg del_util i.palikaid i.month eased_ , r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+reg cs_util i.palikaid i.month eased_ , r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+reg pnc_util i.palikaid i.month eased_ , r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+
 
 **** IF AUGUST WERE TREATMENT INDICATOR 
 

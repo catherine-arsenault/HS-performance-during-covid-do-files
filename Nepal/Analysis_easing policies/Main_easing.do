@@ -3,10 +3,10 @@
 * Main do file
 * Created by Catherine Arsenault and Neena Kappoor
 
- global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/acatherine/Dropbox (Harvard University)"
 *global user "/Users/neenakapoor/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
- global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
+global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
 *global dofiles "/Users/neenakapoor/Desktop/HS-performance-during-covid-do-files/Nepal"
 
 **********************************************************************
@@ -20,13 +20,10 @@ do "$dofiles/Palika/cr_NEP_03.do"
 
 **********************************************************************
 * Data cleaning
-
-* Cleans the data 
 do "$dofiles/Analysis_easing policies/clean_easing.do"
 
 **********************************************************************
 * Links containment policy data to dhis2 dataset and formats data
-
 do "$dofiles/Analysis_easing policies/cr_easing_01.do"
 
 **********************************************************************

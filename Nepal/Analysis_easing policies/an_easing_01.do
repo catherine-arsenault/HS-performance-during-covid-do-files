@@ -5,20 +5,35 @@
 
 clear all
 
-global user "/Users/neenakapoor/Dropbox (Harvard University)/HMIS Data for Health System Performance Covid (Nepal)"
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta", clear
 
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta"
+global vars fp_sa_util anc_util del_util cs_util pnc_util
+ 
+* Descriptives
+ta eased_8_20 if tag // 323 out of 753 (43%) eased containment policies in August 
+
+* Number of Palika and total volume of services by month
+table month, c(N fp_sa_util sum fp_sa_util N anc_util sum anc_util) 
+table month, c(N del_util sum del_util N cs_util sum cs_util)
+table month, c(N pnc_util sum pnc_util )
+* Number of Palika and total volume of services by month and treatment status
+foreach x of global vars {
+	di "`x'"
+	table month , c(N `x' sum `x' ) by(eased_8_20)
+}
 
 *Parrallel trends graphs 
+collapse (sum) fp_sa_util anc_util del_util cs_util pnc_util, by(month eased_8_20 )
+sort eased  month
 
-collapse (sum) fp_sa_util anc_util del_util cs_util pnc_util, by(month eased_8_20)
+line fp_sa_util month if eased_8_20 == 1 || line fp_sa_util month if eased_8_20 == 0, sort 
 
-line fp_sa_util month if eased_8_20 == 0 || line fp_sa_util month if eased_8_20 == 1, sort 
+line anc_util month if eased_8_20 == 1 || line anc_util month if eased_8_20 == 0, sort
 
-line anc_util month if eased_8_20 == 0 || line anc_util month if eased_8_20 == 1, sort
+line del_util month if eased_8_20 == 1 || line del_util month if eased_8_20 == 0, sort
 
-line del_util month if eased_8_20 == 0 || line del_util month if eased_8_20 == 1, sort
+line cs_util month if eased_8_20 == 1 || line cs_util month if eased_8_20 == 0, sort
 
-line cs_util month if eased_8_20 == 0 || line cs_util month if eased_8_20 == 1, sort
+line pnc_util month if eased_8_20 == 1 || line pnc_util month if eased_8_20 == 0, sort
 
-line pnc_util month if eased_8_20 == 0 || line pnc_util month if eased_8_20 == 1, sort
+

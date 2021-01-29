@@ -86,12 +86,12 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 Completeness is an issue, particularly for the latest months. Some palikas have
 not reported yet. For each variable, keep only heath facilities that 
 have reported at least 18 of 23 months. This brings completeness up "generally" 
-above 90% for all variables. */
+above 90% for all variables. 
 	foreach x of global volumes {
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=18  
+					keep if `x'11_20 !=. 
 					/* keep if at least 18 out of 23 months are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
@@ -108,8 +108,10 @@ above 90% for all variables. */
 		}
 	foreach x of global volumes {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
-			 }
-	
+			 } 
+			 
+			 */
+
 save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_easing.dta", replace
 
 
