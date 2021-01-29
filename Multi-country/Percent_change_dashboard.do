@@ -122,9 +122,10 @@ preserve
 
 	gen mat_mort = mat_mort_num/totaldel
 	gen peri_mort = peri_mort_num/totaldel
+	gen cs_qual = cs_util/totaldel 
 	drop $mort 
 
-	global revall $rmnch $other mat_mort peri_mort
+	global revall $rmnch $other mat_mort peri_mort cs_qual 
 
 	reshape wide $revall, i(orgunitlevel1) j(year)
 
