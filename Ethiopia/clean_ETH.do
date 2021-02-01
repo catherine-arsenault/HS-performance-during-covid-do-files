@@ -218,21 +218,36 @@ save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", repla
 
 
 
-* We are not comparing quarters for now
+
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-				    TO COMPARE QUARTERS
+			   FOR MULTI COUNTRY PERCENT CHANGE 
 ****************************************************************
-For analyses (Quater comparisons), we keep only those facilities 
-that reported the months of interest) 
+we keep only those facilities that reported Q2 months of interest) */
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 
+* Region names
+drop orgunitlevel1 orgunitlevel4  
+rename (orgunitlevel3 orgunitlevel2) (zone region) 
+replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
+replace region ="Afar"  if region== "Afar Regional Health Bureau"
+replace region ="Amhara"  if region== "Amhara Regional Health Bureau"
+replace region ="Ben Gum" if region==  "Beneshangul Gumuz Regional Health Bureau"
+replace region ="Dire Dawa" if region==  "Dire Dawa Regional Health Bureau"
+replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
+replace region ="Harari"  if region== "Harari Regional Health Bureau"
+replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
+replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
+replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
+replace region ="Somali"  if region== "Somali Regional Health Bureau"
+replace region ="Tigray" if region== "Tigray Regional Health Bureau"
+order region zone organisationunitname
+
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util   cerv_qual ///
-			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom totalipd_mort {
+			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+				totalipd_mort {
 			 	preserve
 					keep region zone org* `x'*
 					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & `x'7_19!=. & `x'8_19!=. & ///
@@ -249,22 +264,22 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 				restore 
 	
 	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
-	foreach x in diab_hyper sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util   cerv_qual ///
-			  opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-			  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom totalipd_mort {
+	foreach x in  sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+				totalipd_mort {
 			 	merge 1:1 region zone org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 			  }
 * Reshape for analyses
-reshape long fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util diab_util hyper_util  cerv_qual ///
-				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util newborn_mort_num sb_mort_num ///
-				mat_mort_num er_mort_num icu_mort_num ipd_mort_num kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom totalipd_mort, i(region zone org*) j(month) string	
+reshape long diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util anc_util ///
+			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
+			  er_util road_util  cerv_qual art_util hivsupp_qual_num  ///
+			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
+			  totalipd_mort diab_detec hyper_detec, i(region zone org*) j(month) string	
 	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -330,8 +345,8 @@ rename mo month
 	lab var sb_mort_num "Institutional stillbirths per 1000 "
 	lab var mat_mort_num "Institutional maternal deaths per 1000"
 	lab var er_mort_num "Emergency room deaths per 1000"
-	lab var ipd_mort_num "Inpatient deaths per 1000"
-	lab var icu_mort_num "ICU deaths per 1000"
+	*lab var ipd_mort_num "Inpatient deaths per 1000"
+	*lab var icu_mort_num "ICU deaths per 1000"
 	lab var totalipd_mort "Total inpatient (incl. ICU) deaths per 1000" 
 
 * THIS IS THE DATASET USED FOR ANALYSES:
