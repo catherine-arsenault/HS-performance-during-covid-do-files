@@ -64,8 +64,7 @@ egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/23=1) //23mts : Jan19-Nov20
 
-putexcel set "$user/$data/Analyses/Nepal_changes_2020_2019.xlsx", sheet(palika-total N, replace)  modify
-putexcel A1 = "Jan19-Nov20" //indicate the months 
+putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(Tot fac reporting 23mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -76,6 +75,32 @@ foreach var of global all {
 	putexcel B`i' = `r(sum)'
 }
 drop *report
+
+preserve
+	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
+			   pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util ////
+			   tbdetect_qual  hivdiag_qual totaldel pent_qual bcg_qual ///
+			   measles_qual opv3_qual pneum_qual sb_mort_num mat_mort_num ///
+			   ipd_mort_num neo_mort_num
+			   
+	reshape long `all', i(org*) j(month, string)
+	recode `all' (.=0) (1/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(MinMax fac reporting 23mos, replace)  modify
+
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
 
 
 /*******************************************************************
