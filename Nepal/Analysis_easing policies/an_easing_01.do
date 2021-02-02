@@ -26,14 +26,14 @@ foreach x of global vars {
 collapse (sum) fp_sa_util anc_util del_util cs_util pnc_util, by(month eased_8_20 )
 sort eased  month
 
-line fp_sa_util month if eased_8_20 == 1 || line fp_sa_util month if eased_8_20 == 0, sort 
+line fp_sa_util month if eased_8_20 == 1 || line fp_sa_util month if eased_8_20 == 0, title("Contraceptive users") ytitle("Actual number") xtitle(Month) legend( label (1 "Eased policies") label (2 "Maintained policies (control)"))
 
-line anc_util month if eased_8_20 == 1 || line anc_util month if eased_8_20 == 0, sort
+line anc_util month if eased_8_20 == 1 || line anc_util month if eased_8_20 == 0, title("Antenatal Care Visits") ytitle("Actual number") xtitle(Month) legend( label (1 "Eased policies") label (2 "Maintained policies (control)"))
 
-line del_util month if eased_8_20 == 1 || line del_util month if eased_8_20 == 0, sort
+line del_util month if eased_8_20 == 1 || line del_util month if eased_8_20 == 0, title("Facility Deliveries") ytitle("Actual number") xtitle(Month) legend( label (1 "Eased policies") label (2 "Maintained policies (control)"))
 
-line cs_util month if eased_8_20 == 1 || line cs_util month if eased_8_20 == 0, sort
+line cs_util month if eased_8_20 == 1 || line cs_util month if eased_8_20 == 0, title("C-Sections") ytitle("Actual number") xtitle(Month) legend( label (1 "Eased policies") label (2 "Maintained policies (control)"))
 
-line pnc_util month if eased_8_20 == 1 || line pnc_util month if eased_8_20 == 0, sort
+line pnc_util month if eased_8_20 == 1 || line pnc_util month if eased_8_20 == 0, title("PNC Visits") ytitle("Actual number") xtitle(Month) legend( label (1 "Eased policies") label (2 "Maintained policies (control)"))
 
-
+*How do we do this for the treatment varying over time? 
