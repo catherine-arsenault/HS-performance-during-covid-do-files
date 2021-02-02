@@ -48,7 +48,7 @@ order org* year month
 * For now, drop the pre-lockdown period
 * Pre intervention = lockdown period which coincides with dhis2 months of Mar-July 2020
 * Pre intervention = 3_20 4_20 5_20 6_20 7_20 
-* Post intervention = easing periof which coincides with Aug-November
+* Post intervention = easing perio which coincides with Aug-November
 * Post intervention = 8_20 9_20 10_20 11_20 
 drop if year==2019
 drop if month==1 | month==2
@@ -58,10 +58,10 @@ drop if month==11
 
 /* Edit July to be 0 (still under lockdown, allows for a lag, also, data quality
  issue for policy change in july)*/
-replace eased = 0 if month==7
+*replace eased = 0 if month==7
 *******************************************************************************
 * Creates a "post" dummy, policies change starting august
-gen post = month>=8 & month<=11 
+gen post = month>=7 & month<=11 
 order org* year month post
 
 * Creates interaction term (variable treatment)

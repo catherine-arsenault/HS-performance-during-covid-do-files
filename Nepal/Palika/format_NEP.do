@@ -58,18 +58,6 @@ rename mo month
 sort province year month
  
 
-
-* Recoding months to match Nepali calendar
-* January 2019 is Magh 20175 (Jan 15 to Feb 15 2019) 
-* January 2020 is Magh 2076 (Jan 15 to Feb 15 2020)
-* to identify the last day on the month on the dashboard, we move months forward
-gen month2 = month+1
-replace year = 2020 if year ==2019 & month2==13
-recode month2 (13=1)
-drop month 
-rename month2 month
-order province year  month
-
 * Reshaping for data visualisations
 preserve
 	keep if year == 2020
@@ -98,7 +86,19 @@ export delimited using "$user/$data/Nepal_palika_Jan19-Nov20_fordashboard.csv", 
 
 
 
+/* 
 
+
+* Recoding months to match Nepali calendar
+* January 2019 is Magh 20175 (Jan 15 to Feb 15 2019) 
+* January 2020 is Magh 2076 (Jan 15 to Feb 15 2020)
+* to identify the last day on the month on the dashboard, we move months forward
+gen month2 = month+1
+replace year = 2020 if year ==2019 & month2==13
+recode month2 (13=1)
+drop month 
+rename month2 month
+order province year  month
 
 
 
