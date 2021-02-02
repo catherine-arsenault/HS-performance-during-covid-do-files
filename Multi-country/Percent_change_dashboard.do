@@ -225,9 +225,8 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_clean_AN.dta", clear
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 			   sam_util opd_util ipd_util er_util road_util  cerv_qual art_util ///
 			   hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual ///
-			   pneum_qual rota_qual diab_util hyper_util diab_qual_num ///
-			   hyper_qual_num kmc_qual_num kmc_qual_denom resus_qual_num ///
-			   resus_qual_denom diab_detec hyper_detec
+			   pneum_qual rota_qual kmc_qual_num kmc_qual_denom resus_qual_num ///
+			   resus_qual_denom 
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort 
 global all $volumes $mortality
 by year, sort: tabstat $all  if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
@@ -241,7 +240,6 @@ preserve
 
 	gen kmc_qual = kmc_qual_num/kmc_qual_denom
 	gen resus_qual = resus_qual_num/resus_qual_denom
-	gen hyper_qual = hyper_qual_num / hyper_util
 	gen cs_qual =  cs_util / totaldel
 	gen hivsupp_qual = hivsupp_qual_num / art_util
 	gen newborn_mort = newborn_mort_num / totaldel 
@@ -252,7 +250,7 @@ preserve
 	
 	drop $mortality  
 
-	global revall $volumes kmc_qual resus_qual hyper_qual cs_qual hivsupp_qual ///
+	global revall $volumes kmc_qual resus_qual cs_qual hivsupp_qual ///
 					newborn_mort sb_mort mat_mort er_mort ipd_mort	   
 	reshape wide $revall, i(country) j(year)
 
