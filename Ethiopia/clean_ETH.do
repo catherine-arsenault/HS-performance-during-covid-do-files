@@ -382,8 +382,9 @@ replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname
 	
 	
-
-* THIS IS THE DATASET USED TO COMPARE Q2 2020 TO Q2 2019: 
+* drop the other months
+keep if month>=4 & month<=6
+ 
 save "$user/$data/Data for analysis/Ethiopia_CCA_Q2.dta", replace
 
 
@@ -515,6 +516,9 @@ drop month
 sort org* year mo 
 order org* year mo 
 rename mo month
+
+*drop the other months
+keep if (month >=1 & month<=3 & year ==2020) | (month >=4 & month<=6 & year ==2020)
 
 * THIS IS THE DATASET USED TO COMPARE Q2 2020 TO Q2 2019: 
 save "$user/$data/Data for analysis/Ethiopia_Q1_Q2_2020_comparisons.dta", replace
