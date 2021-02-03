@@ -56,7 +56,7 @@ egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/18=1) //18mts : Jan19-June20
 
-putexcel set "$user/$data/Analyses/Codebook for Haiti.xlsx", sheet(Tot fac reporting 18mos, replace)  modify
+putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(Tot fac reporting 18mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2

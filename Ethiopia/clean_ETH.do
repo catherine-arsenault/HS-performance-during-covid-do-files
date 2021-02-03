@@ -42,15 +42,14 @@ global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_
 global all $volumes $mortality
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel 
 ****************************************************************/
 foreach var of global all {
 	egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/22=1) //Jan19-Oct20:22 months 
 
-putexcel set "$user/$data/Analyses/Ethiopia changes 2019 2020.xlsx", sheet(Total facilities reporting, replace)  modify
-putexcel A1 = "Total facilities reporting from Jan19-Oct20"
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Tot fac reporting 22mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -61,6 +60,34 @@ foreach var of global all {
 	putexcel B`i' = `r(sum)'
 }
 drop *report
+
+preserve
+	local all fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+			  opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
+			  measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+			  resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+			  icu_mort_num ipd_mort_num 
+	reshape long `all', i(org*) j(month, string)		  
+	recode `all' (.=0) (1/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(MinMax fac reporting 22mos, replace)  modify
+	
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+
+
 
 /****************************************************************
 EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
