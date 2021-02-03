@@ -216,7 +216,7 @@ foreach x of global all {
 			   neo_mort_num sb_mort_num mat_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN_Q2.dta", replace
+				save "$user/$data/Data for analysis/Lao_CCA_Q2.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -249,7 +249,10 @@ drop month
 sort orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/Lao_Jan19-Oct20_clean_AN_Q2.dta", replace
+* drop the other months
+keep if month>=4 & month<=6
+
+save "$user/$data/Data for analysis/Lao_CCA_Q2.dta", replace
 
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
@@ -277,7 +280,7 @@ foreach x of global all {
 			   neo_mort_num sb_mort_num mat_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN_Q3.dta", replace
+				save "$user/$data/Data for analysis/Lao_CCA_Q3.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -310,7 +313,11 @@ drop month
 sort orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/Lao_Jan19-Oct20_clean_AN_Q3.dta", replace
+* drop the other months
+keep if month>=7 & month<=9
+
+
+save "$user/$data/Data for analysis/Lao_CCA_Q3.dta", replace
 
 
 
