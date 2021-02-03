@@ -2,7 +2,7 @@
 * Catherine Arsenault and Anna Gage
 
 
-*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "HMIS Data for Health System Performance Covid (South Africa)"
 global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"

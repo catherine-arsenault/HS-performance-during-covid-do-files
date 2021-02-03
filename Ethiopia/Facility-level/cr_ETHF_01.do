@@ -1,11 +1,74 @@
 * HS performance during Covid
-* Created Dec 7, 2020 
-* Ethiopia, Jan19 - October 2020 data
+* Created Jan 29 2021
+* Data extracted Jan 29 2021
+* Ethiopia, Jan19 - December 2020 data
 
-*Imported raw data from January 2019 to Oct 2020 
-import delimited "$user/$data/Raw/By levels/Ethiopia_Health system performance during Covid_data extraction_2020_January to October_06_12 _2020_GC/Ethiopia_2020_January to October_ by Woredas_06_12_2020.csv", clear
+* FACILITY LEVEL DATA
 
-* Recode variables
+********************************************************************************
+*Public hospitals
+import delimited "$user/$data/Raw/By levels/Received Jan292021/Ethiopia_Health system performance during Covid_data extraction_2020_January to December_29_01 _2021_GC/Facility Type/Ethiopia_2020_January to December_ by Public Hospital_29_01_2021.csv", clear
+	
+* Deliveries
+rename (totalnumberofbirthsattendedbyski-v106) ///
+(	del_util1_19	del_util2_19	del_util3_19	del_util4_19	del_util5_19	del_util6_19 ///		
+	del_util7_19	del_util8_19	del_util9_19	del_util10_19	del_util11_19	del_util12_19 ///
+	del_util1_20	del_util2_20	del_util3_20	del_util4_20	del_util5_20	del_util6_20 ///
+	del_util7_20    del_util8_20    del_util9_20    del_util10_20 del_util11_20 del_util12_20)   
+
+*Csections
+rename (numberofwomenhavinggivenbirthbyc-v130) ///
+(	cs_util1_19		cs_util2_19		cs_util3_19		cs_util4_19		cs_util5_19		cs_util6_19 ///		
+	cs_util7_19		cs_util8_19		cs_util9_19		cs_util10_19	cs_util11_19	cs_util12_19 ///
+	cs_util1_20		cs_util2_20		cs_util3_20		cs_util4_20		cs_util5_20		cs_util6_20 ///
+	cs_util7_20     cs_util8_20     cs_util9_20     cs_util10_20 cs_util11_20 cs_util12_20)
+
+	
+	egen totaldel1_19 =  rowtotal(del_util1_19 cs_util1_19), m
+	egen totaldel2_19 =	rowtotal(del_util2_19 cs_util2_19), m
+	egen totaldel3_19 =	rowtotal(del_util3_19 cs_util3_19), m
+	egen totaldel4_19 =	rowtotal(del_util4_19 cs_util4_19), m
+	egen totaldel5_19=	rowtotal(del_util5_19 cs_util5_19), m
+	egen totaldel6_19=	rowtotal(del_util6_19 cs_util6_19), m
+	egen totaldel7_19=	rowtotal(del_util7_19 cs_util7_19), m
+	egen totaldel8_19=	rowtotal(del_util8_19 cs_util8_19), m
+	egen totaldel9_19=	rowtotal(del_util9_19 cs_util9_19), m 
+	egen totaldel10_19=	rowtotal(del_util10_19 cs_util10_19), m
+	egen totaldel11_19=	rowtotal(del_util11_19  cs_util11_19), m
+	egen totaldel12_19=	rowtotal(del_util12_19  cs_util12_19), m
+	egen totaldel1_20 =  rowtotal(del_util1_20  cs_util1_20), m
+	egen totaldel2_20 =	rowtotal(del_util2_20 cs_util2_20), m
+	egen totaldel3_20 =	rowtotal(del_util3_20 cs_util3_20), m
+	egen totaldel4_20 =	rowtotal(del_util4_20 cs_util4_20), m
+	egen totaldel5_20=	rowtotal(del_util5_20 cs_util5_20), m
+	egen totaldel6_20=	rowtotal(del_util6_20 cs_util6_20), m
+	egen totaldel7_20=	rowtotal(del_util7_20 cs_util7_20), m
+	egen totaldel8_20=	rowtotal(del_util8_20 cs_util8_20), m
+	egen totaldel9_20=	rowtotal(del_util9_20 cs_util9_20), m
+	egen totaldel10_20=	rowtotal(del_util10_20 cs_util10_20), m
+	egen totaldel11_20=	rowtotal(del_util11_20 cs_util11_20), m
+	egen totaldel12_20=	rowtotal(del_util12_20 cs_util12_20), m
+	
+save "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Dec20_WIDE.dta", replace	
+********************************************************************************
+*Private hospitals
+
+********************************************************************************
+*Health centers 
+
+********************************************************************************
+*Clinics 
+
+********************************************************************************
+*Health posts 
+	
+
+	
+drop *12_20 // December likely incomplete
+
+
+	
+/* Recode variables
 * VOLUMES 
 * FP
 rename (totalnewandrepeatacceptorsdisagg-v27) ///
@@ -27,20 +90,6 @@ rename (numberofpregnantwomenthatreceive-v71) ///
 	 anc_util7_19	anc_util8_19	anc_util9_19	anc_util10_19	anc_util11_19	anc_util12_19 ///
 	 anc_util1_20	anc_util2_20	anc_util3_20	anc_util4_20	anc_util5_20	anc_util6_20 ///
 	 anc_util7_20   anc_util8_20    anc_util9_20    anc_util10_20)
-	
-* Deliveries
-rename (totalnumberofbirthsattendedbyski-v93 ) ///
-(	del_util1_19	del_util2_19	del_util3_19	del_util4_19	del_util5_19	del_util6_19 ///		
-	del_util7_19	del_util8_19	del_util9_19	del_util10_19	del_util11_19	del_util12_19 ///
-	del_util1_20	del_util2_20	del_util3_20	del_util4_20	del_util5_20	del_util6_20 ///
-	del_util7_20    del_util8_20    del_util9_20    del_util10_20)   
-
-*Csections
-rename ( numberofwomenhavinggivenbirthbyc-v115) ///
-(	cs_util1_19		cs_util2_19		cs_util3_19		cs_util4_19		cs_util5_19		cs_util6_19 ///		
-	cs_util7_19		cs_util8_19		cs_util9_19		cs_util10_19	cs_util11_19	cs_util12_19 ///
-	cs_util1_20		cs_util2_20		cs_util3_20		cs_util4_20		cs_util5_20		cs_util6_20 ///
-	cs_util7_20     cs_util8_20     cs_util9_20     cs_util10_20)
 	
 * PNC
 rename (numberofpostnatalvisitswithin7da-v137) ///

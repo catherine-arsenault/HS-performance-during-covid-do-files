@@ -31,6 +31,13 @@ do "$dofiles/cr_MEX_06.do"
 
 * Recodes data from September 2020 and merges with prior data
 do "$dofiles/cr_MEX_07.do"
+
+* Adding 1 cancer indicator and merging with prior data
+do "$dofiles/cr_MEX_08.do"
+
+* Recodes data from October 2020, merges with prior data 
+do "$dofiles/cr_MEX_09.do"
+
 ********************************************************************************
 * Format do files
 

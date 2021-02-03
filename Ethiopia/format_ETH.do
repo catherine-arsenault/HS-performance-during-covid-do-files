@@ -1,20 +1,39 @@
 clear all 
 set more off
-use "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", clear
+use "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", clear
 
 /****************************************************************
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
 *****************************************************************/
+* Region names
+drop orgunitlevel1 orgunitlevel4  
+rename (orgunitlevel3 orgunitlevel2) (zone region) 
+replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
+replace region ="Afar"  if region== "Afar Regional Health Bureau"
+replace region ="Amhara"  if region== "Amhara Regional Health Bureau"
+replace region ="Ben Gum" if region==  "Beneshangul Gumuz Regional Health Bureau"
+replace region ="Dire Dawa" if region==  "Dire Dawa Regional Health Bureau"
+replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
+replace region ="Harari"  if region== "Harari Regional Health Bureau"
+replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
+replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
+replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
+replace region ="Somali"  if region== "Somali Regional Health Bureau"
+replace region ="Tigray" if region== "Tigray Regional Health Bureau"
+order region zone organisationunitname
+
 * Totals by facility types
 	gen factype = "Facility type: Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
 	replace factype ="Facility type: Non-Hospitals" if factype==""
+	
 preserve
-	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(factype)
+	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(factype)
 	rename factype region
 	save "$user/$data/Data for analysis/tmpfactype.dta", replace
 restore
+
 * Totals by region type
-	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(region)	
+	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(region)	
 	gen regtype = "Region type: Urban" if region=="Addis Ababa" ///
 	                          | region=="Dire Dawa" | region=="Harari"
 	replace regtype = "Region type: Agrarian" if region == "Amhara" | region=="Oromiya" ///
@@ -22,7 +41,7 @@ restore
 	replace regtype = "Region type: Pastoral" if region == "Afar" | region=="Ben Gum" ///
                               | region=="Gambella" | region=="Somali" 
 preserve
-	collapse (sum) fp_util1_19-totalipd_mort8_20 , by(regtype)	
+	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(regtype)	
 	rename regtype region
 	save "$user/$data/Data for analysis/tmpregtype.dta", replace
 restore
@@ -44,6 +63,7 @@ restore
 append using "$user/$data/Data for analysis/tmpfactype.dta"
 append using "$user/$data/Data for analysis/tmpregtype.dta"
 
+
 /****************************************************************
  RESHAPE FOR DASHBAORD
 *****************************************************************/
@@ -51,10 +71,11 @@ reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util
 			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
 			  er_util road_util  cerv_qual art_util hivsupp_qual_num  ///
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel ///
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
-			  tbnum_qual tbdenom_qual tbdetect_qual ///
-			  totalipd_mort, i(region ) j(month) string
+        tbnum_qual tbdenom_qual tbdetect_qual totalipd_mort diab_detec hyper_detec ///
+        , i(region ) j(month) string
+
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
 				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
@@ -83,10 +104,10 @@ preserve
 	global varlist fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 	sam_util opd_util ipd_util er_util road_util  cerv_qual art_util ///
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-	newborn_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel totalipd_mort ///
+	newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort ///
 	diab_util hyper_util diab_qual_num hyper_qual_num kmc_qual_num kmc_qual_denom ///
-	tbnum_qual tbdenom_qual tbdetect_qual resus_qual_num resus_qual_denom
-	
+  tbnum_qual tbdenom_qual tbdetect_qual resus_qual_num resus_qual_denom diab_detec hyper_detec
+  
 	foreach v of global varlist {
 		rename(`v')(`v'20)
 	}
@@ -99,16 +120,14 @@ foreach v of global varlist {
 	}
 drop year
 merge m:m region month using "$user/$data/Data for analysis/temp.dta"
-drop _merge
+drop _merge //34 not merging becuase they are November and December months which are missing in 2020 data
 
 rm "$user/$data/Data for analysis/temp.dta"
 rm "$user/$data/Data for analysis/tmpfactype.dta"
 rm "$user/$data/Data for analysis/tmpregtype.dta"
 ********************************************************************************
 * THIS IS THE CSV FILE FOR GOOGLE DATA STUDIO
-export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Aug20_fordashboard.csv", replace
-
-
+export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Oct20_fordashboard.csv", replace
 
 /* Code to identify clinics (private) 
 replace factype =2 if regexm(organ, "[Cc]linic") | regexm(organ, "CLINIC") | ///
