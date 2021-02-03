@@ -290,6 +290,7 @@ set more off
 	(anc_util1_20	anc_util2_20	anc_util3_20	anc_util4_20	anc_util5_20	anc_util6_20	///
 	anc_util7_20	anc_util8_20	anc_util9_20	anc_util10_20)	
 	append using "$user/$data/Data for analysis/tmp.dta"
+	keep org* anc*
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta", replace
