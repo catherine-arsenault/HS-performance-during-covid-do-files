@@ -223,6 +223,10 @@ drop month
 sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
 
+
+* Drop the other months
+keep if month>=4 & month<=6
+
 save "$user/$data/Data for analysis/Haiti_CCA_Q2.dta", replace
 
 

@@ -213,6 +213,9 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
+* Drop the other months
+keep if month>=4 & month<=6
+
 save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
 
 
@@ -260,6 +263,10 @@ gen month= rmonth
 replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
+
+
+* Drop the other months
+keep if month>=7 & month<=9
 
 save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
 
