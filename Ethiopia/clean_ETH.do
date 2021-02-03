@@ -87,8 +87,6 @@ foreach var of global all {
 }
 restore
 
-
-
 /****************************************************************
 EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
 ****************************************************************/
@@ -240,18 +238,30 @@ collected until October 2019  */
 				drop _merge
 				save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", replace
 		}
-		
+* Region names	
+rename (orgunitlevel3 orgunitlevel2) (zone region) 
+replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
+replace region ="Afar"  if region== "Afar Regional Health Bureau"
+replace region ="Amhara"  if region== "Amhara Regional Health Bureau"
+replace region ="Ben Gum" if region==  "Beneshangul Gumuz Regional Health Bureau"
+replace region ="Dire Dawa" if region==  "Dire Dawa Regional Health Bureau"
+replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
+replace region ="Harari"  if region== "Harari Regional Health Bureau"
+replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
+replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
+replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
+replace region ="Somali"  if region== "Somali Regional Health Bureau"
+replace region ="Tigray" if region== "Tigray Regional Health Bureau"
+order region zone organisationunitname
+	
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", replace
-
-
-
 
 /***************************************************************
                  COMPLETE CASE ANALYSIS DATASET
-			        COMPARING QUARTERS 2 
+			   COMPARING QUARTERS 2 (2020 vs 2019)
 ****************************************************************
 we keep only those facilities that reported months of interest. In this case,
-we are comparing April to August 2020 vs. 2019 */
+we are comparing Quarters 2 2020 vs. 2019 */
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
@@ -264,7 +274,6 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & ///
 							`x'4_20!=. & `x'5_20!=. & `x'6_20!=.
 					/* keep if Q2 2020 and 2019 are not missing */
-					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}

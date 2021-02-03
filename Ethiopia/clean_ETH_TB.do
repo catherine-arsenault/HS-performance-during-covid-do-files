@@ -42,7 +42,7 @@ foreach var of global all {
 }
 recode *_report (0=0) (1/6=1) 
 
-putexcel set "$user/$data/Analyses/Ethiopia changes 2019 2020.xlsx", sheet(TB Total facilities reporting, replace)  modify
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(TB Total facilities reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -75,12 +75,12 @@ common for mortality indicators.  */
 foreach x in tbdetect_qual tbdenom_qual tbnum_qual {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
-	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
-	forvalues v = 1/6 {  // until June 2020
-		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
-		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
-	}
+			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // positive threshold
+				forvalues v = 1/6 {  // until June 2020
+					gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+					replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+					replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
+			}
 	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
 }
 
@@ -93,7 +93,7 @@ foreach x in tbdetect_qual tbdenom_qual tbnum_qual {
 			  preserve
 					keep region zone org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>4 & `x'5!=.
+					keep if total`x'>4 & `x'6!=.
 					/* keep if at least 5 out of 6 quarters are reported & Q2 2020 is reported */
 					drop total`x'
 					rename `x'1 `x'1_19
@@ -106,12 +106,12 @@ foreach x in tbdetect_qual tbdenom_qual tbnum_qual {
 				restore
 				}
 	
-	foreach x in tbdetect_qual tbdenom_qual tbnum_qual {
-		use "$user/$data/Data for analysis/tmp`x'.dta", clear
-			 	merge 1:1 region zone org using "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", force 
-				drop _merge
-				save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", replace
-		}
+		use "$user/$data/Data for analysis/tmptbdetect_qual.dta", clear
+		merge 1:1 region zone org* using "$user/$data/Data for analysis/tmptbnum_qual.dta", force 
+		drop _merge
+		merge 1:1 region zone org* using "$user/$data/Data for analysis/tmptbdenom_qual.dta", force 
+		drop _merge		
+		save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta", replace
+		
 	
-	order tbnum_qual1_19-tbdetect_qual4_20, after(art_util8_20)
-	save "$user/$data/Data for analysis/Ethiopia_Jan19-Aug20_WIDE_CCA_DB.dta", replace	
+	
