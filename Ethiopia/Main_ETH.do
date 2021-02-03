@@ -2,11 +2,13 @@
 * Master do file 
 * PI Catherine Arsenault
 
-global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
 *global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
-global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
+*global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 *global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
+global dofiles "/Users/annagage/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 
 ********************************************************************************
 * Creation do files
@@ -30,11 +32,17 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 * Overwrites previous do files
 do "$dofiles/cr_ETH_05.do"
 
+*TB quarterly data
+do "dofiles/cr_ETH_TB.do"
+
 ********************************************************************************
 * Cleaning do files
 
 * Cleans data (see cleaning protocol in shared folder)
 do "$dofiles/clean_ETH.do"
+
+* Cleans TB data
+do "$dofiles/clean_ETH_TB.do"
 
 ********************************************************************************
 * Format do files
