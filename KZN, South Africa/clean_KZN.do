@@ -169,7 +169,7 @@ at least 15 out of 21 months (incl the latest 2 months) 12/14/20 */
 save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", replace
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-				     FOR ANALYSES 
+		   COMPARING QUARTERS 2 (2020 VS 2019)
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
 that reported the months of interest) */
@@ -194,7 +194,7 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", replace
+				save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -213,10 +213,15 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", replace
+save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
 
-***********************************************************************************************
-*Q3 (July-Sep) Calculation 
+
+/***************************************************************
+                 COMPLETE CASE ANALYSIS 
+		   COMPARING QUARTERS 3 (2020 VS 2019)
+****************************************************************
+For analyses (Quater comparisons), we keep only those facilities 
+that reported the months of interest) */
 
 u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
 
@@ -237,7 +242,7 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", replace
+				save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -256,7 +261,7 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", replace
+save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
 
 
 /*************************************************************

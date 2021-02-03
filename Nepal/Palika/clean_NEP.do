@@ -193,7 +193,7 @@ save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_DB.dta", r
 
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-				     FOR ANALYSES 
+				   COMPARING QUATERS 3 (2020 vs. 2019)
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
 that reported the months of interest) */
@@ -215,7 +215,7 @@ foreach x of global all {
 			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num live_births {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_AN.dta", replace
+				save "$user/$data/Data for analysis/Nepal_CCA_Q3.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -249,12 +249,12 @@ drop month
 sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_AN.dta", replace
+save "$user/$data/Data for analysis/Nepal_CCA_Q3.dta", replace
 
 
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-			FOR MULTI-COUNTRY COMPARISON
+			COMPARING QUARTERS 2 (2020 VS. 2019)
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
 that reported the months of interest) */
@@ -276,7 +276,7 @@ foreach x of global all {
 			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num live_births {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_AN.dta", replace
+				save "$user/$data/Data for analysis/Nepal_CCA_Q2.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -310,5 +310,5 @@ drop month
 sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_MULTI.dta", replace
+save "$user/$data/Data for analysis/Nepal_CCA_Q2.dta", replace
 
