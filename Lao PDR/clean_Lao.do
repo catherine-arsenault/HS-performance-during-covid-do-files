@@ -57,7 +57,6 @@ global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 global mortality neo_mort_num sb_mort_num mat_mort_num 
 global all $volumes $mortality 
 
-
 /****************************************************************
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
 ****************************************************************/
@@ -104,8 +103,6 @@ foreach var of global all {
 }
 restore
 
-
-
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
@@ -141,7 +138,7 @@ foreach x of global all {
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
 	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20  {
+				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20  { // ends in OCT for now
 				 * 11_20 12_20
 		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
 		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
@@ -170,7 +167,7 @@ This brings completeness up "generally" above 90% for all variables. */
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>19 & `x'9_20!=. & `x'10_20!=. 
+					keep if total`x'>=19 & `x'9_20!=. & `x'10_20!=. 
 					/* keep if at least 19 out of 22 months are reported 
 					& Sept/Oct 2020 are reported */
 					drop total`x'
@@ -178,7 +175,7 @@ This brings completeness up "generally" above 90% for all variables. */
 				restore
 				}
 	u "$user/$data/Data for analysis/tmpfp_perm_util.dta", clear
-
+	* All variables except the first 
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util ///
@@ -195,10 +192,10 @@ save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_DB.dta", replace
 
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-				     FOR ANALYSES 
+				    TO COMPARE Q2 2020 TO Q2 2019
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
-that reported the months of interest) */
+that reported the months of interest, here Q2 2019 and Q2 2020 */
 
 u "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 
@@ -219,7 +216,7 @@ foreach x of global all {
 			   neo_mort_num sb_mort_num mat_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN.dta", replace
+				save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN_Q2.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -254,8 +251,13 @@ rename mo month
 
 save "$user/$data/Data for analysis/Lao_Jan19-Oct20_clean_AN_Q2.dta", replace
 
-****************************************************************************************
-*Q3 (July-Sep) 
+/***************************************************************
+                 COMPLETE CASE ANALYSIS 
+				   TO COMPARE Q3 2020 TO Q3 2019
+****************************************************************
+For analyses (Quater comparisons), we keep only those facilities 
+that reported the months of interest, here Q3 2019 and Q3 2020 */
+
 
 u "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 
@@ -275,7 +277,7 @@ foreach x of global all {
 			   neo_mort_num sb_mort_num mat_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN.dta", replace
+				save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_AN_Q3.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
