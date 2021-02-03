@@ -152,7 +152,7 @@ restore
 *******************************************************************************
 *Mexico
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
-u "$user/$data/Data for analysis/IMSS_Q2.dta", replace
+u "$user/$data/Data for analysis/IMSS_Jan19-Oct20_foranalysis.dta", replace
 
 *combine cerv_denom into 1 variable 
 gen cerv_denom = cerv_denom2019 if year==2019
