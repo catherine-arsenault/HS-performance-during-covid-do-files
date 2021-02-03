@@ -12,7 +12,7 @@ global folder "/Quest Center/Active projects/HS performance Covid (internal)/Dat
 *******************************************************************************
 *Nepal 
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
-u "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_MULTI.dta", clear 
+u "$user/$data/Data for analysis/Nepal_CCA_Q2.dta", clear 
 
 *put variables here 
 
@@ -61,7 +61,7 @@ restore
 *******************************************************************************
 *KZN 
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
-u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", clear
+u "$user/$data/Data for analysis/KZN_CCA_Q2.dta", clear
 
 global rmnch anc1_util  del_util cs_util pnc_util diarr_util pneum_util sam_util  
 global vax vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual 
@@ -109,7 +109,7 @@ restore
 *******************************************************************************
 *Haiti 
 global data "/HMIS Data for Health System Performance Covid (Haiti)"
-use "$user/$data/Data for analysis/Haiti_Jan19-Jun20_clean_AN.dta", clear
+use "$user/$data/Data for analysis/Haiti_CCA_Q2.dta", clear
 
 global rmnch fp_util anc_util del_util cs_util pncm_util pncc_util diarr_util cerv_qual 
 global other dental_util opd_util diab_util hyper_util 	
@@ -152,7 +152,7 @@ restore
 *******************************************************************************
 *Mexico
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
-u "$user/$data/Data for analysis/IMSS_Jan19-Oct20_foranalysis.dta", replace
+u "$user/$data/Data for analysis/IMSS_Q2.dta", replace
 
 *combine cerv_denom into 1 variable 
 gen cerv_denom = cerv_denom2019 if year==2019
@@ -222,7 +222,7 @@ restore
 *******************************************************************************
 *Ethiopia
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
-u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_clean_AN.dta", clear 
+u "$user/$data/Data for analysis/Ethiopia_CCA_Q2.dta", clear 
 
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 			   sam_util opd_util ipd_util er_util road_util  cerv_qual art_util ///
