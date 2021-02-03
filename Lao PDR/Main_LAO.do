@@ -12,17 +12,17 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 ********************************************************************************
 * Creation do files
 * Imports Jan 2019 - Oct 2020 raw data, renames variables 
-do "$dofiles/cr_Lao_01.do"
+do "$dofiles/cr_LAO_01.do"
 
 ********************************************************************************
 * Cleaning do files
 * Cleans the data (see cleaning protocol in shared folder)
-do "$dofiles/clean_Lao.do"
+do "$dofiles/clean_LAO.do"
 
 ********************************************************************************
 * Format do files for dashboard
-do "$dofiles/format_Lao.do"
+do "$dofiles/format_LAO.do"
 
 ********************************************************************************
 * Analysis: calculates changes in Q2 (April-June 2019vs2020) Q3 (July-Sep 2019 vs 2020) 
-do "$dofiles/an_Lao.do"
+do "$dofiles/an_LAO.do"
