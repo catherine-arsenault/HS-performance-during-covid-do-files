@@ -5,8 +5,8 @@
 clear 
 set more off 
 
-*global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/acatherine/Dropbox (Harvard University)"
+*global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global folder "/Quest Center/Active projects/HS performance Covid (internal)/Data/Data viz/Country Comparison/Stata output"
 
 *******************************************************************************
@@ -22,6 +22,7 @@ global other opd_util ipd_util er_util tbdetect_qual hivdiag_qual
 global vax pent_qual bcg_qual measles_qual opv3_qual pneum_qual 
 global mortality sb_mort_num mat_mort_num totaldel ipd_mort_num neo_mort_num
 global all $rmnch $other $vax $mortality 
+
 by year, sort: tabstat $all  if month>=4 & month<= 6, s(sum) c(s)  format(%20.10f)
 
 
@@ -40,7 +41,6 @@ preserve
 	global revall $rmnch $vax $other sb_mort mat_mort ipd_mort neo_mort cs_qual 
 
 	reshape wide $revall, i(orgunitlevel1) j(year)
-
 
 	foreach var in $revall {
 		gen `var'change = (`var'2020-`var'2019)/`var'2019
