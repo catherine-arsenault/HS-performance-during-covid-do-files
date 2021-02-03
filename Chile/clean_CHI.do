@@ -26,7 +26,7 @@ u "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta", clear
 order country region levelofattention facilityname idfacility 
 rename (country-idfacility) (org1 org2 org3 org4 org5)
 ********************************************************************
-* 2023 facilities 
+* 1996 facilities 
 * Dropping all facilities that don't report any indicators all period
 egen all_visits = rowtotal(pnc_util1_19-anc_util10_20), m
 drop if all_visits==. //no observation drop
@@ -96,7 +96,7 @@ We do not assess outliers for diabetes and hypertension because they were not
 collected until October 2019 
 */
 
-foreach x in  pnc_util cs_util del_util anc_util  {
+foreach x of global volumes {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 

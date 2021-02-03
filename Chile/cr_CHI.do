@@ -26,8 +26,8 @@ rename (_01-v27 ) ///
 	del_util4_20	del_util5_20	del_util6_20 del_util7_20    del_util8_20 ///
 	del_util9_20    del_util10_20)  
 	
-	merge 1:1 idfacility levelofattention country region facilityname using "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta"
-	drop _merge // 1893 out of 1884 not matched
+	merge 1:1 idfacility  using "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta"
+	drop _merge // 1893 out of 1968 not matched
 	save "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta", replace	
 
 **********************************************************************************
@@ -40,7 +40,7 @@ rename ( _01-v27) ///
 	cs_util4_20		cs_util5_20		cs_util6_20 cs_util7_20     cs_util8_20 ///
     cs_util9_20     cs_util10_20)	
 	
-	merge 1:1 idfacility levelofattention country region facilityname using "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta"
+	merge 1:1 idfacility  using "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta"
 	drop _merge // 1886 out of 1884 not matched
 	save "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta", replace	
 
@@ -54,7 +54,7 @@ rename (_01-v27) ///
 	pnc_util4_20	pnc_util5_20	pnc_util6_20 pnc_util7_20    pnc_util8_20 ///
 	pnc_util9_20    pnc_util10_20)
 	
-	merge 1:1 idfacility levelofattention country region facilityname using "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta"
+	merge 1:1 idfacility using "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta"
 	drop _merge // 369 out of 1884 not matched
 	save "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE.dta", replace	
 
