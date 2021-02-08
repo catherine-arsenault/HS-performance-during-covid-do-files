@@ -192,16 +192,9 @@ rename (numberofinpatientdeathsjanuary20-numberofinpatientdeathsaugust202) ///
 		ipd_mort_num4_20	ipd_mort_num5_20	ipd_mort_num6_20	///
 		ipd_mort_num7_20	ipd_mort_num8_20)
 
-* Institutional all causes deaths 
-rename (numberofinstitutioanlallcausedea-v400) ///
-		(allcause_mort_num1_19	allcause_mort_num2_19	allcause_mort_num3_19 ///
-		allcause_mort_num4_19	allcause_mort_num5_19	allcause_mort_num6_19 ///
-		allcause_mort_num7_19	allcause_mort_num8_19	allcause_mort_num9_19 ///
-		allcause_mort_num10_19	allcause_mort_num11_19	allcause_mort_num12_19 ///
-		allcause_mort_num1_20	allcause_mort_num2_20	allcause_mort_num3_20 ///
-		allcause_mort_num4_20	allcause_mort_num5_20	allcause_mort_num6_20 ///
-		allcause_mort_num7_20	allcause_mort_num8_20)
-
+* All cause deaths - dropped since there is no denominator 
+drop numberofinstitutioanlallcausedea-v400
+		
 save "$user/$data/Data for analysis/Kor_Jan19-Aug20_WIDE.dta", replace	
 **********************************************************************************
 *END

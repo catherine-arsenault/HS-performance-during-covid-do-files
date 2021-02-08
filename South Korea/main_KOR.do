@@ -14,9 +14,9 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 do "$dofiles/cr_KOR.do"
 
 ********************************************************************************
-* Cleaning do files
-* Cleans data (see cleaning protocol in shared folder)
-do "$dofiles/clean_KOR.do"
+* Cleaning do files - Not needed since it's province level data
+* Cleans data (see cleaning protocol in shared folder) 
+*do "$dofiles/clean_KOR.do"
 
 ********************************************************************************
 * Format do files
