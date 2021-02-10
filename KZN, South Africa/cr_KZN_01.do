@@ -6,7 +6,7 @@ clear all
 set more off	
 
 * Jan-Sept 2020
-import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South_Africa_2020_Jan_Sept_Facility.xlsx", firstrow clear
+import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_Province_District_Sub_District_Facility - Dec2020.xlsx", firstrow clear
 rename (orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 OPDheadcountsum) (Province District SubDistrict Facility OPDheadcounttotal)
 drop organisationunitname Hospitalpublic NonFixedfacilitysatellitehe
 save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/tmp2020.dta", replace 
@@ -26,7 +26,7 @@ drop _merge */
 
 *Months
 encode periodname, gen(month)
-recode month (1 2=4) (3 4=8) (5=12) (6 7=2) (8 9=1) (10 11=7) (12 13=6) (14 15=3) (16 17=5) (18=11) (19=10) (20 21=9)
+recode month (1 2=4) (3 4=8) (5 6=12) (7 8=2) (9 10=1) (11 12=7) (13 14=6) (15 16=3) (17 18=5) (19 20=11) (21 22=10) (23 24=9)
 lab def mlbl 1 "January" 2 "February" 3 "March" 4 "April" 5 "May" 6 "June" 7 "July" 8 "August" 9 "September" 10 "October" 11 "November" 12 "December"
 lab val month mlbl
 gen year = 2019 if regexm(periodname,"2019")
@@ -141,11 +141,11 @@ save "$user/HMIS Data for Health System Performance Covid (South Africa)/Data fo
 * Reshape to wide
 reshape wide fp_util-trauma_mort_num, i(Facility factype Province dist subdist) j(rmonth)
 
-*2852 "facilities", though many are pharmacies, non-medical, etc. Dropping all facilities that don't report any data
-egen all_visits =rowtotal(fp_util1-trauma_mort_num21), missing
+*2858 "facilities", though many are pharmacies, non-medical, etc. Dropping all facilities that don't report any data
+egen all_visits =rowtotal(fp_util1-trauma_mort_num24), missing
 drop if all_visits==.
 drop all_visits
-*Retains 1068 facilities with some data during 2019-2020
+*Retains 1069 facilities with some data during 2019-2020
 
 order Province dist subdist Facility factype fp_util* anc*_util* totaldel* del_util* cs_util* pnc_util* diarr_util* pneum_util* sam_util* art_util* opd_util* ipd_util* er_util* road_util* diab_util* hyper_util* kmcn_qual* cerv_qual* tbscreen_qual* tbdetect_qual* tbtreat_qual* vacc_qual* pent_qual* bcg_qual* measles_qual* pneum_qual* rota_qual* newborn_mort_num* sb_mort_num*  mat_mort_num* ipd_mort_num*  icu_mort_num* icu_util* trauma_mort_num*
 
