@@ -39,21 +39,20 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING EVERY MONTH
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
 ****************************************************************/
 
-foreach var of global volumes {
+foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
 
 recode *_report (0=0) (1/24=1) //24 months of data
 
-
-putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(Total facilities reporting, replace)  modify
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot fac reporting 21mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
-foreach var of global volumes {	
+foreach var of global all {	
 	local i = `i'+1
 	putexcel A`i' = "`var'"
 	qui sum `var'_report
@@ -62,21 +61,24 @@ foreach var of global volumes {
 drop *report
 
 preserve
-	local volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+	local all anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util ///
+	           pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
-			   trauma_util
+			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num ///
+			   icu_mort_num trauma_mort_num
 
-	reshape long `volumes', i(Facility factype Province dist subdist) j(rmonth)
-	drop newborn_mort_num1-icu_mort_num21 trauma_mort_num1-trauma_mort_num21
-	recode `volumes' (.=0) (1/999999999=1)
-	collapse (sum) `volumes', by(rmonth)
-	putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(MinMax facilities reporting, replace)  modify
+	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
+	recode `all' (.=0) (1/999999999=1)
+	collapse (sum) `all', by(rmonth)
+	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax fac reporting 21mos, replace)  modify
+	
+	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
 	putexcel B2 = "Min month report data"	
 	putexcel C2 = "Max month report data"
 	local i= 2
-foreach var of global volumes {	
+foreach var of global all {	
 	local i = `i'+1
 	putexcel A`i' = "`var'"
 	qui sum `var'
@@ -167,7 +169,7 @@ at least 18 out of 24 months (incl the latest 2 months) 12/14/20 */
 save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-				     FOR ANALYSES 
+		   COMPARING QUARTERS 2 (2020 VS 2019)
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
 that reported the months of interest) */
@@ -192,7 +194,7 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", replace
+				save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -211,10 +213,19 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN_Q2.dta", replace
 
-***********************************************************************************************
-*Q3 (July-Sep) Calculation 
+* Drop the other months
+keep if month>=4 & month<=6
+
+save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
+
+
+/***************************************************************
+                 COMPLETE CASE ANALYSIS 
+		   COMPARING QUARTERS 3 (2020 VS 2019)
+****************************************************************
+For analyses (Quater comparisons), we keep only those facilities 
+that reported the months of interest) */
 
 u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
@@ -235,7 +246,9 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN_Q3.dta", replace
+
+				save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
+
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -254,7 +267,11 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", replace
+
+* Drop the other months
+keep if month>=7 & month<=9
+
+save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
 
 
 /*************************************************************

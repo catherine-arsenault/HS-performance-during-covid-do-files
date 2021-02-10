@@ -364,17 +364,17 @@ we last extracted the data. We have renamed them to merge with previous data. */
 	import delimited "$user/$data/Raw data/Palika/Nepal_2020_Jan-Nov_palika_neonatal_mort_num.csv", clear
 	drop organisationunitdescription
 	rename (totallateneonataldeathsinthehosp totalearlyneonataldeathsinthehos safemotherhoodprogrammaternaldea) (v9 v20 v31)
-	egen neo_mort_num1_20 = rowtotal(v9  v20 v31)
-	egen neo_mort_num2_20 = rowtotal(v10 v21 v32)
-	egen neo_mort_num3_20 = rowtotal(v11 v22 v33)
-	egen neo_mort_num4_20 = rowtotal(v12 v23 v34)
-	egen neo_mort_num5_20 = rowtotal(v13 v24 v35)
-	egen neo_mort_num6_20 = rowtotal(v14 v25 v36)
-	egen neo_mort_num7_20 = rowtotal(v15 v26 v37)
-	egen neo_mort_num8_20 = rowtotal(v16 v27 v38)
-	egen neo_mort_num9_20 = rowtotal(v17 v28 v39)
-	egen neo_mort_num10_20 = rowtotal(v18 v29 v40)
-	egen neo_mort_num11_20 = rowtotal(v19 v30 v41)
+	egen neo_mort_num1_20 = rowtotal(v9  v20 v31), m 
+	egen neo_mort_num2_20 = rowtotal(v10 v21 v32), m 
+	egen neo_mort_num3_20 = rowtotal(v11 v22 v33), m 
+	egen neo_mort_num4_20 = rowtotal(v12 v23 v34), m 
+	egen neo_mort_num5_20 = rowtotal(v13 v24 v35), m 
+	egen neo_mort_num6_20 = rowtotal(v14 v25 v36), m
+	egen neo_mort_num7_20 = rowtotal(v15 v26 v37), m 
+	egen neo_mort_num8_20 = rowtotal(v16 v27 v38), m
+	egen neo_mort_num9_20 = rowtotal(v17 v28 v39), m 
+	egen neo_mort_num10_20 = rowtotal(v18 v29 v40), m
+	egen neo_mort_num11_20 = rowtotal(v19 v30 v41), m
 	
 	keep org* neo*
 	duplicates tag org* , gen(tag)
