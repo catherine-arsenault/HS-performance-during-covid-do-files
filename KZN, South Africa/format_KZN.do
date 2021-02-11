@@ -15,7 +15,7 @@ created in google data studio
 u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 	drop Province
 	encode Facility, gen(facname)
-	collapse (sum) anc1_util1-trauma_mort_num19 , by(dist)
+	collapse (sum) anc1_util1-trauma_mort_num24 , by(dist)
 	order dist
 	set obs 12 // adding an empty row to dataset
 	foreach x of var _all    {
