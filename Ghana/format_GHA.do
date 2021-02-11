@@ -65,7 +65,11 @@ save "$user/$data/Data for analysis/GHA_Jan19-Aug20.dta", replace
 
 
 *Create national totals 
-collapse (sum) fp_util19-totaldel20, by(month)
+collapse (sum) fp_util19-totaldel20, by(month) 
+*Replace 0 to missing for data studio to read the correctly
+foreach v of global all {
+	replace `v'20 =. if `v'20==0
+}
 append using "$user/$data/Data for analysis/GHA_Jan19-Aug20.dta"
 replace region ="National" if region =="" 
 order region 
