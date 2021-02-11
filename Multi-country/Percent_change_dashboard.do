@@ -5,16 +5,14 @@
 clear 
 set more off 
 
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global folder "/Quest Center/Active projects/HS performance Covid (internal)/Data/Data viz/Country Comparison/Stata output"
 
 *******************************************************************************
-*Nepal 
+*1) Nepal 
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 u "$user/$data/Data for analysis/Nepal_CCA_Q2.dta", clear 
-
-*put variables here 
 
 global rmnch fp_perm_util fp_la_util fp_sa_util anc_util del_util cs_util ///
 			 pnc_util diarr_util pneum_util  sam_util 
@@ -59,7 +57,7 @@ restore
 
 
 *******************************************************************************
-*KZN 
+*2) KZN 
 global data "/HMIS Data for Health System Performance Covid (South Africa)"
 u "$user/$data/Data for analysis/KZN_CCA_Q2.dta", clear
 
@@ -107,7 +105,7 @@ preserve
 restore	
 
 *******************************************************************************
-*Haiti 
+*3) Haiti 
 global data "/HMIS Data for Health System Performance Covid (Haiti)"
 use "$user/$data/Data for analysis/Haiti_CCA_Q2.dta", clear
 
@@ -150,7 +148,7 @@ restore
 
 
 *******************************************************************************
-*Mexico
+*4) Mexico
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 u "$user/$data/Data for analysis/IMSS_Jan19-Oct20_foranalysis.dta", replace
 
@@ -220,7 +218,7 @@ restore
 
 
 *******************************************************************************
-*Ethiopia
+*5) Ethiopia
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 u "$user/$data/Data for analysis/Ethiopia_CCA_Q2.dta", clear 
 
@@ -271,6 +269,139 @@ preserve
 		putexcel B`i' = `var'change
 		}	
 restore
+
+*******************************************************************************
+*6) Lao
+global data "/HMIS Data for Health System Performance Covid (Lao PDR)"
+u "$user/$data/Data for analysis/Lao_CCA_Q2.dta", clear
+
+global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
+			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   diab_util hyper_util opd_util ipd_util road_util 
+global mortality neo_mort_num sb_mort_num mat_mort_num 
+global all $volumes $mortality 
+
+by year, sort: tabstat $all  if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
+
+
+preserve 
+	gen country = "Lao"
+	order country 
+	keep if month>=4 & month<= 6
+	collapse (sum) $all, by(country year)
+
+	gen neo_mort = neo_mort_num / totaldel 
+	gen sb_mort = sb_mort_num / totaldel 
+	gen mat_mort = mat_mort_num/ totaldel 
+
+	drop $mortality  
+
+	global revall $volumes neo_mort sb_mort mat_mort  
+	
+	reshape wide $revall, i(country) j(year)
+
+	foreach var in $revall {
+		gen `var'change = (`var'2020-`var'2019)/`var'2019
+		}
+		
+	putexcel set "/$user/$folder/Lao.xlsx", sheet(Lao, replace) modify
+	putexcel A1 ="Country"
+	putexcel B1 = "Lao_change"
+	local i= 1
+	foreach var in $revall {
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		putexcel B`i' = `var'change
+		}	
+restore
+
+
+*******************************************************************************
+*7) South Korea
+global data "/HMIS Data for Health System Performance Covid (South Korea)"
+import delimited "$user/$data/Kor_Jan19-Aug20_fordashboard.csv", clear
+
+*only keep national totals 
+drop if region !="National" 
+
+forval i = 19/20 {
+	gen newborn_mort`i' = newborn_mort_num`i'/totaldel`i'
+	gen sb_mort`i' = sb_mort_num`i'/totaldel`i'
+	gen mat_mort`i' = mat_mort_num`i'/totaldel`i'
+	gen ipd_mort`i' = ipd_mort_num`i'/ipd_util`i'
+}
+
+drop newborn_mort_num19-totaldel19 newborn_mort_num20-totaldel20
+
+global all sti_util19-ipd_mort20
+ 
+tabstat $all if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
+
+keep if month>=4 & month<= 6
+collapse (sum) $all 
+
+global volume sti_util anc_util del_util cs_util diarr_util pneum_util
+global other diab_util hyper_util art_util mental_util opd_util er_util ///
+			 ipd_util kmc_qual
+global mortality newborn_mort sb_mort mat_mort ipd_mort
+global all $volume $other $mortality
+
+
+	foreach var in $all {
+		gen `var' = (`var'20-`var'19)/`var'19
+		}
+
+				
+*drop original variables 
+drop sti_util19 - ipd_mort20
+
+
+export excel using "/$user/$folder/South Korea.xlsx", firstrow(variables) ///
+		sheet("Transpose") keepcellfmt replace 
+
+*******************************************************************************
+*8) Ghana 
+global data "/HMIS Data for Health System Performance Covid (Ghana)"
+import delimited "$user/$data/Ghana_Jan19-Aug20_fordashboard.csv", clear
+
+*only keep national totals 
+drop if region !="National" 
+
+forval i = 19/20 {
+	gen newborn_mort`i' = newborn_mort_num`i'/totaldel`i'
+	gen sb_mort`i' = sb_mort_num`i'/totaldel`i'
+	gen mat_mort`i' = mat_mort_num`i'/totaldel`i'
+	gen ipd_mort`i' = ipd_mort_num`i'/ipd_util`i'
+}
+
+drop newborn_mort_num19-mat_mort_num19 ipd_mort_num19 ipd_mort_num20 ///
+newborn_mort_num20-mat_mort_num20 totaldel19 totaldel20 
+
+global all fp_util19-ipd_mort20
+
+tabstat $all if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
+
+keep if month>=4 & month<= 6
+collapse (sum) $all 
+
+global volume fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
+			  malnu_util
+global vaccine vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual 
+global other opd_util ipd_util road_util diab_util hyper_util malaria_util ///
+			 tbdetect_qual surg_util
+global mortality newborn_mort sb_mort mat_mort ipd_mort 
+global all $volume $vaccine $other $mortality 
+
+	foreach var in $all {
+	gen `var' = (`var'20-`var'19)/`var'19
+	}
+
+*drop original variables 
+drop fp_util19-ipd_mort20
+	
+
+export excel using "/$user/$folder/Ghana.xlsx", firstrow(variables) ///
+		sheet("Transpose") keepcellfmt replace 
 
 *******************************************************************************
 *END
