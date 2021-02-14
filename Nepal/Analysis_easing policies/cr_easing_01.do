@@ -6,19 +6,39 @@
 clear all
 set more off
 
+*Import and clean Covid case data 
+import excel using "$user/BEHST Center/Active projects/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal/COVID Cases new one.xlsx", firstrow clear
+drop sn  date patient_name age sex province district
+drop if orgunitlevel3 == ""
+drop if year == 2021
+collapse (sum) covid_case, by (year month orgunitlevel3) 
+** I'm not sure if this month/year is Nepali calendar or Western calendar? For now I assumed the months here matched our own health service utilization data (Nepali calendar), but if it is Western calendar will have to use the days to translate to Nepali calendar 
+save "$user/$data/Data for analysis/Nepal_covid_cases.dta", replace
+clear
+
+*Import covid death data and save as .dta file 
+import excel using "$user/BEHST Center/Active projects/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal/Death_DistrictWise_EDCD Data_2033 Cases.xlsx", sheet("Sheet1") firstrow clear
+drop District K L
+save "$user/$data/Data for analysis/Nepal_covid_deaths.dta", replace
+clear
+
 * Import policy data 
 * For each month, from July to August 2020, did the palika "ease" containment policies
-import excel using "$user/$data/Analyses/District-level Diff-in-diff Analysis/policy_data.xlsx", firstrow clear
+import excel using "$user/BEHST Center/Active projects/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal/policy_data.xlsx", firstrow clear
 
 * Merge policy data with health service utilization data 
 merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_easing.dta"
+drop _merge
+
+* Merge data with Covid data death data 
+merge m:1 orgunitlevel3 using "$user/$data/Data for analysis/Nepal_covid_deaths.dta"
 drop _merge
 
 *******************************************************************************
 * RESHAPES FROM WIDE TO LONG FOR ANALYSES
 reshape long fp_sa_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			 opd_util ipd_util er_util tbdetect_qual hivdiag_qual pent_qual bcg_qual ///
-			 totaldel measles_qual opv3_qual pneum_qual eased_ ///
+			 totaldel measles_qual opv3_qual pneum_qual eased_ covid_death_ ///
 			  , i(org*) j(month) string	
 	
 * Month and year
@@ -45,6 +65,12 @@ rename mo month
 order org* year month 
 
 *******************************************************************************
+
+* Merge data with Covid case 
+merge m:1 orgunitlevel3 year month using "$user/$data/Data for analysis/Nepal_covid_cases.dta"
+drop _merge
+
+
 * For now, drop the pre-lockdown period
 * Pre intervention = lockdown period which coincides with dhis2 months of Mar-July 2020
 * Pre intervention = 3_20 4_20 5_20 6_20 7_20 
@@ -54,37 +80,91 @@ drop if year==2019
 drop if month==1 | month==2
 * Retains 9 months of data per palika 
 * Need to drop November which is Actually Nov15-Dec16 2020 (MK downloaded the data in early Jan)
-drop if month==11
+drop if month==11 | month ==12
 
-/* Edit July to be 0 (still under lockdown, allows for a lag, also, data quality
+/* Remove July from the analysis (lockdown happens mid-month, also, data quality
  issue for policy change in july)*/
-*replace eased = 0 if month==7
+replace eased = . if month==7
 *******************************************************************************
 * Creates a "post" dummy, policies change starting august
-gen post = month>=7 & month<=11 
+gen post = month>=8 & month<=11 
+replace post = . if month == 7 
 order org* year month post
 
 * Creates interaction term (variable treatment)
 gen did_eased = post*eased
 order org* year month post did
 
-* Creates a single policy change (non-varying treatment)
+*Simple comparison in means pre/post indicator 
+gen post_simp = . 
+replace post_simp = 0 if month == 4 | month == 5 | month == 6 
+replace post_simp = 1 if month == 8 | month == 9 | month == 10 
+
+
+* Created the three-part variable - districts that full eased in post-period, districts that fully maintained in post-period, districts that switched in the post-period
+* There are no districts that maintaned 8,9,10 so just doing month 8 and 9 for now (will be updating this policy data soon though)
+by organisationunitname, sort: egen temp= sum(eased_) if month>=8 & month<=9
+gen eased_cat = 1 if temp==0
+replace eased_cat = 2 if temp==2
+replace eased_cat=3 if temp==1
+lab def eased_cat 1 "fully maintained" 2 "fully eased " 3 "switch "
+lab val eased_cat eased_cat
+drop temp
+
+gen post_cat = .
+replace post_cat = 1 if month == 8 | month == 9
+replace post_cat = 0 if month == 3 | month == 4 | month == 5 | month == 6 
+
+
+* Creates a single policy change (non-varying treatment) based on month of August (used as a practice analysis)
 gen eased_8_20 = 1 if eased_==1 & month==8
-order org* year month post did eased_ eased_8_20 
+order org* year month post eased_ eased_8_20 
 by organisationunitname,  sort: egen temp= sum(eased_8_20 )
 replace eased_8_20 = temp if eased_8_20==.
 drop temp 
-order org* year month post did eased_ eased_8_20 
 
-* Creates interaction term (fixed treatment)
+* Creates interaction term (fixed treatment) (used as a practice analysis)
 gen did_eased_8_20 = post*eased_8_20
+
+
+*Create a two-part variable of fully maintained or fully eased 
+gen eased_9_20 = 1 if eased_ == 1 & month == 9
+by organisationunitname,  sort: egen temp= sum(eased_9_20 )
+replace eased_9_20 = temp if eased_9_20==.
+drop temp 
+order org* year month post eased_ eased_8_20 eased_9_20 did*
+
+gen eased_cat_2 = .
+replace eased_cat_2 = 1 if eased_8_20 == 1 & eased_9_20 == 1
+replace eased_cat_2 = 0 if eased_8_20 == 0 & eased_9_20 == 0
+
+*Create interaction term
+gen did_eased_cat_2 = post_cat*eased_cat_2
+
+order org* year month post* eased_* did*
+
+*Placebo test using the fully maintained or fully eased 
+gen post_plac = .
+replace post_plac = 1 if month == 5 | month == 6
+replace post_plac = 0 if month == 3 | month == 4 
+
+*Creates the placebo interaction term (two-part variable)
+gen did_eased_cat_plac = post_plac*eased_cat_2
+
+order org* year month post* eased* did* 
 
 lab var eased_ "Treated/control: Variable policy change"
 lab var did_eased "Interaction term based on variable treatment"
 lab var eased_8_20 "Treated/control: Fixed policy change based on August"
+lab var eased_cat "Three-category: fully eased, fully maintained and switched"
+lab var eased_cat_2 "Two-category: fully eased and fully maintained"
+lab var post_cat "Pre/post period for two and three category"
+lab var did_eased_cat_2 "Interaction term for two-category"
+lab var post_plac "Pre/post for placebo test"
+lab var did_eased_cat_plac "Interaction term for placebo test, two-category"
 lab var did_eased_8_20 "Interaction term based on fixed treatment"
-
-order org* year month post did_eased eased_ eased_8_20 did_eased_8_20
+lab var post "Pre/post period for analysis"
+lab var post_simp "Pre/post period for simple means comparison"
 
 * Creates an id for palika 
 encode organisationunitname, gen(palikaid)
@@ -93,39 +173,3 @@ egen tag = tag(organisationunitname)
 
 save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta", replace
 
-/* 
-Older code:
-gen post = .
-replace post = 0 if year == 2020 
-** Not sure about month 7 
-replace post = 1 if year == 2020 & month == 8 | year == 2020 & month == 9 | year == 2020 & month == 10 | year == 2020 & month == 11 
-
-
-/*Create pre/post indicator for placebo test and DID analysis
-gen post_plac = 0 if year == 2020 & month == 1 | year == 2020 & month == 2 | year == 2020 & month == 3
-replace post_plac = 1 if year == 2020 & month == 4 | year == 2020 & month == 5 | year == 2020 & month == 6
-
-
-**** IF TREATMENT WERE EASED_8_20, month of August as Treatment 
-* Create interaction term - Placebo DID 
-gen did_eased_8_20_plac = post_plac*eased_8_20
-
-* Create interaction term - DID 
-gen did_eased_8_20 = post*eased_8_20
-
-**** FOR MULTIPLE POST PERIODS
-gen did_eased_9_20 = post*eased_9_20
-gen did_eased_10_20 = post*eased_10_20
-gen did_eased_11_20 = post*eased_11_20
-
-**** IF TREATMENT CHANGED OVER TIME 
-gen eased_treated = .
-replace eased_treated = 0 if year == 2020
-** Not sure about month 7 
-replace eased_treated = 1 if year == 2020 & month == 8 & eased_8_20 == 1
-replace eased_treated = 1 if year == 2020 & month == 9 & eased_9_20 == 1
-replace eased_treated = 1 if year == 2020 & month == 10 & eased_10_20 == 1
-replace eased_treated = 1 if year == 2020 & month == 11 & eased_11_20 == 1
-
-* Create interaction term - DID 
-gen did_eased = post*eased_treated */
