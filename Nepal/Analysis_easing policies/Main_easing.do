@@ -7,6 +7,7 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 *global user "/Users/neenakapoor/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
+global analysis "/Quest Center/Active projects/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal"
 *global dofiles "/Users/neenakapoor/Desktop/HS-performance-during-covid-do-files/Nepal"
 
 **********************************************************************

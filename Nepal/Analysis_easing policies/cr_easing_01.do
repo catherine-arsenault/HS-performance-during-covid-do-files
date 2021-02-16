@@ -7,7 +7,7 @@ clear all
 set more off
 
 *Import and clean Covid case data 
-import excel using "$user/BEHST Center/Active projects/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal/COVID Cases new one.xlsx", firstrow clear
+import excel using "$user/$analysis/COVID Cases new one.xlsx", firstrow clear
 drop sn  date patient_name age sex province district
 drop if orgunitlevel3 == ""
 drop if year == 2021
@@ -17,14 +17,14 @@ save "$user/$data/Data for analysis/Nepal_covid_cases.dta", replace
 clear
 
 *Import covid death data and save as .dta file 
-import excel using "$user/BEHST Center/Active projects/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal/Death_DistrictWise_EDCD Data_2033 Cases.xlsx", sheet("Sheet1") firstrow clear
+import excel using "$user/$analysis/Death_DistrictWise_EDCD Data_2033 Cases.xlsx", sheet("Sheet1") firstrow clear
 drop District K L
 save "$user/$data/Data for analysis/Nepal_covid_deaths.dta", replace
 clear
 
 * Import policy data 
 * For each month, from July to August 2020, did the palika "ease" containment policies
-import excel using "$user/BEHST Center/Active projects/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal/policy_data.xlsx", firstrow clear
+import excel using "$user/$analysis/policy_data.xlsx", firstrow clear
 
 * Merge policy data with health service utilization data 
 merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_easing.dta"
