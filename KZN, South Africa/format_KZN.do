@@ -7,15 +7,64 @@
 /****************************************************************
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
-****************************************************************
- 
-		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
+****************************************************************/
 
+/****************************************************************
+Min and Max number of facilities reporting 
+****************************************************************/
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", clear
+foreach var of global all {
+egen `var'_report = rownonmiss(`var'*)
+}
+
+recode *_report (0=0) (1/24=1)
+
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Dashboard-total fac reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+preserve
+	local all anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util ///
+	           pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
+			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
+			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num ///
+			   icu_mort_num trauma_mort_num
+
+	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
+	recode `all' (.=0) (1/999999999=1)
+	collapse (sum) `all', by(rmonth)
+	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Dashboard- MinMax fac reporting, replace)  modify
+	
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+
+/*****************************************************************
+		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
-u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", clear
 	drop Province
 	encode Facility, gen(facname)
-	collapse (sum) anc1_util1-trauma_mort_num24 , by(dist)
+	collapse (sum) anc1_util1-trauma_mort_num21 , by(dist)
 	order dist
 	set obs 12 // adding an empty row to dataset
 	foreach x of var _all    {

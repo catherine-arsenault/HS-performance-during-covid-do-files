@@ -48,7 +48,7 @@ egen `var'_report = rownonmiss(`var'*)
 
 recode *_report (0=0) (1/24=1) //24 months of data
 
-putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot fac reporting 21mos, replace)  modify
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot fac reporting 24mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -71,7 +71,7 @@ preserve
 	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
 	recode `all' (.=0) (1/999999999=1)
 	collapse (sum) `all', by(rmonth)
-	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax fac reporting 21mos, replace)  modify
+	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax fac reporting 24mos, replace)  modify
 	
 	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
