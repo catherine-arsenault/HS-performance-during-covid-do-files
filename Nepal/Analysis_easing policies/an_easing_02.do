@@ -18,14 +18,6 @@ tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 2 , stat(N
 tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 3 , stat(N mean) col(stat)
 
 
-* DID estimates fixed policy change
-reg fp_sa_util post eased_8_20  did_eased_8_20 , r
-reg anc_util post eased_8_20  did_eased_8_20 , r
-reg del_util post eased_8_20  did_eased_8_20 , r
-reg cs_util post eased_8_20  did_eased_8_20 , r
-reg pnc_util post eased_8_20  did_eased_8_20 , r
-* could also do reg anc_util post##eased_8_20
-
 
 *DID estimates with variable policy changes with covid case and covid death 
 quietly reg fp_sa_util i.palikaid i.month eased_ covid_case covid_death_, r
@@ -92,6 +84,28 @@ margins, at(did_eased_cat_2 = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
 
+*DID estimates with only eased or only maintained with covid case and death 
+quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg anc_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg del_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg cs_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg pnc_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+
 *DID estimates with only eased or only maintained - PLACEBO TEST 
 quietly reg fp_sa_util i.palikaid i.month did_eased_cat_plac , r
 margins, at(did_eased_cat_plac = (0 1)) post
@@ -113,7 +127,36 @@ quietly reg pnc_util i.palikaid i.month did_eased_cat_plac , r
 margins, at(did_eased_cat_plac = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
+*DID estimates with only eased or only maintained - PLACEBO TEST with covid case and death
+quietly reg fp_sa_util i.palikaid i.month did_eased_cat_plac covid_case , r
+margins, at(did_eased_cat_plac = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
 
+quietly reg anc_util i.palikaid i.month did_eased_cat_plac covid_case , r
+margins, at(did_eased_cat_plac = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg del_util i.palikaid i.month did_eased_cat_plac covid_case , r
+margins, at(did_eased_cat_plac = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg cs_util i.palikaid i.month did_eased_cat_plac covid_case , r
+margins, at(did_eased_cat_plac = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg pnc_util i.palikaid i.month did_eased_cat_plac covid_case , r
+margins, at(did_eased_cat_plac = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+
+
+* DID estimates fixed policy change - 
+reg fp_sa_util post eased_8_20  did_eased_8_20 , r
+reg anc_util post eased_8_20  did_eased_8_20 , r
+reg del_util post eased_8_20  did_eased_8_20 , r
+reg cs_util post eased_8_20  did_eased_8_20 , r
+reg pnc_util post eased_8_20  did_eased_8_20 , r
+* could also do reg anc_util post##eased_8_20
 
 
 

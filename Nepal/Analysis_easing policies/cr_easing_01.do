@@ -77,7 +77,8 @@ drop _merge
 * Post intervention = easing perio which coincides with Aug-November
 * Post intervention = 8_20 9_20 10_20 11_20 
 drop if year==2019
-drop if month==1 | month==2
+*drop if month==1 | month==2 
+* I removed this in case we use month 1 and 2 for placebo test? 
 * Retains 9 months of data per palika 
 * Need to drop November which is Actually Nov15-Dec16 2020 (MK downloaded the data in early Jan)
 drop if month==11 | month ==12
@@ -88,7 +89,7 @@ replace eased = . if month==7
 *******************************************************************************
 * Creates a "post" dummy, policies change starting august
 gen post = month>=8 & month<=11 
-replace post = . if month == 7 
+replace post = . if month == 7 | month == 1 | month == 2
 order org* year month post
 
 * Creates interaction term (variable treatment)
@@ -145,7 +146,7 @@ order org* year month post* eased_* did*
 
 *Placebo test using the fully maintained or fully eased 
 gen post_plac = .
-replace post_plac = 1 if month == 5 | month == 6
+replace post_plac = 1 if month == 5 | month == 6 
 replace post_plac = 0 if month == 3 | month == 4 
 
 *Creates the placebo interaction term (two-part variable)
