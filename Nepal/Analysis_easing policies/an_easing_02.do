@@ -27,7 +27,7 @@ reg pnc_util post eased_8_20  did_eased_8_20 , r
 * could also do reg anc_util post##eased_8_20
 
 
-*DID estimates with variable policy changes
+*DID estimates with variable policy changes with covid case and covid death 
 quietly reg fp_sa_util i.palikaid i.month eased_ covid_case covid_death_, r
 margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
@@ -45,6 +45,27 @@ margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
 quietly reg pnc_util i.palikaid i.month eased_ covid_case covid_death_, r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+*DID estimates with variable policy changes without covid case and covid death
+quietly reg fp_sa_util i.palikaid i.month eased_, r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg anc_util i.palikaid i.month eased_, r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg del_util i.palikaid i.month eased_, r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg cs_util i.palikaid i.month eased_, r
+margins, at(eased_= (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg pnc_util i.palikaid i.month eased_, r
 margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
@@ -72,23 +93,23 @@ lincom (_b[2._at]-_b[1._at])
 
 
 *DID estimates with only eased or only maintained - PLACEBO TEST 
-reg fp_sa_util i.palikaid i.month did_eased_cat_plac , r
+quietly reg fp_sa_util i.palikaid i.month did_eased_cat_plac , r
 margins, at(did_eased_cat_plac = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
-reg anc_util i.palikaid i.month did_eased_cat_plac , r
+quietly reg anc_util i.palikaid i.month did_eased_cat_plac , r
 margins, at(did_eased_cat_plac = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
-reg del_util i.palikaid i.month did_eased_cat_plac , r
+quietly reg del_util i.palikaid i.month did_eased_cat_plac , r
 margins, at(did_eased_cat_plac = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
-reg cs_util i.palikaid i.month did_eased_cat_plac , r
+quietly reg cs_util i.palikaid i.month did_eased_cat_plac , r
 margins, at(did_eased_cat_plac = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
-reg pnc_util i.palikaid i.month did_eased_cat_plac , r
+quietly reg pnc_util i.palikaid i.month did_eased_cat_plac , r
 margins, at(did_eased_cat_plac = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
