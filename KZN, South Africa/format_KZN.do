@@ -20,7 +20,7 @@ egen `var'_report = rownonmiss(`var'*)
 
 recode *_report (0=0) (1/24=1)
 * Number of facilities reporting for at least 1 month for each indicator
-putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Dashboard-total fac reporting, replace)  modify
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(DB-Tot reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -44,7 +44,7 @@ preserve
 	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(rmonth)
-	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Dashboard- MinMax fac reporting, replace)  modify
+	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(DB- MinMax reporting, replace)  modify
 	
 	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
@@ -60,6 +60,27 @@ preserve
 }
 restore
 
+* Overall mean
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(DB-Tot reporting)  modify
+putexcel E2 = "Variable"
+putexcel F2 = "Mean per facility"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel E`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel F`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
 /*****************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
