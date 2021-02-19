@@ -49,7 +49,7 @@ foreach var of global all {
 }
 recode *_report (0=0) (1/22=1) //Jan19-Oct20:22 months 
 
-putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Tot fac reporting 22mos, replace)  modify
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Tot reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -87,6 +87,27 @@ foreach var of global all {
 }
 restore
 
+* Overall mean
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Tot reporting)  modify
+putexcel E2 = "Variable"
+putexcel F2 = "Mean per facility"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel E`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel F`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
 /****************************************************************
 EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
 ****************************************************************/
