@@ -12,13 +12,14 @@ created in google data studio
 /****************************************************************
 Min and Max number of facilities reporting 
 ****************************************************************/
-u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", clear
+
 foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
 
 recode *_report (0=0) (1/24=1)
-
+* Number of facilities reporting for at least 1 month for each indicator
 putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Dashboard-total fac reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
@@ -31,6 +32,7 @@ foreach var of global all {
 }
 drop *report
 
+* Min and Max number of facilities reporting every month, for each indicator
 preserve
 	local all anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util ///
 	           pnc_util diarr_util pneum_util sam_util art_util opd_util ///
@@ -61,7 +63,7 @@ restore
 /*****************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
-u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 	drop Province
 	encode Facility, gen(facname)
 	collapse (sum) anc1_util1-trauma_mort_num21 , by(dist)
