@@ -4,11 +4,74 @@
 
 clear all 
 set more off
+
+global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom  
+				
+global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num 	totalipd_mort_num 
+
+global all $volumes $mortality
+
 * ALL INDICATORS
 use "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", clear
-* MERGE WITH TB QUARTERLY INDICATORS 
+
+/**************************************************************************
+ COUNTS THE NUMBER OF FACILITIES LEFT IN THE DASHBOARD DATASET AND EXPORTS 
+ TO EXCEL
+***************************************************************************/
+foreach var of global all {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/24=1)
+* Number of facilities reporting for at least 1 month for each indicator
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Dashboard-total fac reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+* Min and Max number of facilities reporting every month, for each indicator
+preserve
+	local all  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			   totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num ///
+				er_mort_num totalipd_mort_num  
+
+	reshape long `all', i(region zone organisationunitname orgunitlevel1 orgunitlevel4) j(rmonth) string
+	recode `all' (.=0) (0/999999999=1)
+	collapse (sum) `all', by(rmonth)
+	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Dashboard- MinMax fac reporting, replace)  modify
+	
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+	foreach var of global all {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'
+		putexcel B`i' = `r(min)'
+		putexcel C`i' = `r(max)'
+}
+restore
+/**************************************************************************
+ MERGE WITH TB QUARTERLY INDICATORS
+***************************************************************************/
 merge 1:1  region zone org*  using "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta"
 drop _merge
+
 /****************************************************************
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
 *****************************************************************/

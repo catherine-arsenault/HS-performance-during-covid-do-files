@@ -32,12 +32,12 @@ drop all_visits
 * Retains 1625 woreda/facilities with some data from Jan19-June20
 ********************************************************************
 
-global all tbdetect_qual tbdenom_qual tbnum_qual
+local all tbdetect_qual tbdenom_qual tbnum_qual
 
 /****************************************************************
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 ****************************************************************/
-foreach var of global all {
+foreach var of local all {
 	egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/6=1) 
@@ -46,7 +46,7 @@ putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(TB Total facilities
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
-foreach var of global all {	
+foreach var of local all {	
 	local i = `i'+1
 	putexcel A`i' = "`var'"
 	qui sum `var'_report
