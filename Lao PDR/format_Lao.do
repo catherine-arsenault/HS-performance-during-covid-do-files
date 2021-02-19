@@ -4,16 +4,60 @@
 * Lao, January 2019 - Oct 2020, analyses at facility LEVEL 
 * PI Catherine Arsenault, Analyst MK Kim
 * Formating for google data studio dashboard
-/****************************************************************
+/*********************************************************************
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
-****************************************************************
- 
+*********************************************************************
+	COUNTS THE NUMBER OF FACILITIES REMAINING IN THE FINAL DATASET
+
+**********************************************************************/
+use "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_DB.dta", clear
+
+foreach var of global all {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/22=1) //22mts : Jan19-Oct20
+
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(DB-Tot reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+preserve
+	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
+			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   diab_util hyper_util opd_util ipd_util road_util neo_mort_num ///
+			   sb_mort_num mat_mort_num
+			   
+	reshape long `all', i(org*) j(month, string)
+	recode `all' (.=0) (0/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(DB-MinMax reporting, replace)  modify
+
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+/*****************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
 *****************************************************************/
-
-use "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE_CCA_DB.dta", clear
 	rename orgunitlevel2 province
 	order province  org* 
 	collapse (sum) fp_perm_util1_19-mat_mort_num10_20 , by(province)
