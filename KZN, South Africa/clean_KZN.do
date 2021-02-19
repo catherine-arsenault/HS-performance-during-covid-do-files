@@ -73,7 +73,7 @@ preserve
 			   icu_mort_num trauma_mort_num
 
 	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
-	recode `all' (.=0) (1/999999999=1)
+	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(rmonth)
 	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax fac reporting 24mos, replace)  modify
 	
