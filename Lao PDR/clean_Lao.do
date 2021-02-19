@@ -120,6 +120,7 @@ foreach var of global all {
 	qui sum `var'_overall_mean
 	putexcel D`i' = `r(mean)'
 }
+drop *_mean
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
