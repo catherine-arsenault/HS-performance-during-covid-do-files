@@ -84,7 +84,7 @@ preserve
 			   ipd_mort_num neo_mort_num live_births
 			   
 	reshape long `all', i(org*) j(month, string)
-	recode `all' (.=0) (1/999999999=1)
+	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
 	putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(MinMax fac reporting 23mos, replace)  modify
 
