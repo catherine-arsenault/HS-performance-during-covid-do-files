@@ -42,7 +42,7 @@ preserve
 			   icu_mort_num trauma_mort_num
 
 	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
-	recode `all' (.=0) (1/999999999=1)
+	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(rmonth)
 	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Dashboard- MinMax fac reporting, replace)  modify
 	
@@ -51,12 +51,12 @@ preserve
 	putexcel B2 = "Min month report data"	
 	putexcel C2 = "Max month report data"
 	local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'
-	putexcel B`i' = `r(min)'
-	putexcel C`i' = `r(max)'
+	foreach var of global all {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'
+		putexcel B`i' = `r(min)'
+		putexcel C`i' = `r(max)'
 }
 restore
 
