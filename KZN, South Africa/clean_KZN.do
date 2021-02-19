@@ -42,7 +42,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA BEFORE CLEANING: 
+TOTAL NUMBER OF FACILITIES REPORTING AVERAGE VOLUMES BEFORE CLEANING: 
 EXPORTED TO EXCEL
 ****************************************************************/
 
@@ -52,7 +52,7 @@ egen `var'_report = rownonmiss(`var'*)
 
 recode *_report (0=0) (1/24=1) //24 months of data
 
-putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot fac reporting 24mos, replace)  modify
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -75,7 +75,7 @@ preserve
 	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(rmonth)
-	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax fac reporting 24mos, replace)  modify
+	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax reporting, replace)  modify
 	
 	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
@@ -90,6 +90,28 @@ foreach var of global all {
 	putexcel C`i' = `r(max)'
 }
 restore
+
+* Overall mean
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot reporting)  modify
+putexcel E2 = "Variable"
+putexcel F2 = "Mean per facility"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel E`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel F`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
 
 /****************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
