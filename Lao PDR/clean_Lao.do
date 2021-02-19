@@ -58,9 +58,10 @@ global mortality neo_mort_num sb_mort_num mat_mort_num
 global all $volumes $mortality 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
+TOTAL NUMBER OF FACILITIES REPORTING DATA PER INDICATOR
+AND MEAN PER INDICATOR BEFORE CLEANING
 ****************************************************************/
-
+* Counts the total facilties reporitng at least once for each indic
 foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
@@ -77,7 +78,7 @@ foreach var of global all {
 	putexcel B`i' = `r(sum)'
 }
 drop *report
-
+* For every month, reports the month with the min number of facilities reporting and the max, for each indicator
 preserve
 	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
@@ -103,6 +104,22 @@ foreach var of global all {
 }
 restore
 
+* Mean for each indicator before cleaning per facility
+foreach var of global all {
+	egen `var'_mean = rowmean(`var'*)
+	egen `var'_overall_mean = mean(`var'_mean) 
+}
+
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot reporting, replace)  modify
+putexcel C2 = "Variable"
+putexcel D2 = "Average of facility means"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel C`i' = "`var'"
+	qui sum `var'_overall_mean
+	putexcel D`i' = `r(mean)'
+}
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
