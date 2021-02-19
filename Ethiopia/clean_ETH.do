@@ -62,14 +62,14 @@ foreach var of global all {
 drop *report
 
 preserve
-	local all fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+	local all  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
-			  opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-			  measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-			  resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-			  icu_mort_num ipd_mort_num 
+				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num ///
+				mat_mort_num er_mort_num icu_mort_num ipd_mort_num  
 	reshape long `all', i(org*) j(month, string)		  
-	recode `all' (.=0) (1/999999999=1)
+	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
 	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(MinMax fac reporting 22mos, replace)  modify
 	
@@ -177,12 +177,15 @@ foreach x in diab_util diab_qual_num hyper_util hyper_qual_num ///
 forval i = 1/12 {
 	egen totalipd_mort`i'_19= rowtotal(ipd_mort_num`i'_19 icu_mort_num`i'_19), m	
 	drop ipd_mort_num`i'_19 icu_mort_num`i'_19
+	rename totalipd_mort`i'_19 totalipd_mort_num`i'_19
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
 forval i = 1/10 {
 	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m
 	drop ipd_mort_num`i'_20 icu_mort_num`i'_20
+	rename totalipd_mort`i'_20 totalipd_mort_num`i'_20
 }
+
 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", replace 
 
@@ -207,7 +210,7 @@ collected until October 2019  */
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-				totalipd_mort {
+				totalipd_mort_num {
 			  preserve
 					keep  org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
@@ -233,7 +236,7 @@ collected until October 2019  */
 					totaldel ipd_util er_util road_util  cerv_qual diab_hyper ///
 					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 					measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort  {
+					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num  {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 				save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", replace
@@ -268,7 +271,7 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-				totalipd_mort {
+				totalipd_mort_num {
 			  preserve
 					keep  org* `x'* 
 					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & ///
@@ -283,7 +286,7 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-				totalipd_mort {
+				totalipd_mort_num  {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 			  }
@@ -295,7 +298,7 @@ reshape long  fp_util sti_util anc_util ///
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
-			  totalipd_mort , i( org*) j(month) string	
+			  totalipd_mort_num , i( org*) j(month) string	
 	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -363,7 +366,7 @@ rename mo month
 	lab var er_mort_num "Emergency room deaths per 1000"
 	*lab var ipd_mort_num "Inpatient deaths per 1000"
 	*lab var icu_mort_num "ICU deaths per 1000"
-	lab var totalipd_mort "Total inpatient (incl. ICU) deaths per 1000" 
+	lab var totalipd_mort_num "Total inpatient (incl. ICU) deaths per 1000" 
 
 * Region names	
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
@@ -401,7 +404,7 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-				totalipd_mort diab_util diab_detec diab_qual_num hyper_util hyper_detec hyper_qual_num {
+				totalipd_mort_num diab_util diab_detec diab_qual_num hyper_util hyper_detec hyper_qual_num {
 			  preserve
 					keep  org* `x'* 
 					keep if `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & ///
@@ -420,7 +423,7 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 					measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
 					diab_util diab_detec diab_qual_num hyper_util hyper_detec hyper_qual_num ///
-					mat_mort_num er_mort_num totalipd_mort  {
+					mat_mort_num er_mort_num totalipd_mort_num  {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 				save "$user/$data/Data for analysis/Ethiopia_Q1_Q2_2020_comparisons.dta", replace
@@ -431,7 +434,7 @@ reshape long fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
-				mat_mort_num er_mort_num totalipd_mort, i( org*) j(month) string	
+				mat_mort_num er_mort_num totalipd_mort_num, i( org*) j(month) string	
 * Region names	
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
 replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
