@@ -73,7 +73,7 @@ preserve
 			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num
 			   
 	reshape long `all', i(org*) j(month, string)
-	recode `all' (.=0) (1/999999999=1)
+	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
 	putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(MinMax fac reporting 18mos, replace)  modify
 
