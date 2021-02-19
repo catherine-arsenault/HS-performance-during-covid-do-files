@@ -58,7 +58,7 @@ global all $volumes $mortality
 /****************************************************************
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
 ****************************************************************/
-
+* Number of palika reporting any data, for each indicator
 foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
@@ -75,7 +75,7 @@ foreach var of global all {
 	putexcel B`i' = `r(sum)'
 }
 drop *report
-
+* Min and Max number of palikas reporting any data, for any given month
 preserve
 	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util ////
