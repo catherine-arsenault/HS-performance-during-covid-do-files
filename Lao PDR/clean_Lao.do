@@ -104,23 +104,27 @@ foreach var of global all {
 }
 restore
 
-* Mean for each indicator before cleaning per facility
+* Overall mean
 foreach var of global all {
-	egen `var'_mean = rowmean(`var'*)
-	egen `var'_overall_mean = mean(`var'_mean) 
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
 
-putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot reporting, replace)  modify
-putexcel C2 = "Variable"
-putexcel D2 = "Average of facility means"	
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot reporting)  modify
+putexcel E2 = "Variable"
+putexcel F2 = "Mean per facility"	
 local i= 2
 foreach var of global all {	
 	local i = `i'+1
-	putexcel C`i' = "`var'"
-	qui sum `var'_overall_mean
-	putexcel D`i' = `r(mean)'
+	putexcel E`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel F`i' = `r(mean)'
 }
-drop *_mean
+drop *_report *_sum *_mean
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
