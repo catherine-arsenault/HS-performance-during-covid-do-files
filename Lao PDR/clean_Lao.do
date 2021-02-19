@@ -66,7 +66,7 @@ egen `var'_report = rownonmiss(`var'*)
 }
 recode *_report (0=0) (1/22=1) //22mts : Jan19-Oct20
 
-putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot fac reporting 22mos, replace)  modify
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -85,9 +85,9 @@ preserve
 			   sb_mort_num mat_mort_num
 			   
 	reshape long `all', i(org*) j(month, string)
-	recode `all' (.=0) (1/999999999=1)
+	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(MinMax fac reporting 22mos, replace)  modify
+	putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(MinMax reporting, replace)  modify
 
 	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
