@@ -54,6 +54,23 @@ foreach var of global all {
 	putexcel C`i' = `r(max)'
 }
 restore
+
+* Mean for each indicator  per facility
+foreach var of global all {
+	egen `var'_mean = rowmean(`var'*)
+	egen `var'_overall_mean = mean(`var'_mean) 
+}
+
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(DB-Tot reporting, replace)  modify
+putexcel C2 = "Variable"
+putexcel D2 = "Average of facility means"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel C`i' = "`var'"
+	qui sum `var'_overall_mean
+	putexcel D`i' = `r(mean)'
+}
 /*****************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
