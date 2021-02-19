@@ -22,11 +22,14 @@ set more off
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
 
-global volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+global volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util ///
+			   pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util
+			   
 global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num
+
 global all $volumes $mortality 
 
 drop fp_util* hyper_util* er_util* /* these indicators are no longer collected after April 2020 (start of financial year)
@@ -39,7 +42,8 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA BEFORE CLEANING: 
+EXPORTED TO EXCEL
 ****************************************************************/
 
 foreach var of global all {
@@ -48,7 +52,7 @@ egen `var'_report = rownonmiss(`var'*)
 
 recode *_report (0=0) (1/24=1) //24 months of data
 
-putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot fac reporting 21mos, replace)  modify
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot fac reporting 24mos, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
@@ -69,9 +73,9 @@ preserve
 			   icu_mort_num trauma_mort_num
 
 	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
-	recode `all' (.=0) (1/999999999=1)
+	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(rmonth)
-	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax fac reporting 21mos, replace)  modify
+	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax fac reporting 24mos, replace)  modify
 	
 	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
@@ -105,6 +109,7 @@ forval i = 1/24 {
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
+
 /****************************************************************
               IDENTIFY OUTLIERS AND SET TO MISSING 
 ****************************************************************
@@ -146,7 +151,7 @@ at least 18 out of 24 months (incl the latest 2 months) 12/14/20 */
 					keep Province dist subdist Facility factype `x'* 
 					egen total`x'= rownonmiss(`x'*)
 					keep if total`x'>=18 & `x'23!=. & `x'24!=. 
-					/* keep if at least 18 out of 21 months are reported 
+					/* keep if at least 18 out of 24 months are reported 
 					& Nov/Dec are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace

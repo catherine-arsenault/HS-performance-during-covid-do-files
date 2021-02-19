@@ -1,11 +1,11 @@
 * HS performance during Covid
 * July 8, 2020 
-* South Africa, January - December 2019
+* South Africa, January 2019 - December 2020 
 * Anna Gage, code checked by: Catherine Arsenault
 clear all
 set more off	
 
-* Jan-Sept 2020
+* Jan-Dec 2020
 import excel using "$user/HMIS Data for Health System Performance Covid (South Africa)/Raw data/South Africa_Province_District_Sub_District_Facility - Dec2020.xlsx", firstrow clear
 rename (orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 OPDheadcountsum) (Province District SubDistrict Facility OPDheadcounttotal)
 drop organisationunitname Hospitalpublic NonFixedfacilitysatellitehe
