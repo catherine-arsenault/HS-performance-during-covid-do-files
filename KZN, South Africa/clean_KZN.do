@@ -150,7 +150,7 @@ at least 18 out of 24 months (incl the latest 2 months) 12/14/20 */
 			 	preserve
 					keep Province dist subdist Facility factype `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=18 & `x'23!=. & `x'24!=. 
+					keep if total`x'>=18
 					/* keep if at least 18 out of 24 months are reported 
 					& Nov/Dec are reported */
 					drop total`x'
