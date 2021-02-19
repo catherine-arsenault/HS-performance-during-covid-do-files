@@ -39,7 +39,8 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA BEFORE CLEANING: 
+EXPORTED TO EXCEL
 ****************************************************************/
 
 foreach var of global all {
@@ -105,6 +106,7 @@ forval i = 1/24 {
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
+
 /****************************************************************
               IDENTIFY OUTLIERS AND SET TO MISSING 
 ****************************************************************
@@ -146,7 +148,7 @@ at least 18 out of 24 months (incl the latest 2 months) 12/14/20 */
 					keep Province dist subdist Facility factype `x'* 
 					egen total`x'= rownonmiss(`x'*)
 					keep if total`x'>=18 & `x'23!=. & `x'24!=. 
-					/* keep if at least 18 out of 21 months are reported 
+					/* keep if at least 18 out of 24 months are reported 
 					& Nov/Dec are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
