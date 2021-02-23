@@ -23,7 +23,7 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 clear all
 set more off	
 
-u "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta", clear
+u "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", clear
 
 order org* fp_perm_util*_19 fp_perm_util*_20 fp_sa_util*_19 fp_sa_util*_20 ///
 	fp_la_util*_19 fp_la_util*_20 anc_util*_19 anc_util*_20 del_util*_19 ///

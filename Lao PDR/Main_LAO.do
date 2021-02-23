@@ -14,6 +14,9 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 * Imports Jan 2019 - Oct 2020 raw data, renames variables 
 do "$dofiles/cr_LAO_01.do"
 
+* Imports Jan 2020 - Dec 2020 raw data, renames variables 
+do "$dofiles/cr_LAO_02.do"
+
 ********************************************************************************
 * Cleaning do files
 * Cleans the data (see cleaning protocol in shared folder)
