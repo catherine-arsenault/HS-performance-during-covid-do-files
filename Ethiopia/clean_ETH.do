@@ -298,6 +298,9 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & ///
 							`x'4_20!=. & `x'5_20!=. & `x'6_20!=.
 					/* keep if Q2 2020 and 2019 are not missing */
+
+					*drop total`x'
+
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}

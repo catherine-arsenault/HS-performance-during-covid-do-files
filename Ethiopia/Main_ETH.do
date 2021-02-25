@@ -3,12 +3,12 @@
 * PI Catherine Arsenault
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
-*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
-*global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
-*global dofiles "/Users/annagage/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
+global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
+
 
 ********************************************************************************
 * Creation do files
@@ -53,5 +53,5 @@ do "$dofiles/format_ETH.do"
 ********************************************************************************
 * Analyses do files
 
-* Analyses (2020 vs 2019 comparisons)
-* do "$dofiles/an_ETH_01.do"
+* Analyses (2020 vs 2019 comparisons) (comparing Q1 and Q2 in 2020)
+ do "$dofiles/an_ETH_01.do"
