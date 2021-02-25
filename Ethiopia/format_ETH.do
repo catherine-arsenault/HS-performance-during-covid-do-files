@@ -1,39 +1,116 @@
+* HS performance during Covid - Ethiopia
+* Format do file
+* Created by Catherine Arsenault
+
 clear all 
 set more off
+
+global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom  
+				
+global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num 	totalipd_mort_num 
+
+global all $volumes $mortality
+
+* ALL INDICATORS
 use "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", clear
+
+/**************************************************************************
+ COUNTS THE NUMBER OF FACILITIES LEFT IN THE DASHBOARD DATASET AND EXPORTS 
+ TO EXCEL
+***************************************************************************/
+foreach var of global all {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/24=1)
+* Number of facilities reporting for at least 1 month for each indicator
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(DB-Tot reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+* Min and Max number of facilities reporting every month, for each indicator
+preserve
+	local all  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			   totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num ///
+				er_mort_num totalipd_mort_num  
+
+	reshape long `all', i(region zone organisationunitname orgunitlevel1 orgunitlevel4) j(rmonth) string
+	recode `all' (.=0) (0/999999999=1)
+	collapse (sum) `all', by(rmonth)
+	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(DB- MinMax reporting, replace)  modify
+	
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+	foreach var of global all {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'
+		putexcel B`i' = `r(min)'
+		putexcel C`i' = `r(max)'
+}
+restore
+
+
+* Overall mean
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(DB-Tot reporting)  modify
+putexcel E2 = "Variable"
+putexcel F2 = "Mean per facility"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel E`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel F`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
+/**************************************************************************
+ MERGE WITH TB QUARTERLY INDICATORS
+***************************************************************************/
+merge 1:1  region zone org*  using "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta"
+drop _merge
 
 /****************************************************************
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
 *****************************************************************/
-* Region names
-drop orgunitlevel1 orgunitlevel4  
-rename (orgunitlevel3 orgunitlevel2) (zone region) 
-replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
-replace region ="Afar"  if region== "Afar Regional Health Bureau"
-replace region ="Amhara"  if region== "Amhara Regional Health Bureau"
-replace region ="Ben Gum" if region==  "Beneshangul Gumuz Regional Health Bureau"
-replace region ="Dire Dawa" if region==  "Dire Dawa Regional Health Bureau"
-replace region ="Gambella"  if region== "Gambella Regional Health Bureau"
-replace region ="Harari"  if region== "Harari Regional Health Bureau"
-replace region ="Oromiya"  if region== "Oromiya Regional Health Bureau"
-replace region ="SNNP"  if region== "SNNP Regional Health Bureau"
-replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
-replace region ="Somali"  if region== "Somali Regional Health Bureau"
-replace region ="Tigray" if region== "Tigray Regional Health Bureau"
-order region zone organisationunitname
-
 * Totals by facility types
 	gen factype = "Facility type: Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
 	replace factype ="Facility type: Non-Hospitals" if factype==""
 	
 preserve
-	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(factype)
+	collapse (sum) fp_util1_19-tbdenom_qual4_20, by(factype)
 	rename factype region
 	save "$user/$data/Data for analysis/tmpfactype.dta", replace
 restore
 
 * Totals by region type
-	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(region)	
+	collapse (sum) fp_util1_19-tbdenom_qual4_20 , by(region)	
+	
 	gen regtype = "Region type: Urban" if region=="Addis Ababa" ///
 	                          | region=="Dire Dawa" | region=="Harari"
 	replace regtype = "Region type: Agrarian" if region == "Amhara" | region=="Oromiya" ///
@@ -41,7 +118,7 @@ restore
 	replace regtype = "Region type: Pastoral" if region == "Afar" | region=="Ben Gum" ///
                               | region=="Gambella" | region=="Somali" 
 preserve
-	collapse (sum) fp_util1_19-totalipd_mort10_20 , by(regtype)	
+	collapse (sum) fp_util1_19-tbdenom_qual4_20 , by(regtype)	
 	rename regtype region
 	save "$user/$data/Data for analysis/tmpregtype.dta", replace
 restore
@@ -73,7 +150,9 @@ reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
-			  totalipd_mort diab_detec hyper_detec, i(region ) j(month) string
+			  tbnum_qual tbdenom_qual tbdetect_qual totalipd_mort diab_detec hyper_detec ///
+			 , i(region ) j(month) string
+
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
 				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
@@ -104,8 +183,8 @@ preserve
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 	newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort ///
 	diab_util hyper_util diab_qual_num hyper_qual_num kmc_qual_num kmc_qual_denom ///
-	resus_qual_num resus_qual_denom diab_detec hyper_detec
-	
+   tbnum_qual tbdenom_qual tbdetect_qual resus_qual_num resus_qual_denom diab_detec hyper_detec
+  
 	foreach v of global varlist {
 		rename(`v')(`v'20)
 	}

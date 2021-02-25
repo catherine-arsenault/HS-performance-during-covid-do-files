@@ -237,18 +237,18 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pneum_util.csv", clear
 	drop organisationunitdescription
 	rename cbimci259monthsclassificationari v9
-	egen pneum_util1_19 = rowtotal(v9 v21)
-	egen pneum_util2_19 = rowtotal(v10 v22)
-	egen pneum_util3_19 = rowtotal(v11 v23)
-	egen pneum_util4_19 = rowtotal(v12 v24)
-	egen pneum_util5_19 = rowtotal(v13 v25)
-	egen pneum_util6_19 = rowtotal(v14 v26)
-	egen pneum_util7_19 = rowtotal(v15 v27)
-	egen pneum_util8_19 = rowtotal(v16 v28)
-	egen pneum_util9_19 = rowtotal(v17 v29)
-	egen pneum_util10_19 = rowtotal(v18 v30)
-	egen pneum_util11_19 = rowtotal(v19 v31)
-	egen pneum_util12_19 = rowtotal(v20 v32)
+	egen pneum_util1_19 = rowtotal(v9 v21), m 
+	egen pneum_util2_19 = rowtotal(v10 v22), m
+	egen pneum_util3_19 = rowtotal(v11 v23), m
+	egen pneum_util4_19 = rowtotal(v12 v24), m 
+	egen pneum_util5_19 = rowtotal(v13 v25), m 
+	egen pneum_util6_19 = rowtotal(v14 v26), m 
+	egen pneum_util7_19 = rowtotal(v15 v27), m 
+	egen pneum_util8_19 = rowtotal(v16 v28), m 
+	egen pneum_util9_19 = rowtotal(v17 v29), m 
+	egen pneum_util10_19 = rowtotal(v18 v30), m 
+	egen pneum_util11_19 = rowtotal(v19 v31), m 
+	egen pneum_util12_19 = rowtotal(v20 v32), m 
 	keep org* pneum* 
 	duplicates tag org* , gen(tag)
 	egen total= rowtotal(pneum*), m
@@ -579,18 +579,18 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_pnc_util
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_neonatal_mort_num.csv", clear
 	drop organisationunitdescription
 	rename (totallateneonataldeathsinthehosp totalearlyneonataldeathsinthehos safemotherhoodprogrammaternaldea) (v9 v21 v33)
-	egen neo_mort_num1_19 = rowtotal(v9 v21 v33)
-	egen neo_mort_num2_19 = rowtotal(v10 v22 v34)
-	egen neo_mort_num3_19 = rowtotal(v11 v23 v35)
-	egen neo_mort_num4_19 = rowtotal(v12 v24 v36)
-	egen neo_mort_num5_19 = rowtotal(v13 v25 v37)
-	egen neo_mort_num6_19 = rowtotal(v14 v26 v38)
-	egen neo_mort_num7_19 = rowtotal(v15 v27 v39)
-	egen neo_mort_num8_19 = rowtotal(v16 v28 v40)
-	egen neo_mort_num9_19 = rowtotal(v17 v29 v41)
-	egen neo_mort_num10_19 = rowtotal(v18 v30 v42)
-	egen neo_mort_num11_19 = rowtotal(v19 v31 v43)
-	egen neo_mort_num12_19 = rowtotal(v20 v32 v44)
+	egen neo_mort_num1_19 = rowtotal(v9 v21 v33), m 
+	egen neo_mort_num2_19 = rowtotal(v10 v22 v34), m 
+	egen neo_mort_num3_19 = rowtotal(v11 v23 v35), m 
+	egen neo_mort_num4_19 = rowtotal(v12 v24 v36), m 
+	egen neo_mort_num5_19 = rowtotal(v13 v25 v37), m 
+	egen neo_mort_num6_19 = rowtotal(v14 v26 v38), m 
+	egen neo_mort_num7_19 = rowtotal(v15 v27 v39), m 
+	egen neo_mort_num8_19 = rowtotal(v16 v28 v40), m 
+	egen neo_mort_num9_19 = rowtotal(v17 v29 v41), m 
+	egen neo_mort_num10_19 = rowtotal(v18 v30 v42), m 
+	egen neo_mort_num11_19 = rowtotal(v19 v31 v43), m 
+	egen neo_mort_num12_19 = rowtotal(v20 v32 v44), m 
 	
 	keep org* neo*
 	duplicates tag org* , gen(tag)

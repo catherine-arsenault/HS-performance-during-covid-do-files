@@ -22,11 +22,14 @@ set more off
 
 u "$user/$data/Data for analysis/fac_wide.dta", clear
 
-global volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+global volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util ///
+			   pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
 			   trauma_util
+			   
 global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num
+
 global all $volumes $mortality 
 
 drop fp_util* hyper_util* er_util* /* these indicators are no longer collected after April 2020 (start of financial year)
@@ -39,21 +42,21 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING EVERY MONTH
+TOTAL NUMBER OF FACILITIES REPORTING AVERAGE VOLUMES BEFORE CLEANING: 
+EXPORTED TO EXCEL
 ****************************************************************/
 
-foreach var of global volumes {
+foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
 
-recode *_report (0=0) (1/21=1) //Jan19-Sep20 = 21 months 
+recode *_report (0=0) (1/24=1) //24 months of data
 
-
-putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(Total facilities reporting, replace)  modify
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot reporting, replace)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 2
-foreach var of global volumes {	
+foreach var of global all {	
 	local i = `i'+1
 	putexcel A`i' = "`var'"
 	qui sum `var'_report
@@ -62,21 +65,24 @@ foreach var of global volumes {
 drop *report
 
 preserve
-	local volumes anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util pnc_util diarr_util pneum_util sam_util art_util opd_util ///
+	local all anc1_util totaldel del_util sb_mort_denom livebirths_denom cs_util ///
+	           pnc_util diarr_util pneum_util sam_util art_util opd_util ///
 			   ipd_util road_util diab_util kmcn_qual cerv_qual tbscreen_qual tbdetect_qual ///
 			   tbtreat_qual vacc_qual pent_qual bcg_qual measles_qual pneum_qual rota_qual icu_util ///
-			   trauma_util
+			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num ///
+			   icu_mort_num trauma_mort_num
 
-	reshape long `volumes', i(Facility factype Province dist subdist) j(rmonth)
-	drop newborn_mort_num1-icu_mort_num21 trauma_mort_num1-trauma_mort_num21
-	recode `volumes' (.=0) (1/999999999=1)
-	collapse (sum) `volumes', by(rmonth)
-	putexcel set "$user/$data/Analyses/KZN changes 2019 2020.xlsx", sheet(MinMax facilities reporting, replace)  modify
+	reshape long `all', i(Facility factype Province dist subdist) j(rmonth)
+	recode `all' (.=0) (0/999999999=1)
+	collapse (sum) `all', by(rmonth)
+	putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(MinMax reporting, replace)  modify
+	
+	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
 	putexcel B2 = "Min month report data"	
 	putexcel C2 = "Max month report data"
 	local i= 2
-foreach var of global volumes {	
+foreach var of global all {	
 	local i = `i'+1
 	putexcel A`i' = "`var'"
 	qui sum `var'
@@ -85,13 +91,35 @@ foreach var of global volumes {
 }
 restore
 
+* Overall mean
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Codebook for South Africa.xlsx", sheet(Tot reporting)  modify
+putexcel E2 = "Variable"
+putexcel F2 = "Mean per facility"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel E`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel F`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
+
 /****************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS SOMETHING AT SOME POINT DURING THE YEAR
 ****************************************************************
 For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
-forval i = 1/21 {
+forval i = 1/24 {
 	replace newborn_mort_num`i' = 0 if newborn_mort_num`i'==. &  livebirths_denom`i'!=.
 	replace sb_mort_num`i' = 0 	    if sb_mort_num`i' ==.  & sb_mort_denom`i'!=.
 	replace mat_mort_num`i' = 0     if mat_mort_num`i' == .  & livebirths_denom`i'!=.
@@ -103,6 +131,7 @@ forval i = 1/21 {
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
+
 /****************************************************************
               IDENTIFY OUTLIERS AND SET TO MISSING 
 ****************************************************************
@@ -115,7 +144,7 @@ foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
-	forval v = 1/19 {
+	forval v = 1/24 {
 		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
 		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
 		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
@@ -123,7 +152,7 @@ foreach x of global all {
 	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
 }
 
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", replace 
+save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
@@ -137,15 +166,15 @@ Completeness is an issue, particularly May and June 2020. Some palikas have
 not reported yet. For each variable, keep only heath facilities that 
 have reported at least 14 out of 18 months (incl the latest 2 months) 
 This brings completeness up "generally" above 90% for all variables.
-MK: updated dataset from Jan19-Oct20; keep only health facilities that have reported
-at least 15 out of 21 months (incl the latest 2 months) 12/14/20 */
+MK: updated dataset from Jan19-Dec20; keep only health facilities that have reported
+at least 18 out of 24 months (incl the latest 2 months) 12/14/20 */
 	foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>15 & `x'20!=. & `x'21!=. 
-					/* keep if at least 15 out of 21 months are reported 
-					& Aug/Sep 2020 are reported */
+					keep if total`x'>=18
+					/* keep if at least 18 out of 24 months are reported 
+					& Nov/Dec are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
@@ -158,21 +187,21 @@ at least 15 out of 21 months (incl the latest 2 months) 12/14/20 */
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 				merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", replace
+				save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
 	
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_DB.dta", replace
+save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
-				     FOR ANALYSES 
+		   COMPARING QUARTERS 2 (2020 VS 2019)
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
 that reported the months of interest) */
 
-u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
+u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 *Q2 (April-June) Policy brief 
 foreach x of global all {
@@ -192,7 +221,7 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", replace
+				save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -211,12 +240,21 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q2.dta", replace
 
-***********************************************************************************************
-*Q3 (July-Sep) Calculation 
+* Drop the other months
+keep if month>=4 & month<=6
 
-u "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN.dta", clear
+save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
+
+
+/***************************************************************
+                 COMPLETE CASE ANALYSIS 
+		   COMPARING QUARTERS 3 (2020 VS 2019)
+****************************************************************
+For analyses (Quater comparisons), we keep only those facilities 
+that reported the months of interest) */
+
+u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 foreach x of global all {
 			 	preserve
@@ -235,7 +273,9 @@ foreach x of global all {
 			   trauma_util newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num {
 			 	merge 1:1 Province dist subdist Facility factype using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
-				save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", replace
+
+				save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
+
 		}
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
@@ -254,7 +294,11 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 
-save "$user/$data/Data for analysis/KZN_Jan19-Sep20_WIDE_CCA_AN_Q3.dta", replace
+
+* Drop the other months
+keep if month>=7 & month<=9
+
+save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
 
 
 /*************************************************************

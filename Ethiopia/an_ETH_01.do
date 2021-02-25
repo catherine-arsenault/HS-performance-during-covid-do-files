@@ -51,6 +51,7 @@ order Q1
 
 *Calling globals 
 global rmnch fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util
+
 global other diab_util hyper_util diab_detec hyper_detec art_util opd_util er_util ///
 			 ipd_util road_util cerv_qual 
 global quality kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom ///
@@ -159,8 +160,18 @@ drop Q1
 
 
 
+global all $rmnch $other $vax $mortality 
 
 
+by region, sort:  tabstat $rmnch if month>=1 & month<= 3 & year==2020, s(N sum) c(s)
+by region, sort:  tabstat $rmnch if month>=4 & month<= 6 & year==2020, s(N sum) c(s)  
 
 
+by region, sort:  tabstat $other if month>=1 & month<= 3 & year==2020, s(N sum) c(s)
+by region, sort:  tabstat $other if month>=4 & month<= 6 & year==2020, s(N sum) c(s)  
 
+by region, sort:  tabstat $vax if month>=1 & month<= 3 & year==2020, s(N sum) c(s)
+by region, sort:  tabstat $vax if month>=4 & month<= 6 & year==2020, s(N sum) c(s)  
+
+by region, sort:  tabstat $mortality if month>=1 & month<= 3 & year==2020, s(N sum) c(s)
+by region, sort:  tabstat $mortality if month>=4 & month<= 6 & year==2020, s(N sum) c(s)  

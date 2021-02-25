@@ -7,12 +7,58 @@
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
 ****************************************************************
+
+		COUNTS THE NUMBER OF FACILITIES INCLUDED IN THE 
+		FINAL DASHBOARD DATASET
+		
+****************************************************************/
+u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA_DB.dta", clear
+
+foreach var of global all {
+egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/18=1) //18mts : Jan19-June20
+
+putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(Dashboard-Tot reporting, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+preserve
+	local all totaldel del_util  pncm_util dental_util fp_util anc_util cs_util diarr_util ///
+			   cerv_qual pncc_util opd_util diab_util hyper_util mat_mort_num peri_mort_num
+			   
+	reshape long `all', i(org*) j(month, string)
+	recode `all' (.=0) (0/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Codebook for Haiti.xlsx", sheet(Dashboard-MinMax reporting , replace)  modify
+
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+
+/****************************************************************
  
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
 *****************************************************************/
-
-u "$user/$data/Data for analysis/Haiti_Jan19-Jun20_WIDE_CCA_DB.dta", clear
 	rename orgunitlevel2 departement
 	collapse (sum) fp_util1_19-peri_mort_num6_20 , by(departement)
 	encode departement, gen(dpt)
