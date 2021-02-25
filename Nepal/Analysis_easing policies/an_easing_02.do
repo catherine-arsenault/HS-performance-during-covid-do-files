@@ -18,6 +18,7 @@ tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 2 , stat(N
 tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 3 , stat(N mean) col(stat)
 
 
+*TIME VARYING POLICY CHANGE
 
 *DID estimates with variable policy changes with covid case and covid death 
 quietly reg fp_sa_util i.palikaid i.month eased_ covid_case covid_death_, r
@@ -84,28 +85,8 @@ margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
 
+* FIXED POLICY CHANGE 
 ** There are very few palikas that maintained the whole post period (just August and September )
-*DID estimates with only eased or only maintained
-quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg anc_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg del_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg cs_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg pnc_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
 
 *DID estimates with only eased or only maintained with covid case and death 
 quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
@@ -128,6 +109,52 @@ quietly reg pnc_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ 
 margins, at(did_eased_cat_2 = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
+*DID estimates with only eased or only maintained with only covid case 
+quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 covid_case , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg anc_util i.palikaid i.month did_eased_cat_2 covid_case , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg del_util i.palikaid i.month did_eased_cat_2 covid_case , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg cs_util i.palikaid i.month did_eased_cat_2 covid_case , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg pnc_util i.palikaid i.month did_eased_cat_2 covid_case , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+*DID estimates with only eased or only maintained
+quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg anc_util i.palikaid i.month did_eased_cat_2 , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg del_util i.palikaid i.month did_eased_cat_2 , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg cs_util i.palikaid i.month did_eased_cat_2 , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+quietly reg pnc_util i.palikaid i.month did_eased_cat_2 , r
+margins, at(did_eased_cat_2 = (0 1)) post
+lincom (_b[2._at]-_b[1._at])
+
+
+*PLACEBO TEST 
+*Fixed policy change from above, pre-period is March and April, post is May and June
+*Everyone under national policy during this whole period 
 
 *DID estimates with only eased or only maintained - PLACEBO TEST 
 quietly reg fp_sa_util i.palikaid i.month did_eased_cat_plac , r
@@ -170,6 +197,8 @@ lincom (_b[2._at]-_b[1._at])
 quietly reg pnc_util i.palikaid i.month did_eased_cat_plac covid_case , r
 margins, at(did_eased_cat_plac = (0 1)) post
 lincom (_b[2._at]-_b[1._at])
+
+*can't do with Covid deaths, I think because first Covid death is in May 
 
 
 
