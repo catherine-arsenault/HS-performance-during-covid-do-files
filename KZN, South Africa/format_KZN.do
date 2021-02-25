@@ -65,7 +65,7 @@ foreach var of global all {
 	egen `var'_report = rownonmiss(`var'*)
 	recode `var'_report (0=0) (1/999999=1) 
 	egen `var'_total_report = total(`var'_report)
-	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_sum = rowtotal(`var'1 -`var'24)
 	egen `var'_total_sum = total(`var'_sum) 
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
@@ -77,7 +77,7 @@ local i= 2
 foreach var of global all {	
 	local i = `i'+1
 	putexcel E`i' = "`var'"
-	qui sum `var'_total_mean
+	qui sum `var'_total_sum
 	putexcel F`i' = `r(mean)'
 }
 drop *_report *_sum *_mean
