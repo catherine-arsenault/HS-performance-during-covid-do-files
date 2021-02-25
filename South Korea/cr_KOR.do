@@ -32,12 +32,12 @@ rename (numberofantenatalcarevisitsjanua-v43) ///
 	 anc_util11_19	anc_util12_19 anc_util1_20	anc_util2_20	anc_util3_20 ///
 	 anc_util4_20	anc_util5_20	anc_util6_20 anc_util7_20   anc_util8_20)
 
-* Facility deliveries 
+* Facility deliveries - includes C-sections 
 rename (numberoffacilitydeliveriesjanuar-v64 ) ///
-	(del_util1_19	del_util2_19	del_util3_19	del_util4_19	del_util5_19 ///
-	del_util6_19 del_util7_19	del_util8_19	del_util9_19	del_util10_19 ///
-	del_util11_19	del_util12_19 del_util1_20	del_util2_20	del_util3_20 ///
-	del_util4_20	del_util5_20	del_util6_20 del_util7_20    del_util8_20)  
+	(totaldel1_19	totaldel2_19	totaldel3_19	totaldel4_19	totaldel5_19 ///
+	totaldel6_19	totaldel7_19	totaldel8_19	totaldel9_19	totaldel10_19 ///
+	totaldel11_19	totaldel12_19 totaldel1_20	totaldel2_20	totaldel3_20 ///
+	totaldel4_20	totaldel5_20	totaldel6_20	totaldel7_20	totaldel8_20)  
 
 * C-sections 
 rename (numberofcaesareansectionsjanuary-v85) ///
@@ -62,27 +62,6 @@ rename (v108-v127) ///
 		pneum_util1_20	pneum_util2_20	pneum_util3_20	pneum_util4_20	///
 		pneum_util5_20	pneum_util6_20	pneum_util7_20	pneum_util8_20)
 
-* Total deliveries 
-	egen totaldel1_19 = rowtotal(del_util1_19 cs_util1_19), m
-	egen totaldel2_19 =	rowtotal(del_util2_19 cs_util2_19), m
-	egen totaldel3_19 =	rowtotal(del_util3_19 cs_util3_19), m
-	egen totaldel4_19 =	rowtotal(del_util4_19 cs_util4_19), m
-	egen totaldel5_19=	rowtotal(del_util5_19 cs_util5_19), m
-	egen totaldel6_19=	rowtotal(del_util6_19 cs_util6_19), m
-	egen totaldel7_19=	rowtotal(del_util7_19 cs_util7_19), m
-	egen totaldel8_19=	rowtotal(del_util8_19 cs_util8_19), m
-	egen totaldel9_19=	rowtotal(del_util9_19 cs_util9_19), m 
-	egen totaldel10_19=	rowtotal(del_util10_19 cs_util10_19), m
-	egen totaldel11_19=	rowtotal(del_util11_19  cs_util11_19), m
-	egen totaldel12_19=	rowtotal(del_util12_19  cs_util12_19), m
-	egen totaldel1_20 =  rowtotal(del_util1_20  cs_util1_20), m
-	egen totaldel2_20 =	rowtotal(del_util2_20 cs_util2_20), m
-	egen totaldel3_20 =	rowtotal(del_util3_20 cs_util3_20), m
-	egen totaldel4_20 =	rowtotal(del_util4_20 cs_util4_20), m
-	egen totaldel5_20=	rowtotal(del_util5_20 cs_util5_20), m
-	egen totaldel6_20=	rowtotal(del_util6_20 cs_util6_20), m
-	egen totaldel7_20=	rowtotal(del_util7_20 cs_util7_20), m
-	egen totaldel8_20=	rowtotal(del_util8_20 cs_util8_20), m
 
 **********************************************************************************
 * OTHER SERVICES
