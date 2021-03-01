@@ -3,11 +3,11 @@
 * PI Catherine Arsenault
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 *global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
-*global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
+global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 *global dofiles "/Users/annagage/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 
 ********************************************************************************
