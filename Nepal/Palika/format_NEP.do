@@ -11,12 +11,12 @@ created in google data studio
 		COUNTS THE NUMBER OF FACILITIES REMAINING IN THE DATASET
 		AFTER CLEANING AND EXPORTS TO EXCEL (CODEBOOK)
 *****************************************************************/
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE_CCA_DB.dta", clear
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 
 foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
-recode *_report (0=0) (1/23=1) //23mts : Jan19-Nov20
+recode *_report (0=0) (1/24=1) 
 
 putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(Dashboard-Tot reporting, replace)  modify
 putexcel A2 = "Variable"
@@ -35,7 +35,7 @@ preserve
 			   pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util ////
 			   tbdetect_qual  hivdiag_qual totaldel pent_qual bcg_qual ///
 			   measles_qual opv3_qual pneum_qual sb_mort_num mat_mort_num ///
-			   ipd_mort_num neo_mort_num live_births
+			   ipd_mort_num neo_mort_num 
 			   
 	reshape long `all', i(org*) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
@@ -61,7 +61,7 @@ restore
 *****************************************************************/
 	rename orgunitlevel2 province
 	order province  org* 
-	collapse (sum) fp_perm_util1_19-neo_mort_num11_20 , by(province)
+	collapse (sum) fp_perm_util1_19-neo_mort_num10_20 , by(province)
 	encode province, gen(prv)
 	drop province
 	order prv
@@ -124,7 +124,7 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Nepal_palika_Jan19-Nov20_fordashboard.csv", replace
+export delimited using "$user/$data/Nepal_palika_Jan19-Dec20_fordashboard.csv", replace
 
 
 

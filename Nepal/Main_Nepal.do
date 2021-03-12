@@ -3,10 +3,10 @@
 * Analyst MK Kim
 	
 global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
-*global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
+global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
 
 **********************************************************************
 * Creation do files
@@ -19,6 +19,10 @@ do "$dofiles/Palika/cr_NEP_01.do"
 
 * Imports Jan 2020- Nov 2020 raw data extracted from dhis2, renames variables 
 do "$dofiles/Palika/cr_NEP_03.do"
+
+* Imports Nov 2020- Dec 2020 raw data extracted from dhis2, renames variables, 
+* overwrites Nov2020 data from cr_NEP_03.do file 
+do "$dofiles/Palika/cr_NEP_04.do"
 
 **********************************************************************
 * Data cleaning
