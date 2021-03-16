@@ -84,58 +84,6 @@ save "$user/$data/Data for analysis/IMSS_Jan19-Nov20_WIDE.dta", replace
 
 
 
-/* Will add these codes once the data are available:
-
-Penta vaccine 
-egen pent_qual9_20 =rowtotal (Indic26_penta*sept20) , m
-drop Indic26_penta*
-
-* BCG 
-egen bcg_qual9_20 =rowtotal(Indic27_BCG_U_sept20 Indic27_BCG_P_sept20 Indic27_BCG_S_sept20 Indic27_BCG_T_sept20 Indic27_BCG_R_sept20 Indic27_BCG_A_sept20) , m
-drop Indic27_BCG*
-
-* MCV 
-egen measles_qual9_20 =rowtotal ( Indic28_srp_sept20 Indic28_SR_sept20) , m
-drop Indic28*
-
-* OPV3 #
-rename Indic29_SABIN_T_sept20 opv3_qual9_20
-drop Indic29_SABIN* 
-
-* Pneumococcal #
-rename Indic30_ANC_sept20 pneum_qual9_20
-
-* Rotavirus #
-rename Indic31_RV_sept20 rota_qual9_20
-
-*Newborn deaths - Sep2020
-rename Indic32_NMN_sept20 newborn_mort_num9_20
-
-* Stillbirths - Sep2020
-rename Indic33_NMF_sept20 sb_mort_num9_20
-
-*Maternal deaths - Dec 2020
-rename In34_NMM_dic20  mat_mort_num12_20
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
