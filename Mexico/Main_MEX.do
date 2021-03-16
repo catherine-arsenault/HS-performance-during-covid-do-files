@@ -17,10 +17,10 @@ do "$dofiles/cr_MEX_01.do"
 mortality data */
 do "$dofiles/cr_MEX_02.do"
 
-* Recodes data from June 2020, merges with prior data
+* Recodes data from June 2020
 do "$dofiles/cr_MEX_03.do"
 
-* Recodes data from July 2020, merges with prior data
+* Recodes data from July 2020,
 do "$dofiles/cr_MEX_04.do"
 
 * Recodes data from August 2020 and corrects deliveries-c-sections
@@ -29,20 +29,23 @@ do "$dofiles/cr_MEX_05.do"
 * Recodes COVID mortality data from June 2020 to Oct 2020
 do "$dofiles/cr_MEX_06.do"
 
-* Recodes data from September 2020 and merges with prior data
+* Recodes data from September 2020 
 do "$dofiles/cr_MEX_07.do"
 
-* Adding 1 cancer indicator and merging with prior data
+* Adding 1 cancer indicator 
 do "$dofiles/cr_MEX_08.do"
 
-* Recodes data from October 2020, merges with prior data 
+* Recodes data from October 2020, updates vaccine data
 do "$dofiles/cr_MEX_09.do"
 
 * Recodes COVID mortality data from June 2020 to Dec 2020
 do "$dofiles/cr_MEX_10.do"
 
-* Recodes data from November 2020, merges with prior data 
+* Recodes data from November 2020
 do "$dofiles/cr_MEX_11.do"
+
+* Recodes data from Dec 2020
+do "$dofiles/cr_MEX_12.do"
 
 ********************************************************************************
 * Format do files
