@@ -21,3 +21,8 @@ replace breast_util5_20=  breast_util5_20- breast_util4_20
 replace breast_util4_20=  breast_util4_20- breast_util3_20
 replace breast_util3_20=  breast_util3_20- breast_util2_20
 replace breast_util2_20=  breast_util2_20- breast_util1_20
+
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20v1_WIDE.dta"
+drop _merge
+
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20v2_WIDE.dta", replace
