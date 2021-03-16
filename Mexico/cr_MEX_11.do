@@ -5,6 +5,7 @@
 clear all
 set more off	
 
+// Sent by Svetlana Feb 3, 2021
 import spss using "$user/$data/Raw/Indicadores_IMSS_Noviembre2020.sav", clear
 
 * 35 delegations, data in wide form
@@ -38,7 +39,7 @@ egen opd_util11_20= rowtotal(Indic11_vmf_nov2020 Indic11_esp_nov2020), m
 rename (Indic11_urg_nov2020 Indic11_dntl_nov2020) (er_util11_20 dental_util11_20)	
 drop Indic11* 
 
-*IPD
+*IPD total
 rename Indic12_egrecc_nov2020 ipd_util11_20
 drop Indic12_*
 
@@ -52,14 +53,14 @@ rename Indic17_sui_nov20 mental_util11_20
 *Cervical cancer screening
 rename Indic21cacu_nov2020 cerv_util11_20 
 
-*Diabetic and hypertensive patients screening 
+*Diabetic and hypertensive patients with controlled condition
 rename (Indic24_dmctrl_nov20 Indic25_htactrl_nov20) ///
 		(diab_qual_num11_20 hyper_qual_num11_20 )
 
 *ER deaths
 rename In36_MortServUrg_nov20 er_mort_num11_20
 
-* Inpatient deaths 
+* Inpatient deaths (ICU+ Inpatient)
 egen ipd_mort_num11_20  = rowtotal(In37_MortServCI_nov20 In38_MortHosp_nov20), m  
 drop In37* In38*
 
