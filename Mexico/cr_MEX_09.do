@@ -53,7 +53,7 @@ rename Indic17_sui_oct20 mental_util10_20
 *Cervical cancer screening
 rename Indic21cacu_oct2020 cerv_util10_20 
 
-*Diabetic and hypertensive patients screening 
+*Diabetic and hypertensive patients with controlled condition
 rename ( Indic24_dmctrl_oct20 Indic25_htactrl_oct20) (diab_qual_num10_20 hyper_qual_num10_20 )
 
 *Newborn deaths - Sep2020

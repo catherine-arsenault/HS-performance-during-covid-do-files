@@ -3,10 +3,10 @@
 * Analyst MK Kim
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/minkyungkim/Dropbox (Harvard University)"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
-*global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
+global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
 
 ********************************************************************************
 * Creation do files
@@ -37,6 +37,12 @@ do "$dofiles/cr_MEX_08.do"
 
 * Recodes data from October 2020, merges with prior data 
 do "$dofiles/cr_MEX_09.do"
+
+* Recodes COVID mortality data from June 2020 to Dec 2020
+do "$dofiles/cr_MEX_10.do"
+
+* Recodes data from November 2020, merges with prior data 
+do "$dofiles/cr_MEX_11.do"
 
 ********************************************************************************
 * Format do files
