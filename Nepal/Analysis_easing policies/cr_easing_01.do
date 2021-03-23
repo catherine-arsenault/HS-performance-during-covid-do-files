@@ -137,7 +137,7 @@ order org* year month post did
 
 *Simple comparison in means pre/post indicator 
 gen post_simp = . 
-replace post_simp = 0 if month == 4 | month == 5 | month == 6 
+replace post_simp = 0 if month == 3 | month == 4 | month == 5 | month == 6
 replace post_simp = 1 if month == 8 | month == 9 | month == 10 
 
 
