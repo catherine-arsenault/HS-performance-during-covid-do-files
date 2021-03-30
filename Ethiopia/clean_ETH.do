@@ -1,6 +1,6 @@
 * HS performance during Covid
 * Ethiopia 
-* Data cleaning, January-October 2020 
+* Data cleaning, January19-December 2020 
 /********************************************************************
 SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
  IN DHIS2. IT USES DATASET IN WIDE FORM (1 ROW PER HEALTH FACILITY)
@@ -21,15 +21,15 @@ SUMMARY: THIS DO FILE CONTAINS METHODS TO ADDRESS DATA QUALITY ISSUES
 clear all
 set more off	
 
-u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE.dta", clear
+u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta", clear
 
 ********************************************************************
-* 3616 woreda/facilities 
+* 3935 woreda/facilities 
 * Dropping all woreda/facilities that don't report any indicators all period
-egen all_visits = rowtotal(fp_util1_19-totaldel10_20), m
+egen all_visits = rowtotal(sb_mort_num1_19 - totaldel12_20), m
 drop if all_visits==.
 drop all_visits 
-* Retains 2336 woreda/facilities with some data from Jan19-Oct20
+* Retains 2351 woreda/facilities with some data from Jan19-Dec20
 ********************************************************************
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
@@ -47,7 +47,7 @@ TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
 foreach var of global all {
 	egen `var'_report = rownonmiss(`var'*)
 }
-recode *_report (0=0) (1/22=1) //Jan19-Oct20:22 months 
+recode *_report (0=0) (1/24=1) //Jan19-Dec20:24 months 
 
 putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Tot reporting, replace)  modify
 putexcel A2 = "Variable"
@@ -71,7 +71,7 @@ preserve
 	reshape long `all', i(org*) j(month, string)		  
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(MinMax fac reporting 22mos, replace)  modify
+	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(MinMax fac reporting 24mos, replace)  modify
 	
 	putexcel A1 = "Min and Max number of facilities reporting any month"
 	putexcel A2 = "Variable"
@@ -92,7 +92,7 @@ foreach var of global all {
 	egen `var'_report = rownonmiss(`var'*)
 	recode `var'_report (0=0) (1/999999=1) 
 	egen `var'_total_report = total(`var'_report)
-	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_sum = rowtotal(`var'1_19 - `var'12_20)
 	egen `var'_total_sum = total(`var'_sum) 
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
@@ -111,7 +111,7 @@ drop *_report *_sum *_mean
 /****************************************************************
 EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
 ****************************************************************/
-*export excel using "$user/$data/Data cleaning/Ethio_Jan19-October20_fordatacleaning1.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Ethio_Jan19-Dec20_fordatacleaning1.xlsx", firstrow(variable) replace
 
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
@@ -127,7 +127,7 @@ forval i = 1/12 {
 	replace ipd_mort_num`i'_19 = 0     if ipd_mort_num`i'_19==. & ipd_util`i'_19!=.
 	replace icu_mort_num`i'_19 = 0     if icu_mort_num`i'_19==. & ipd_util`i'_19!=. // we don't have ICU admissions so we use inpatient
 }
-forval i = 1/10 {
+forval i = 1/12 {
 	replace newborn_mort_num`i'_20 = 0 if newborn_mort_num`i'_20==. & totaldel`i'_20!=. 
 	replace sb_mort_num`i'_20 = 0 	   if sb_mort_num`i'_20==. & totaldel`i'_20!=. 
 	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & totaldel`i'_20!=. 
@@ -138,7 +138,7 @@ forval i = 1/10 {
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning2.xlsx", firstrow(variable) replace
+*export excel org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Dec20_fordatacleaning2.xlsx", firstrow(variable) replace
 
 /****************************************************************
          IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
@@ -162,8 +162,7 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
 			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 {  // until Oct 2020 
-				         *  11_20 12_20
+				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 {  
 		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
 		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
 		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
@@ -181,7 +180,7 @@ forval i=1/12 {
 	replace resus_qual_num`i'_19 = . if resus_qual_num`i'_19 > resus_qual_denom`i'_19 & resus_qual_num`i'_19 !=.
 }
 
-forval i=1/10 { // until Oct 2020
+forval i=1/12 { 
 	replace kmc_qual_num`i'_20 = . if kmc_qual_num`i'_20 > kmc_qual_denom`i'_20 & kmc_qual_num`i'_20 !=.
 	replace resus_qual_num`i'_20 = . if resus_qual_num`i'_20 > resus_qual_denom`i'_20 & resus_qual_num`i'_20 !=.
 }
@@ -201,19 +200,18 @@ forval i = 1/12 {
 	rename totalipd_mort`i'_19 totalipd_mort_num`i'_19
 	* total of Inpatient and ICU deaths since we don't have ICU utilisation
 }
-forval i = 1/10 {
+forval i = 1/12 {
 	egen totalipd_mort`i'_20= rowtotal(ipd_mort_num`i'_20 icu_mort_num`i'_20), m
 	drop ipd_mort_num`i'_20 icu_mort_num`i'_20
 	rename totalipd_mort`i'_20 totalipd_mort_num`i'_20
 }
 
-
-save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", replace 
+save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-*export excel using "$user/$data/Data cleaning/Ethio_Jan19-Aug20_fordatacleaning3.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Ethio_Jan19-Dec20_fordatacleaning3.xlsx", firstrow(variable) replace
 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
@@ -224,7 +222,7 @@ delays in reporting). For each variable, keep only heath facilities that
 have reported at least 17 out of 22 months (incl the latest 2 months) 
 This brings completeness up "generally" above 90% for all variables.
 
-Lines 180-194 below ignore  diabetes and hypertension because they were not 
+Lines 243-248 below ignore  diabetes and hypertension because they were not 
 collected until October 2019  */
 	
 	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
@@ -235,16 +233,15 @@ collected until October 2019  */
 			  preserve
 					keep  org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=17 & `x'9_20!=. & `x'10_20!=. 
-					/* keep if at least 17 out of 22 months are reported 
-					& Sep/Oct 2020 are reported */
+					keep if total`x'>=19 
+					/* keep if at least 19 out of 24 months are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
 	preserve 
 		keep  org* diab* hyper* 
-		egen total = rowtotal(diab_util10_19-hyper_qual_num10_20), m // until Oct 2020
+		egen total = rowtotal(diab_util10_19-hyper_qual_num12_20), m 
 		drop if total==.
 		drop total 
 		save "$user/$data/Data for analysis/tmpdiab_hyper.dta", replace
@@ -253,14 +250,14 @@ collected until October 2019  */
 	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
 		* all variables except the first (fp_util) and diabetes hypertension
 		* diabetes and hypertension are saved under diab_hyper
-		foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+		foreach x in sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 					totaldel ipd_util er_util road_util  cerv_qual diab_hyper ///
 					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
 					measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num  {
+					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
-				save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", replace
+				save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 		}
 * Region names	
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
@@ -278,7 +275,7 @@ replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname
 	
-save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", replace
+save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 
 /***************************************************************
                  COMPLETE CASE ANALYSIS DATASET
@@ -286,7 +283,7 @@ save "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", repla
 ****************************************************************
 we keep only those facilities that reported months of interest. In this case,
 we are comparing Quarters 2 2020 vs. 2019 */
-u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
+u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
@@ -422,7 +419,7 @@ save "$user/$data/Data for analysis/Ethiopia_CCA_Q2.dta", replace
 we keep only those facilities that reported all months of interest. In this case,
 we are comparing the first and second quarters of 2020 */
 
-u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
+u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///

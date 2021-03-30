@@ -15,8 +15,17 @@ global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num 	totalipd
 
 global all $volumes $mortality
 
+*Separate globals for diab and hyper due to missing data from Jan19-Sep19 
+global total fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util cerv_qual ///
+				opd_util hivsupp_qual_num vacc_qual pent_qual bcg_qual ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num ///
+				er_mort_num totalipd_mort_num 
+global ncd diab_util hyper_util diab_detec hyper_detec diab_qual_num hyper_qual_num				
+
 * ALL INDICATORS
-use "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_DB.dta", clear
+use "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 
 /**************************************************************************
  COUNTS THE NUMBER OF FACILITIES LEFT IN THE DASHBOARD DATASET AND EXPORTS 
@@ -69,11 +78,11 @@ restore
 
 
 * Overall mean
-foreach var of global all {
+foreach var of global total {
 	egen `var'_report = rownonmiss(`var'*)
 	recode `var'_report (0=0) (1/999999=1) 
 	egen `var'_total_report = total(`var'_report)
-	egen `var'_sum = rowtotal(`var'*)
+	egen `var'_sum = rowtotal(`var'1_19 - `var'12_20)
 	egen `var'_total_sum = total(`var'_sum) 
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
@@ -82,22 +91,50 @@ putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(DB-Tot reporting)  
 putexcel E2 = "Variable"
 putexcel F2 = "Mean per facility"	
 local i= 2
-foreach var of global all {	
+foreach var of global total {	
 	local i = `i'+1
 	putexcel E`i' = "`var'"
 	qui sum `var'_total_mean
 	putexcel F`i' = `r(mean)'
 }
 drop *_report *_sum *_mean
+
+
+foreach var of global ncd {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'10_19 - `var'12_20) //starts with Oct19 
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(DB-Tot reporting)  modify
+putexcel H2 = "Variable"
+putexcel I2 = "Mean per facility"	
+local i= 2
+foreach var of global ncd {	
+	local i = `i'+1
+	putexcel H`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel I`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
+
+
 /**************************************************************************
  MERGE WITH TB QUARTERLY INDICATORS
 ***************************************************************************/
 merge 1:1  region zone org*  using "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta"
 drop _merge
+*863 out of 1906 were not merge 
+save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_CCA_DB_Complete.dta", replace 
 
 /****************************************************************
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
 *****************************************************************/
+u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_CCA_DB_Complete.dta", clear
+
 * Totals by facility types
 	gen factype = "Facility type: Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
 	replace factype ="Facility type: Non-Hospitals" if factype==""
@@ -150,7 +187,7 @@ reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
-			  tbnum_qual tbdenom_qual tbdetect_qual totalipd_mort diab_detec hyper_detec ///
+			  tbnum_qual tbdenom_qual tbdetect_qual totalipd_mort_num diab_detec hyper_detec ///
 			 , i(region ) j(month) string
 
 * Month and year
@@ -181,7 +218,7 @@ preserve
 	global varlist fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 	sam_util opd_util ipd_util er_util road_util  cerv_qual art_util ///
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-	newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort ///
+	newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort_num ///
 	diab_util hyper_util diab_qual_num hyper_qual_num kmc_qual_num kmc_qual_denom ///
    tbnum_qual tbdenom_qual tbdetect_qual resus_qual_num resus_qual_denom diab_detec hyper_detec
   
@@ -204,7 +241,7 @@ rm "$user/$data/Data for analysis/tmpfactype.dta"
 rm "$user/$data/Data for analysis/tmpregtype.dta"
 ********************************************************************************
 * THIS IS THE CSV FILE FOR GOOGLE DATA STUDIO
-export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Oct20_fordashboard.csv", replace
+export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Dec20_fordashboard.csv", replace
 
 /* Code to identify clinics (private) 
 replace factype =2 if regexm(organ, "[Cc]linic") | regexm(organ, "CLINIC") | ///

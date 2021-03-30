@@ -3,7 +3,6 @@
 * PI Catherine Arsenault
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-
 global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
@@ -30,7 +29,11 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 * Imports raw data and renames variables for January 2019-Oct 2020 
 * Data from Jan 2019 to Oct 2020 (Tirr2011 to Tikemet 2013 was sent again)
 * Overwrites previous do files
-do "$dofiles/cr_ETH_05.do"
+*do "$dofiles/cr_ETH_05.do"
+
+* Imports raw data and renames variables for January 2019 - Dec 2020 
+* Overwrites previous do files 
+do "$dofiles/cr_ETH_06.do"
 
 *TB quarterly data
 do "$dofiles/cr_ETH_TB_01.do"
