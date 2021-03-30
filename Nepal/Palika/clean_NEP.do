@@ -114,7 +114,7 @@ foreach var of global all {
 	egen `var'_sum = rowtotal(`var'1_19 `var'2_19 `var'3_19 `var'4_19 `var'5_19 ///
 	 `var'6_19 `var'7_19 `var'8_19 `var'9_19 `var'10_19 `var'11_19 `var'12_19 ///
 	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
-	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 )
+	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
 	* Sum/volume of services across whole country
 	egen `var'_total_sum = total(`var'_sum)
 	* Average volume per facility 
