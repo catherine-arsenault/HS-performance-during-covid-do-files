@@ -5,7 +5,7 @@
 clear 
 set more off 
 
-*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/acatherine/Dropbox (Harvard University)"
 global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global folder "/Quest Center/Active projects/HS performance Covid (internal)/Data/Data viz/Country Comparison/Stata output"
 
@@ -418,7 +418,7 @@ forval i = 19/20 {
 	gen ipd_mort`i' = ipd_mort_num`i'/ipd_util`i'
 }
 
-drop newborn_mort_num19-ipd_mort_num19 newborn_mort_num20-ipd_mort_num20 ///
+drop newborn_mort_num19-ipd_mort_num19 newborn_mort_num20-ipd_mort_num20 
 
 global all sti_util19-ipd_mort20
  
@@ -432,7 +432,6 @@ global other diab_util hyper_util art_util mental_util opd_util er_util ///
 			 ipd_util kmc_qual cs_qual 
 global mortality newborn_mort sb_mort mat_mort ipd_mort
 global all $volume $other $mortality
-
 
 	foreach var in $all {
 		gen `var' = (`var'20-`var'19)/`var'19
