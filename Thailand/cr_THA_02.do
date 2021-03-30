@@ -109,7 +109,7 @@ merge 1:1 Province using "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WID
 drop _merge
 save  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", replace
 
-* Hypertension cases
+* New Hypertension cases
 import excel using "$user/$data/Raw data/Received_021621/Provincial - New hypertension cases 2018 to 2021.xlsx", firstrow clear
 drop AC 
 rename (B-AB) (hyper_util10_18 hyper_util11_18 hyper_util12_18 ///
@@ -137,7 +137,7 @@ merge 1:1 Province using "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WID
 drop _merge
 save  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", replace
 
-*Outpatient 
+*Outpatient visits
 import excel using "$user/$data/Raw data/Received_021621/Provincial - OPD Visit 2018 to 2021.xlsx", firstrow clear
 drop  AC 
 rename (B-AB) ///
@@ -214,70 +214,6 @@ road_mort_num9_20	road_mort_num10_20	road_mort_num11_20	road_mort_num12_20)
 merge 1:1 Province using "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta"
 drop _merge
 save  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", replace 
-
-
-set obs 78
-replace Province="National" if Province==""
-
-*******************************************************************************
-* RESHAPE TO LONG FORM
-********************************************************************************
-reshape long opd_util ipd_util dental_util diab_util dengue_util diarr_util heart_util hyper_util stroke_util predel_util totaldel road_util road_mort_num mal_qual pneum_qual anc_util, i(Prov) j(month) string 
-
-	
-* Labels (And dashboard format) - monthly collected data 
-lab var opd_util  "Number outpatient (family medicine clinic  & opd specialty) visits"
-lab var ipd_util "Number of inpatient admissions total"
-lab var dental_util "Number of dental visits"
-lab var diab_util "Diabetes cases"
-lab var dengue_util "Dengue cases"
-lab var diarr_util "Diarrhea cases" 
-lab var heart_util "Coronary heart disease cases"
-lab var hyper_util "Hypertension cases "
-lab var stroke_util "Stroke cases "
-lab var predel_util "Preterm delivery cases"
-lab var totaldel "Total delivery cases "
-lab var road_util "Traffic accident cases "
-lab var road_mort_num "Traffic deaths"
-lab var mal_qual "Number malaria cases diagnosed"	
-lab var pneum_qual "Number of pneumonia cases"
-lab var anc_util "Total number of antenatal care visits"	
-	
-	
-* Month and year
-gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" | ///
-				   month=="5_20" |	month=="6_20"  | month=="7_20" | month=="8_20" | ///
-				   month=="9_20" |	month=="10_20" | month=="11_20" | month=="12_20" 
-
-				   
-replace year = 2019 if month=="1_19" |	month=="2_19" |	month=="3_19" |	month=="4_19" | ///
-					   month=="5_19" |	month=="6_19"  | month=="7_19" | month=="8_19" | ///
-				       month=="9_19" |	month=="10_19" | month=="11_19" | month=="12_19" 
-					   
-replace year = 2018 if month=="10_18" | month=="11_18" | month=="12_18" | month=="Q4_18"					   
-					   
-
-gen mo = 1 if month =="1_19" | month =="1_20" 
-replace mo = 2 if month =="2_19" | month =="2_20"
-replace mo = 3 if month =="3_19" | month =="3_20"
-replace mo = 4 if month =="4_19" | month =="4_20"
-replace mo = 5 if month =="5_19" | month =="5_20"
-replace mo = 6 if month =="6_19" | month =="6_20"
-replace mo = 7 if month =="7_19" | month =="7_20"
-replace mo = 8 if month =="8_19" | month =="8_20"
-replace mo = 9 if month =="9_19" | month =="9_20"
-replace mo = 10 if month=="10_18"| month =="10_19" | month =="10_20" 
-replace mo = 11 if month=="11_18"| month =="11_19" | month =="11_20" 
-replace mo = 12 if month=="12_18"| month =="12_19" | month =="12_20"
-
-
-order Province year mo 
-drop month 
-rename mo month 
-
-
-save "$user/$data/Data for analysis/Thailand_Oct18-Dec20_clean.dta", replace
-
 
 ***END***
 
