@@ -170,9 +170,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 Completeness is an issue, particularly May and June 2020. Some palikas have
 not reported yet. For each variable, keep only heath facilities that 
 have reported at least 14 out of 18 months (incl the latest 2 months) 
-This brings completeness up "generally" above 90% for all variables.
-MK: updated dataset from Jan19-Dec20; keep only health facilities that have reported
-at least 18 out of 24 months (incl the latest 2 months) 12/14/20 */
+This brings completeness up "generally" above 90% for all variables. */
 	foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'* 
