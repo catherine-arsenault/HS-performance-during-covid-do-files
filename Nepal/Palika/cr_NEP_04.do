@@ -32,7 +32,7 @@ set more off
 	duplicates tag org* , gen(tag)
 	egen total= rowtotal(fp*), m
 	
-*Amit review needed: 3 municipalities names did not match the previous data. 
+*Amit review needed: 3 municipalities names did not match the previous data. But the code matches. Did they change Names?
 	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
 	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
 	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
@@ -276,7 +276,8 @@ set more off
 ********************************************************************************	
 
 *Merge with Jan19-Nov20 data 
-	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta"
+	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
+	           using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta"
 	drop _merge
 	drop live_births* //no longer used 
 	
