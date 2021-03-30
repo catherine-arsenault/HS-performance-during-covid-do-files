@@ -117,7 +117,7 @@ foreach var of global all {
 	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
 	* Sum/volume of services across whole country
 	egen `var'_total_sum = total(`var'_sum)
-	* Average volume per facility 
+	* Average volume per Palika
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
 
