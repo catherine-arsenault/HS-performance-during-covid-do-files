@@ -5,7 +5,7 @@
 clear 
 set more off 
 
-*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/acatherine/Dropbox (Harvard University)"
 global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global folder "/Quest Center/Active projects/HS performance Covid (internal)/Data/Data viz/Country Comparison/Stata output"
 
@@ -340,11 +340,31 @@ restore
 global data "/HMIS Data for Health System Performance Covid (Lao PDR)"
 u "$user/$data/Data for analysis/Lao_CCA_Q2.dta", clear
 
+*Create empty variables for dashboard to read the dataset easily 
+gen sti_util = . 
+gen cerv_qual = . 
+gen pneum_util = . 
+gen malnu_util = . 
+gen diarr_util = . 
+gen vacc_qual = . 
+gen rota_qual = . 
+gen art_util = . 
+gen er_util = . 
+gen dental_util = . 
+gen tb_detect_qual = . 
+gen diab_qual = . 
+gen hyper_qual = . 
+gen kmc_qual = . 
+gen newborn_mort = . 
+gen er_mort = . 
+gen ipd_mort = . 
+
 global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util 
 global mortality neo_mort_num sb_mort_num mat_mort_num 
-global all $volumes $mortality 
+global none sti_util cerv_qual pneum_util malnu_util diarr_util vacc_qual rota_qual art_util er_util dental_util tb_detect_qual diab_qual hyper_qual kmc_qual newborn_mort er_mort ipd_mort 
+global all $volumes $mortality $none
 
 by year, sort: tabstat $all  if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
 
@@ -354,14 +374,15 @@ preserve
 	order country 
 	keep if month>=4 & month<= 6
 	collapse (sum) $all, by(country year)
-
+	
+	gen cs_qual =  cs_util / totaldel
 	gen neo_mort = neo_mort_num / totaldel 
 	gen sb_mort = sb_mort_num / totaldel 
 	gen mat_mort = mat_mort_num/ totaldel 
 
 	drop $mortality  
 
-	global revall $volumes neo_mort sb_mort mat_mort  
+	global revall $volumes cs_qual neo_mort sb_mort mat_mort $none
 	
 	reshape wide $revall, i(country) j(year)
 
@@ -390,13 +411,14 @@ import delimited "$user/$data/Kor_Jan19-Aug20_fordashboard.csv", clear
 drop if region !="National" 
 
 forval i = 19/20 {
+	gen cs_qual`i' = cs_util`i'/totaldel`i'
 	gen newborn_mort`i' = newborn_mort_num`i'/totaldel`i'
 	gen sb_mort`i' = sb_mort_num`i'/totaldel`i'
 	gen mat_mort`i' = mat_mort_num`i'/totaldel`i'
 	gen ipd_mort`i' = ipd_mort_num`i'/ipd_util`i'
 }
 
-drop newborn_mort_num19-totaldel19 newborn_mort_num20-totaldel20
+drop newborn_mort_num19-ipd_mort_num19 newborn_mort_num20-ipd_mort_num20 
 
 global all sti_util19-ipd_mort20
  
@@ -405,12 +427,11 @@ tabstat $all if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
 keep if month>=4 & month<= 6
 collapse (sum) $all 
 
-global volume sti_util anc_util del_util cs_util diarr_util pneum_util
+global volume sti_util anc_util totaldel cs_util diarr_util pneum_util
 global other diab_util hyper_util art_util mental_util opd_util er_util ///
-			 ipd_util kmc_qual
+			 ipd_util kmc_qual cs_qual 
 global mortality newborn_mort sb_mort mat_mort ipd_mort
 global all $volume $other $mortality
-
 
 	foreach var in $all {
 		gen `var' = (`var'20-`var'19)/`var'19
@@ -420,6 +441,23 @@ global all $volume $other $mortality
 *drop original variables 
 drop sti_util19 - ipd_mort20
 
+*create empty variables 
+gen cerv_qual = .
+gen pnc_util = .
+gen malnu_util = .
+gen vacc_qual = .
+gen bcg_qual = .
+gen pent_qual = .
+gen measles_qual = .
+gen opv3_qual = .
+gen pneum_qual = .
+gen rota_qual = .
+gen road_util = .
+gen dental_util = .
+gen tb_detect_qual = .
+gen diab_qual = .
+gen hyper_qual = .
+gen er_mort = .
 
 export excel using "/$user/$folder/South Korea.xlsx", firstrow(variables) ///
 		sheet("Transpose") keepcellfmt replace 
@@ -437,12 +475,13 @@ forval i = 19/20 {
 	gen sb_mort`i' = sb_mort_num`i'/totaldel`i'
 	gen mat_mort`i' = mat_mort_num`i'/totaldel`i'
 	gen ipd_mort`i' = ipd_mort_num`i'/ipd_util`i'
+	gen cs_qual`i' = cs_util`i'/totaldel`i'
 }
 
 drop newborn_mort_num19-mat_mort_num19 ipd_mort_num19 ipd_mort_num20 ///
 newborn_mort_num20-mat_mort_num20 totaldel19 totaldel20 
 
-global all fp_util19-ipd_mort20
+global all fp_util19-cs_qual20
 
 tabstat $all if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
 
@@ -453,7 +492,7 @@ global volume fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 			  malnu_util
 global vaccine vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual 
 global other opd_util ipd_util road_util diab_util hyper_util malaria_util ///
-			 tbdetect_qual surg_util
+			 tbdetect_qual surg_util cs_qual 
 global mortality newborn_mort sb_mort mat_mort ipd_mort 
 global all $volume $vaccine $other $mortality 
 
@@ -462,12 +501,59 @@ global all $volume $vaccine $other $mortality
 	}
 
 *drop original variables 
-drop fp_util19-ipd_mort20
-	
+drop fp_util19-cs_qual20
 
+*create empty variables 	
+gen cerv_qual = .
+gen art_util = . 
+gen er_util = . 
+gen dental_util = . 
+gen tb_detct_qual = . 
+gen diab_qual = . 
+gen hyper_qual = . 
+gen kmc_qual = . 
+gen er_mort = . 
+		
 export excel using "/$user/$folder/Ghana.xlsx", firstrow(variables) ///
 		sheet("Transpose") keepcellfmt replace 
 
+
+*******************************************************************************
+*9) Thailand 
+global data "/HMIS Data for Health System Performance Covid (Thailand)"
+import delimited "$user/$data/Thailand_Oct18-Dec20_monthly_dashboard.csv", clear
+
+*only keep national totals 
+drop if provinces !="National" 
+
+*drop 2018 data since no other countries have 2018 data 
+drop road_mort_num18 - dengue_util18
+		
+global all road_mort_num20-dengue_util19
+
+tabstat $all if month>=4 & month<= 6, s(sum) c(s) format(%20.10f)
+
+keep if month>=4 & month<= 6
+collapse (sum) $all 
+
+global rmnch predel_util anc_util totaldel
+global volume hyper_util stroke_util diab_util heart_util 
+global other dengue_util diarr_util opd_util ipd_util dental_util road_util ///
+	   road_mort_num mal_qual pneum_qual 
+global all $rmnch $volume $other 
+
+	foreach var in $all {
+	gen `var' = (`var'20-`var'19)/`var'19
+	}
+
+*drop original variables 
+drop road_mort_num20 - dengue_util19
+
+		
+export excel using "/$user/$folder/Thailand.xlsx", firstrow(variables) ///
+		sheet("Transpose") keepcellfmt replace 
+		
+		
 *******************************************************************************
 *END
 *******************************************************************************
