@@ -193,17 +193,16 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
                     COMPLETE CASE ANALYSIS 
                          FOR DASHBOARD 
 ****************************************************************
-Completeness is an issue, particularly Oct and Nov 2020. Some palikas have
-not reported yet. For each variable, keep only heath facilities that 
-have reported at least 18 out of 23 months (incl the latest 2 months) 
-This brings completeness up "generally" above 90% for all variables. */
+Completeness is an issue, particularly for the latest months included. Some 
+palikas have not reported yet. For each variable, keep only heath facilities that 
+have reported at least 18 out of 24 months. This brings completeness up "generally" 
+above 90% for all variables. */
 	foreach x of global all {
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=19 & `x'11_20!=. & `x'12_20!=. 
-					/* keep if at least 19 out of 24 months are reported 
-					& Nov/Dec 2020 are reported */
+					keep if total`x'>=18
+					/* keep if at least 18 out of 24 months are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
