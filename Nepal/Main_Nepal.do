@@ -17,10 +17,10 @@ do "$dofiles/Palika/cr_NEP_01.do"
 * Imports Jan 2020 - June 2020 raw data extracted from dhis2, renames variables
 * do "$dofiles/Palika/cr_NEP_02.do"
 
-* Imports Jan 2020- Nov 2020 raw data extracted from dhis2, renames variables 
+* Imports Jan 2020- Nov 2020 raw data extracted from dhis2, renames variables, merge with 2019 data 
 do "$dofiles/Palika/cr_NEP_03.do"
 
-* Imports Nov 2020- Dec 2020 raw data extracted from dhis2, renames variables, 
+* Imports Nov 2020- Dec 2020 raw data extracted from dhis2, renames variables, merge with Jan19-Nov20 data 
 * overwrites Nov2020 data from cr_NEP_03.do file 
 do "$dofiles/Palika/cr_NEP_04.do"
 
