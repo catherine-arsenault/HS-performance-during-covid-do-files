@@ -168,9 +168,9 @@ collected until October 2019
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-				icu_mort_num ipd_mort_num {
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
+			  sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
