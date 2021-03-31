@@ -46,8 +46,8 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING AND SUM AND AVERAGE VOLUMES
-BEFORE CLEANING: EXPORTED TO EXCEL
+TOTAL NUMBER OF FACILITIES REPORTING AVERAGE VOLUMES BEFORE CLEANING: 
+EXPORTED TO EXCEL
 ****************************************************************/
 
 foreach var of global all {
