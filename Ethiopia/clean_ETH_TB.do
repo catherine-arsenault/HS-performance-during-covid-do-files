@@ -42,7 +42,7 @@ foreach var of local all {
 }
 recode *_report (0=0) (1/6=1) 
 
-putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Before cleaning, replace)  modify
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Before cleaning)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 44
