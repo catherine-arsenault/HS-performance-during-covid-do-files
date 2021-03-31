@@ -260,11 +260,12 @@ rename (totaldeathinicuinthereportingper - v893) ///
 	egen totaldel11_20=	rowtotal(del_util11_20 cs_util11_20), m
 	egen totaldel12_20=	rowtotal(del_util12_20 cs_util12_20), m
 	
-*8 woreda were duplicates and had completely missing data so dropped them to merge with the other dataset 
-duplicates tag, gen(dup)
+*8 woredas were duplicates and had completely missing data for all indicators
+* Dropped them in order to merge with the other dataset 
+duplicates tag org* , gen(dup)
 drop if dup==1
 
-save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDEa.dta", replace	
+save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta", replace	
 *n=3935
 
 ********************************************************************************	
@@ -296,12 +297,10 @@ rename (totalnumberofnewbornsweighing200 - v101) ///
 duplicates tag, gen(dup)
 drop if dup==1
 
-save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDEb.dta", replace	
 *n=3935
 
-
 *Merge with the Jan19-Dec20 dataset 
-merge 1:1 org* using "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDEa.dta"
+merge 1:1 org* using "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta"
 drop _merge 
 drop dup 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta", replace	
