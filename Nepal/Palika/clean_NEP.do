@@ -55,9 +55,12 @@ global mortality sb_mort_num mat_mort_num ipd_mort_num neo_mort_num live_births
 global all $volumes $mortality 
 
 
+
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA
+TOTAL NUMBER OF FACILITIES REPORTING AND SUM AND AVERAGE VOLUMES
+BEFORE CLEANING: EXPORTED TO EXCEL
 ****************************************************************/
+
 * Number of palika reporting any data, for each indicator
 foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
