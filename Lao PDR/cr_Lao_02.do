@@ -9,7 +9,7 @@ set more off
 ********************************************************************************
 ********************************************************************************
 *Import raw data: VOLUMES OF SERVICES 
-
+* 1269 facilities
 *Family planning 
 	 import delimited "$user/$data/Raw data/2020/facility/Jan20-Dec20/Lao_2020_Jan to Dec_facility_1 Modern contraceptive use.csv", clear
 	 rename ïorgunitlevel1 country 
@@ -322,8 +322,6 @@ set more off
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 	
-
-	
 *********************************************************************************************
 *********************************************************************************************
 *Total delivery 2020
@@ -346,11 +344,12 @@ set more off
 	
 	
 *********************************************************************************************
+* Merge with Older data
+merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
+* 
 
-*Append with Jan19-Dec19 data 
-u "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", clear 
-merge 1:1  organisationunitname using "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta"
 *167 won't merge 
+*list orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname if _merge!=3
 *87 (2020 data - master); 7 additional facilities 
 *80 (2019 data - using)
 
