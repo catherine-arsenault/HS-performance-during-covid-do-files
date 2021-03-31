@@ -58,7 +58,7 @@ preserve
 				resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
 				mat_mort_num er_mort_num totalipd_mort_num 
 			   
-	reshape long `all', i(org*) j(month, string)
+	reshape long `all', i(region zone org*) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
 	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(After cleaning) modify  
@@ -76,7 +76,7 @@ foreach var of global all {
 restore
 
 * Sum and average volumes 
-foreach var of global all {
+foreach var of global total {
 	egen `var'_report = rownonmiss(`var'*)
 	recode `var'_report (0=0) (1/999999=1) 
 	* Total facilities ever reporting each indicator
@@ -84,6 +84,22 @@ foreach var of global all {
 	* Sum/volume of services or deaths per Woreda over 24 months
 	egen `var'_sum = rowtotal(`var'1_19 `var'2_19 `var'3_19 `var'4_19 `var'5_19 ///
 	 `var'6_19 `var'7_19 `var'8_19 `var'9_19 `var'10_19 `var'11_19 `var'12_19 ///
+	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
+	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
+	* Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum)
+	* Average volume per Woreda
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+* Sum and average volumes 
+foreach var of global ncd {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	* Total facilities ever reporting each indicator
+	egen `var'_total_report = total(`var'_report) 
+	* Sum/volume of services or deaths per Woreda over 24 months
+	egen `var'_sum = rowtotal(`var'10_19 `var'11_19 `var'12_19 ///
 	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
 	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
 	* Sum/volume of services across whole country
