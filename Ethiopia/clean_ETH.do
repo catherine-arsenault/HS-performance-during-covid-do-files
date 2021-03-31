@@ -40,6 +40,7 @@ global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pn
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
 global all $volumes $mortality
+* 40 indicators total (not including quarterly TB)
 
 /****************************************************************
 ASSESSES DATASET BEFORE CLEANING (NUMBER OF UNITS REPORTING, AND
@@ -164,6 +165,7 @@ common for mortality indicators.
 
 We do not assess outliers for diabetes and hypertension because they were not 
 collected until October 2019 
+= 34 indicators
 */
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
@@ -206,7 +208,7 @@ foreach x in diab_util diab_qual_num hyper_util hyper_qual_num ///
 		drop `x'`i'_19
 	}
 }
-* Calculate total inpatients deaths
+* Calculate total inpatients deaths = IPD+ICU
 forval i = 1/12 {
 	egen totalipd_mort`i'_19= rowtotal(ipd_mort_num`i'_19 icu_mort_num`i'_19), m	
 	drop ipd_mort_num`i'_19 icu_mort_num`i'_19
@@ -236,23 +238,26 @@ have reported at least 17 out of 22 months (incl the latest 2 months)
 This brings completeness up "generally" above 90% for all variables.
 
 Lines 243-248 below ignore  diabetes and hypertension because they were not 
-collected until October 2019  */
+collected until October 2019. IPD and ICU deaths were also merged into 1  
+= 33 indicators 
+*/
 	
 	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-				totalipd_mort_num {
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num ///
+			  kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
+			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			  preserve
 					keep  org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=19 
-					/* keep if at least 19 out of 24 months are reported */
+					keep if total`x'>=18 
+					/* keep if at least 18 out of 24 months are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
 	preserve 
+		* For these indicators we keep all woredas that report at least once.
 		keep  org* diab* hyper* 
 		egen total = rowtotal(diab_util10_19-hyper_qual_num12_20), m 
 		drop if total==.
@@ -263,11 +268,13 @@ collected until October 2019  */
 	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
 		* all variables except the first (fp_util) and diabetes hypertension
 		* diabetes and hypertension are saved under diab_hyper
+		* =33 indicators
 		foreach x in sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 					totaldel ipd_util er_util road_util  cerv_qual diab_hyper ///
-					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-					measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual measles_qual ///
+					opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
+					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
+					mat_mort_num er_mort_num totalipd_mort_num {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 				save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_DB.dta", replace
@@ -300,9 +307,9 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
-				totalipd_mort_num {
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
+			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			  preserve
 					keep  org* `x'* 
 					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & ///
