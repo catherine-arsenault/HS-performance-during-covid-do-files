@@ -61,70 +61,11 @@ global all $volumes $mortality
 TOTAL NUMBER OF FACILITIES REPORTING DATA PER INDICATOR
 AND MEAN PER INDICATOR BEFORE CLEANING
 ****************************************************************/
-* Counts the total facilties reporitng at least once for each indic
-foreach var of global all {
-egen `var'_report = rownonmiss(`var'*)
-}
-recode *_report (0=0) (1/22=1) //22mts : Jan19-Oct20
 
-putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot reporting, replace)  modify
-putexcel A2 = "Variable"
-putexcel B2 = "Reported any data"	
-local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'_report
-	putexcel B`i' = `r(sum)'
-}
-drop *report
-* For every month, reports the month with the min number of facilities reporting and the max, for each indicator
-preserve
-	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
-			   diab_util hyper_util opd_util ipd_util road_util neo_mort_num ///
-			   sb_mort_num mat_mort_num
-			   
-	reshape long `all', i(org*) j(month, string)
-	recode `all' (.=0) (0/999999999=1)
-	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(MinMax reporting, replace)  modify
 
-	putexcel A1 = "Min and Max number of facilities reporting any month"
-	putexcel A2 = "Variable"
-	putexcel B2 = "Min month report data"	
-	putexcel C2 = "Max month report data"
-	local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'
-	putexcel B`i' = `r(min)'
-	putexcel C`i' = `r(max)'
-}
-restore
 
-* Overall mean
-foreach var of global all {
-	egen `var'_report = rownonmiss(`var'*)
-	recode `var'_report (0=0) (1/999999=1) 
-	egen `var'_total_report = total(`var'_report)
-	egen `var'_sum = rowtotal(`var'*)
-	egen `var'_total_sum = total(`var'_sum) 
-	gen `var'_total_mean = `var'_total_sum /`var'_total_report
-}
+*[ MK enter here code from Nepal Clean] lines 61-138
 
-putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Tot reporting)  modify
-putexcel E2 = "Variable"
-putexcel F2 = "Mean per facility"	
-local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel E`i' = "`var'"
-	qui sum `var'_total_mean
-	putexcel F`i' = `r(mean)'
-}
-drop *_report *_sum *_mean
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
