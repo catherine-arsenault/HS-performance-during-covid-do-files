@@ -136,36 +136,15 @@ forval i = 1/24 {
 	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' !=. 
 	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' !=. 	
 }
+save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
 
-/****************************************************************
-              IDENTIFY OUTLIERS AND SET TO MISSING 
-****************************************************************
-Identifying extreme outliers over the period. Any value that is greater than 
-3.5SD from the mean  trend is set to missing.This is only applied if the mean 
-of the series is greater or equal to 1. This technique avoids flagging as 
-outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
-common for mortality indicators.  */
-foreach x of global all {
-	egen rowmean`x'= rowmean(`x'*)
-	egen rowsd`x'= rowsd(`x'*)
-	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
-	forval v = 1/24 {
-		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
-		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
-	}
-	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
-}
 
-save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
-/****************************************************************
-EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
-****************************************************************/
-*export excel  using "$user/$data/Data cleaning/KZN_Jan19-Dec19_fordatacleaning3.xlsx", firstrow(variable) replace
+
+
 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
@@ -173,14 +152,14 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************
 Completeness is an issue, particularly May and June 2020. Some palikas have
 not reported yet. For each variable, keep only heath facilities that 
-have reported at least 14 out of 18 months (incl the latest 2 months) 
+have reported at least 15 out of 18 months (incl the latest 2 months) 
 This brings completeness up "generally" above 90% for all variables. */
 	foreach x of global all {
 			 	preserve
 					keep Province dist subdist Facility factype `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=18
-					/* keep if at least 18 out of 24 months are reported 
+					keep if total`x'>=15
+					/* keep if at least 15 out of 24 months are reported 
 					& Nov/Dec are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
@@ -199,6 +178,26 @@ This brings completeness up "generally" above 90% for all variables. */
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
+			 
+/****************************************************************
+              IDENTIFY OUTLIERS AND SET TO MISSING 
+****************************************************************
+Identifying extreme outliers over the period. Any value that is greater than 
+3.5SD from the mean  trend is set to missing.This is only applied if the mean 
+of the series is greater or equal to 1. This technique avoids flagging as 
+outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
+common for mortality indicators.  */
+foreach x of global all {
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	forval v = 1/24 {
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
+}			 
 	
 save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 /***************************************************************
@@ -250,6 +249,18 @@ replace year= 2020 if rmonth>=13
 
 * Drop the other months
 keep if month>=4 & month<=6
+
+foreach x of global all {
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	forval v = 1/24 {
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
+}	
 
 save "$user/$data/Data for analysis/KZN_CCA_Q2.dta", replace
 
@@ -304,6 +315,18 @@ replace year= 2020 if rmonth>=13
 
 * Drop the other months
 keep if month>=7 & month<=9
+
+foreach x of global all {
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	forval v = 1/24 {
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
+}	
 
 save "$user/$data/Data for analysis/KZN_CCA_Q3.dta", replace
 
