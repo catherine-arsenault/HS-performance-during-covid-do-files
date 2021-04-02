@@ -332,6 +332,26 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
 			  }
+/****************************************************************
+         IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
+*****************************************************************/ 
+			  
+foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
+			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			egen rowmean`x'= rowmean(`x'*)
+			egen rowsd`x'= rowsd(`x'*)
+			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
+			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 {  
+		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
+}			  
 			  
 * Reshape for analyses
 reshape long  fp_util sti_util anc_util ///
@@ -429,27 +449,6 @@ order region zone organisationunitname
 	
 * drop the other months
 keep if month>=4 & month<=6
-
-/****************************************************************
-         IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
-*****************************************************************/ 
-
-foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
-			egen rowmean`x'= rowmean(`x'*)
-			egen rowsd`x'= rowsd(`x'*)
-			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
-			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 {  
-		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
-		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
-	}
-	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
-}
  
 save "$user/$data/Data for analysis/Ethiopia_CCA_Q2.dta", replace
 
@@ -492,6 +491,28 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 				save "$user/$data/Data for analysis/Ethiopia_Q1_Q2_2020_comparisons.dta", replace
 		}
 		
+/****************************************************************
+         IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
+*****************************************************************/ 
+
+foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
+			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			egen rowmean`x'= rowmean(`x'*)
+			egen rowsd`x'= rowsd(`x'*)
+			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
+			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 {  
+		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
+}
+		
+*Reshape to long		
 reshape long fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 		totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
@@ -586,27 +607,6 @@ rename mo month
 *drop the other months
 keep if (month >=1 & month<=3 & year ==2020) | (month >=4 & month<=6 & year ==2020)
 
-/****************************************************************
-         IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
-*****************************************************************/ 
-
-foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
-			egen rowmean`x'= rowmean(`x'*)
-			egen rowsd`x'= rowsd(`x'*)
-			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
-			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 {  
-		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
-		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
-	}
-	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
-}
-
 * THIS IS THE DATASET USED TO COMPARE Q2 2020 TO Q2 2019: 
 save "$user/$data/Data for analysis/Ethiopia_Q1_Q2_2020_comparisons.dta", replace
 
@@ -617,7 +617,7 @@ save "$user/$data/Data for analysis/Ethiopia_Q1_Q2_2020_comparisons.dta", replac
 we keep only those facilities that reported all months of interest. In this case,
 we are comparing the first and second quarters of 2020 */
 
-u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
+u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
@@ -648,6 +648,28 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Oct20_WIDE_CCA_AN.dta", clear
 				save "$user/$data/Data for analysis/Ethiopia_Q1_Q3_2020_comparisons.dta", replace
 		}
 		
+/****************************************************************
+         IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
+*****************************************************************/ 
+
+foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
+			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
+			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			egen rowmean`x'= rowmean(`x'*)
+			egen rowsd`x'= rowsd(`x'*)
+			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
+			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 {  
+		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
+}
+		
+*Reshape to long		
 reshape long fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 		totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
@@ -738,27 +760,6 @@ drop month
 sort org* year mo 
 order org* year mo 
 rename mo month
-
-/****************************************************************
-         IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
-*****************************************************************/ 
-
-foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
-			egen rowmean`x'= rowmean(`x'*)
-			egen rowsd`x'= rowsd(`x'*)
-			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
-			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 {  
-		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
-		replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
-	}
-	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
-}
 
 *drop the other months
 keep if (month >=1 & month<=3 & year ==2020) | (month >=7 & month<=9 & year ==2020)
