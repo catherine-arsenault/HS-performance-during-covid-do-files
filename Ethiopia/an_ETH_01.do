@@ -89,7 +89,7 @@ preserve
 	gen newborn_mort = newborn_mort_num / totaldel 
 	gen sb_mort = sb_mort_num / totaldel 
 	gen mat_mort = mat_mort_num/ totaldel 
-	gen er_mort = er_mort_num / totaldel 
+	gen er_mort = er_mort_num / er_util 
 	gen ipd_mort = totalipd_mort / ipd_util 
 
 	drop $quality $mortality 
@@ -134,7 +134,7 @@ preserve
 	gen newborn_mort = newborn_mort_num / totaldel 
 	gen sb_mort = sb_mort_num / totaldel 
 	gen mat_mort = mat_mort_num/ totaldel 
-	gen er_mort = er_mort_num / totaldel 
+	gen er_mort = er_mort_num / er_util 
 	gen ipd_mort = totalipd_mort / ipd_util 
 
 	drop $quality $mortality 
@@ -150,13 +150,6 @@ preserve
 	bro country *cal 
 restore 
 drop Q1 
-
-
-
-
-
-
-
 
 
 global all $rmnch $other $vax $mortality 
@@ -224,7 +217,7 @@ preserve
 	gen newborn_mort = newborn_mort_num / totaldel 
 	gen sb_mort = sb_mort_num / totaldel 
 	gen mat_mort = mat_mort_num/ totaldel 
-	gen er_mort = er_mort_num / totaldel 
+	gen er_mort = er_mort_num / er_util 
 	gen ipd_mort = totalipd_mort / ipd_util 
 
 	drop $quality $mortality 
@@ -269,7 +262,7 @@ preserve
 	gen newborn_mort = newborn_mort_num / totaldel 
 	gen sb_mort = sb_mort_num / totaldel 
 	gen mat_mort = mat_mort_num/ totaldel 
-	gen er_mort = er_mort_num / totaldel 
+	gen er_mort = er_mort_num / er_util 
 	gen ipd_mort = totalipd_mort / ipd_util 
 
 	drop $quality $mortality 
@@ -285,13 +278,6 @@ preserve
 	bro country *cal 
 restore 
 drop Q1 
-
-
-
-
-
-
-
 
 
 global all $rmnch $other $vax $mortality 
