@@ -7,7 +7,7 @@ set more off
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global folder "/Quest Center/Active projects/HS performance Covid (internal)/Data/Data viz/Country Comparison/Stata output"
+global folder "/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Data/Data viz/Country Comparison/Stata output"
 
 *******************************************************************************
 *1) Nepal 
@@ -311,7 +311,7 @@ preserve
 	gen newborn_mort = newborn_mort_num / totaldel 
 	gen sb_mort = sb_mort_num / totaldel 
 	gen mat_mort = mat_mort_num/ totaldel 
-	gen er_mort = er_mort_num / totaldel 
+	gen er_mort = er_mort_num / er_util 
 	gen ipd_mort = totalipd_mort / ipd_util 
 	
 	drop $mortality  
