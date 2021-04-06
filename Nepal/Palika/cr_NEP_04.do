@@ -272,26 +272,53 @@ set more off
 	save "$user/$data/Data for analysis/Nepal_palika_Nov20-Dec20_WIDE.dta", replace	
 
 ********************************************************************************
-*END OF coding for Nov20-Dec20 data 
+* Merge with Jan19-Nov20 data
 ********************************************************************************	
-
-*Merge with Jan19-Nov20 data 
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
 	           using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta"
 	drop _merge
 	drop live_births* //no longer used 
+	drop ipd_util ipd_mort // wrong data elements used
 	
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 
-	
+********************************************************************************
+* Corrections to ipd_util and ipd_mort  
+********************************************************************************		
+import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_inpatient.csv", clear
+* Replace facility identifiers so that new dataset match old dataset
+	rename ïorgunitlevel1 orgunitlevel1
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"	
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
+* IPD util
+	rename  (inpatientmorbiditycasesmagh2075-inpatientmorbiditycasespoush2077) ///
+	(ipd_util1_19 ipd_util2_19 ipd_util3_19 ipd_util4_19 ipd_util5_19 ///
+	ipd_util6_19 ipd_util7_19	ipd_util8_19 ipd_util9_19 ipd_util10_19	///
+	ipd_util11_19 ipd_util12_19 ipd_util1_20	ipd_util2_20	ipd_util3_20 ///
+	ipd_util4_20 ipd_util5_20 ipd_util6_20 ipd_util7_20 ipd_util8_20 ipd_util9_20 ///
+	ipd_util10_20	ipd_util11_20 ipd_util12_20)
+* IPD deaths
+	rename (inpatientmorbiditydeathsmagh2075-v53) (ipd_mort_num1_19 ///
+	ipd_mort_num2_19 ipd_mort_num3_19 ipd_mort_num4_19 ipd_mort_num5_19 ///
+	ipd_mort_num6_19 ipd_mort_num7_19 ipd_mort_num8_19 ipd_mort_num9_19 ///
+	ipd_mort_num10_19 ipd_mort_num11_19 ipd_mort_num12_19 ipd_mort_num1_20 ///
+	ipd_mort_num2_20 ipd_mort_num3_20 ipd_mort_num4_20 ipd_mort_num5_20 ///
+	ipd_mort_num6_20 ipd_mort_num7_20 ipd_mort_num8_20 ipd_mort_num9_20 ///
+	ipd_mort_num10_20 ipd_mort_num11_20 ipd_mort_num12_20)
 
+	egen total= rowtotal(ipd_util1_19-ipd_mort_num12_20), m
+	drop if total==. 
+	drop total
 	
-	
-	
-	
-	
-	
-	
+merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
+	      using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 	
 	
 	
