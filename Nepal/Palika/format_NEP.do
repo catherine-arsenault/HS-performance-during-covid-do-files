@@ -76,7 +76,7 @@ foreach var of global all {
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
 
-putexcel set "$user/$data/Analyses/Nepal Codebook/Internal.xlsx", sheet(After cleaning)  modify
+putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(After cleaning)  modify
 putexcel F2 = "Variable"
 putexcel G2 = "Sum of services or deaths"	
 putexcel H2 = "Average per unit/facility"
