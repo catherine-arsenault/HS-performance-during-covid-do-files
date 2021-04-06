@@ -278,7 +278,7 @@ set more off
 	           using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta"
 	drop _merge
 	drop live_births* //no longer used 
-	drop ipd_util ipd_mort // wrong data elements used
+	drop ipd_util* ipd_mort* // wrong data elements used
 	
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 
@@ -315,8 +315,7 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_inpatient.csv", cl
 	drop if total==. 
 	drop total
 	
-merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
-	      using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 	
@@ -333,6 +332,8 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_HIV_tests.csv", cl
 	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
 	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
 	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
+	
+	replace orgunitlevel3="206 RAUTAHAT" if orgunitlevel3=="206 RAUTAHAT "
 * HIV testing
 	rename (virologyhivtestconductedmagh2075-v29) (hivtest_qual1_19 hivtest_qual2_19 ///
 	hivtest_qual3_19  hivtest_qual4_19 hivtest_qual5_19 hivtest_qual6_19 ///
@@ -342,12 +343,7 @@ import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_HIV_tests.csv", cl
 	hivtest_qual7_20 hivtest_qual8_20 hivtest_qual9_20 hivtest_qual10_20 ///
 	hivtest_qual11_20 hivtest_qual12_20)
 	
-egen total= rowtotal(hivtest_qual1_19-hivtest_qual12_20), m
-	drop if total==. 
-	drop total
-	
-merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
-	      using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
 	
