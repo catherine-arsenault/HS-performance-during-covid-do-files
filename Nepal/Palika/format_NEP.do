@@ -37,8 +37,8 @@ drop *report
 * Min and Max number of palikas reporting any data, for any given month	
 preserve
 	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util ////
-			   hivtest_qual tbdetect_qual  hivdiag_qual totaldel pent_qual bcg_qual ///
+			   pnc_util diarr_util pneum_util   opd_util ipd_util er_util ////
+			   hivtest_qual tbdetect_qual    totaldel pent_qual bcg_qual ///
 			   measles_qual opv3_qual pneum_qual sb_mort_num mat_mort_num ///
 			   ipd_mort_num neo_mort_num 
 			   
@@ -114,8 +114,8 @@ order province
 
 * Reshaping for data visualisations / dashboard
 reshape long  fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			  pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
-			  er_util tbdetect_qual hivdiag_qual hivtest_qual ///
+			  pnc_util diarr_util pneum_util   opd_util ipd_util ///
+			  er_util tbdetect_qual   hivtest_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
 			  totaldel sb_mort_num mat_mort_num ipd_mort_num neo_mort_num, ///
 			  i(province) j(month) string
