@@ -23,7 +23,7 @@ foreach var of global all {
 }
 	recode *_report (0=0) (1/24=1) // 0 never any value, 1 some values
 
-putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(After cleaning)  modify
+putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(After cleaning)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Number reporting any data"	
 local i= 2
@@ -38,14 +38,14 @@ drop *report
 preserve
 	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util diarr_util pneum_util sam_util opd_util ipd_util er_util ////
-			   tbdetect_qual  hivdiag_qual totaldel pent_qual bcg_qual ///
+			   hivtest_qual tbdetect_qual  hivdiag_qual totaldel pent_qual bcg_qual ///
 			   measles_qual opv3_qual pneum_qual sb_mort_num mat_mort_num ///
 			   ipd_mort_num neo_mort_num 
 			   
 	reshape long `all', i(org*) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(After cleaning) modify  
+	putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(After cleaning) modify  
 	putexcel C2 = "Variable"
 	putexcel D2 = "Min units reporting any month"	
 	putexcel E2 = "Max units reporting any month"	
@@ -76,7 +76,7 @@ foreach var of global all {
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
 
-putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(After cleaning)  modify
+putexcel set "$user/$data/Analyses/Nepal Codebook/Internal.xlsx", sheet(After cleaning)  modify
 putexcel F2 = "Variable"
 putexcel G2 = "Sum of services or deaths"	
 putexcel H2 = "Average per unit/facility"
@@ -115,7 +115,7 @@ order province
 * Reshaping for data visualisations / dashboard
 reshape long  fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			  pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
-			  er_util tbdetect_qual hivdiag_qual ///
+			  er_util tbdetect_qual hivdiag_qual hivtest_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
 			  totaldel sb_mort_num mat_mort_num ipd_mort_num neo_mort_num, ///
 			  i(province) j(month) string
