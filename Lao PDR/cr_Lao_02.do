@@ -340,13 +340,23 @@ set more off
 
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta"
 	drop _merge
-	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 	
+	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 	
 *********************************************************************************************
 * Merge with Older data
-merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta"
-* 
+
+import excel using "$user/$data/Analyses/org names link.xlsx", firstrow 
+merge 1:1  orgunitlevel2	orgunitlevel3	orgunitlevel4	organisationunitname using "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta.dta"
+
+replace orgunitlevel2=orgunitlevel2_old! if orgunitlevel2_old!=.
+replace orgunitlevel3
+
+
+drop org*_old 
+
+merge 1:1 org* using 2019 data 	
+
 
 *167 won't merge 
 *list orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname if _merge!=3
