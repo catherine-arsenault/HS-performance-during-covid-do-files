@@ -18,9 +18,8 @@ global other diab_util hyper_util art_util mental_util opd_util er_util ipd_util
 global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num 
 global all $volume $other $mortality 
 
-
 *********************************************************
-* Create national total
+* Create national totals
 *********************************************************
 	collapse (sum) sti_util1_19 - ipd_mort_num9_20 , by(region)
 	encode region, gen(reg)
