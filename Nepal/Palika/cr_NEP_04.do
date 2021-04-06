@@ -320,11 +320,36 @@ merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 	
+********************************************************************************
+* New HIV indicator (initial one poorly reported)  
+********************************************************************************			
+import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_HIV_tests.csv", clear
+* Replace facility identifiers so that new dataset match old dataset
+	rename ïorgunitlevel1 orgunitlevel1
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"	
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
+* HIV testing
+	rename (virologyhivtestconductedmagh2075-v29) (hivtest_qual1_19 hivtest_qual2_19 ///
+	hivtest_qual3_19  hivtest_qual4_19 hivtest_qual5_19 hivtest_qual6_19 ///
+	hivtest_qual7_19 hivtest_qual8_19 hivtest_qual9_19 hivtest_qual10_19 ///
+	hivtest_qual11_19 hivtest_qual12_19 hivtest_qual1_20 hivtest_qual2_20 ///
+	hivtest_qual3_20  hivtest_qual4_20 hivtest_qual5_20 hivtest_qual6_20 ///
+	hivtest_qual7_20 hivtest_qual8_20 hivtest_qual9_20 hivtest_qual10_20 ///
+	hivtest_qual11_20 hivtest_qual12_20)
 	
+egen total= rowtotal(hivtest_qual1_19-hivtest_qual12_20), m
+	drop if total==. 
+	drop total
 	
-	
-	
-	
+merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
+	      using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
 	
 	
 /*old codes - we have removed this indicator because we added a neonatal mortality indicator. 
