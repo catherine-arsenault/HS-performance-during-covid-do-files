@@ -37,7 +37,7 @@ do "$dofiles/Palika/clean_NEP.do"
 do "$dofiles/Palika/format_NEP.do"
 
 **********************************************************************
-* Analysis
+* Analyses for policy briefs
 
 * Calculates changes between Q2 2020 and Q2 2019 for policy brief
 do "$dofiles/Palika/an_NEP_01.do"

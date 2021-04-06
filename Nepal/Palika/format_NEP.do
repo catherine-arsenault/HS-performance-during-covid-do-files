@@ -12,8 +12,10 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using "$user/$data/Data cleaning/Nepal_palika_Jan19-Dec20_fordatacleaning2.xlsx", firstrow(variable) replace	 
 /****************************************************************
-ASSESSES DATASET BEFORE CLEANING (NUMBER OF UNITS REPORTING, AND
+
+ASSESSES DATASET BEFORE AFTER (NUMBER OF UNITS REPORTING, AND
 SUM AND AVERAGE SERVICES PER UNIT)
+
 ****************************************************************/
 use "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 
@@ -140,6 +142,7 @@ drop month
 rename mo month
 sort province year month
  
+save "$user/$data/Data for analysis/Nepal_24mo_for_analyses.dta", replace
 
 * Reshaping for data visualisations
 preserve
