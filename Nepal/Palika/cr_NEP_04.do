@@ -279,7 +279,7 @@ set more off
 	drop _merge
 	drop live_births* //no longer used 
 	drop ipd_util* ipd_mort* // wrong data elements used
-	
+	drop sam_util* hivdiag_qual* // remove from analyses, poorly reported
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 
 ********************************************************************************
@@ -320,7 +320,7 @@ merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WID
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 	
 ********************************************************************************
-* New HIV indicator (initial one poorly reported)  
+* New HIV indicator 
 ********************************************************************************			
 import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_HIV_tests.csv", clear
 * Replace facility identifiers so that new dataset match old dataset
