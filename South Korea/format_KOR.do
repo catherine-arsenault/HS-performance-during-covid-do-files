@@ -11,7 +11,7 @@ created in google data studio
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
 *****************************************************************/
-u "$user/$data/Data for analysis/Kor_Jan19-Aug20_WIDE.dta", replace	
+u "$user/$data/Data for analysis/Kor_Jan19-Sep20_WIDE.dta", replace	
 
 global volume sti_util anc_util cs_util diarr_util pneum_util totaldel
 global other diab_util hyper_util art_util mental_util opd_util er_util ipd_util kmc_qual
@@ -22,7 +22,7 @@ global all $volume $other $mortality
 *********************************************************
 * Create national total
 *********************************************************
-	collapse (sum) sti_util1_19-ipd_mort_num8_20 , by(region)
+	collapse (sum) sti_util1_19 - ipd_mort_num9_20 , by(region)
 	encode region, gen(reg)
 	drop region
 	order reg
@@ -82,7 +82,7 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Kor_Jan19-Aug20_fordashboard.csv", replace
+export delimited using "$user/$data/Kor_Jan19-Sep20_fordashboard.csv", replace
 
 		
 
