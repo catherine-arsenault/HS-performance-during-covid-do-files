@@ -142,10 +142,6 @@ EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using  "$user/$data/Data cleaning/KZN_Jan19-Jul20_fordatacleaning1.xlsx", firstrow(variable) replace
 
-
-
-
-
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
                          FOR DASHBOARD 
@@ -180,7 +176,7 @@ This brings completeness up "generally" above 90% for all variables. */
 			 }
 			 
 /****************************************************************
-              IDENTIFY OUTLIERS AND SET TO MISSING 
+             IDENTIFY OUTLIERS AND SET TO MISSING 
 ****************************************************************
 Identifying extreme outliers over the period. Any value that is greater than 
 3.5SD from the mean  trend is set to missing.This is only applied if the mean 
@@ -233,7 +229,9 @@ foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
 			 
-*Remove outliers
+/****************************************************************
+              IDENTIFY OUTLIERS AND SET TO MISSING 
+****************************************************************/
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
@@ -301,7 +299,9 @@ foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
 			 
-*Remove outliers
+/****************************************************************
+              IDENTIFY OUTLIERS AND SET TO MISSING 
+****************************************************************/
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)

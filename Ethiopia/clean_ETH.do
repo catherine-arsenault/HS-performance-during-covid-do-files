@@ -154,7 +154,6 @@ EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Dec20_fordatacleaning2.xlsx", firstrow(variable) replace
 
-
 ****************************************************************
 * 			OTHER DATA QUALITY EDITS
 ****************************************************************
@@ -170,7 +169,7 @@ forval i=1/12 {
 	replace resus_qual_num`i'_20 = . if resus_qual_num`i'_20 > resus_qual_denom`i'_20 & resus_qual_num`i'_20 !=.
 }
 
-*Diabetes and hypertension were only collected starting October 2019
+*Diabetes and hypertension were only collected fully starting October 2019
 *Drop variables for utilisation and quality from Jan to Sep 2019
 foreach x in diab_util diab_qual_num hyper_util hyper_qual_num ///
 			 diab_detec hyper_detec {
@@ -200,7 +199,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
-                         FOR DASHBOARD 
+                    FOR DASHBOARD AND ANALYSES
 ****************************************************************
 Completeness is an issue, particularly for the latest months (there are important
 delays in reporting). For each variable, keep only heath facilities that 
@@ -295,6 +294,7 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 	}
 	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
 }
+
 	
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 
@@ -385,50 +385,6 @@ sort org* year mo
 order org* year mo 
 rename mo month
 
-* Labels (And dashboard format)
-* Volume RMNCH services TOTALS
-	lab var fp_util "Number of new and current users of contraceptives"
-	lab var sti_util "Number of consultations for STI care"
-	lab var anc_util "Total number of antenatal care visits"
-	lab var del_util "Number of facility deliveries"
-	lab var cs_util "Number of caesarean sections"
-	lab var diarr_util "Number children treated with ORS for diarrhea"
-	lab var pneum_util "Number of consultations for sick child care - pneumonia"
-	lab var sam_util "Number of children screened for malnutrition"
-	lab var pnc_util "Number of postnatal visits within 7 days of birth" 
-* Vaccines TOTALS
-	lab var vacc_qual "Number fully vaccinated by age 1"
-	lab var bcg_qual "Nb children vaccinated with bcg vaccine"
-	lab var pent_qual "Nb children vaccinated with 3rd dose pentavalent"
-	lab var measles_qual "Nb children vaccinated with measles vaccine"
-	lab var opv3_qual "Nb children vaccinated with 3rd dose oral polio vaccine"
-	lab var pneum_qual "Nb children vaccinated with pneumococcal vaccine"
-	lab var rota_qual "Nb children vaccinated with rotavirus vaccine"
-* Volume other services	 TOTALS
-	*lab var diab_util "Number of diabetic patients enrolled"
-	*lab var hyper_util "Number of hypertensive patients enrolled"
-	lab var art_util "Number of adult and children on ART "
-	lab var opd_util  "Nb outpatient visits"
-	lab var er_util "Number of emergency room visits"
-	lab var ipd_util "Number of inpatient admissions total"
-	lab var road_util "Number of road traffic injuries"
-	lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
-	*lab var diab_qual_num "Number of diabetic patients enrolled to care"
-	*lab var hyper_qual_num "Number of hypertensive patients enrolled to care"
-	lab var totaldel "Total number of births attended by skilled health personnel"
-	lab var hivsupp_qual_num "Nb of adult and pediatric patients with viral load <1,000 copies/ml"
-	lab var kmc_qual_num "Nb of newborns weighting <2000g and/or premature newborns for which KMC initiated" 
-	lab var kmc_qual_denom "Total number of newborns weighting <2000gm and/or premature"
-	lab var resus_qual_num "Total number of neonates resusciated and survived"
-	lab var resus_qual_denom "Total number of neonates resuscitated"
-* Institutional mortality 
-	lab var newborn_mort_num "Institutional newborn deaths"
-	lab var sb_mort_num "Institutional stillbirths per 1000 "
-	lab var mat_mort_num "Institutional maternal deaths per 1000"
-	lab var er_mort_num "Emergency room deaths per 1000"
-	*lab var ipd_mort_num "Inpatient deaths per 1000"
-	*lab var icu_mort_num "ICU deaths per 1000"
-	lab var totalipd_mort_num "Total inpatient (incl. ICU) deaths per 1000" 
 
 * Region names	
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
@@ -445,7 +401,6 @@ replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
 replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname
-	
 	
 * drop the other months
 keep if month>=4 & month<=6
@@ -534,52 +489,6 @@ replace region ="SNNP"  if region== "Sidama Regional Health Bureau"
 replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname
-	
-
-* Labels (And dashboard format)
-* Volume RMNCH services TOTALS
-	lab var fp_util "Number of new and current users of contraceptives"
-	lab var sti_util "Number of consultations for STI care"
-	lab var anc_util "Total number of antenatal care visits"
-	lab var del_util "Number of facility deliveries"
-	lab var cs_util "Number of caesarean sections"
-	lab var diarr_util "Number children treated with ORS for diarrhea"
-	lab var pneum_util "Number of consultations for sick child care - pneumonia"
-	lab var sam_util "Number of children screened for malnutrition"
-	lab var pnc_util "Number of postnatal visits within 7 days of birth" 
-* Vaccines TOTALS
-	lab var vacc_qual "Number fully vaccinated by age 1"
-	lab var bcg_qual "Nb children vaccinated with bcg vaccine"
-	lab var pent_qual "Nb children vaccinated with 3rd dose pentavalent"
-	lab var measles_qual "Nb children vaccinated with measles vaccine"
-	lab var opv3_qual "Nb children vaccinated with 3rd dose oral polio vaccine"
-	lab var pneum_qual "Nb children vaccinated with pneumococcal vaccine"
-	lab var rota_qual "Nb children vaccinated with rotavirus vaccine"
-* Volume other services	 TOTALS
-	*lab var diab_util "Number of diabetic patients enrolled"
-	*lab var hyper_util "Number of hypertensive patients enrolled"
-	lab var art_util "Number of adult and children on ART "
-	lab var opd_util  "Nb outpatient visits"
-	lab var er_util "Number of emergency room visits"
-	lab var ipd_util "Number of inpatient admissions total"
-	lab var road_util "Number of road traffic injuries"
-	lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
-	*lab var diab_qual_num "Number of diabetic patients enrolled to care"
-	*lab var hyper_qual_num "Number of hypertensive patients enrolled to care"
-	lab var totaldel "Total number of births attended by skilled health personnel"
-	lab var hivsupp_qual_num "Nb of adult and pediatric patients with viral load <1,000 copies/ml"
-	lab var kmc_qual_num "Nb of newborns weighting <2000g and/or premature newborns for which KMC initiated" 
-	lab var kmc_qual_denom "Total number of newborns weighting <2000gm and/or premature"
-	lab var resus_qual_num "Total number of neonates resusciated and survived"
-	lab var resus_qual_denom "Total number of neonates resuscitated"
-* Institutional mortality 
-	lab var newborn_mort_num "Institutional newborn deaths"
-	lab var sb_mort_num "Institutional stillbirths per 1000 "
-	lab var mat_mort_num "Institutional maternal deaths per 1000"
-	lab var er_mort_num "Emergency room deaths per 1000"
-	*lab var ipd_mort_num "Inpatient deaths per 1000"
-	*lab var icu_mort_num "ICU deaths per 1000"
-	lab var totalipd_mort "Total inpatient (incl. ICU) deaths per 1000" 
 
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -692,8 +601,32 @@ replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname
 	
+	
+* Month and year
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
+		month=="5_20" |	month=="6_20"  | month=="7_20" |	month=="8_20" |	///
+		month=="9_20" |	month=="10_20" | ///
+		month=="11_20" |	month=="12_20"
+replace year = 2019 if year==.
+gen mo = 1 if month =="1_19" | month =="1_20"
+replace mo = 2 if month =="2_19" | month =="2_20"
+replace mo = 3 if month =="3_19" | month =="3_20"
+replace mo = 4 if month =="4_19" | month =="4_20"
+replace mo = 5 if month =="5_19" | month =="5_20"
+replace mo = 6 if month =="6_19" | month =="6_20"
+replace mo = 7 if month =="7_19" | month =="7_20"
+replace mo = 8 if month =="8_19" | month =="8_20"
+replace mo = 9 if month =="9_19" | month =="9_20"
+replace mo = 10 if month =="10_19" | month =="10_20"
+replace mo = 11 if month =="11_19" | month =="11_20"
+replace mo = 12 if month =="12_19" | month =="12_20"
+drop month
+sort org* year mo 
+order org* year mo 
+rename mo month
 
-* Labels (And dashboard format)
+
+* Labels
 * Volume RMNCH services TOTALS
 	lab var fp_util "Number of new and current users of contraceptives"
 	lab var sti_util "Number of consultations for STI care"
@@ -737,29 +670,6 @@ order region zone organisationunitname
 	*lab var ipd_mort_num "Inpatient deaths per 1000"
 	*lab var icu_mort_num "ICU deaths per 1000"
 	lab var totalipd_mort "Total inpatient (incl. ICU) deaths per 1000" 
-
-* Month and year
-gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
-		month=="5_20" |	month=="6_20"  | month=="7_20" |	month=="8_20" |	///
-		month=="9_20" |	month=="10_20" | ///
-		month=="11_20" |	month=="12_20"
-replace year = 2019 if year==.
-gen mo = 1 if month =="1_19" | month =="1_20"
-replace mo = 2 if month =="2_19" | month =="2_20"
-replace mo = 3 if month =="3_19" | month =="3_20"
-replace mo = 4 if month =="4_19" | month =="4_20"
-replace mo = 5 if month =="5_19" | month =="5_20"
-replace mo = 6 if month =="6_19" | month =="6_20"
-replace mo = 7 if month =="7_19" | month =="7_20"
-replace mo = 8 if month =="8_19" | month =="8_20"
-replace mo = 9 if month =="9_19" | month =="9_20"
-replace mo = 10 if month =="10_19" | month =="10_20"
-replace mo = 11 if month =="11_19" | month =="11_20"
-replace mo = 12 if month =="12_19" | month =="12_20"
-drop month
-sort org* year mo 
-order org* year mo 
-rename mo month
 
 *drop the other months
 keep if (month >=1 & month<=3 & year ==2020) | (month >=7 & month<=9 & year ==2020)

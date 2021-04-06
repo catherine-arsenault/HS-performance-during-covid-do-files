@@ -57,7 +57,6 @@ global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 global mortality sb_mort_num mat_mort_num ipd_mort_num neo_mort_num 
 global all $volumes $mortality 
 
-
 /****************************************************************
 ASSESSES DATASET BEFORE CLEANING (NUMBER OF UNITS REPORTING, AND
 SUM AND AVERAGE SERVICES PER UNIT)
