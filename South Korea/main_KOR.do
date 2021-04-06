@@ -1,4 +1,4 @@
-* HS performance during Covid - South Korea
+* HS performance during Covid - South Korea, Regional-level analysis
 * Master do file 
 * PI Catherine Arsenault
 
@@ -15,11 +15,6 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 
 * Imports raw data and renames variables for January 2019 - September 2020
 do "$dofiles/cr_KOR_02.do"
-
-********************************************************************************
-* Cleaning do files - Not needed since it's province level data
-* Cleans data (see cleaning protocol in shared folder) 
-*do "$dofiles/clean_KOR.do"
 
 ********************************************************************************
 * Format do files

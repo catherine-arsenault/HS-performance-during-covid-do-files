@@ -1,6 +1,6 @@
 * HS performance during Covid
 * Created on Feb 4th 2021
-* South Korea, Jan19 - Aug 2020 data
+* South Korea, Jan19 - Sep 2020 data
 
 * Call in dataset
 import delimited "/$user/$data/Raw data/SouthKorea_03302021.csv", numericcols(3/400) clear
