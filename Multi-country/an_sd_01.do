@@ -6,5 +6,4 @@
 
 
 * Open final dataset in Nepal 
-
 use "$user/$data/Data for analysis/Nepal_24mo_for_analyses.dta", clear
