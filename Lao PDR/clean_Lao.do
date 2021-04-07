@@ -68,7 +68,7 @@ egen `var'_report = rownonmiss(`var'*) //counts the number of non missing cells
 }
 recode *_report (0=0) (1/24=1) //0 never any value, 1 some values 
 
-putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Before cleaning)  modify
+putexcel set "$user/$data/Analyses/Codebook for Lao PDR Internal.xlsx", sheet(Before cleaning)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Number reporting any data"	
 local i= 2
@@ -89,7 +89,7 @@ preserve
 	reshape long `all', i(org*) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Before cleaning)  modify
+	putexcel set "$user/$data/Analyses/Codebook for Lao PDR Internal.xlsx", sheet(Before cleaning)  modify
 	putexcel C2 = "Variable"
 	putexcel D2 = "Min units reporting any month"	
 	putexcel E2 = "Max units reporting any month"	
@@ -120,7 +120,7 @@ foreach var of global all {
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
 
-putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Before cleaning)  modify
+putexcel set "$user/$data/Analyses/Codebook for Lao PDR Internal.xlsx", sheet(Before cleaning)  modify
 putexcel F2 = "Variable"
 putexcel G2 = "Sum of services or deaths"	
 putexcel H2 = "Average per unit/facility"
@@ -128,7 +128,7 @@ local i= 2
 foreach var of global all {	
 	local i = `i'+1
 	putexcel F`i' = "`var'"
-	qui sum `var'_total_mean
+	qui sum `var'_total_sum 
 	putexcel G`i' = `r(mean)'
 	qui sum `var'_total_mean
 	putexcel H`i' = `r(mean)'
