@@ -42,7 +42,9 @@ rename 	(totalnumberofdeaths earlyneonataldeaths07days totalstillbirth ///
 		 totalmaternaldeaths  ) ///
 		 (ipd_mort_num newborn_mort_num sb_mort_num mat_mort_num )
 
-
+foreach x in ipd_mort_num newborn_mort_num sb_mort_num mat_mort_num {
+	replace `x'= 0 if `x'==.
+} 
 *******************************************************************************
 * Keep only coded variables 
 keep period region fp_util sti_util anc_util del_util cs_util pnc_util diarr_util ///
