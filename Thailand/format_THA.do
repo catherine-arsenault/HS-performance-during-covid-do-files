@@ -14,7 +14,7 @@ replace Province="National" if Province==""
 
 reshape long opd_util ipd_util dental_util diab_util dengue_util diarr_util ///
              heart_util hyper_util stroke_util predel_util totaldel road_util ///
-			 road_mort_num mal_qual pneum_qual anc_util, i(Prov) j(month) string 
+			 road_mort_num malaria_util pneum_util anc_util, i(Prov) j(month) string 
 
 * Labels (And dashboard format) - monthly collected data 
 lab var opd_util  "Number outpatient (family medicine clinic  & opd specialty) visits"
@@ -30,8 +30,8 @@ lab var predel_util "Preterm delivery cases"
 lab var totaldel "Total delivery cases "
 lab var road_util "Traffic accident cases "
 lab var road_mort_num "Traffic deaths"
-lab var mal_qual "Number malaria cases diagnosed"	
-lab var pneum_qual "Number of pneumonia cases"
+lab var malaria_util "Number malaria cases diagnosed"	
+lab var pneum_util "Number of pneumonia cases"
 lab var anc_util "Total number of antenatal care visits"	
 	
 * Month and year
@@ -69,7 +69,7 @@ rename mo month
 ******************************************************************************** 
 foreach v in opd_util ipd_util dental_util diab_util dengue_util diarr_util ///
               heart_util hyper_util stroke_util predel_util totaldel road_util ///
-			  road_mort_num mal_qual pneum_qual anc_util {
+			  road_mort_num malaria_util pneum_util anc_util {
 	by year month, sort: egen `v'tot= total(`v'), m
 	replace `v'= `v'tot if Province=="National"
 	drop `v'tot
@@ -82,7 +82,7 @@ save "$user/$data/Data for analysis/Thailand_Oct18-Dec20_foranalysis.dta", repla
 ********************************************************************************
 global varlist opd_util ipd_util dental_util diab_util dengue_util diarr_util ///
 heart_util hyper_util stroke_util predel_util totaldel road_util road_mort_num ///
-mal_qual pneum_qual anc_util			   
+malaria_util pneum_util anc_util			   
 
 preserve
 	keep if year==2020
