@@ -343,6 +343,7 @@ set more off
 	
 	egen total = rowtotal (mat_mort_num1_20-totaldel12_20), m
 	drop if total==. 
+	drop total 
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 		
 ********************************************************************************************
