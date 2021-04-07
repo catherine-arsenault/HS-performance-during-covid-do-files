@@ -1113,6 +1113,11 @@ foreach var of global all {
 	drop `var'1_20 - `var'10_20
 }
 
+* Drop empty facilities
+egen total = rowtotal(mat_mort_num1_19-totaldel12_19), m 
+drop if total==.
+drop total
+
 save "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta", replace
 
 	

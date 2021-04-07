@@ -341,7 +341,12 @@ set more off
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta"
 	drop _merge
 	
+	egen total = rowtotal (mat_mort_num1_20-totaldel12_20), m
+	drop if total==. 
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
+	
+
+	merge 1:1 org* using "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta"
 	
 ********************************************************************************************
 * Merge with Older data
