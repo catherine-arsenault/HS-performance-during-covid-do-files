@@ -25,7 +25,6 @@ set more off
 
 u "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE.dta", clear
 
-
 order org* fp_perm_util*_19 fp_perm_util*_20 fp_sa_util*_19 fp_sa_util*_20 ///
 	fp_la_util*_19 fp_la_util*_20 anc_util*_19 anc_util*_20 del_util*_19 ///
 	del_util*_20 cs_util*_19 cs_util*_20 ///
@@ -155,35 +154,7 @@ EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel using "$user/$data/Data cleaning/Lao_Jan19-Dec20_fordatacleaning1.xlsx", firstrow(variable) replace
 
-/****************************************************************
-         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
-	               AND SET THEM TO MISSING 
-***************************************************************** 
-Identifying extreme outliers over the period. Any value that is greater than 
-3.5SD from the mean  trend is set to missing.This is only applied if the mean 
-of the series is greater or equal to 1. This technique avoids flagging as 
-outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
-common for mortality indicators.  */
-foreach x of global all {
-	egen rowmean`x'= rowmean(`x'*)
-	egen rowsd`x'= rowsd(`x'*)
-	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
-	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
-		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
-		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
-	}
-	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
-}
-
 save "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
-
-
-/****************************************************************
-EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
-****************************************************************/
-*export excel  using "$user/$data/Data cleaning/Lao_Jan19-Dec20_fordatacleaning2.xlsx", firstrow(variable) replace	
 
 /***************************************************************
                     COMPLETE CASE ANALYSIS 
@@ -216,7 +187,29 @@ This brings completeness up "generally" above 90% for all variables. */
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
-	
+
+/****************************************************************
+         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
+	               AND SET THEM TO MISSING 
+***************************************************************** 
+Identifying extreme outliers over the period. Any value that is greater than 
+3.5SD from the mean  trend is set to missing.This is only applied if the mean 
+of the series is greater or equal to 1. This technique avoids flagging as 
+outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
+common for mortality indicators.  */
+foreach x of global all {
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
+}
+
 save "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 
 /***************************************************************
@@ -250,6 +243,22 @@ foreach x of global all {
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
+/****************************************************************
+         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
+	               AND SET THEM TO MISSING 
+******************************************************************/
+foreach x of global all {
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
+}
 * Reshape for analyses
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
@@ -314,6 +323,22 @@ foreach x of global all {
 	foreach x of global all {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
+/****************************************************************
+         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
+	               AND SET THEM TO MISSING 
+******************************************************************/
+foreach x of global all {
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
+}
 * Reshape for analyses
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
