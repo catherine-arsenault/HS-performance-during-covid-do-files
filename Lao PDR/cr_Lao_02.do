@@ -346,9 +346,9 @@ set more off
 	drop total 
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 		
-********************************************************************************************
+********************************************************************************
 * Merge with 2019 data
-
+********************************************************************************
 import excel using "$user/$data/Analyses/name match.xlsx", firstrow clear
 drop I J 
 
@@ -365,6 +365,11 @@ drop *_old
 * Merge to 2019 data with the old names
 merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta"
 drop _merge 
+
+********************************************************************************
+* Drop poorly reported indicators
+********************************************************************************
+drop measles* 
 
 save "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE.dta" , replace 
 

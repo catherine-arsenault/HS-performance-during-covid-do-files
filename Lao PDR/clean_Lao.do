@@ -30,7 +30,7 @@ order org* fp_perm_util*_19 fp_perm_util*_20 fp_sa_util*_19 fp_sa_util*_20 ///
 	del_util*_20 cs_util*_19 cs_util*_20 ///
 	totaldel*19 totaldel*20  pnc_util*_19 pnc_util*_20  ///
 	bcg_qual*_19 bcg_qual*_20 pent_qual*_19 pent_qual*_20  ///
-	measles_qual*_19 measles_qual*_20 opv3_qual*_19 opv3_qual*_20 ///
+	opv3_qual*_19 opv3_qual*_20 ///
 	pneum_qual*_19 pneum_qual*_20  diab_util*_19 diab_util*_20 ///
 	hyper_util*_19 hyper_util*_20 opd_util*_19 opd_util*_20 ///
 	ipd_util*_19 ipd_util*_20 road_util*_19 road_util*_20 ///
@@ -52,7 +52,7 @@ drop all_visits
 ******************************************************************
 
 global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   pnc_util bcg_qual totaldel pent_qual   opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util 
 global mortality neo_mort_num sb_mort_num mat_mort_num 
 global all $volumes $mortality 
@@ -82,7 +82,7 @@ drop *report
 * Min and Max number of facilities reporting any data, for any given month	
 preserve
 	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   pnc_util bcg_qual totaldel pent_qual   opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util neo_mort_num ///
 			   sb_mort_num mat_mort_num
 			   
@@ -179,7 +179,7 @@ This brings completeness up "generally" above 90% for all variables. */
 	u "$user/$data/Data for analysis/tmpfp_perm_util.dta", clear
 	* All variables except the first 
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   pnc_util bcg_qual totaldel pent_qual   opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util ///
 			   neo_mort_num sb_mort_num mat_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
@@ -235,7 +235,7 @@ foreach x of global all {
 	u "$user/$data/Data for analysis/tmpfp_perm_util.dta", clear
 
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   pnc_util bcg_qual totaldel pent_qual   opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util ///
 			   neo_mort_num sb_mort_num mat_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
@@ -263,7 +263,7 @@ foreach x of global all {
 }
 * Reshape for analyses
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   pnc_util bcg_qual totaldel pent_qual   opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util ///
 			   neo_mort_num sb_mort_num mat_mort_num, i(org*) j(month) string	
 	
@@ -315,7 +315,7 @@ foreach x of global all {
 	u "$user/$data/Data for analysis/tmpfp_perm_util.dta", clear
 
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   pnc_util bcg_qual totaldel pent_qual   opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util ///
 			   neo_mort_num sb_mort_num mat_mort_num {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
@@ -343,7 +343,7 @@ foreach x of global all {
 }
 * Reshape for analyses
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
-			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   pnc_util bcg_qual totaldel pent_qual   opv3_qual pneum_qual ///
 			   diab_util hyper_util opd_util ipd_util road_util ///
 			   neo_mort_num sb_mort_num mat_mort_num, i(org*) j(month) string	
 	
