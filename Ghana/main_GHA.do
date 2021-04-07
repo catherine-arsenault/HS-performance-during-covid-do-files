@@ -17,8 +17,6 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 * Imports raw data and renames variables for January 2019 - Dec 2020
 * Overwrite previous data 
 do "$dofiles/cr_GHA_02.do"
-
-
 ********************************************************************************
 * Cleaning do files
 * Cleans data - no need since it's province level data
