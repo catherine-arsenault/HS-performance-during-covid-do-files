@@ -8,8 +8,7 @@ set more off
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom  
+				measles_qual opv3_qual pneum_qual rota_qual art_util 
 				
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num 	totalipd_mort_num 
 
@@ -19,8 +18,8 @@ global all $volumes $mortality
 global total fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util   ///
 				opd_util hivsupp_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				newborn_mort_num sb_mort_num mat_mort_num ///
 				er_mort_num totalipd_mort_num 
 				
 global ncd diab_util hyper_util diab_detec hyper_detec diab_qual_num hyper_qual_num				
@@ -55,8 +54,8 @@ preserve
 	local all fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				  newborn_mort_num sb_mort_num ///
 				mat_mort_num er_mort_num totalipd_mort_num 
 			   
 	reshape long `all', i(region zone org*) j(month, string)
@@ -186,7 +185,6 @@ reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util
 			  er_util road_util    art_util hivsupp_qual_num  ///
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
 			  tbnum_qual tbdenom_qual tbdetect_qual totalipd_mort_num diab_detec hyper_detec ///
 			 , i(region ) j(month) string
 
@@ -219,8 +217,8 @@ preserve
 	sam_util opd_util ipd_util er_util road_util    art_util ///
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 	newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort_num ///
-	diab_util hyper_util diab_qual_num hyper_qual_num kmc_qual_num kmc_qual_denom ///
-   tbnum_qual tbdenom_qual tbdetect_qual resus_qual_num resus_qual_denom diab_detec hyper_detec
+	diab_util hyper_util diab_qual_num hyper_qual_num  ///
+   tbnum_qual tbdenom_qual tbdetect_qual  diab_detec hyper_detec
   
 	foreach v of global varlist {
 		rename(`v')(`v'20)
