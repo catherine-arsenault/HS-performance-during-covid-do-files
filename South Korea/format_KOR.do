@@ -11,18 +11,17 @@ created in google data studio
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
 *****************************************************************/
-u "$user/$data/Data for analysis/Kor_Jan19-Aug20_WIDE.dta", replace	
+u "$user/$data/Data for analysis/Kor_Jan19-Sep20_WIDE.dta", replace	
 
-global volume sti_util anc_util del_util cs_util diarr_util pneum_util
+global volume sti_util anc_util cs_util diarr_util pneum_util totaldel
 global other diab_util hyper_util art_util mental_util opd_util er_util ipd_util kmc_qual
-global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num totaldel
+global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num 
 global all $volume $other $mortality 
 
-
 *********************************************************
-* Create national total
+* Create national totals
 *********************************************************
-	collapse (sum) sti_util1_19-totaldel8_20 , by(region)
+	collapse (sum) sti_util1_19 - ipd_mort_num9_20 , by(region)
 	encode region, gen(reg)
 	drop region
 	order reg
@@ -37,9 +36,9 @@ global all $volume $other $mortality
 	drop reg 
 	order region 
 	
-reshape long sti_util anc_util del_util cs_util diarr_util pneum_util diab_util ///
+reshape long sti_util anc_util totaldel cs_util diarr_util pneum_util diab_util ///
 		hyper_util art_util mental_util opd_util er_util ipd_util kmc_qual ///
-		newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num totaldel, i(region) j(month) string 
+		newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num, i(region) j(month) string 
 	
 * Month and year
 	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
@@ -82,7 +81,7 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Kor_Jan19-Aug20_fordashboard.csv", replace
+export delimited using "$user/$data/Kor_Jan19-Sep20_fordashboard.csv", replace
 
 		
 

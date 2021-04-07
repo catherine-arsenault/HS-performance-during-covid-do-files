@@ -6,10 +6,7 @@
 * Formating for google data studio dashboard
 /*********************************************************************
 This do file formats the dataset for the interactive dashboard 
-created in google data studio
-*********************************************************************
-	COUNTS THE NUMBER OF FACILITIES REMAINING IN THE FINAL DATASET
-
+created in google data studio*/
 **********************************************************************/
 use "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 
@@ -86,6 +83,7 @@ foreach var of global all {
 	putexcel H`i' = `r(mean)'
 }
 drop *_report *_sum *_mean
+
 
 /*****************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD

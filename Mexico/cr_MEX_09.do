@@ -53,7 +53,7 @@ rename Indic17_sui_oct20 mental_util10_20
 *Cervical cancer screening
 rename Indic21cacu_oct2020 cerv_util10_20 
 
-*Diabetic and hypertensive patients screening 
+*Diabetic and hypertensive patients with controlled condition
 rename ( Indic24_dmctrl_oct20 Indic25_htactrl_oct20) (diab_qual_num10_20 hyper_qual_num10_20 )
 
 *Newborn deaths - Sep2020
@@ -76,6 +76,55 @@ drop In37* In38*
 save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", replace
 
 ********************************************************************************
+* UPDATED VACCINE DATA FOR OCTOBER RECEIVED IN FEBRUARY
+********************************************************************************
+import spss using "$user/$data/Raw/Vaccine indicators_October_November_December_2020IMSS[1].sav" , clear
+
+replace Deleg= "D.F. Norte" if Deleg=="CDMX. Norte"
+replace Deleg = "D.F. Sur" if Deleg=="CDMX. Sur"
+
+*Penta vaccine 
+egen pent_qual10_20 =rowtotal (Indic26_penta_oct20 Indic26_pentaacel_oct20) , m
+egen pent_qual11_20 =rowtotal (Indic26_penta_nov20 Indic26_pentaacel_nov20) , m
+egen pent_qual12_20 =rowtotal (Indic26_penta_dic20 Indic26_pentaacel_dic20) , m
+drop Indic26_penta*
+
+* BCG 
+egen bcg_qual10_20 =rowtotal(Indic27_BCG_U_oct20 Indic27_BCG_P_oct20 ///
+							 Indic27_BCG_S_oct20 Indic27_BCG_T_oct20 ///
+							 Indic27_BCG_R_oct20 Indic27_BCG_A_oct20) , m
+							 
+egen bcg_qual11_20 =rowtotal(Indic27_BCG_U_nov20 Indic27_BCG_P_nov20 ///
+							 Indic27_BCG_S_nov20 Indic27_BCG_T_nov20 ///
+							 Indic27_BCG_R_nov20 Indic27_BCG_A_nov20 ), m
+							 
+egen bcg_qual12_20 =rowtotal(Indic27_BCG_U_dic20 Indic27_BCG_P_dic20 ///
+							 Indic27_BCG_S_dic20 Indic27_BCG_T_dic20 ///
+							 Indic27_BCG_R_dic20 Indic27_BCG_A_dic20 ), m
+drop Indic27_BCG*
+
+* MCV 
+egen measles_qual10_20 =rowtotal (Indic28_srp_oct20 Indic28_SR_oct20), m
+egen measles_qual11_20 =rowtotal (Indic28_srp_nov20 Indic28_SR_nov20), m
+egen measles_qual12_20 =rowtotal (Indic28_srp_dic20 Indic28_SR_dic20), m
+drop Indic28_*
+
+* OPV3 #
+rename (Indic29_SABIN_T_oct20 Indic29_SABIN_T_nov20 Indic29_SABIN_T_dic20) ///
+       (opv3_qual10_20 opv3_qual11_20 opv3_qual12_20)
+drop Indic29_SABIN* 
+
+* Pneumococcal #
+rename (Indic30_ANC_oct20 Indic30_ANC_nov20 Indic30_ANC_dic20) (pneum_qual10_20 ///
+        pneum_qual11_20 pneum_qual12_20)
+
+* Rotavirus #
+rename (Indic31_RV_oct20 Indic31_RV_nov20 Indic31_RV_dic20) (rota_qual10_20 ///
+        rota_qual11_20 rota_qual12_20)
+
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta"
+drop _merge 
+********************************************************************************
 * MERGE TO DATA FROM PRIOR ROUNDS (Jan19-Oct20)
 ********************************************************************************
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Oct20c_WIDE.dta"
@@ -92,33 +141,6 @@ save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", replace
 
 
 
-
-
-
-/* Will add these codes once the data are available:
-
-Penta vaccine 
-egen pent_qual9_20 =rowtotal (Indic26_penta*sept20) , m
-drop Indic26_penta*
-
-* BCG 
-egen bcg_qual9_20 =rowtotal(Indic27_BCG_U_sept20 Indic27_BCG_P_sept20 Indic27_BCG_S_sept20 Indic27_BCG_T_sept20 Indic27_BCG_R_sept20 Indic27_BCG_A_sept20) , m
-drop Indic27_BCG*
-
-* MCV 
-egen measles_qual9_20 =rowtotal ( Indic28_srp_sept20 Indic28_SR_sept20) , m
-drop Indic28*
-
-* OPV3 #
-rename Indic29_SABIN_T_sept20 opv3_qual9_20
-drop Indic29_SABIN* 
-
-* Pneumococcal #
-rename Indic30_ANC_sept20 pneum_qual9_20
-
-* Rotavirus #
-rename Indic31_RV_sept20 rota_qual9_20
-*/
 
 
 

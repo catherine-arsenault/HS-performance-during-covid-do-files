@@ -61,6 +61,7 @@ global all $volumes $mortality
 ASSESSES DATASET BEFORE CLEANING (NUMBER OF UNITS REPORTING, AND
 SUM AND AVERAGE SERVICES PER UNIT)
 ****************************************************************/
+
 * Number of facility reporting any data, for each indicator
 foreach var of global all {
 egen `var'_report = rownonmiss(`var'*) //counts the number of non missing cells 
@@ -133,6 +134,7 @@ foreach var of global all {
 	putexcel H`i' = `r(mean)'
 }
 drop *_report *_sum *_mean
+
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 IF FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)

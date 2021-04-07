@@ -1,5 +1,5 @@
 * HS performance during Covid
-*Jan 8, 2021
+* Jan 8, 2021
 * Mexico - IMSS, new cancer indicator
 
 clear all

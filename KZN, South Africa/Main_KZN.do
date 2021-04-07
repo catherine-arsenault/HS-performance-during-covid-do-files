@@ -17,8 +17,10 @@ do "$dofiles/cr_KZN_01.do"
 * Cleans the data (see cleaning protocol in shared folder)
 do "$dofiles/clean_KZN.do"
 
-* Analysis: calculates changes between July-Sep 2020 and July-Sep 2019
-do "$dofiles/an_KZN_01.do"
 
 * Formats data for dashboard
 do "$dofiles/format_KZN.do"
+
+
+* Analysis: calculates changes between July-Sep 2020 and July-Sep 2019
+do "$dofiles/an_KZN_01.do"

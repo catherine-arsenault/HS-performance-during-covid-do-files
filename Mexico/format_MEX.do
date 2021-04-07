@@ -4,7 +4,7 @@
 * Updated Jan 8, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
-use "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", clear
+use "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", clear
 
 *******************************************************************************
 * RESHAPE TO LONG FORM
@@ -90,7 +90,7 @@ order Delegation year mo
 sort  year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_foranalysis.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", replace
 ********************************************************************************
 * CREATE NATIONAL TOTALS
 ********************************************************************************
@@ -107,7 +107,7 @@ death_negative hospit_negative death_pending hospit_pending {
 	drop `v'tot
 }
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_foranalysis.dta", replace 
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", replace 
 
 
 ********************************************************************************
@@ -138,7 +138,7 @@ drop year cerv_denom2020 breast_denom2020
 merge m:m  Delegation month using "$user/$data/temp.dta"
 drop  _merge 
 
-export delimited using "$user/$data/IMSS_Jan19-Oct20_fordashboard.csv", replace
+export delimited using "$user/$data/IMSS_Jan19-Dec20_fordashboard.csv", replace
 
 rm "$user/$data/temp.dta"
 

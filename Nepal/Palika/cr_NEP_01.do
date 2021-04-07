@@ -622,9 +622,27 @@ drop rota*
 	
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec19_WIDE.dta", replace
 	
+	
+	
 ********************************************************************************
 *END	
 ********************************************************************************	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*Old codes
 *Family planning 2019 - We downloaded a new set of family planning into 3 categories 
 	import delimited "$user/$data/Raw data/Palika/Nepal_2019_Jan-Dec_palika_fp_util.csv", clear
