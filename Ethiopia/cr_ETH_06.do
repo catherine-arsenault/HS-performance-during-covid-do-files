@@ -270,7 +270,7 @@ save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta", replace
 
 ********************************************************************************	
 *Imported raw data from January 2019 to Dec 2020 
-*Remaining data extracted on March 26 (n=3943)
+* Missing indicators sent March 26 (n=3943)
 import delimited "$user/$data/Raw/2020/Rcvd 26MAR2021/Ethiopia_Health system performance during Covid_data extraction_2020_January to December_26_03 _2021_GC/Ethiopia_2020_January to December_ by Woreda Level_26_03_2021.csv", clear
 	
 * Stillbirths # numerator

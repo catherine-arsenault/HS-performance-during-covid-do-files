@@ -22,6 +22,7 @@ global total fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num ///
 				er_mort_num totalipd_mort_num 
+				
 global ncd diab_util hyper_util diab_detec hyper_detec diab_qual_num hyper_qual_num				
 
 * ALL INDICATORS
@@ -37,7 +38,7 @@ foreach var of global all {
 }
 	recode *_report (0=0) (1/24=1) // 0 never any value, 1 some values
 
-putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(After cleaning)  modify
+putexcel set "$user/$data/Analyses/Codebook for Ethiopia Internal.xlsx", sheet(After cleaning)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Number reporting any data"	
 local i= 2
@@ -61,7 +62,7 @@ preserve
 	reshape long `all', i(region zone org*) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(After cleaning) modify  
+	putexcel set "$user/$data/Analyses/Codebook for Ethiopia Internal.xlsx", sheet(After cleaning) modify  
 	putexcel C2 = "Variable"
 	putexcel D2 = "Min units reporting any month"	
 	putexcel E2 = "Max units reporting any month"	
@@ -108,7 +109,7 @@ foreach var of global ncd {
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
 
-putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(After cleaning)  modify
+putexcel set "$user/$data/Analyses/Codebook for Ethiopia Internal.xlsx", sheet(After cleaning)  modify
 putexcel F2 = "Variable"
 putexcel G2 = "Sum of services or deaths"	
 putexcel H2 = "Average per unit/facility"
@@ -124,11 +125,11 @@ local i= 2
 drop *_report *_sum *_mean
 
 /**************************************************************************
- MERGE WITH TB QUARTERLY INDICATORS
+ MERGE WITH TB QUARTERLY INDICATORS - ONLY UNTIL JUNE FOR NOW
 ***************************************************************************/
 merge 1:1  region zone org*  using "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta"
 drop _merge
-*863 out of 1906 were not merge 
+*931 were not merged 
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_CCA_DB_Complete.dta", replace 
 
 /****************************************************************
