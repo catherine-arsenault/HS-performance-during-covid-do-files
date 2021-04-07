@@ -272,7 +272,7 @@ set more off
 	save "$user/$data/Data for analysis/Nepal_palika_Nov20-Dec20_WIDE.dta", replace	
 
 ********************************************************************************
-* Merge with Jan19-Nov20 data
+* Merge with Jan19-Nov20 data, remove poorly reported indicators
 ********************************************************************************	
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
 	           using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta"

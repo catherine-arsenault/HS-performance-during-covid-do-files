@@ -303,6 +303,12 @@ drop if dup==1
 merge 1:1 org* using "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta"
 drop _merge 
 drop dup 
+
+********************************************************************************	
+*Remove poorly reported indicators
+********************************************************************************	
+drop cerv_qual* kmc_qual* resus_qual* 
+
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta", replace	
 *N=3935
 	
