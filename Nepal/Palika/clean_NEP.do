@@ -248,7 +248,7 @@ foreach x of global all {
 			 }
 			 
 /****************************************************************
-         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
+         IDENTIFY POSITIVE OUTLIERS BASED ON 2 YR TREND
 	               AND SET THEM TO MISSING 
 *****************************************************************/
 
