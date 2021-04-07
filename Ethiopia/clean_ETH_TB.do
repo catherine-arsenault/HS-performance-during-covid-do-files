@@ -42,7 +42,7 @@ foreach var of local all {
 }
 recode *_report (0=0) (1/6=1) 
 
-putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Before cleaning)  modify
+putexcel set "$user/$data/Analyses/Codebook for Ethiopia Internal.xlsx", sheet(Before cleaning)  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Reported any data"	
 local i= 44
@@ -54,6 +54,36 @@ foreach var of local all {
 }
 drop *report
 
+* Sum and average volumes 
+foreach var of local all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	* Total facilities ever reporting each indicator
+	egen `var'_total_report = total(`var'_report) 
+	* Sum/volume of services or deaths per Woreda over 24 months
+	egen `var'_sum = rowtotal(`var'1-`var'6), m
+	* Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum)
+	* Average volume per Woreda
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Analyses/Codebook for Ethiopia Internal.xlsx", sheet(Before cleaning)  modify
+putexcel F2 = "Variable"
+putexcel G2 = "Sum of services or deaths"	
+putexcel H2 = "Average per unit/facility"
+local i= 44
+	foreach var of local all {	
+		local i = `i'+1
+		putexcel F`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel G`i' = `r(mean)'
+		qui sum `var'_total_mean
+		putexcel H`i' = `r(mean)'
+	}
+drop *_report *_sum *_mean
+
+
 /*******************************************************************
 CURE: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS THE TB REGISTERED COHORT THAT MONTH
@@ -63,6 +93,26 @@ forval i = 1/6 {
 	recode tbnum_qual`i' (.=0) if tbdenom_qual`i'!=. 
 }
 
+
+/***************************************************************
+                    COMPLETE CASE ANALYSIS 
+                         FOR DASHBOARD 
+****************************************************************/
+	foreach x in tbdetect_qual tbdenom_qual tbnum_qual {
+			  preserve
+					keep region zone org* `x'* 
+					egen total`x'= rownonmiss(`x'*)
+					keep if total`x'>4 
+					/* keep if at least 5 out of 6 quarters are reported  */
+					drop total`x'
+					save "$user/$data/Data for analysis/tmp`x'.dta", replace
+				restore
+				}
+	use "$user/$data/Data for analysis/tmptbdetect_qual.dta", clear
+		merge 1:1 region zone org* using "$user/$data/Data for analysis/tmptbnum_qual.dta", force 
+		drop _merge
+		merge 1:1 region zone org* using "$user/$data/Data for analysis/tmptbdenom_qual.dta", force 
+		drop _merge		
 /****************************************************************
          IDENTIFY OUTLIERS AND SET THEM TO MISSING 
 ***************************************************************** 
@@ -81,37 +131,16 @@ foreach x in tbdetect_qual tbdenom_qual tbnum_qual {
 					replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
 					replace `x'`v'=. if flagout_`x'`v'==1 // replaces value to missing if flag is = 1
 			}
-	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
-}
-
-/***************************************************************
-                    COMPLETE CASE ANALYSIS 
-                         FOR DASHBOARD 
-****************************************************************/
-
-	foreach x in tbdetect_qual tbdenom_qual tbnum_qual {
-			  preserve
-					keep region zone org* `x'* 
-					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>4 & `x'6!=.
-					/* keep if at least 5 out of 6 quarters are reported & Q2 2020 is reported */
-					drop total`x'
 					rename `x'1 `x'1_19
 					rename `x'2 `x'4_19
 					rename `x'3 `x'7_19
 					rename `x'4 `x'10_19
 					rename `x'5 `x'1_20
 					rename `x'6 `x'4_20
-					save "$user/$data/Data for analysis/tmp`x'.dta", replace
-				restore
-				}
-	
-		use "$user/$data/Data for analysis/tmptbdetect_qual.dta", clear
-		merge 1:1 region zone org* using "$user/$data/Data for analysis/tmptbnum_qual.dta", force 
-		drop _merge
-		merge 1:1 region zone org* using "$user/$data/Data for analysis/tmptbdenom_qual.dta", force 
-		drop _merge		
-		save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta", replace
+	drop rowmean`x' rowsd`x' pos_out`x'  flagout_`x'*
+}	
+		
+	save "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta", replace
 		
 	
 	
