@@ -6,7 +6,7 @@ clear all
 set more off
 
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom  
@@ -17,7 +17,7 @@ global all $volumes $mortality
 
 *Separate globals for diab and hyper due to missing data from Jan19-Sep19 
 global total fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual ///
+			  totaldel ipd_util er_util road_util   ///
 				opd_util hivsupp_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num ///
@@ -53,7 +53,7 @@ drop *report
 * Min and Max number of palikas reporting any data, for any given month	
 preserve
 	local all fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
 				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
 				resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
@@ -183,7 +183,7 @@ append using "$user/$data/Data for analysis/tmpregtype.dta"
 *****************************************************************/
 reshape long  diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util anc_util ///
 			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
-			  er_util road_util  cerv_qual art_util hivsupp_qual_num  ///
+			  er_util road_util    art_util hivsupp_qual_num  ///
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
 			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
@@ -216,7 +216,7 @@ order region year month
 preserve
 	keep if year == 2020
 	global varlist fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
-	sam_util opd_util ipd_util er_util road_util  cerv_qual art_util ///
+	sam_util opd_util ipd_util er_util road_util    art_util ///
 	hivsupp_qual_num vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
 	newborn_mort_num sb_mort_num mat_mort_num er_mort_num totaldel totalipd_mort_num ///
 	diab_util hyper_util diab_qual_num hyper_qual_num kmc_qual_num kmc_qual_denom ///
