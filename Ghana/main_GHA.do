@@ -19,8 +19,8 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 do "$dofiles/cr_GHA_02.do"
 ********************************************************************************
 * Cleaning do files
-* Cleans data - no need since it's province level data
-*do "$dofiles/clean_GHA.do"
+* Remove outliers at regional level
+do "$dofiles/clean_GHA.do"
 
 ********************************************************************************
 * Format do files
