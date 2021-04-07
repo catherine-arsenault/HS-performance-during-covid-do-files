@@ -32,10 +32,9 @@ drop all_visits
 * Retains 2351 woreda/facilities with some data from Jan19-Dec20
 ********************************************************************
 global volumes fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom  
+				measles_qual opv3_qual pneum_qual rota_qual art_util 
 				
 global mortality newborn_mort_num sb_mort_num mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 
@@ -67,10 +66,9 @@ drop *report
 * Min and Max number of palikas reporting any data, for any given month	
 preserve
 	local all fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+			  totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util  newborn_mort_num sb_mort_num ///
 				mat_mort_num er_mort_num icu_mort_num ipd_mort_num 
 			   
 	reshape long `all', i(org*) j(month, string)
@@ -154,7 +152,7 @@ EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
 *export excel org* *mort_num* using "$user/$data/Data cleaning/Ethio_Jan19-Dec20_fordatacleaning2.xlsx", firstrow(variable) replace
 
-****************************************************************
+/****************************************************************
 * 			OTHER DATA QUALITY EDITS
 ****************************************************************
 *Newborn resuscitation and KMC intitatied
@@ -168,6 +166,7 @@ forval i=1/12 {
 	replace kmc_qual_num`i'_20 = . if kmc_qual_num`i'_20 > kmc_qual_denom`i'_20 & kmc_qual_num`i'_20 !=.
 	replace resus_qual_num`i'_20 = . if resus_qual_num`i'_20 > resus_qual_denom`i'_20 & resus_qual_num`i'_20 !=.
 }
+*/
 
 *Diabetes and hypertension were only collected fully starting October 2019
 *Drop variables for utilisation and quality from Jan to Sep 2019
@@ -212,9 +211,8 @@ collected until October 2019. IPD and ICU deaths were also merged into 1
 */
 	
 	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num ///
-			  kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util newborn_mort_num ///
 			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			  preserve
 					keep  org* `x'* 
@@ -239,10 +237,9 @@ collected until October 2019. IPD and ICU deaths were also merged into 1
 		* diabetes and hypertension are saved under diab_hyper
 		* =33 indicators
 		foreach x in sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-					totaldel ipd_util er_util road_util  cerv_qual diab_hyper ///
+					totaldel ipd_util er_util road_util    diab_hyper ///
 					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual measles_qual ///
-					opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
+					opv3_qual pneum_qual rota_qual art_util  newborn_mort_num sb_mort_num ///
 					mat_mort_num er_mort_num totalipd_mort_num {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
@@ -279,10 +276,9 @@ collected until October 2019
 */
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			   newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
@@ -307,10 +303,9 @@ we are comparing Quarters 2 2020 vs. 2019 */
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			  preserve
 					keep  org* `x'* 
 					keep if `x'4_19!=. & `x'5_19!=. & `x'6_19!=. & ///
@@ -325,9 +320,9 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 	
 	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
 	foreach x in  sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				 newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
 				totalipd_mort_num  {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 				drop _merge
@@ -337,10 +332,9 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 *****************************************************************/ 
 			  
 foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			  newborn_mort_num  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
@@ -356,10 +350,9 @@ foreach x in fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneu
 * Reshape for analyses
 reshape long  fp_util sti_util anc_util ///
 			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
-			  er_util road_util  cerv_qual art_util hivsupp_qual_num  ///
+			  er_util road_util    art_util hivsupp_qual_num  ///
 			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
-			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel  /// 
 			  totalipd_mort_num , i( org*) j(month) string	
 	
 * Month and year
@@ -418,9 +411,9 @@ we are comparing the first and second quarters of 2020 */
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
 				totalipd_mort_num diab_util diab_detec diab_qual_num hyper_util hyper_detec hyper_qual_num {
 			  preserve
 					keep  org* `x'* 
@@ -435,10 +428,10 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
 		* all variables except the first (fp_util) 
 		foreach x in  sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-					totaldel ipd_util er_util road_util  cerv_qual ///
+					totaldel ipd_util er_util road_util    ///
 					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-					measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
+					measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+					 newborn_mort_num sb_mort_num ///
 					diab_util diab_detec diab_qual_num hyper_util hyper_detec hyper_qual_num ///
 					mat_mort_num er_mort_num totalipd_mort_num  {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
@@ -451,10 +444,9 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 *****************************************************************/ 
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			   newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
@@ -469,11 +461,10 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 		
 *Reshape to long		
 reshape long fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-		totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+		totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
-				mat_mort_num er_mort_num totalipd_mort_num, i( org*) j(month) string	
+				measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num, i( org*) j(month) string	
 * Region names	
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
 replace region ="Addis Ababa" if region== "Addis Ababa Regional Health Bureau"
@@ -529,9 +520,9 @@ we are comparing the first and second quarters of 2020 */
 u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
 	foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
-			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
+			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				 newborn_mort_num sb_mort_num mat_mort_num er_mort_num ///
 				totalipd_mort_num diab_util diab_detec diab_qual_num hyper_util hyper_detec hyper_qual_num {
 			  preserve
 					keep  org* `x'* 
@@ -546,10 +537,10 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 	u "$user/$data/Data for analysis/tmpfp_util.dta", clear
 		* all variables except the first (fp_util) 
 		foreach x in  sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-					totaldel ipd_util er_util road_util  cerv_qual ///
+					totaldel ipd_util er_util road_util    ///
 					opd_util hivsupp_qual_num  vacc_qual pent_qual bcg_qual ///
-					measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-					resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
+					measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+					 newborn_mort_num sb_mort_num ///
 					diab_util diab_detec diab_qual_num hyper_util hyper_detec hyper_qual_num ///
 					mat_mort_num er_mort_num totalipd_mort_num  {
 			 	merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
@@ -562,10 +553,9 @@ u "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 *****************************************************************/ 
 
 foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-			  totaldel ipd_util er_util road_util cerv_qual opd_util hivsupp_qual_num vacc_qual ///
+			  totaldel ipd_util er_util road_util   opd_util hivsupp_qual_num vacc_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			  kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom newborn_mort_num ///
-			  sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
+			   newborn_mort_num sb_mort_num mat_mort_num er_mort_num totalipd_mort_num {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
@@ -580,10 +570,10 @@ foreach x in  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 		
 *Reshape to long		
 reshape long fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-		totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec cerv_qual ///
+		totaldel ipd_util er_util road_util diab_util hyper_util diab_detec hyper_detec   ///
 				opd_util hivsupp_qual_num diab_qual_num hyper_qual_num vacc_qual pent_qual bcg_qual ///
-				measles_qual opv3_qual pneum_qual rota_qual art_util kmc_qual_num kmc_qual_denom ///
-				resus_qual_num resus_qual_denom  newborn_mort_num sb_mort_num ///
+				measles_qual opv3_qual pneum_qual rota_qual art_util  ///
+				  newborn_mort_num sb_mort_num ///
 				mat_mort_num er_mort_num totalipd_mort_num, i( org*) j(month) string	
 * Region names	
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
@@ -653,15 +643,15 @@ rename mo month
 	lab var er_util "Number of emergency room visits"
 	lab var ipd_util "Number of inpatient admissions total"
 	lab var road_util "Number of road traffic injuries"
-	lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
+	* lab var cerv_qual    "# women 30-49 screened with VIA for cervical cancer"
 	*lab var diab_qual_num "Number of diabetic patients enrolled to care"
 	*lab var hyper_qual_num "Number of hypertensive patients enrolled to care"
 	lab var totaldel "Total number of births attended by skilled health personnel"
 	lab var hivsupp_qual_num "Nb of adult and pediatric patients with viral load <1,000 copies/ml"
-	lab var kmc_qual_num "Nb of newborns weighting <2000g and/or premature newborns for which KMC initiated" 
-	lab var kmc_qual_denom "Total number of newborns weighting <2000gm and/or premature"
-	lab var resus_qual_num "Total number of neonates resusciated and survived"
-	lab var resus_qual_denom "Total number of neonates resuscitated"
+	*lab var kmc_qual_num "Nb of newborns weighting <2000g and/or premature newborns for which KMC initiated" 
+	*lab var kmc_qual_denom "Total number of newborns weighting <2000gm and/or premature"
+	*lab var resus_qual_num "Total number of neonates resusciated and survived"
+	*lab var resus_qual_denom "Total number of neonates resuscitated"
 * Institutional mortality 
 	lab var newborn_mort_num "Institutional newborn deaths"
 	lab var sb_mort_num "Institutional stillbirths per 1000 "
