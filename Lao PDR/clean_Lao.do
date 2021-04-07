@@ -170,8 +170,8 @@ This brings completeness up "generally" above 90% for all variables. */
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=18 
-					/* keep if at least 18 of 24 months are reported */
+					keep if total`x'>=15 
+					/* keep if at least 15 of 24 months are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
