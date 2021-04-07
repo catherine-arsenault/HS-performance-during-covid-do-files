@@ -344,20 +344,16 @@ set more off
 	egen total = rowtotal (mat_mort_num1_20-totaldel12_20), m
 	drop if total==. 
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
-	
-
-	merge 1:1 org* using "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta"
-	
+		
 ********************************************************************************************
-* Merge with Older data
+* Merge with 2019 data
 
-import excel using "$user/$data/Analyses/org names link.xlsx", firstrow clear
+import excel using "$user/$data/Analyses/name match.xlsx", firstrow clear
 drop I J 
 
-*error 
+* Merge to 2020 data (81 matched by hand)
 merge 1:1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname using "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta" 
-
-
+drop _merge 
 replace orgunitlevel2=orgunitlevel2_old if orgunitlevel2_old !=""
 replace orgunitlevel3=orgunitlevel3_old if orgunitlevel3_old !=""
 replace orgunitlevel4=orgunitlevel4_old if orgunitlevel4_old !=""
@@ -365,11 +361,11 @@ replace organisationunitname=organisationunitname_old if organisationunitname_ol
 
 drop *_old 
 
-
-
-
+* Merge to 2019 data with the old names
 merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta"
+drop _merge 
 
+save "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE.dta" , replace 
 
 
 
