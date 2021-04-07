@@ -7,9 +7,82 @@
 /*********************************************************************
 This do file formats the dataset for the interactive dashboard 
 created in google data studio*/
+**********************************************************************/
+use "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 
+* Number of facility reporting any data, for each indicator 
+foreach var of global all {
+egen `var'_report = rownonmiss(`var'*) //counts the number of non missing cells 
+}
+recode *_report (0=0) (1/24=1) //0 never any value, 1 some values
 
-*[ MK enter here code similar to cleaning do file (except change codebook sheet to "After cleaning")]
+putexcel set "$user/$data/Analyses/Codebook for Lao PDR Internal.xlsx", sheet(After cleaning, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Number reporting any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+* Min and Max number of facility reporting any data, for any given month	
+preserve
+	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
+			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   diab_util hyper_util opd_util ipd_util road_util neo_mort_num ///
+			   sb_mort_num mat_mort_num
+			   
+	reshape long `all', i(org*) j(month, string)
+	recode `all' (.=0) (0/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Analyses/Codebook for Lao PDR Internal.xlsx", sheet(After cleaning)  modify
+	putexcel C2 = "Variable"
+	putexcel D2 = "Min units reporting any month"	
+	putexcel E2 = "Max units reporting any month"	
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel C`i' = "`var'"
+	qui sum `var'
+	putexcel D`i' = `r(min)'
+	putexcel E`i' = `r(max)'
+}
+restore
+
+* Sum and average volumes 
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	* Total facilities ever reporting each indicator	
+	egen `var'_total_report = total(`var'_report)
+	* Sum/volume of services or deaths per facility over 24 months
+	egen `var'_sum = rowtotal(`var'1_19 `var'2_19 `var'3_19 `var'4_19 `var'5_19 ///
+	 `var'6_19 `var'7_19 `var'8_19 `var'9_19 `var'10_19 `var'11_19 `var'12_19 ///
+	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
+	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ) , m 
+	 * Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum) 
+	* Average volume per facility 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Analyses/Codebook for Lao PDR Internal.xlsx", sheet(After cleaning)  modify
+putexcel F2 = "Variable"
+putexcel G2 = "Sum of services or deaths"	
+putexcel H2 = "Average per unit/facility"
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel F`i' = "`var'"
+	qui sum `var'_total_sum
+	putexcel G`i' = `r(mean)'
+	qui sum `var'_total_mean
+	putexcel H`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
 
 
 /*****************************************************************
@@ -18,7 +91,7 @@ created in google data studio*/
 *****************************************************************/
 	rename orgunitlevel2 province
 	order province  org* 
-	collapse (sum) fp_perm_util1_19-mat_mort_num10_20 , by(province)
+	collapse (sum) fp_perm_util1_19-mat_mort_num12_20 , by(province)
 	encode province, gen(prv)
 	drop province
 	order prv
@@ -80,7 +153,7 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Lao_Jan19-Oct20_fordashboard.csv", replace
+export delimited using "$user/$data/Lao_Jan19-Dec20_fordashboard.csv", replace
 
 
 
