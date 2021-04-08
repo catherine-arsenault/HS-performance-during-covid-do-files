@@ -34,7 +34,7 @@ rename (numberofantenatalcarevisitsjanua - v46) ///
 	 anc_util4_20	anc_util5_20	anc_util6_20 anc_util7_20   anc_util8_20 ///
 	 anc_util9_20 )
 
-* Facility deliveries - includes C-sections 
+* Total facility deliveries - includes C-sections 
 rename (numberoffacilitydeliveriesjanuar - v69) ///
 	(totaldel1_19	totaldel2_19	totaldel3_19	totaldel4_19	totaldel5_19 ///
 	totaldel6_19	totaldel7_19	totaldel8_19	totaldel9_19	totaldel10_19 ///
@@ -51,6 +51,30 @@ rename (numberofcaesareansectionsjanuary - v92) ///
 		cs_util4_20		cs_util5_20		cs_util6_20 cs_util7_20     cs_util8_20 ///
 		cs_util9_20 )	
 
+* Facility deliveries = total facility deliveries - c-sections
+		gen fp_util1_19 = (totaldel1_19 - cs_util1_19)
+		gen fp_util2_19 = (totaldel2_19 - cs_util2_19)
+		gen fp_util3_19 = (totaldel3_19 - cs_util3_19)
+		gen fp_util4_19 = (totaldel4_19 - cs_util4_19)
+		gen fp_util5_19 = (totaldel5_19 - cs_util5_19)
+		gen fp_util6_19 = (totaldel6_19 - cs_util6_19)
+		gen fp_util7_19 = (totaldel7_19 - cs_util7_19)
+		gen fp_util8_19 = (totaldel8_19 - cs_util8_19)
+		gen fp_util9_19 = (totaldel9_19 - cs_util9_19)
+		gen fp_util10_19 = (totaldel10_19 - cs_util10_19)
+		gen fp_util11_19 = (totaldel11_19 - cs_util11_19)
+		gen fp_util12_19 = (totaldel12_19 - cs_util12_19)
+		gen fp_util1_20 = (totaldel1_20 - cs_util1_20)
+		gen fp_util2_20 = (totaldel2_20 - cs_util2_20)
+		gen fp_util3_20 = (totaldel3_20 - cs_util3_20)
+		gen fp_util4_20 = (totaldel4_20 - cs_util4_20)
+		gen fp_util5_20 = (totaldel5_20 - cs_util5_20)
+		gen fp_util6_20 = (totaldel6_20 - cs_util6_20)
+		gen fp_util7_20 = (totaldel7_20 - cs_util7_20)
+		gen fp_util8_20 = (totaldel8_20 - cs_util8_20)
+		gen fp_util9_20 = (totaldel9_20 - cs_util9_20)
+	
+		
 * Sick child care diarrhea
 rename (numberofconsultationsforsickchil - v115) ///
 		(diarr_util1_19	diarr_util2_19	diarr_util3_19	diarr_util4_19	///
