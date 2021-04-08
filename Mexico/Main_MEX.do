@@ -50,8 +50,12 @@ do "$dofiles/cr_MEX_12.do"
 * Recodes breast cancer 
 do "$dofiles/cr_MEX_13.do"
 
-* Final update december 2020 data
+* Update december 2020 data
 do "$dofiles/cr_MEX_14.do"
+
+* Final data for January-Dec2020 ART, this completes the 24-month data 
+do "$dofiles/cr_MEX_15.do"
+
 
 ********************************************************************************
 * Format do files
