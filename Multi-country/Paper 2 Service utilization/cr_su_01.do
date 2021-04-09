@@ -11,8 +11,7 @@ use "$user/$ETHdata/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_DB.dta", cle
 reshape long   opd_util er_util road_util ipd_util fp_util sti_util anc_util ///
               del_util cs_util pnc_util diarr_util pneum_util sam_util vacc_qual ///
 			  bcg_qual pent_qual measles_qual opv3_qual pneum_qual rota_qual ///
-			   art_util hiv_supp_qual_num diab_util hyper_util ///
-			  diab_detec hyper_detec diab_qual_num hyper_qual_num ///
+			   art_util hivsupp_qual_num  ///
 			 , i(region zone org* ) j(month) string
 drop *_19 *_20
 * Month and year
@@ -40,7 +39,7 @@ order region year month
 collapse (count) opd_util er_util road_util ipd_util fp_util sti_util anc_util ///
               del_util cs_util pnc_util diarr_util pneum_util sam_util vacc_qual ///
 			  bcg_qual pent_qual measles_qual opv3_qual pneum_qual rota_qual ///
-			   art_util hiv_supp_qual_num diab_util hyper_util ///
+			   art_util hivsupp_qual_num diab_util hyper_util ///
 			  diab_detec hyper_detec diab_qual_num hyper_qual_num ///
 			  , by (year month)
 			  
