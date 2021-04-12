@@ -136,7 +136,18 @@ forval i = 1/24 {
 	replace ipd_mort_num`i' = 0     if ipd_mort_num`i' ==. & ipd_util`i' !=. 
 	replace icu_mort_num`i'=0		if icu_mort_num`i'==. & icu_util`i' !=. 	
 }
+
+/****************************************************************
+C-SECTIONS: REPLACE ALL MISSINGNESS TO 0 IF FACILITY NEVER DID 
+ANY C-SECTIONS
+****************************************************************/
+
+egen cs_util = rowtotal(cs_util*)
+recode cs_util1-cs_util24 (0=.) if cs_util==0
+drop cs_util
+
 save "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
+
 /****************************************************************
 EXPORT RECODED DATA WITH IMPUTED ZEROS FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
