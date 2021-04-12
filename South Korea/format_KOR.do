@@ -13,7 +13,7 @@ created in google data studio
 *****************************************************************/
 u "$user/$data/Data for analysis/Kor_Jan19-Sep20_WIDE.dta", replace	
 
-global volume sti_util anc_util cs_util diarr_util pneum_util fp_util totaldel
+global volume sti_util anc_util cs_util diarr_util pneum_util del_util totaldel
 global other diab_util hyper_util art_util mental_util opd_util er_util ipd_util kmc_qual
 global mortality newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num 
 global all $volume $other $mortality 
@@ -21,7 +21,7 @@ global all $volume $other $mortality
 *********************************************************
 * Create national totals
 *********************************************************
-	collapse (sum) sti_util1_19 - fp_util9_20 , by(region)
+	collapse (sum) sti_util1_19 - del_util9_20 , by(region)
 	encode region, gen(reg)
 	drop region
 	order reg
@@ -38,7 +38,7 @@ global all $volume $other $mortality
 	
 reshape long sti_util anc_util totaldel cs_util diarr_util pneum_util diab_util ///
 		hyper_util art_util mental_util opd_util er_util ipd_util kmc_qual ///
-		newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num fp_util, i(region) j(month) string 
+		newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num del_util, i(region) j(month) string 
 	
 * Month and year
 	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
