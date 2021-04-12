@@ -54,18 +54,47 @@ restore
 
 
 *TIME VARYING POLICY CHANGE
+* Cluster SEs at the palika level because of serial correlation: you have multiple months of observation for each palika
+
+*DID estimates with variable policy changes with just covid case 
+xtreg fp_sa_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+
+*DID estimates with variable policy changes with covid case and covid death 
+xtreg fp_sa_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+
+*DID estimates with variable policy changes without covid case and covid death 
+xtreg fp_sa_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+
+*Sensitivity analyses (will add here)
+preserve
+keep if inlist(orgunitlevel2, "5 Province 5", "6 Karnali Province", "7 Sudurpashchim Province")
+xtreg fp_sa_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+restore
+
+
+
+/* Old code 
 
 *DID estimates with variable policy changes with covid case and covid death 
 quietly reg fp_sa_util i.palikaid i.month eased_ covid_case covid_death_, vce(cluster palikaid)
 margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
-
-* Cluster SEs at the palika level because of serial correlation: you have multiple months of observation for each palika
-* Same results as regression above 
-
-xtreg fp_sa_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
-
-
 
 quietly reg anc_util i.palikaid i.month eased_ covid_case covid_death_, r
 margins, at(eased_= (0 1)) post
@@ -103,7 +132,6 @@ lincom (_b[2._at]-_b[1._at])
 quietly reg pnc_util i.palikaid i.month eased_ covid_case, r
 margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
-
 
 *DID estimates with variable policy changes (without covid case and covid death)
 quietly reg fp_sa_util i.palikaid i.month eased_, r
@@ -242,18 +270,9 @@ lincom (_b[2._at]-_b[1._at])
 
 *can't do with Covid deaths, I think because first Covid death is in May 
 
-*Sensitivity analyses
-preserve
-keep if inlist(orgunitlevel2, "5 Province 5", "6 Karnali Province", "7 Sudurpashchim Province")
 
 
-
-
-restore
-
-
-
-/* Old code 
+/* Very Old code 
 * Probably won't use this 
 * DID estimates fixed policy change - 
 reg fp_sa_util post eased_8_20  did_eased_8_20 , r
