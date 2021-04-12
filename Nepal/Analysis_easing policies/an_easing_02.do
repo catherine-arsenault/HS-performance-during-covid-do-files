@@ -17,11 +17,82 @@ tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 1 , stat(N
 tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 2 , stat(N mean) col(stat)
 tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 3 , stat(N mean) col(stat)
 
+*Sebastian's suggested preliminary analysis (fixed, post period as just August)
+preserve 
+* Only keep 3 months before and 1 month after, omitting July
+keep if inlist(month, 4, 5, 6, 8)
+
+* Create a variable = 1 for those areas that eased by August
+* It's = 1 also for the pre-period: it's a defining and fixed characteristic of the places that at some time eased restrictions.
+	gen tmp = 1 if eased_==1
+	recode tmp (.=0)
+	bysort palikaid:egen evereased = max(tmp)
+
+xtreg fp_sa_util month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg anc_util month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg pnc_util month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg del_util month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg cs_util month##evereased, i(palikaid) fe cluster(palikaid)
+
+* Adding Covid-19 cases as a covariate
+
+xtreg fp_sa_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg anc_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg pnc_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg del_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+xtreg cs_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+restore
+
 
 *TIME VARYING POLICY CHANGE
+* Cluster SEs at the palika level because of serial correlation: you have multiple months of observation for each palika
+
+*DID estimates with variable policy changes with just covid case 
+xtreg fp_sa_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
 
 *DID estimates with variable policy changes with covid case and covid death 
-quietly reg fp_sa_util i.palikaid i.month eased_ covid_case covid_death_, r
+xtreg fp_sa_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ covid_case covid_death_ i.month, i(palikaid) fe cluster(palikaid)
+
+*DID estimates with variable policy changes without covid case and covid death 
+xtreg fp_sa_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+
+*Sensitivity analyses (will add here)
+preserve
+keep if inlist(orgunitlevel2, "5 Province 5", "6 Karnali Province", "7 Sudurpashchim Province")
+xtreg fp_sa_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+restore
+
+
+
+/* Old code 
+
+*DID estimates with variable policy changes with covid case and covid death 
+quietly reg fp_sa_util i.palikaid i.month eased_ covid_case covid_death_, vce(cluster palikaid)
 margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
 
@@ -61,7 +132,6 @@ lincom (_b[2._at]-_b[1._at])
 quietly reg pnc_util i.palikaid i.month eased_ covid_case, r
 margins, at(eased_= (0 1)) post
 lincom (_b[2._at]-_b[1._at])
-
 
 *DID estimates with variable policy changes (without covid case and covid death)
 quietly reg fp_sa_util i.palikaid i.month eased_, r
@@ -202,7 +272,7 @@ lincom (_b[2._at]-_b[1._at])
 
 
 
-/* Old code 
+/* Very Old code 
 * Probably won't use this 
 * DID estimates fixed policy change - 
 reg fp_sa_util post eased_8_20  did_eased_8_20 , r
