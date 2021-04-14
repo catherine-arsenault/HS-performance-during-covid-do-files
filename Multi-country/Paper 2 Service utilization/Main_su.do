@@ -27,6 +27,10 @@ global KZNall opd_util road_util trauma_util ipd_util icu_util anc1_util del_uti
 			  bcg_qual pent_qual measles_qual pneum_qual rota_qual tbscreen_qual ///
 			  tbdetect_qual tbtreat_qual art_util diab_util cerv_qual
 
+global LAOall opd_util road_util ipd_util fp_sa_util anc_util del_util cs_util ///
+			  pnc_util bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util
+
+
 
 		
 
