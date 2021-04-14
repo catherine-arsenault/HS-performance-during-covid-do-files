@@ -86,7 +86,7 @@ replace year = 2020 if year==.
 order year , after(factype)
 replace month = month-12 if month>=13
 
-* Save clean dataset for national analyses
+* Save clean dataset for analyses
 save "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta"
 
 collapse (count) anc1_util-trauma_util, by (year month)
@@ -128,8 +128,9 @@ rename mo month
 sort org* year month
 order org*  year month 
 
-* Save clean dataset for national analyses
+* Save clean dataset for analyses
 save "$user/$LAOdata/Data for analysis/Lao_su_24months_for_analyses.dta"
+
 collapse (count) fp_sa_util-road_util , by (year month)
 			  
 foreach x of global LAOall {
@@ -175,7 +176,7 @@ rename mo month
 sort org* year month
 order org*  year month 
 
-* Save clean dataset for national analyses
+* Save clean dataset for analyses
 save "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta"
 
 drop fp_perm_util fp_la_util // not included in multi country paper
