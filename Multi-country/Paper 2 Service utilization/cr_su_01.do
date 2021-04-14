@@ -11,6 +11,8 @@
 * 2 ETHIOPIA
 ********************************************************************************
 use "$user/$ETHdata/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_CCA_DB.dta", clear
+sort region zone organisationunitname orgunitlevel1 orgunitlevel4
+gen unique_id=_n
 * Reshape
 reshape long   opd_util er_util road_util ipd_util fp_util sti_util anc_util ///
               del_util cs_util pnc_util diarr_util pneum_util sam_util vacc_qual ///
@@ -49,8 +51,28 @@ replace regtype = "Pastoral" if region == "Afar" | region=="Ben Gum" ///
                               | region=="Gambella" | region=="Somali" 
 lab var regtype "Region type"
 
+gen rmonth= month if year==2019
+replace rmonth = month+12 if year ==2020
+gen postCovid = rmonth>15 // State of Emergency was March 30th, month 15. 
+* Number of months since Covid
+gen timeafter=0 
+replace time=1 if rmonth==16
+replace time=2 if rmonth==17
+replace time=3 if rmonth==18
+replace time=4 if rmonth==19
+replace time=5 if rmonth==20
+replace time=6 if rmonth==21
+replace time=7 if rmonth==22
+replace time=8 if rmonth==23
+replace time=9 if rmonth==24
+
+gen spring = month>=3 & month<=5
+gen summer = month>=6 & month<=8
+gen fall = month>=9 & month<=11
+gen winter= month==12 | month==1 | month==2
+
 * Save clean dataset for analyses
-save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta"
+save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", replace 
 
 collapse (count)fp_util-art_util , by (year month)
 			  
