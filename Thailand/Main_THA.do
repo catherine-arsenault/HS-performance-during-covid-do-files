@@ -4,9 +4,9 @@
 * Analyst MK Kim
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Thailand)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Thailand"
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Thailand"
 
 
