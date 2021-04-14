@@ -11,7 +11,7 @@ created in google data studio
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 
 *****************************************************************/
-u "$user/$data/Data for analysis/GHA_Jan19-Dec20_WIDE.dta", clear
+u "$user/$data/Data for analysis/GHA_Jan19-Dec20.dta", clear
 
 global volume fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 			  malnu_util
@@ -42,6 +42,9 @@ replace month = 12 if period == "December 2019" | period == "December 2020"
 
 drop period 
 order region year month 
+
+* Save dataset for analyses
+save "$user/$data/Data for analysis/Ghana_su_24months_for_analyses.dta"
 
 * Reshaping for data visualisations
 preserve

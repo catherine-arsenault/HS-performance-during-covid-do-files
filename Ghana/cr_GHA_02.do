@@ -53,7 +53,7 @@ keep period region fp_util sti_util anc_util del_util cs_util pnc_util diarr_uti
 	 pneum_qual measles_qual rota_qual ipd_mort_num newborn_mort_num ///
 	 sb_mort_num mat_mort_num surg_util totaldel
 
-save "$user/$data/Data for analysis/GHA_Jan19-Dec20_WIDE.dta", replace	
+save "$user/$data/Data for analysis/GHA_Jan19-Dec20.dta", replace	
 
 
 
