@@ -5,6 +5,7 @@
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Ghana)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ghana"
+
 *global user "/Users/minkyungkim/Dropbox (Harvard University)"
 *global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ghana"
 
