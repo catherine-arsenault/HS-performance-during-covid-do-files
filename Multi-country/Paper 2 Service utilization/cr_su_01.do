@@ -15,7 +15,7 @@ global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_n
 				hospit_pending hospit_negative death_covid death_negative ///
 				death_pending  mental_util diab_qual_num hyper_qual_num ///
 				cerv_denom2020 cerv_denom2019 road_mort_num predel_util ///
-				stroke_util heart_util dental_util dengue_util peri_mort_num
+				stroke_util heart_util dental_util dengue_util peri_mort_num totaldel
 
 ********************************************************************************
 * 1 CHILE (facility)
@@ -24,12 +24,12 @@ u "$user/$CHLdata/Data for analysis/Chile_su_22months.dta", clear
 
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
- capture drop `dl_modif'
+ cap drop `dl_modif'
  
 save "$user/$CHLdata/Data for analysis/Chile_su_22months_for_analyses.dta", replace 
 ********************************************************************************
@@ -39,12 +39,12 @@ u "$user/$ETHdata/Data for analysis/Ethiopia_su_24months.dta", replace
 
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
- capture drop `dl_modif'
+ cap drop `dl_modif'
  
 save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", replace 
 
@@ -64,12 +64,12 @@ u  "$user/$GHAdata/Data for analysis/Ghana_su_24months.dta", clear
 
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
- capture drop `dl_modif'
+ cap drop `dl_modif'
  
 save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", replace 	 
 	 
@@ -79,13 +79,12 @@ use "$user/$HTIdata/Data for analysis/Haiti_su_18months.dta", clear
 
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
- capture drop `dl_modif'
-
+ cap drop `dl_modif'
 rename pncc_util pnc_util 
 save "$user/$HTIdata/Data for analysis/Haiti_su_18months_for_analyses.dta", replace 
 ********************************************************************************
@@ -93,17 +92,17 @@ save "$user/$HTIdata/Data for analysis/Haiti_su_18months_for_analyses.dta", repl
 use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear 
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
- capture drop `dl_modif'
+ cap drop `dl_modif'
 
  rename (kmcn_qual sam_util anc1_util)  (kmc_qual malnu_util anc_util)
 save "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
 
-collapse (count) anc1_util-rota_qual, by (year month)
+collapse (count) anc_util-rota_qual, by (year month)
 			  
 foreach x of global all {
 	cap egen max`x'=max(`x')
@@ -118,20 +117,21 @@ export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(KZ
 use "$user/$LAOdata/Data for analysis/Lao_su_24months.dta", clear
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
- capture drop `dl_modif'
- 
+ cap drop `dl_modif'
+ rename fp_sa_util fp_util 
 save "$user/$LAOdata/Data for analysis/Lao_su_24months_for_analyses.dta", replace
-collapse (count) fp_sa_util-road_util , by (year month)
+
+collapse (count) fp_util-road_util , by (year month)
 			  
 foreach x of global LAOall {
-	egen max`x'=max(`x')
-	gen completeness_`x'= `x'/max`x'
-	drop max`x'
+	cap egen max`x'=max(`x')
+	cap gen completeness_`x'= `x'/max`x'
+	cap drop max`x'
 }		
 export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Lao) firstrow(variable)  
 
@@ -141,12 +141,12 @@ export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(La
 use  "$user/$MEXdata/Data for analysis/Mexico_su_24months.dta", clear 
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
- capture drop `dl_modif'
+ cap drop `dl_modif'
  rename cerv_util cerv_qual
 save "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", replace
 ********************************************************************************
@@ -154,21 +154,21 @@ save "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", rep
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months.dta", clear
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
-capture drop `dl_modif'
-
+cap drop `dl_modif'
+rename fp_sa_util fp_util 
 save "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta", replace
 
-collapse (count) fp_sa_util-pneum_qual , by (year month)
+collapse (count) fp_util-pneum_qual , by (year month)
 			  
 foreach x of global all {
-	egen max`x'=max(`x')
-	gen completeness_`x'= `x'/max`x'
-	drop max`x'
+	cap egen max`x'=max(`x')
+	cap gen completeness_`x'= `x'/max`x'
+	cap drop max`x'
 }		
 export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Nepal) firstrow(variable)  
 
@@ -178,12 +178,12 @@ export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Ne
 u  "$user/$KORdata/Data for analysis/Korea_su_21months.dta", clear
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
-capture drop `dl_modif'
+cap drop `dl_modif'
 
 save "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", replace
 ********************************************************************************
@@ -191,11 +191,19 @@ save "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", repl
 u "$user/$THAdata/Data for analysis/Thailand_su_24months.dta", clear 
 local dl_modif
     foreach x of global droplist {
-       capture confirm variable `x'
+       cap confirm variable `x'
 	    if _rc==0 {
 			local dl_modif `dl_modif' `x'
        }
  }
-capture drop `dl_modif'
+cap drop `dl_modif'
 
 save "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", replace 
+
+
+
+
+
+
+
+
