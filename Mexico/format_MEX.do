@@ -91,6 +91,10 @@ sort  year mo
 rename mo month
 
 save "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", replace
+
+drop if Delegation=="National"
+
+save "$user/$data/Data for analysis/Mexico_su_24months_for_analyses.dta", replace 
 ********************************************************************************
 * CREATE NATIONAL TOTALS
 ********************************************************************************
