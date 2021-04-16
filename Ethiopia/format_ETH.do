@@ -128,7 +128,7 @@ drop *_report *_sum *_mean
 ***************************************************************************/
 merge 1:1  region zone org*  using "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta"
 drop _merge
-*931 were not merged 
+
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_CCA_DB_Complete.dta", replace 
 
 /****************************************************************
@@ -144,9 +144,9 @@ preserve
 	save "$user/$data/Data for analysis/tmpfactype.dta", replace
 restore
 
-* Totals by region type
+* Collapse by region 
 	collapse (sum) fp_util1_19-tbdenom_qual4_20 , by(region)	
-	
+* Totals by region type	
 	gen regtype = "Region type: Urban" if region=="Addis Ababa" ///
 	                          | region=="Dire Dawa" | region=="Harari"
 	replace regtype = "Region type: Agrarian" if region == "Amhara" | region=="Oromiya" ///
