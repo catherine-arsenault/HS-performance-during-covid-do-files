@@ -20,6 +20,11 @@ global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 ********************************************************************************
 
 
+global all opd_util er_util road_util ipd_util fp_util sti_util anc_util del_util ///
+           cs_util kmc_qual pnc_util diarr_util pneum_util malnu_util vacc_qual ///
+		   bcg_qual pent_qual measles_qual opv3_qual pneum_qual rota_qual ///
+		   malaria_util tbscreen_qual hivtest_qual tbdetect_qual art_util ///
+		   diab_util hyper_util cerv_qual breast_util
 
 		
 
