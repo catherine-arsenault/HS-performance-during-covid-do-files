@@ -1,9 +1,9 @@
 /* 
-  Health system performance during Covid-19 
-  Created by Catherine Arsenault
-  Effect of Covid-19 on health service utilization in 10 countries
-  This do file creates final datasets for the service utilisation paper and an 
-  appendix to assess completeness 
+  Health system performance during Covid-19. Created by Catherine Arsenault
+  Paper title: Effect of Covid-19 on health service utilization in 10 countries
+  This do file creates final datasets for the service utilisation paper, standardizesand
+  variable names and creates an  appendix to assess completeness 
+  (in countries with facility-level data).
   */
 
 * global droplist holds the list of variables that are not in the analysis
@@ -113,7 +113,6 @@ export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(KZ
 
 ********************************************************************************
 * 6 LAO (facility)
-********************************************************************************
 use "$user/$LAOdata/Data for analysis/Lao_su_24months.dta", clear
 local dl_modif
     foreach x of global droplist {
@@ -137,7 +136,6 @@ export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(La
 
 ********************************************************************************
 * 7 MEXICO (region)
-********************************************************************************
 use  "$user/$MEXdata/Data for analysis/Mexico_su_24months.dta", clear 
 local dl_modif
     foreach x of global droplist {
@@ -171,7 +169,6 @@ foreach x of global all {
 	cap drop max`x'
 }		
 export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Nepal) firstrow(variable)  
-
 
 ********************************************************************************
 * 9 SOUTH KOREA (region)
