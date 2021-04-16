@@ -13,7 +13,7 @@ global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_n
 				hospit_pending hospit_negative death_covid death_negative ///
 				death_pending breast_util mental_util diab_qual_num hyper_qual_num ///
 				cerv_denom2020 cerv_denom2019 road_mort_num predel_util ///
-				stroke_util heart_util dental_util dengue_util
+				stroke_util heart_util dental_util dengue_util peri_mort_num
 
 ********************************************************************************
 * 1 CHILE (facility)
@@ -75,9 +75,18 @@ save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", repl
 	 
 ********************************************************************************
 * 4 HAITI (facility)
+use "$user/$HTIdata/Data for analysis/Haiti_su_18months_for_analyses.dta", clear
+local dl_modif
+    foreach x of global droplist {
+       capture confirm variable `x'
+	    if _rc==0 {
+			local dl_modif `dl_modif' `x'
+       }
+ }
+ capture drop `dl_modif'
 
-
-
+rename pncc_util pnc_util 
+save "$user/$HTIdata/Data for analysis/Haiti_su_18months_for_analyses.dta", replace 
 ********************************************************************************
 * 5 KZN, SA (facility)
 use "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta", clear 
