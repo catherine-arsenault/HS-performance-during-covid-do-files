@@ -86,9 +86,9 @@ foreach var of global all {
 }
 drop *_report *_sum *_mean
 
-/*****************************************************************
+/*******************************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
-*****************************************************************/
+*******************************************************************************/
 u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 	drop Province
 	encode Facility, gen(facname)
@@ -148,6 +148,28 @@ rm "$user/$data/Data for analysis/temp.dta"
 
 export delimited using "$user/HMIS Data for Health System Performance Covid (South Africa)/KZN_Jan19-Dec20_fordashboard.csv", replace
 
+/*******************************************************************************
+		CREATES DATASET FOR ANALYSES
+*******************************************************************************/
+u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", clear
+reshape long anc1_util totaldel del_util cs_util pnc_util diarr_util pneum_util ///
+			  sam_util art_util opd_util ipd_util road_util trauma_util ///
+			  icu_util diab_util kmcn_qual cerv_qual tbscreen_qual ///
+			  tbdetect_qual tbtreat_qual vacc_qual pent_qual bcg_qual ///
+			  measles_qual pneum_qual rota_qual  newborn_mort_num ///
+			  mat_mort_num livebirths_denom sb_mort_num sb_mort_denom  ///
+			  ipd_mort_num trauma_mort_num icu_mort_num, ///
+			  i(Province dist subdist Facility factype ) j (month )
+
+rename month rmonth
+gen month= rmonth
+replace month=month-12 if month>=13
+gen year = 2019
+replace year= 2020 if rmonth>=13	
+order Province dist subdist Facility factype year month rmonth 
+* Save clean dataset for analyses
+save "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta"
 
 
-	
+
+
