@@ -100,8 +100,7 @@ local dl_modif
  }
  capture drop `dl_modif'
 
- rename kmcn_qual kmc_qual 
- rename sam_util malnu_util
+ rename (kmcn_qual sam_util anc1_util)  (kmc_qual malnu_util anc_util)
 save "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
 
 collapse (count) anc1_util-rota_qual, by (year month)
