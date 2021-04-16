@@ -170,7 +170,7 @@ order Province dist subdist Facility factype year month rmonth
 
 
 * Save clean dataset for analyses
-save "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
+save "$user/$data/Data for analysis/KZN_su_24months.dta", replace 
 
 
 

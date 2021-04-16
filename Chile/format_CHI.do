@@ -56,7 +56,7 @@ reshape long pnc_util cs_util del_util anc_util, i(region) j(month) string
 		order region year month
 		
 * Saves dataset for analyses 		
-save "$user/$data/Data for analysis/Chile_su_22months_for_analyses.dta", replace
+save "$user/$data/Data for analysis/Chile_su_22months.dta", replace
 
 * Reshaping for data visualisations
 preserve

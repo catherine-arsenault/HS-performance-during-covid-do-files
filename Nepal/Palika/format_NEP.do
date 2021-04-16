@@ -141,7 +141,6 @@ drop month
 rename mo month
 sort province year month
  
-save "$user/$data/Data for analysis/Nepal_24mo_for_analyses.dta", replace
 
 * Reshaping for data visualisations
 preserve
@@ -196,7 +195,7 @@ rename mo month
 sort org* year month
 order org*  year month 
 
-save "$user/$data/Data for analysis/Nepal_su_24months_for_analyses.dta", replace
+save "$user/$data/Data for analysis/Nepal_su_24months.dta", replace
 
 
 

@@ -44,7 +44,7 @@ drop period
 order region year month 
 
 * Save dataset for analyses
-save "$user/$data/Data for analysis/Ghana_su_24months_for_analyses.dta"
+save "$user/$data/Data for analysis/Ghana_su_24months.dta"
 
 * Reshaping for data visualisations
 preserve

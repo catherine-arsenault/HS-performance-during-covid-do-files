@@ -294,7 +294,7 @@ lab var regtype "Region type"
 
 order region regtype zone org* unique_id Hospital  year month 
 
-save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", replace 
+save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months.dta", replace 
 
 /* Code to identify clinics (private) 
 replace factype =2 if regexm(organ, "[Cc]linic") | regexm(organ, "CLINIC") | ///

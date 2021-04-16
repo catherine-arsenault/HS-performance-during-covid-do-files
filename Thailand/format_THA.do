@@ -80,7 +80,7 @@ save "$user/$data/Data for analysis/Thailand_Oct18-Dec20_foranalysis.dta", repla
 
 drop if Province=="National"
 drop if year ==2018
-save "$user/$data/Data for analysis/Thailand_su_24months_for_analyses.dta", replace
+save "$user/$data/Data for analysis/Thailand_su_24months.dta", replace
 ********************************************************************************
 * RESHAPE FOR DASHBOARD FOR VARIABLES AVAILABLE MONTHLY
 ********************************************************************************

@@ -112,7 +112,7 @@ gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20"
 		sort  region year month
 		order region year month 	
 		
-save "$user/$data/Data for analysis/Korea_su_21months_for_analyses.dta", replace		
+save "$user/$data/Data for analysis/Korea_su_21months.dta", replace		
 		
 		
 		

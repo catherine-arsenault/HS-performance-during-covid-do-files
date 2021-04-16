@@ -94,10 +94,11 @@ save "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", replace
 
 drop if Delegation=="National"
 
-save "$user/$data/Data for analysis/Mexico_su_24months_for_analyses.dta", replace 
+save "$user/$data/Data for analysis/Mexico_su_24months.dta", replace 
 ********************************************************************************
 * CREATE NATIONAL TOTALS
 ********************************************************************************
+u "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", clear
 
 foreach v in cerv_denom2019 cerv_denom2020 breast_denom2019 breast_denom2020 ///
 sti_util del_util cs_util diarr_util pneum_util malnu_util art_util er_util ///
