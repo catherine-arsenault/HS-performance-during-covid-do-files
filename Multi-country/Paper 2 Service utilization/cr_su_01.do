@@ -164,9 +164,17 @@ export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Ne
 
 ********************************************************************************
 * 9 SOUTH KOREA (region)
+u  "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", clear
+local dl_modif
+    foreach x of global droplist {
+       capture confirm variable `x'
+	    if _rc==0 {
+			local dl_modif `dl_modif' `x'
+       }
+ }
+capture drop `dl_modif'
 
-
-
+save "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", replace
 ********************************************************************************
 * 10 THAILAND (region)
 
