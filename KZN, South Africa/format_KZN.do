@@ -167,8 +167,10 @@ replace month=month-12 if month>=13
 gen year = 2019
 replace year= 2020 if rmonth>=13	
 order Province dist subdist Facility factype year month rmonth 
+
+
 * Save clean dataset for analyses
-save "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta"
+save "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
 
 
 
