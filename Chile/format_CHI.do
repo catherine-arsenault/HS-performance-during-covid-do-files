@@ -53,8 +53,11 @@ reshape long pnc_util cs_util del_util anc_util, i(region) j(month) string
 		drop month	
 		rename mo month
 		sort  region year month
-		order region year month 
+		order region year month
 		
+* Saves dataset for analyses 		
+save "$user/$data/Data for analysis/Chile_su_22months_for_analyses.dta", replace
+
 * Reshaping for data visualisations
 preserve
 	keep if year == 2020
