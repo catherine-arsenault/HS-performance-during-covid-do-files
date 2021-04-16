@@ -100,7 +100,8 @@ local dl_modif
  cap drop `dl_modif'
 
  rename (kmcn_qual sam_util anc1_util)  (kmc_qual malnu_util anc_util)
-save "$user/$data/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
+ 
+save "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
 
 collapse (count) anc_util-rota_qual, by (year month)
 			  
