@@ -4,20 +4,23 @@
 * This do file creates line graphs
 
 
+
 * Chile
 * 
 
 * Ethiopia
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
 
-collapse (sum)  , by( year month)
-replace `x'=`x'/1000
+
+collapse (sum) opd anc del  , by( year month)
+
+
 
 sort year month 
 gen time= _n
 rename `x' ethiopia_`x'
 lab var `x' "Ethiopia"
-}
+
 save  "$user/$analysis/tmp.dta", replace 
 
 * Ghana
@@ -68,8 +71,6 @@ use "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", cl
 merge 1:1 time using "$user/$analysis/tmp.dta"
 drop _merge 
 save "$user/$analysis/tmp.dta", replace
-
-
 
 
 ********************************************************************************

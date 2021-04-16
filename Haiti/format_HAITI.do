@@ -121,6 +121,7 @@ drop _merge
 rm "$user/$data/temp.dta"
 export delimited using "$user/$data/Haiti_Jan19-Jun20_fordashboard.csv", replace
 
+		replace year = 2019 if year==.
 
 
 
