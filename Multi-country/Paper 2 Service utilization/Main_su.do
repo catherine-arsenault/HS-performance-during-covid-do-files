@@ -4,7 +4,9 @@
 
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global analysis "SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 2 Service utilization"
+global analysis "/Users/acatherine/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 2 Service utilization"
+global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+global analysis "/Users/annagage/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 2 Service utilization"
 
 ********************************************************************************
 global CHLdata "/HMIS Data for Health System Performance Covid (Chile)"

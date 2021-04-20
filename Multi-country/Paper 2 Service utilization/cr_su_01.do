@@ -56,7 +56,7 @@ foreach x of global all {
 	cap gen completeness_`x'= `x'/max`x'
 	cap drop max`x'
 }		
-export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Ethiopia) firstrow(variable) replace  
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(Ethiopia) firstrow(variable) replace  
 
 ********************************************************************************
 * 3 GHANA (region)
@@ -110,7 +110,7 @@ foreach x of global all {
 	cap gen completeness_`x'= `x'/max`x'
 	cap drop max`x'
 }		
-export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(KZN) firstrow(variable)  
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(KZN) firstrow(variable)  
 
 ********************************************************************************
 * 6 LAO (facility)
@@ -133,7 +133,7 @@ foreach x of global LAOall {
 	cap gen completeness_`x'= `x'/max`x'
 	cap drop max`x'
 }		
-export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Lao) firstrow(variable)  
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(Lao) firstrow(variable)  
 
 ********************************************************************************
 * 7 MEXICO (region)
@@ -169,7 +169,7 @@ foreach x of global all {
 	cap gen completeness_`x'= `x'/max`x'
 	cap drop max`x'
 }		
-export excel using "$user/$analysis/Appendices/Data completeness.xlsx", sheet(Nepal) firstrow(variable)  
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(Nepal) firstrow(variable)  
 
 ********************************************************************************
 * 9 SOUTH KOREA (region)
