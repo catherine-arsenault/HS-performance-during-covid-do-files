@@ -167,12 +167,14 @@ export delimited using "$user/$data/Nepal_palika_Jan19-Dec20_fordashboard.csv", 
 		CREATES FINAL DATASET FOR ANALYSES
 *******************************************************************************/
 use "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_CCA_DB.dta", clear
+gen unique_id = _n
+
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			  pnc_util diarr_util pneum_util hyper_util diab_util  opd_util ipd_util ///
 			  er_util tbdetect_qual   hivtest_qual ///
 			  pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
 			  totaldel sb_mort_num mat_mort_num ipd_mort_num neo_mort_num, ///
-			  i(org*) j(month) string
+			  i(org* unique_id) j(month) string
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
 				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
