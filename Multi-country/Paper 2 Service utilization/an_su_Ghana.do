@@ -25,10 +25,11 @@ gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
+
 * Call GEE, export RR to excel
 xtset reg rmonth 
 
-putexcel set "$user/$analysis/Results/Testing diff levels of analysis.xlsx", sheet(Ghana)  modify
+putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(Ghana)  modify
 putexcel A1 = "GHA region-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -37,8 +38,8 @@ local i = 2
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter  , family(poisson) ///
-	link(log) corr(exchangeable) vce(robust)	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -55,8 +56,8 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			 drop if rmonth>15 
 			 xtset reg rmonth
-			 xtgee del_util rmonth , family(poisson) ///
-				link(log) corr(exchangeable) vce(robust)	
+			 xtgee del_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			rename del_util del_util_real
@@ -76,8 +77,8 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			 drop if rmonth>15
 			 xtset reg rmonth
-			 xtgee anc_util rmonth , family(poisson) ///
-				link(log) corr(exchangeable) vce(robust)	
+			 xtgee anc_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			rename anc_util anc_util_real
@@ -97,8 +98,8 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			 drop if rmonth>15
 			xtset reg rmonth
-			 xtgee opd_util rmonth , family(poisson) ///
-				link(log) corr(exchangeable) vce(robust)	
+			 xtgee opd_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			rename opd_util opd_util_real

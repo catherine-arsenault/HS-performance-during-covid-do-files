@@ -27,7 +27,7 @@ save "$user/$KZNdata/Data for analysis/KZNtmp.dta",  replace
 * Call GEE, export RR to excel
 xtset dist rmonth 
 
-putexcel set "$user/$analysis/Results/Testing diff levels of analysis.xlsx", sheet(KZN)  modify
+putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
 putexcel A1 = "KZN district-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -36,8 +36,8 @@ local i = 2
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter  , family(poisson) ///
-	link(log) corr(exchangeable) vce(robust)	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -80,8 +80,8 @@ local i = 10
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, family(poisson) ///
-	link(log) corr(exchangeable) vce(robust)	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, family(gaussian) ///
+	link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -98,8 +98,8 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			 drop if rmonth>15 
 			 xtset dist rmonth
-			 xtgee del_util rmonth , family(poisson) ///
-				link(log) corr(exchangeable) vce(robust)	
+			 xtgee del_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			rename del_util del_util_real
@@ -119,8 +119,8 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			 drop if rmonth>15
 			 xtset dist rmonth
-			 xtgee anc_util rmonth , family(poisson) ///
-				link(log) corr(exchangeable) vce(robust)	
+			 xtgee anc_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			rename anc_util anc_util_real
@@ -140,8 +140,8 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			 drop if rmonth>15
 			xtset dist rmonth
-			 xtgee opd_util rmonth , family(poisson) ///
-				link(log) corr(exchangeable) vce(robust)	
+			 xtgee opd_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			rename opd_util opd_util_real

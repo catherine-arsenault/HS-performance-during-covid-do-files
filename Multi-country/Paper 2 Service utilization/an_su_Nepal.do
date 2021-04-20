@@ -31,7 +31,7 @@ save "$user/$NEPdata/Data for analysis/Nepaltmp.dta",  replace
 * Call GEE, export RR to excel
 xtset prov rmonth 
 
-putexcel set "$user/$analysis/Results/Testing diff levels of analysis.xlsx", sheet(Nepal)  modify
+putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
 putexcel A1 = "Nepal regional GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -41,8 +41,8 @@ foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter  , family(poisson) ///
-	link(log) corr(exchangeable) vce(robust)	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter  , family(gaussian) ///
+	link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -100,8 +100,8 @@ foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a covariate
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter  , family(poisson) ///
-	link(log) corr(exchangeable) vce(robust)	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -117,7 +117,7 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
 			 drop if rmonth>13 
 			 xtset prov rmonth
-			 xtgee del_util rmonth , family(poisson) ///
+			 xtgee del_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
@@ -138,7 +138,7 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
 			 drop if rmonth>13 
 			 xtset prov rmonth
-			 xtgee anc_util rmonth , family(poisson) ///
+			 xtgee anc_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
@@ -159,7 +159,7 @@ foreach var in opd_util anc_util del_util  {
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
 			 drop if rmonth>13 
 			xtset prov rmonth
-			 xtgee opd_util rmonth , family(poisson) ///
+			 xtgee opd_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
