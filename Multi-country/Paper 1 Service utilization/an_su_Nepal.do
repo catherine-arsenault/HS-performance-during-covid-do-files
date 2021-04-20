@@ -41,8 +41,8 @@ foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter  , family(gaussian) ///
-	link(identity) corr(exchangeable) vce(robust)	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -90,7 +90,7 @@ replace cases = 260593 if rmonth==24
 * Call GEE, export RR to excel
 xtset unique_id rmonth 
 
-putexcel set "$user/$analysis/Results/Testing diff levels of analysis.xlsx", sheet(Nepal)  modify
+putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
 putexcel A9 = "Nepal Palika GEE"
 putexcel A10 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 

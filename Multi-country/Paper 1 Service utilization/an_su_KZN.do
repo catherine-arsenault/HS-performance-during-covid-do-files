@@ -71,7 +71,7 @@ gen winter= month==12 | month==1 | month==2
 * Call GEE, export RR to excel
 xtset id rmonth 
 
-putexcel set "$user/$analysis/Results/Testing diff levels of analysis.xlsx", sheet(KZN)  modify
+putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
 putexcel A9 = "KZN facility-level GEE"
 putexcel A10 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
