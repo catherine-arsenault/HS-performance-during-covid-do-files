@@ -92,7 +92,7 @@ xtset unique_id rmonth
 
 putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
 putexcel A9 = "Nepal Palika GEE"
-putexcel A10 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
+putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
 
 local i = 10
 
