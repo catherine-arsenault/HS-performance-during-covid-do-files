@@ -31,7 +31,7 @@ save "$user/$NEPdata/Data for analysis/Nepaltmp.dta",  replace
 * Call GEE, export RR to excel
 xtset prov rmonth 
 
-putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
 putexcel A1 = "Nepal regional GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -90,7 +90,7 @@ replace cases = 260593 if rmonth==24
 * Call GEE, export RR to excel
 xtset unique_id rmonth 
 
-putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
 putexcel A9 = "Nepal Palika GEE"
 putexcel A10 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -132,7 +132,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)70000, labsize(small))
 			
-			graph export "$user/$analysis/Results/Graphs/Nepal_del_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Nepal_del_util.pdf", replace
 
 * ANC			
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
@@ -153,7 +153,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)70000, labsize(small))
 			
-			graph export "$user/$analysis/Results/Graphs/Nepal_anc_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Nepal_anc_util.pdf", replace
 			
 * OPD		
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
@@ -174,7 +174,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Outpatient visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(250000)2000000, labsize(vsmall))
 			
-			graph export "$user/$analysis/Results/Graphs/Nepal_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Nepal_opd_util.pdf", replace
 			
 
 rm "$user/$NEPdata/Data for analysis/Nepaltmp.dta"

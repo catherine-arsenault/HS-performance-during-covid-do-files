@@ -4,9 +4,11 @@
 
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global analysis "/Users/acatherine/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 2 Service utilization"
+global analysis "/Users/acatherine/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
+global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 1 Service utilization"
+
 global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
-global analysis "/Users/annagage/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 2 Service utilization"
+global analysis "/Users/annagage/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
 
 ********************************************************************************
 global CHLdata "/HMIS Data for Health System Performance Covid (Chile)"
@@ -29,17 +31,18 @@ global all opd_util er_util road_util ipd_util fp_util sti_util anc_util del_uti
 		   diab_util hyper_util cerv_qual breast_util
 
 		
-
-
-
-
-
-
-
-
-
-
-
+********************************************************************************
+* Analyses by country 
+do "$dofiles/an_su_Chile"
+do "$dofiles/an_su_Ethiopia"
+do "$dofiles/an_su_Ghana"
+do "$dofiles/an_su_Haiti"
+do "$dofiles/an_su_Korea"
+do "$dofiles/an_su_KZN"
+do "$dofiles/an_su_Lao"
+do "$dofiles/an_su_Mexico"
+do "$dofiles/an_su_Nepal"
+do "$dofiles/an_su_Thailand"
 
 
 

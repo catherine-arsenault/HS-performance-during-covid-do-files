@@ -29,7 +29,7 @@ save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 * Call GEE, export RR to excel
 xtset reg rmonth 
 
-putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(Ghana)  modify
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Ghana)  modify
 putexcel A1 = "GHA region-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -71,7 +71,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)75000, labsize(small))
 			
-			graph export "$user/$analysis/Results/Graphs/GHA_del_util.pdf", replace
+			graph export "$analysis/Results/Graphs/GHA_del_util.pdf", replace
 
 * ANC			
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
@@ -92,7 +92,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(150000)450000, labsize(small))
 			
-			graph export "$user/$analysis/Results/Graphs/GHA_anc_util.pdf", replace
+			graph export "$analysis/Results/Graphs/GHA_anc_util.pdf", replace
 			
 * OPD		
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
@@ -113,7 +113,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Outpatient visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(500000)3500000, labsize(vsmall))
 			
-			graph export "$user/$analysis/Results/Graphs/GHA_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
 			
 
 rm "$user/$GHAdata/Data for analysis/GHAtmp.dta"

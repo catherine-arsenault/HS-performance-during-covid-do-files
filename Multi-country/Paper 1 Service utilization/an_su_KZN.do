@@ -27,7 +27,7 @@ save "$user/$KZNdata/Data for analysis/KZNtmp.dta",  replace
 * Call GEE, export RR to excel
 xtset dist rmonth 
 
-putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
 putexcel A1 = "KZN district-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -71,7 +71,7 @@ gen winter= month==12 | month==1 | month==2
 * Call GEE, export RR to excel
 xtset id rmonth 
 
-putexcel set "$user/$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
 putexcel A9 = "KZN facility-level GEE"
 putexcel A10 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -113,7 +113,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2500)15000, labsize(small))
 			
-			graph export "$user/$analysis/Results/Graphs/KZN_del_util.pdf", replace
+			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
 
 * ANC			
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
@@ -134,7 +134,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(5000)30000, labsize(small))
 			
-			graph export "$user/$analysis/Results/Graphs/KZN_anc_util.pdf", replace
+			graph export "$analysis/Results/Graphs/KZN_anc_util.pdf", replace
 			
 * OPD		
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
@@ -155,7 +155,7 @@ foreach var in opd_util anc_util del_util  {
 			graphregion(color(white)) title("Outpatient visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(50000)500000, labsize(vsmall))
 			
-			graph export "$user/$analysis/Results/Graphs/KZN_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/KZN_opd_util.pdf", replace
 			
 
 rm "$user/$KZNdata/Data for analysis/KZNtmp.dta"
