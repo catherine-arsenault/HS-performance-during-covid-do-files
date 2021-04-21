@@ -101,10 +101,10 @@ foreach var in opd_util anc_util del_util  {
 
 *Negative binomial 
 putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Haiti)  modify
-putexcel A19 = "Haiti Facility GEE linear"
-putexcel A20 = "Indicator" B20="RR postCovid" C20="LCL" D20="UCL" 
+putexcel A13 = "Haiti Facility GEE Neg. binomial"
+putexcel A14 = "Indicator" B14="RR postCovid" C14="LCL" D14="UCL" 
 
-local i = 20
+local i = 14
 
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
