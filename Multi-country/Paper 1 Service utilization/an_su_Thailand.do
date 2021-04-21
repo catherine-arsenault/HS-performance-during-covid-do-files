@@ -34,7 +34,7 @@ putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL"
 
 local i = 2
 
-foreach var in opd_util   {
+foreach var in opd_util totaldel  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
