@@ -1,7 +1,6 @@
-* Level of analysis (facility and regional or regional everywhere?)
-* Testing different models for opd_util anc_util del_util
+
 ********************************************************************************
-* GHANA
+* GHANA (Region level)
 ********************************************************************************
 use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
 
