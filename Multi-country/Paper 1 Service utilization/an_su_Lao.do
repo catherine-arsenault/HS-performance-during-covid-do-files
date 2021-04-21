@@ -30,7 +30,7 @@ save "$user/$LAOdata/Data for analysis/LAOtmp.dta",  replace
 * Call GEE, export RR to excel
 xtset prov rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(LAO)  modify
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Lao)  modify
 putexcel A1 = "LAO regional GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
@@ -78,8 +78,9 @@ gen winter= month==12 | month==1 | month==2
 * Call GEE, export RR to excel
 xtset id rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(LAO)  modify
-putexcel A9 = "LAO regional GEE"
+* Linear
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Lao)  modify
+putexcel A9 = "LAO facility-level GEE linear"
 putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
 
 local i = 10
@@ -89,7 +90,7 @@ foreach var in opd_util anc_util del_util  {
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
+	, family(gaussian) link(identity) corr(independent) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -99,6 +100,27 @@ foreach var in opd_util anc_util del_util  {
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
+* Negative binomial 
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Lao)  modify
+putexcel A15 = "LAO facility-level GEE neg binomial"
+putexcel A16 = "Indicator" B16="RR postCovid" C16="LCL" D16="UCL" 
+
+local i = 16
+
+foreach var in opd_util anc_util del_util  {
+	local i = `i'+1
+	* Regression coefficients represent the expected change in the log of the 
+	* mean of the dependent variable for each change in a predictor
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(nbinomial) link(power) corr(independent) vce(robust)	
+	
+	margins postCovid, post
+	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel A`i' = "`var'"
+	putexcel B`i'= (_b[rr])
+	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+}
 
 ********************************************************************************
 * LAO GRAPHS
