@@ -21,14 +21,14 @@ del_util12_20	del_util1_21	del_util2_21	del_util3_21	)
 
 * PNC visits for mother 
 rename (ConsultationspostnatalesJanvie - BF) ///
-(pncm_util1_19	pncm_util2_19	pncm_util3_19	///
-pncm_util4_19	pncm_util5_19	pncm_util6_19	pncm_util7_19	pncm_util8_19	///
-pncm_util9_19	pncm_util10_19	pncm_util11_19	pncm_util12_19 pncm_util1_20	///
-pncm_util2_20	pncm_util3_20	pncm_util4_20	pncm_util5_20	pncm_util6_20	///
-pncm_util7_20	pncm_util8_20	pncm_util9_20	pncm_util10_20	pncm_util11_20 ///
-pncm_util12_20	pncm_util1_21	pncm_util2_21	pncm_util3_21	)
+(pnc_util1_19	pnc_util2_19	pnc_util3_19	///
+pnc_util4_19	pnc_util5_19	pnc_util6_19	pnc_util7_19	pnc_util8_19	///
+pnc_util9_19	pnc_util10_19	pnc_util11_19	pnc_util12_19 pnc_util1_20	///
+pnc_util2_20	pnc_util3_20	pnc_util4_20	pnc_util5_20	pnc_util6_20	///
+pnc_util7_20	pnc_util8_20	pnc_util9_20	pnc_util10_20	pnc_util11_20 ///
+pnc_util12_20	pnc_util1_21	pnc_util2_21	pnc_util3_21	)
 
-* Prenatal visits - variables re empty
+* Prenatal visits - variables are empty
 drop  VisiteConsultationsprenatales - CG
 
 * Maternal deaths - no data
@@ -153,14 +153,14 @@ egen hyper_util1_21= rowtotal (AnciensCasHTAJanvier2021 NouveauxCasHTAJanvier202
 egen hyper_util2_21= rowtotal (AnciensCasHTAFévrier2021 NouveauxCasHTAFévrier2021 ) , m 
 egen hyper_util3_21= rowtotal (AnciensCasHTAMars2021 NouveauxCasHTAMars2021 ) , m 
 
-drop AnciensCasHTAJanvier2019 - NouveauxCasDiabeteMars2021
+drop AnciensCasDiabeteJanvier2019-NouveauxCasDiabeteMars2021
 
 order Number, after(ID)
 
 merge 1:1 Number using "$user/$data/Data for analysis/Haiti_Jan19-March21_MCH.dta" 
 drop _merge
 
-save "$user/$data/Data for analysis/Haiti_Jan19-March21_NCD_MCH.dta", replace
+save "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", replace
 
 ********************************************************************************
 * OPC - related data 
@@ -227,11 +227,13 @@ drop VisitesdesEnfants14ans-FJ VisitesdesJeunesadultes15-HL
 
 order Number, after(ID)
 
-merge 1:1 Number using "$user/$data/Data for analysis/Haiti_Jan19-March21_NCD_MCH.dta" 
+merge 1:1 Number using "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta" 
 drop _merge
 
 save "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", replace
 
+
+rm  "$user/$data/Data for analysis/Haiti_Jan19-March21_MCH.dta"
 *END 
 
 
