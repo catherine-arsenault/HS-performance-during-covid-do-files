@@ -96,33 +96,33 @@ save "$user/$data/Data for analysis/Haiti_Jan19-March21_MCH.dta", replace
 import excel "$user/$data//Raw data/Jan19-March21/NCD_dataset_DI.xlsx", sheet("NCD") firstrow clear 
 
 *Diabetes visits 										  		
-egen diab_util1_19= rowtotal (
-egen diab_util2_19= rowtotal (
-egen diab_util3_19= rowtotal (
-egen diab_util4_19= rowtotal (
-egen diab_util5_19= rowtotal (
-egen diab_util6_19= rowtotal (
-egen diab_util7_19= rowtotal (
-egen diab_util8_19= rowtotal (
-egen diab_util9_19= rowtotal (
-egen diab_util10_19= rowtotal (
-egen diab_util11_19= rowtotal (
-egen diab_util12_19= rowtotal (
-egen diab_util1_20= rowtotal (
-egen diab_util2_20= rowtotal (
-egen diab_util3_20= rowtotal (
-egen diab_util4_20= rowtotal (
-egen diab_util5_20= rowtotal (
-egen diab_util6_20= rowtotal (
-egen diab_util7_20= rowtotal (
-egen diab_util8_20= rowtotal (
-egen diab_util9_20= rowtotal (
-egen diab_util10_20= rowtotal (
-egen diab_util11_20= rowtotal ( 
-egen diab_util12_20= rowtotal (
-egen diab_util1_21= rowtotal (
-egen diab_util2_21= rowtotal (
-egen diab_util3_21= rowtotal (
+egen diab_util1_19= rowtotal (AnciensCasDiabeteJanvier2019 NouveauxCasDiabeteJanvier201), m
+egen diab_util2_19= rowtotal (AnciensCasDiabeteFévrier2019 NouveauxCasDiabeteFévrier201), m
+egen diab_util3_19= rowtotal (AnciensCasDiabeteMars2019 NouveauxCasDiabeteMars2019), m
+egen diab_util4_19= rowtotal (AnciensCasDiabeteAvril2019 NouveauxCasDiabeteAvril2019), m
+egen diab_util5_19= rowtotal (AnciensCasDiabeteMai2019 NouveauxCasDiabeteMai2019), m
+egen diab_util6_19= rowtotal (AnciensCasDiabeteJuin2019 NouveauxCasDiabeteJuin2019), m
+egen diab_util7_19= rowtotal (AnciensCasDiabeteJuillet2019 NouveauxCasDiabeteJuillet201), m
+egen diab_util8_19= rowtotal (AnciensCasDiabeteAoût2019 NouveauxCasDiabeteAoût2019), m
+egen diab_util9_19= rowtotal (AnciensCasDiabeteSeptembre20 NouveauxCasDiabeteSeptembre2), m
+egen diab_util10_19= rowtotal (AnciensCasDiabeteOctobre2019 NouveauxCasDiabeteOctobre201), m
+egen diab_util11_19= rowtotal (AnciensCasDiabeteNovembre201 NouveauxCasDiabeteNovembre20), m
+egen diab_util12_19= rowtotal (AnciensCasDiabeteDécembre201 NouveauxCasDiabeteDécembre20), m
+egen diab_util1_20= rowtotal (AnciensCasDiabeteJanvier2020 NouveauxCasDiabeteJanvier202), m
+egen diab_util2_20= rowtotal (AnciensCasDiabeteFévrier2020 NouveauxCasDiabeteFévrier202), m
+egen diab_util3_20= rowtotal (AnciensCasDiabeteMars2020 NouveauxCasDiabeteMars2020), m
+egen diab_util4_20= rowtotal (AnciensCasDiabeteAvril2020 NouveauxCasDiabeteAvril2020), m
+egen diab_util5_20= rowtotal (AnciensCasDiabeteMai2020 NouveauxCasDiabeteMai2020), m
+egen diab_util6_20= rowtotal (AnciensCasDiabeteJuin2020 NouveauxCasDiabeteJuin2020), m
+egen diab_util7_20= rowtotal (AnciensCasDiabeteJuillet2020 NouveauxCasDiabeteJuillet202), m
+egen diab_util8_20= rowtotal (AnciensCasDiabeteAoût2020 NouveauxCasDiabeteAoût2020), m
+egen diab_util9_20= rowtotal (Y DB), m
+egen diab_util10_20= rowtotal (AnciensCasDiabeteOctobre2020 NouveauxCasDiabeteOctobre202), m
+egen diab_util11_20= rowtotal (AnciensCasDiabeteNovembre202 DD), m 
+egen diab_util12_20= rowtotal (AnciensCasDiabeteDécembre202 DE), m
+egen diab_util1_21= rowtotal (AnciensCasDiabeteJanvier2021 DF), m
+egen diab_util2_21= rowtotal (AnciensCasDiabeteFévrier2021 DG), m
+egen diab_util3_21= rowtotal (AnciensCasDiabeteMars2021 NouveauxCasDiabeteMars2021), m 
 
 * Hypertension visits 
 egen hyper_util1_19= rowtotal (AnciensCasHTAJanvier2019 NouveauxCasHTAJanvier2019 ) , m 
