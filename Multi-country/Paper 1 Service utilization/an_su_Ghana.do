@@ -23,6 +23,12 @@ gen summer = month>=6 & month<=8
 gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
+* Create % var for graphs
+foreach x in opd anc del {
+		gen ref_`x' = `x'_util if rmonth==1
+		by reg, sort: carryforward ref_`x', replace
+		gen `x'_pct = `x'_util*100/ref_`x' 
+	}
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 
 * Call GEE, export RR to excel
@@ -95,22 +101,22 @@ foreach var in opd_util anc_util del_util  {
 			
 * OPD		
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			 drop if rmonth>15
+			drop if rmonth>15
 			xtset reg rmonth
-			 xtgee opd_util rmonth , family(gaussian) ///
+			 xtgee opd_pct rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename opd_util opd_util_real
-			predict opd_util
+			rename opd_pct opd_pct_real
+			predict opd_pct
 
-			collapse (sum) opd_util_real opd_util , by(rmonth)
+			collapse (mean) opd_pct_real opd_pct , by(rmonth)
 
-			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
+			twoway (line opd_pct_real rmonth,  sort) (line opd_pct rmonth), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Outpatient visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(500000)3500000, labsize(vsmall))
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(25)150, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
 			
