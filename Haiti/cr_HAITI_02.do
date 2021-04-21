@@ -12,12 +12,12 @@ import excel "$user/$data//Raw data/Jan19-March21/MCH_dataset_DI.xlsx", sheet("M
 
 * Total deliveries
 rename (AccouchementsInstitutionnelsJa - AE) ///
-(totaldel1_19	totaldel2_19	totaldel3_19	///
-totaldel4_19	totaldel5_19	totaldel6_19	totaldel7_19	totaldel8_19	///
-totaldel9_19	totaldel10_19	totaldel11_19	totaldel12_19 	totaldel1_20	///
-totaldel2_20	totaldel3_20	totaldel4_20	totaldel5_20	totaldel6_20	///
-totaldel7_20	totaldel8_20	totaldel9_20	totaldel10_20	totaldel11_20 ///
-totaldel12_20	totaldel1_21	totaldel2_21	totaldel3_21	)
+(del_util1_19	del_util2_19	del_util3_19	///
+del_util4_19	del_util5_19	del_util6_19	del_util7_19	del_util8_19	///
+del_util9_19	del_util10_19	del_util11_19	del_util12_19 	del_util1_20	///
+del_util2_20	del_util3_20	del_util4_20	del_util5_20	del_util6_20	///
+del_util7_20	del_util8_20	del_util9_20	del_util10_20	del_util11_20 ///
+del_util12_20	del_util1_21	del_util2_21	del_util3_21	)
 
 * PNC visits for mother 
 rename (ConsultationspostnatalesJanvie - BF) ///
@@ -28,25 +28,11 @@ pncm_util2_20	pncm_util3_20	pncm_util4_20	pncm_util5_20	pncm_util6_20	///
 pncm_util7_20	pncm_util8_20	pncm_util9_20	pncm_util10_20	pncm_util11_20 ///
 pncm_util12_20	pncm_util1_21	pncm_util2_21	pncm_util3_21	)
 
-* Prenatal visits 
-rename (VisiteConsultationsprenatales - CG) ///
-(prenatal_util1_19	prenatal_util2_19	prenatal_util3_19	prenatal_util4_19 ///
-prenatal_util5_19	prenatal_util6_19	prenatal_util7_19	prenatal_util8_19 ///
-prenatal_util9_19	prenatal_util10_19	prenatal_util11_19	prenatal_util12_19 ///
-prenatal_util1_20	prenatal_util2_20	prenatal_util3_20	prenatal_util4_20 ///
-prenatal_util5_20	prenatal_util6_20	prenatal_util7_20	prenatal_util8_20 ///
-prenatal_util9_20	prenatal_util10_20	prenatal_util11_20	prenatal_util12_20 ///
-prenatal_util1_21	prenatal_util2_21	prenatal_util3_21)
+* Prenatal visits - variables re empty
+drop  VisiteConsultationsprenatales - CG
 
 * Maternal deaths - no data
-rename (NombredeDecesmaternelsJanvie - DH) ///
-(mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19 ///
-mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19 ///
-mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19 ///
-mat_mort_num1_20	mat_mort_num2_20	mat_mort_num3_20	mat_mort_num4_20 ///
-mat_mort_num5_20	mat_mort_num6_20	mat_mort_num7_20	mat_mort_num8_20 ///
-mat_mort_num9_20	mat_mort_num10_20	mat_mort_num11_20	mat_mort_num12_20 ///
-mat_mort_num1_21	mat_mort_num2_21	mat_mort_num3_21)
+drop  NombredeDecesmaternelsJanvie - DH
 
 * Fully vaccinated 
 egen vacc_qual1_19 = rowtotal(CompletementVaccinesInstitutio ///
@@ -100,7 +86,6 @@ sb_mort_num6_20	sb_mort_num7_20	sb_mort_num8_20	sb_mort_num9_20 ///
 sb_mort_num10_20	sb_mort_num11_20	sb_mort_num12_20 sb_mort_num1_21 ///
 sb_mort_num2_21 sb_mort_num3_21)
 
-
 order Number, after(ID)
 
 save "$user/$data/Data for analysis/Haiti_Jan19-March21_MCH.dta", replace
@@ -110,14 +95,34 @@ save "$user/$data/Data for analysis/Haiti_Jan19-March21_MCH.dta", replace
 
 import excel "$user/$data//Raw data/Jan19-March21/NCD_dataset_DI.xlsx", sheet("NCD") firstrow clear 
 
-*Diabetes visits (only the old case available)
-rename (AnciensCasDiabeteJanvier2019 - AnciensCasDiabeteMars2021) ///
-(diab_util1_19	diab_util2_19	diab_util3_19	diab_util4_19	diab_util5_19 ///
-diab_util6_19	diab_util7_19	diab_util8_19	diab_util9_19	diab_util10_19 ///
-diab_util11_19	diab_util12_19  diab_util1_20	diab_util2_20	diab_util3_20 ///
-diab_util4_20	diab_util5_20	diab_util6_20	diab_util7_20	diab_util8_20 ///
-diab_util9_20	diab_util10_20	diab_util11_20	diab_util12_20 diab_util1_21 ///
-diab_util2_21	diab_util3_21)			 										  		
+*Diabetes visits 										  		
+egen diab_util1_19= rowtotal (
+egen diab_util2_19= rowtotal (
+egen diab_util3_19= rowtotal (
+egen diab_util4_19= rowtotal (
+egen diab_util5_19= rowtotal (
+egen diab_util6_19= rowtotal (
+egen diab_util7_19= rowtotal (
+egen diab_util8_19= rowtotal (
+egen diab_util9_19= rowtotal (
+egen diab_util10_19= rowtotal (
+egen diab_util11_19= rowtotal (
+egen diab_util12_19= rowtotal (
+egen diab_util1_20= rowtotal (
+egen diab_util2_20= rowtotal (
+egen diab_util3_20= rowtotal (
+egen diab_util4_20= rowtotal (
+egen diab_util5_20= rowtotal (
+egen diab_util6_20= rowtotal (
+egen diab_util7_20= rowtotal (
+egen diab_util8_20= rowtotal (
+egen diab_util9_20= rowtotal (
+egen diab_util10_20= rowtotal (
+egen diab_util11_20= rowtotal ( 
+egen diab_util12_20= rowtotal (
+egen diab_util1_21= rowtotal (
+egen diab_util2_21= rowtotal (
+egen diab_util3_21= rowtotal (
 
 * Hypertension visits 
 egen hyper_util1_19= rowtotal (AnciensCasHTAJanvier2019 NouveauxCasHTAJanvier2019 ) , m 
@@ -200,7 +205,25 @@ egen opd_util1_21 = rowtotal (BD CE DF EG FH GI HJ) , m
 egen opd_util2_21 = rowtotal (BE CF DG EH FI GJ HK) , m 
 egen opd_util3_21 = rowtotal (BF CG DH EI FJ GK HL) , m 
 
-drop VisitesdesClientesPFRepart  - HL
+* Family planning
+rename (VisitesdesClientesPFRepart-BF) ///
+(fp_util1_19	fp_util2_19	fp_util3_19	///
+fp_util4_19	 fp_util5_19  fp_util6_19	fp_util7_19 fp_util8_19	///
+fp_util9_19	 fp_util10_19 fp_util11_19	fp_util12_19 fp_util1_20 ///
+fp_util2_20	 fp_util3_20  fp_util4_20	fp_util5_20	fp_util6_20	///
+fp_util7_20 fp_util8_20	fp_util9_20	fp_util10_20	fp_util11_20 ///
+fp_util12_20 fp_util1_21 fp_util2_21 fp_util3_21)
+
+* ANC 
+rename (VisitesdesFemmesEnceintesR-GK) ///
+(anc_util1_19	anc_util2_19	anc_util3_19	///
+anc_util4_19	 anc_util5_19  anc_util6_19	anc_util7_19 anc_util8_19	///
+anc_util9_19	 anc_util10_19 anc_util11_19	anc_util12_19 anc_util1_20 ///
+anc_util2_20	 anc_util3_20  anc_util4_20	anc_util5_20	anc_util6_20	///
+anc_util7_20 anc_util8_20	anc_util9_20	anc_util10_20	anc_util11_20 ///
+anc_util12_20 anc_util1_21 anc_util2_21 anc_util3_21)
+
+drop VisitesdesEnfants14ans-FJ VisitesdesJeunesadultes15-HL
 
 order Number, after(ID)
 
