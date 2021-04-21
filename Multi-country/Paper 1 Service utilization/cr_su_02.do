@@ -209,7 +209,7 @@ twoway (line ethiopia_opd time, lcolor(green)) (line ghana_opd time, lcolor(red)
 	   (line kzn_opd time, lcolor(mint)) (line lao_opd time, lcolor(ltblue)) ///
 	   (line mexico_opd time, lcolor(orange)) (line nepal_opd time, lcolor(purple)) ///
 	   (line thailand_opd time, lcolor(gs5)) ///
-	   , ylabel(#6, labsize(vsmall)) xlabel(#24,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
+	   , ylabel(0(50)200, labsize(vsmall)) xlabel(#24,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
 	   xline(15) graphregion(color(white))  ///
 	   title("Outpatient visits relative to Jan 2019 (Jan 2019-Dec 2020)", size(small)) ///
 	   legend(rows(2) rowgap(tiny) colgap(tiny) keygap(tiny) size(vsmall) region(margin(tiny) ///
@@ -243,6 +243,42 @@ grc1leg "$analysis/Graphs/opd1.gph" "$analysis/Graphs/anc1.gph" "$analysis/Graph
 	, legendfrom("$analysis/Graphs/anc1.gph") row(2) col(2)
  	   
 * inside xlabel()  glcolor(teal%75) glpattern(dash)
+
+* another option is a scatter plot
+twoway (scatter ethiopia_opd time, lcolor(green) msize(vsmall)) (scatter ghana_opd time, lcolor(red) msize(vsmall)) ///
+	   (scatter haiti_opd time, lcolor(yellow) msize(vsmall))  (scatter korea_opd time, lcolor(blue) msize(vsmall))  ///
+	   (scatter kzn_opd time, lcolor(mint) msize(vsmall)) (scatter lao_opd time, lcolor(ltblue) msize(vsmall)) ///
+	   (scatter mexico_opd time, lcolor(orange) msize(vsmall)) (scatter nepal_opd time, lcolor(purple) msize(vsmall)) ///
+	   (scatter thailand_opd time, lcolor(gs5) msize(vsmall)) ///
+	   , ylabel(0(50)200, labsize(vsmall)) xlabel(#24,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
+	   xline(15) graphregion(color(white))  ///
+	   title("Outpatient visits relative to Jan 2019 (Jan 2019-Dec 2020)", size(small)) ///
+	   legend(rows(2) rowgap(tiny) colgap(tiny) keygap(tiny) size(vsmall) region(margin(tiny) ///
+	   lcolor(none)) bmargin(tiny)) xtitle("Month", size(small)) ytitle("Percent relative to Jan 2019", size(small)) ///
+	   saving("$analysis/Graphs/opd1.gph", replace)
+
+* or separate plots per country
+local colors green red yellow blue mint ltblue orange purple gs5 
+
+foreach c in ethiopia ghana haiti korea kzn lao mexico nepal thailand {	
+	local counter = `counter' + 1
+	local color: word `counter' of `colors'
+twoway (line `c'_opd time, lcolor("`color'")) ///
+	   , ylabel(0(50)200, labsize(vsmall)) xlabel(#24,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
+	   xline(15) graphregion(color(white))  ///
+	    xtitle("`c'", size(small)) ytitle("Percent relative to Jan 2019", size(small)) ///
+	   saving("$analysis/Graphs/opd_`c'.gph", replace)
+}
+
+grc1leg "$analysis/Graphs/opd_ethiopia.gph" "$analysis/Graphs/opd_ghana.gph" ///
+		"$analysis/Graphs/opd_haiti.gph" 	"$analysis/Graphs/opd_korea.gph" ///
+		"$analysis/Graphs/opd_kzn.gph" 	"$analysis/Graphs/opd_lao.gph" ///
+		"$analysis/Graphs/opd_mexico.gph" 	"$analysis/Graphs/opd_nepal.gph" ///
+		"$analysis/Graphs/opd_thailand.gph" , 	 ///
+		title("Outpatient visits relative to January 2019 (January 2019-December 2020)", size(small)) 
+* Removeed legend by hand
+
+
 
 ***********************************************************
 *Jan 2020 as reference
