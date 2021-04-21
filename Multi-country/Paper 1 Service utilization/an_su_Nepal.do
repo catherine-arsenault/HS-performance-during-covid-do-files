@@ -1,5 +1,4 @@
-* Level of analysis (facility and regional or regional everywhere?)
-* Testing different models for opd_util anc_util del_util
+
 ********************************************************************************
 * Nepal (regional)
 ********************************************************************************
@@ -114,7 +113,7 @@ foreach var in opd_util anc_util del_util  {
 			collapse (sum) del_util_real del_util , by(rmonth)
 
 			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)70000, labsize(small))
@@ -135,7 +134,7 @@ foreach var in opd_util anc_util del_util  {
 			collapse (sum) anc_util_real anc_util , by(rmonth)
 
 			twoway (line anc_util_real rmonth, sort) (line anc_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)70000, labsize(small))
@@ -156,7 +155,7 @@ foreach var in opd_util anc_util del_util  {
 			collapse (sum) opd_util_real opd_util , by(rmonth)
 
 			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Outpatient visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(250000)2000000, labsize(vsmall))
