@@ -232,9 +232,8 @@ drop _merge
 
 save "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", replace
 
-
 rm  "$user/$data/Data for analysis/Haiti_Jan19-March21_MCH.dta"
-*END 
+ 
 
 
 																							
