@@ -7,17 +7,15 @@
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
 ****************************************************************
-
-		COUNTS THE NUMBER OF FACILITIES INCLUDED IN THE 
-		FINAL DASHBOARD DATASET
-		
+ASSESSES DATASET AFTER CLEANING (NUMBER OF UNITS REPORTING, AND
+SUM AND AVERAGE SERVICES PER UNIT)
 ****************************************************************/
 u "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", clear
-
+								
 foreach var of global all {
-egen `var'_report = rownonmiss(`var'*)
+	egen `var'_report = rownonmiss(`var'*)
 }
-recode *_report (0=0) (1/24=1) //24 months of data 
+	recode *_report (0=0) (1/24=1) //24 months of data 
 
 putexcel set "$user/$data/Analyses/Codebook for Haiti Internal.xlsx", sheet(After cleaning)  modify
 putexcel A2 = "Variable"
@@ -32,8 +30,8 @@ foreach var of global all {
 drop *report
 * Min and Max number of facilities reporting any data, for any given month	
 preserve
-	local all totaldel pncm_util dental_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util sb_mort_num		   
+	local all dental_util fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num		   
 	reshape long `all', i(Number) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
@@ -87,7 +85,7 @@ drop *_report *_sum *_mean
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
 	rename orgunitlevel2 departement
-	collapse (sum) totaldel1_19 - sb_mort_num12_20 , by(departement)
+	collapse (sum) dental_util1_19-sb_mort_num12_20 , by(departement)
 	encode departement, gen(dpt)
 	drop departement
 	order dpt
@@ -102,8 +100,9 @@ drop *_report *_sum *_mean
 	drop dpt
 	order departement
 
-reshape long  totaldel pncm_util dental_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util sb_mort_num, i(departement) j(month) string
+reshape long dental_util fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num ///
+			   , i(departement) j(month) string
 * Month and year
 		gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
 				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
@@ -151,8 +150,10 @@ export delimited using "$user/$data/Haiti_Jan19-Dec20_fordashboard.csv", replace
 	FINAL DATASET FOR SERVICE UTILISATION PAPER
 *****************************************************************/
 u "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", clear
-reshape long  totaldel pncm_util dental_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util sb_mort_num, i(Number) j(month) string
+
+reshape long  dental_util fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num ///
+			   , i(Number) j(month) string
 * Month and year
 		gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
 				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
