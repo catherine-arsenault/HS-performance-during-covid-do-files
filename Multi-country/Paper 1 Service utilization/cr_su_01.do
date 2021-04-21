@@ -75,7 +75,7 @@ save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", repl
 	 
 ********************************************************************************
 * 4 HAITI (facility)
-use "$user/$HTIdata/Data for analysis/Haiti_su_18months.dta", clear
+use "$user/$HTIdata/Data for analysis/Haiti_su_24months.dta", clear
 
 local dl_modif
     foreach x of global droplist {
@@ -85,8 +85,8 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
-rename pncc_util pnc_util 
-save "$user/$HTIdata/Data for analysis/Haiti_su_18months_for_analyses.dta", replace 
+
+save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace 
 ********************************************************************************
 * 5 KZN, SA (facility)
 use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear 
