@@ -25,12 +25,12 @@ set more off
 
 u "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", clear
 
-/****************************************************************
-EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
-****************************************************************/
-export excel using "$user/$data/Data cleaning/Haiti_Jan19-March21_fordatacleaning0.xlsx", firstrow(variable) replace
+global volumes dental_util fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual
+global mortality sb_mort_num
+global all $volumes $mortality 
 
-* FOR NOW WE WILL NOT INCLUDE DATA FROM 2021!
+* FOR NOW WE WILL NOT INCLUDE DATA FROM 2021
 drop *_21
 
 * 1212 facilities. Dropping all facilities that don't report any indicators all 18 months
@@ -39,40 +39,31 @@ drop if  all_visits==.
 drop all_visits 
 * Drops 373 facilities, retains 839
 
-drop prenatal* // variable was empty
-drop mat_mort_num* //variable was empty 
-
-
-global volumes totaldel pncm_util dental_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util
-global mortality sb_mort_num
-global all $volumes $mortality 
-
 /****************************************************************
 ASSESSES DATASET BEFORE CLEANING (NUMBER OF UNITS REPORTING, AND
 SUM AND AVERAGE SERVICES PER UNIT)
 ****************************************************************/
 * Number of facility reporting any data, for each indicator 
-foreach var of global all {
-egen `var'_report = rownonmiss(`var'*) //counts the number of non missing cells
-}
-recode *_report (0=0) (1/24=1) // 0 never any value, 1 some value 
+	foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*) //counts the number of non missing cells
+	}
+	recode *_report (0=0) (1/24=1) // 0 never any value, 1 some value 
 
-putexcel set "$user/$data/Analyses/Codebook for Haiti Internal.xlsx", sheet(Before cleaning)  modify
-putexcel A2 = "Variable"
-putexcel B2 = "Reported any data"	
-local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'_report
-	putexcel B`i' = `r(sum)'
-}
+	putexcel set "$user/$data/Analyses/Codebook for Haiti Internal.xlsx", sheet(Before cleaning)  modify
+	putexcel A2 = "Variable"
+	putexcel B2 = "Reported any data"	
+	local i= 2
+	foreach var of global all {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'_report
+		putexcel B`i' = `r(sum)'
+	}
 drop *report
 * Min and Max number of facilities reporting any data, for any given month	
 preserve
-	local all totaldel pncm_util dental_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util sb_mort_num
+	local all dental_util fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num
 	reshape long `all', i(Number) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
@@ -106,7 +97,6 @@ foreach var of global all {
 	* Average volume per facilities
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
-
 putexcel set "$user/$data/Analyses/Codebook for Haiti Internal.xlsx", sheet(Before cleaning)  modify
 putexcel F2 = "Variable"
 putexcel G2 = "Sum of services or deaths"	
@@ -130,10 +120,10 @@ REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
 For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
-	replace sb_mort_num`i'_19 = 0     if sb_mort_num`i'_19== . & totaldel`i'_19!=.
+	replace sb_mort_num`i'_19 = 0     if sb_mort_num`i'_19== . & del_util`i'_19!=.
 }
 forval i= 1/12 { 
-	replace sb_mort_num`i'_20 = 0     if sb_mort_num`i'_20== . & totaldel`i'_20!=.
+	replace sb_mort_num`i'_20 = 0     if sb_mort_num`i'_20== . & del_util`i'_20!=.
 }
 /****************************************************************
          IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
@@ -182,10 +172,10 @@ above 90% for all variables. */
 				restore
 				}
 	
-	u "$user/$data/Data for analysis/tmptotaldel.dta", clear
+	u "$user/$data/Data for analysis/tmpdental_util.dta", clear
 
-	foreach x in  dental_util pncm_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util sb_mort_num  {
+	foreach x in  fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num  {
 			 	merge 1:1 Number using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", replace
@@ -195,6 +185,7 @@ above 90% for all variables. */
 			 }
 	
 save "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", replace
+
 /***************************************************************
                  COMPLETE CASE ANALYSIS 
 				 COMPARING QUARTERS 2 (2020 vs. 2019)
@@ -212,10 +203,10 @@ foreach x of global all {
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}
-	u "$user/$data/Data for analysis/tmptotaldel.dta", clear
+	u "$user/$data/Data for analysis/tmpdental_util.dta", clear
 
-	foreach x in dental_util pncm_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util sb_mort_num {
+	foreach x in  fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num  {
 			 	merge 1:1 Number using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Haiti_CCA_Q2.dta", replace
@@ -226,8 +217,8 @@ foreach x of global all {
 
 		 
 * Reshape for analyses
-reshape long totaldel pncm_util dental_util hyper_util vacc_qual cerv_qual ///
-			   opd_util diab_util sb_mort_num, i(Number) j(month) string	
+reshape long dental_util fp_util anc_util opd_util diab_util hyper_util ///
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num, i(Number) j(month) string	
 	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
