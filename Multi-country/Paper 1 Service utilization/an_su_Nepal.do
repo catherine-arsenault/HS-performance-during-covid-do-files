@@ -15,10 +15,10 @@ encode Province, gen(prov)
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort prov rmonth
-gen postCovid = rmonth>13 // Starting February
+gen postCovid = rmonth>15 // Starting April
 
 * Number of months since Covid / lockdowns 
-gen timeafter= rmonth-13
+gen timeafter= rmonth-15
 replace timeafter=0 if timeafter<0
 * Seasons
 gen spring = month>=3 & month<=5
@@ -62,10 +62,10 @@ use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clea
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort unique_id rmonth
-gen postCovid = rmonth>13 // Starting February
+gen postCovid = rmonth>15 // Starting April
 
 * Number of months since Covid / lockdowns 
-gen timeafter= rmonth-13
+gen timeafter= rmonth-15
 replace timeafter=0 if timeafter<0
 * Seasons
 gen spring = month>=3 & month<=5
@@ -73,23 +73,10 @@ gen summer = month>=6 & month<=8
 gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
-gen cases = 0 if rmonth>=1 & rmonth<=12
-replace cases = 1 if rmonth==13
-replace cases = 1 if rmonth==14
-replace cases =  5 if rmonth==15
-replace cases =57 if rmonth==16
-replace cases = 1572 if rmonth==17
-replace cases = 13564 if rmonth==18
-replace cases = 19771 if rmonth==19
-replace cases = 39460 if rmonth==20
-replace cases = 77817 if rmonth==21
-replace cases = 170743 if rmonth==22
-replace cases = 233452 if rmonth==23
-replace cases = 260593 if rmonth==24
-
 * Call GEE, export RR to excel
 xtset unique_id rmonth 
 
+*Linear 
 putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
 putexcel A9 = "Nepal Palika GEE"
 putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
@@ -115,7 +102,7 @@ foreach var in opd_util anc_util del_util  {
 ********************************************************************************
 * Deliveries
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>13 
+			 drop if rmonth>15
 			 xtset prov rmonth
 			 xtgee del_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -136,7 +123,7 @@ foreach var in opd_util anc_util del_util  {
 
 * ANC			
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>13 
+			 drop if rmonth>15 
 			 xtset prov rmonth
 			 xtgee anc_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -157,7 +144,7 @@ foreach var in opd_util anc_util del_util  {
 			
 * OPD		
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>13 
+			 drop if rmonth>15
 			xtset prov rmonth
 			 xtgee opd_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
