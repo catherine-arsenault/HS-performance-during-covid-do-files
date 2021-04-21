@@ -75,10 +75,10 @@ xtset id rmonth
 
 * Linear model
 putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
-putexcel A9 = "KZN facility-level GEE"
-putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
+putexcel A7 = "KZN facility-level GEE linear"
+putexcel A8 = "Indicator" B8="RR postCovid" C8="LCL" D8="UCL" 
 
-local i = 10
+local i = 8
 
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
@@ -95,10 +95,10 @@ foreach var in opd_util anc_util del_util  {
 }
 * Poisson with log link
 putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
-putexcel A15 = "KZN facility-level GEE poisson w. log link"
-putexcel A16 = "Indicator" B16="RR postCovid" C16="LCL" D16="UCL" 
+putexcel A13 = "KZN facility-level GEE poisson w. log link"
+putexcel A14 = "Indicator" B14="RR postCovid" C14="LCL" D14="UCL" 
 
-local i = 16
+local i = 14
 
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
@@ -124,7 +124,7 @@ foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
-	family(poisson) link(log) corr(exchangeable) vce(robust)	
+	family(nbinomial) link(power) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
