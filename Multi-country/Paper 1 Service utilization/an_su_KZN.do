@@ -12,11 +12,12 @@ collapse (sum) opd_util anc_util del_util, by (dist year month rmonth)
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid */ 
 sort dist rmonth
-gen postCovid = rmonth>15 // Starting April
+gen postCovid = rmonth>15 // PostCovid starting April
 
 * Number of months since Covid / lockdowns 
 gen timeafter= rmonth-15
 replace timeafter=0 if timeafter<0
+
 * Seasons
 gen spring = month>=3 & month<=5
 gen summer = month>=6 & month<=8
@@ -24,6 +25,7 @@ gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
 save "$user/$KZNdata/Data for analysis/KZNtmp.dta",  replace
+
 * Call GEE, export RR to excel
 xtset dist rmonth 
 
@@ -80,8 +82,8 @@ local i = 10
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, family(gaussian) ///
-	link(identity) corr(exchangeable) vce(robust)	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
