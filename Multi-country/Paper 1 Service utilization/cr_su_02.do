@@ -710,14 +710,15 @@ save "$analysis/tmp.dta", replace
 
 * Thailand
 use "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear 
+rename totaldel del_util
 
-collapse (sum) opd anc, by( year month)
+collapse (sum) opd anc del, by( year month)
 
 sort year month 
-reshape wide opd_util anc_util, i(month) j(year)
+reshape wide opd_util anc_util del_util, i(month) j(year)
 gen time= _n
 
-foreach x in opd anc {
+foreach x in opd anc del {
 	gen `x'_pct = `x'_util2020*100/`x'_util2019 
 	rename `x'_pct thailand_`x'
 	lab var thailand_`x' "Thailand"
@@ -760,6 +761,7 @@ twoway (line chile_del time, lcolor(black)) (line ethiopia_del time, lcolor(gree
 	   (line haiti_del time, lcolor(yellow))  (line korea_del time, lcolor(blue))  ///
 	   (line kzn_del time, lcolor(mint)) (line lao_del time, lcolor(ltblue)) ///
 	   (line mexico_del time, lcolor(orange)) (line nepal_del time, lcolor(purple)) ///
+	   (line thailand_del time, lcolor(gs5)) ///
 	   , ylabel(#6, labsize(vsmall)) xlabel(#12,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
 	   xline(3) yline(100) graphregion(color(white))  ///
 	   title("Deliveries in 2020 relative to same month 2019", size(small)) ///
