@@ -232,9 +232,34 @@ drop _merge
 
 save "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", replace
 
+********************************************************************************
+* Maternal mortality 
+import excel "$user/$data//Raw data/Jan19-March21/Maternal_mortality_DI.xlsx", sheet("Sheet 1") firstrow clear 
+
+rename E Number 
+
+//no data 
+drop DecesmaternelsJanvier2020 - DecesmaternelsDécembre2019
+
+rename (NombredeDecesmaternelsparAc - AC) ///
+(mat_mort_num1_20	mat_mort_num2_20	mat_mort_num3_20	mat_mort_num4_20 ///
+mat_mort_num5_20	mat_mort_num6_20	mat_mort_num7_20	mat_mort_num8_20 ///
+mat_mort_num9_20	mat_mort_num10_20	mat_mort_num11_20	mat_mort_num12_20  ///
+mat_mort_num1_19	mat_mort_num2_19	mat_mort_num3_19	mat_mort_num4_19 ///
+mat_mort_num5_19	mat_mort_num6_19	mat_mort_num7_19	mat_mort_num8_19 ///
+mat_mort_num9_19	mat_mort_num10_19	mat_mort_num11_19	mat_mort_num12_19 )
+
+order org* ID Number *_19 *_20
+
+merge 1:1 Number using "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta" 
+drop _merge
+
+save "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", replace
+
 rm  "$user/$data/Data for analysis/Haiti_Jan19-March21_MCH.dta"
  
-
+********************************************************************************
+*END
 
 																							
 																							
