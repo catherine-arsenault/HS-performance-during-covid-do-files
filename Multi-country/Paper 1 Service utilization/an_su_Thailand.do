@@ -38,7 +38,7 @@ foreach var in opd_util totaldel  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
+	, family(nbinomial) link(power) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
@@ -49,7 +49,7 @@ foreach var in opd_util totaldel  {
 }
 
 ********************************************************************************
-* THAICO GRAPHS
+* THAILAND GRAPHS
 ********************************************************************************
 
 
@@ -95,6 +95,19 @@ foreach var in opd_util totaldel  {
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(5000000(5000000)35000000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/THA_opd_util.pdf", replace
+* Deliveries		
+			u "$user/$THAdata/Data for analysis/THAtmp.dta", clear
 			
+			collapse (sum) totaldel , by(rmonth)
+			rename totaldel del_util
+			twoway (scatter del_util rmonth,  sort msize(small)) (lfit del_util rmonth if rmonth<16) ///
+			(lfit del_util rmonth if rmonth>=16, lcolor(green)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Deliveries", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(6000)32000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/THA_opd_util.pdf", replace
+						
 
 rm "$user/$THAdata/Data for analysis/THAtmp.dta"
