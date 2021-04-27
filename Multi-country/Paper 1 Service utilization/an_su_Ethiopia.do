@@ -89,7 +89,7 @@ xtset unique_id rmonth
 
 *Linear model
 putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Ethiopia)  modify
-putexcel A9 = "Ethio facility-level GEE"
+putexcel A9 = "Ethio facility-level GEE - linear model"
 putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
 
 local i = 10
@@ -109,7 +109,26 @@ foreach var in opd_util anc_util del_util  {
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
+* Negative binomial with. power link
+putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Ethiopia)  modify
+putexcel A20 = "Ethio facility-level GEE -  neg binomial w. power link"
+putexcel A21 = "Indicator" B21="RR postCovid" C21="LCL" D21="UCL" 
 
+local i = 21
+
+foreach var in opd_util anc_util del_util  {
+	local i = `i'+1
+	* POWER LINK OR LOG LINK???
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	family(nbinomial) link(power) corr(exchangeable) vce(robust)	
+	
+	margins postCovid, post
+	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel A`i' = "`var'"
+	putexcel B`i'= (_b[rr])
+	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+}
 ********************************************************************************
 * Ethiopia GRAPHS
 ********************************************************************************
