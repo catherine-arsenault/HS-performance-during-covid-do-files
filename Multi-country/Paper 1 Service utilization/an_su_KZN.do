@@ -122,7 +122,7 @@ local i = 21
 
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
-	
+	* POWER LINK OR LOG LINK???
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	family(nbinomial) link(power) corr(exchangeable) vce(robust)	
 	
