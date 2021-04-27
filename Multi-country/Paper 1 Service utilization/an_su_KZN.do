@@ -59,7 +59,7 @@ encode unique_id, gen(id)
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid */ 
 sort id rmonth
-gen postCovid = rmonth>15 // Starting April
+gen postCovid = rmonth>14 // Starting March
 
 * Number of months since Covid / lockdowns 
 gen timeafter= rmonth-15
@@ -139,18 +139,11 @@ foreach var in opd_util anc_util del_util  {
 ********************************************************************************
 * Deliveries
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			 drop if rmonth>15 
-			 xtset dist rmonth
-			 xtgee del_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
+			
+			collapse (sum)  del_util , by(rmonth)
 
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			rename del_util del_util_real
-			predict del_util
-
-			collapse (sum) del_util_real del_util , by(rmonth)
-
-			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
+			twoway (scatter del_util rmonth,  sort msize(small)) (lfit del_util rmonth if rmonth<16) ///
+			(lfit del_util rmonth if rmonth>=16, lcolor(green)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Deliveries", size(small)) ///
@@ -160,18 +153,11 @@ foreach var in opd_util anc_util del_util  {
 
 * ANC			
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			 drop if rmonth>15
-			 xtset dist rmonth
-			 xtgee anc_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
+		
+			collapse (sum) anc_util , by(rmonth)
 
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			rename anc_util anc_util_real
-			predict anc_util
-
-			collapse (sum) anc_util_real anc_util , by(rmonth)
-
-			twoway (line anc_util_real rmonth, sort) (line anc_util rmonth), ///
+			twoway (scatter anc_util rmonth, msize(small) sort) ///
+			(lfit anc_util rmonth if rmonth<16) (lfit anc_util rmonth if rmonth>=16, lcolor(green)) , ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
