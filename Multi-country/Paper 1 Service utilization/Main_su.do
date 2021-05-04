@@ -23,15 +23,22 @@ global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
 global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 ********************************************************************************
 
-global all opd_util er_util road_util ipd_util fp_util sti_util anc_util del_util ///
-           cs_util kmc_qual pnc_util diarr_util pneum_util malnu_util vacc_qual ///
-		   bcg_qual pent_qual measles_qual opv3_qual pneum_qual rota_qual ///
-		   malaria_util tbscreen_qual hivtest_qual tbdetect_qual art_util ///
-		   diab_util hyper_util cerv_qual breast_util
+global all opd_util er_util road_util ipd_util fp_util sti_util anc_util ///
+		   del_util cs_util kmc_qual pnc_util diarr_util pneum_util malnu_util ///
+		   vacc_qual bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///
+		   rota_qual malaria_util tbscreen_qual hivtest_qual tbdetect_qual ///
+		   art_util  diab_util hyper_util cerv_qual breast_util
 		
 ********************************************************************************
-* Analyses by country 
+* Creates datasets for paper 1 analyses
+do "$dofiles/cr_su_01.do"
 
+********************************************************************************
+* Creates multi country graphs
+do "$dofiles/cr_su_02.do"
+
+********************************************************************************
+* Regression analyses by country 
 do "$dofiles/an_su_Chile"
 do "$dofiles/an_su_Ethiopia"
 do "$dofiles/an_su_Ghana"
