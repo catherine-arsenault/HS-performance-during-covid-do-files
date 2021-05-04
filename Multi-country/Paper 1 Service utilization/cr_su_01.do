@@ -9,7 +9,7 @@
 * global droplist holds the list of variables that are not in the analysis
 global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_num ///
 				ipd_mort_num sb_mort_denom livebirths_denom ///
-                totalipd_mort_num hivsupp_qual_num tbnum_qual tbdenom_qual surg_util ///
+                totalipd_mort_num  tbnum_qual tbdenom_qual surg_util ///
 				tt_qual trauma_util tbtreat_qual icu_mort_num trauma_mort_num icu_util ///
 				fp_perm_util fp_la_util breast_denom2020 breast_denom2019 hospit_covid ///
 				hospit_pending hospit_negative death_covid death_negative ///
