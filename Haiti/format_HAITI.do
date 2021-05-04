@@ -31,7 +31,7 @@ drop *report
 * Min and Max number of facilities reporting any data, for any given month	
 preserve
 	local all dental_util fp_util anc_util opd_util diab_util hyper_util ///
-			   del_util pnc_util cerv_qual vacc_qual sb_mort_num		   
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num mat_mort_num	   
 	reshape long `all', i(Number) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
@@ -85,7 +85,7 @@ drop *_report *_sum *_mean
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
 	rename orgunitlevel2 departement
-	collapse (sum) dental_util1_19-sb_mort_num12_20 , by(departement)
+	collapse (sum) dental_util1_19-mat_mort_num12_20 , by(departement)
 	encode departement, gen(dpt)
 	drop departement
 	order dpt
@@ -102,7 +102,7 @@ drop *_report *_sum *_mean
 
 reshape long dental_util fp_util anc_util opd_util diab_util hyper_util ///
 			   del_util pnc_util cerv_qual vacc_qual sb_mort_num ///
-			   , i(departement) j(month) string
+			   mat_mort_num, i(departement) j(month) string
 * Month and year
 		gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
 				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
@@ -153,7 +153,7 @@ u "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 
 reshape long  dental_util fp_util anc_util opd_util diab_util hyper_util ///
 			   del_util pnc_util cerv_qual vacc_qual sb_mort_num ///
-			   , i(Number) j(month) string
+			   mat_mort_num, i(Number) j(month) string
 * Month and year
 		gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
 				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///

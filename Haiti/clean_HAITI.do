@@ -27,14 +27,14 @@ u "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", clear
 
 global volumes dental_util fp_util anc_util opd_util diab_util hyper_util ///
 			   del_util pnc_util cerv_qual vacc_qual
-global mortality sb_mort_num
+global mortality sb_mort_num mat_mort_num
 global all $volumes $mortality 
 
 * FOR NOW WE WILL NOT INCLUDE DATA FROM 2021
 drop *_21
 
 * 1212 facilities. Dropping all facilities that don't report any indicators all 18 months
-egen all_visits = rowtotal(dental_util1_19 - vacc_qual12_20), m
+egen all_visits = rowtotal(mat_mort_num1_20 - vacc_qual12_20), m
 drop if  all_visits==.
 drop all_visits 
 * Drops 373 facilities, retains 839
@@ -63,7 +63,7 @@ drop *report
 * Min and Max number of facilities reporting any data, for any given month	
 preserve
 	local all dental_util fp_util anc_util opd_util diab_util hyper_util ///
-			   del_util pnc_util cerv_qual vacc_qual sb_mort_num
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num mat_mort_num
 	reshape long `all', i(Number) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
@@ -120,9 +120,11 @@ REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
 For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
+	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & del_util`i'_19!=.	
 	replace sb_mort_num`i'_19 = 0     if sb_mort_num`i'_19== . & del_util`i'_19!=.
 }
 forval i= 1/12 { 
+	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & del_util`i'_19!=.	
 	replace sb_mort_num`i'_20 = 0     if sb_mort_num`i'_20== . & del_util`i'_20!=.
 }
 /****************************************************************
@@ -175,7 +177,7 @@ above 90% for all variables. */
 	u "$user/$data/Data for analysis/tmpdental_util.dta", clear
 
 	foreach x in  fp_util anc_util opd_util diab_util hyper_util ///
-			   del_util pnc_util cerv_qual vacc_qual sb_mort_num  {
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num mat_mort_num {
 			 	merge 1:1 Number using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", replace
@@ -206,7 +208,7 @@ foreach x of global all {
 	u "$user/$data/Data for analysis/tmpdental_util.dta", clear
 
 	foreach x in  fp_util anc_util opd_util diab_util hyper_util ///
-			   del_util pnc_util cerv_qual vacc_qual sb_mort_num  {
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num mat_mort_num {
 			 	merge 1:1 Number using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
 				save "$user/$data/Data for analysis/Haiti_CCA_Q2.dta", replace
@@ -218,7 +220,8 @@ foreach x of global all {
 		 
 * Reshape for analyses
 reshape long dental_util fp_util anc_util opd_util diab_util hyper_util ///
-			   del_util pnc_util cerv_qual vacc_qual sb_mort_num, i(Number) j(month) string	
+			   del_util pnc_util cerv_qual vacc_qual sb_mort_num ///
+			   mat_mort_num, i(Number) j(month) string	
 	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
