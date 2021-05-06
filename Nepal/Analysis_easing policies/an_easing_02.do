@@ -6,7 +6,7 @@
 clear all
 set more off
 
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta"
+use "$user/$data/Data for analysis/epal_palika_March20-Oct20_LONG_NK_1.dta"
 
 * eased_: whether the municpality eased or not in that month 
 * post: pre period is month 6, post period is month 8 
@@ -26,8 +26,8 @@ eststo: xtreg anc_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
 eststo: xtreg pnc_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
 eststo: xtreg del_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
 eststo: xtreg cs_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress title("Table 5: Simple DD regression, eased in August, controlling for Covid-19 cases") mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Facility Deliveries" "C-sections")
+esttab, rename(post Post)
+esttab, ci r2 ar2 compress title("Table 5: Simple DD regression, eased in August, controlling for Covid-19 cases") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(post Post eased_ Eased "covid_case" "Covid case")
 
 * eased_ is the DD coeffcients 
 
@@ -66,7 +66,7 @@ eststo: xtreg cs_util covid_case month##evereased, i(palikaid) fe cluster(palika
 
 test 5.month#1.evereased  6.month#1.evereased
 
-esttab, ci r2 ar2 compress nobaselevels drop(1.evereased) title("Table 6: DD regression analysis with 4 time periods, fixed treatment status") mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Facility Deliveries" "C-sections")
+esttab, ci r2 ar2 compress nobaselevels drop(1.evereased) title("Table 6: DD regression analysis with 4 time periods, fixed treatment status") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(covid_case "Covid cases" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 5.month#1.evereased "Eased*Mo 5" 6.month#1.evereased "Eased*Mo 6" 8.month#1.evereased "Eased*Mo 8")
 
 * 8.month#evereased is DD coefficient 
 
@@ -87,7 +87,7 @@ eststo: xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikai
 eststo: xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
 eststo: xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
 
-esttab, ci r2 ar2 compress nobaselevels title("Table 8: DD regression with multiple pre and post periods, time-varying treatment status") mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Facility Deliveries" "C-sections")
+esttab, ci r2 ar2 compress nobaselevels title("Table 8: DD regression with multiple pre and post periods, time-varying treatment status, Months 3 through 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8")
 
 eststo clear
 restore
@@ -101,17 +101,19 @@ eststo: xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikai
 eststo: xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
 eststo: xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
 
-esttab, ci r2 ar2 compress nobaselevels title("Table 8: DD regression with multiple pre and post periods, time-varying treatment status") mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Facility Deliveries" "C-sections")
+esttab, ci r2 ar2 compress nobaselevels title("Table 9: DD regression with multiple pre and post periods, time-varying treatment status, Months 3 through 8") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8") 
 
 eststo clear
 restore
 
 * eased_ is the DD coefficient 
 
-
+*** MODEL 4 ***
 *** Multiple pre-periods and August and September as the post-period, full eased, fully maintained and switched ***
 
 *** This is the analysis Sebastian has suggested instead of the time-varying one above, but I think considering only ~50 of the palikas eased_all (maintained policies for months 8 and 9) out of 753 palikas, that might be why these numbers are kind of odd?? 
+
+preserve 
 
 keep if inlist(month, 3, 4, 5, 6, 8, 9)
 
@@ -129,10 +131,12 @@ eststo: xtreg pnc_util eased_all##month switch##month covid_case i.month, i(pali
 eststo: xtreg del_util eased_all##month switch##month covid_case i.month, i(palikaid) fe cluster(palikaid)
 eststo: xtreg cs_util eased_all##month switch##month covid_case i.month, i(palikaid) fe cluster(palikaid)
 
-esttab, ci r2 ar2 compress nobaselevels drop(1.eased_all#4.month 1.eased_all#5.month 1.eased_all#6.month 1.eased_all#9.month 1.switch#4.month 1.switch#5.month 1.switch#6.month 1.switch#9.month) title("Table 9: Difference-in differences regression accounting for municipalities that switched") mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Facility Deliveries" "C-sections")
+esttab, ci r2 ar2 compress nobaselevels drop(1.eased_all#4.month 1.eased_all#5.month 1.eased_all#6.month 1.eased_all#9.month 1.switch#4.month 1.switch#5.month 1.switch#6.month 1.switch#9.month) title("Table 10: Difference-in differences regression accounting for municipalities that switched") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(1.eased_all "Eased all" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" 1.eased_all#8.month "EasedxMo 8" 1.switch "Switch" 1.switch#8.month "SwtchxMo 8" covid_case "Covid cases")
 
 * 1.switch#8.month and 1.eased_#8.month are DD coefficents 
 
+eststo clear
+restore
 
 *** I reported these results from Model 3 in my thesis presentation because I think maybe just looking at the effects right after the easing (month 8 and maybe month 9) makes the most sense since most lift in month 9 and 10 (Table 3 in my Masters Thesis Draft)
 

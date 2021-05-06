@@ -65,6 +65,10 @@ clear
 * For each month, from July to August 2020, did the palika "ease" containment policies
 import excel using "$user/$analysis/policy_data.xlsx", firstrow clear
 
+* Merge policy data with health service utilization data 
+merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_WIDE_NK_1.dta"
+drop _merge
+
 * Merge data with Covid data death data 
 merge m:1 orgunitlevel3 using "$user/$data/Data for analysis/Nepal_covid_deaths.dta"
 drop _merge
@@ -72,8 +76,8 @@ drop _merge
 
 *******************************************************************************
 * RESHAPES FROM WIDE TO LONG FOR ANALYSES
-reshape long eased_ covid_death_ , i(org*) j(month) string	
-	
+reshape long fp_sa_util anc_util del_util cs_util pnc_util eased_ covid_death_ , i(org*) j(month) string	
+
 * Month and year
 gen year = 2020 
 gen mo = . 
@@ -94,10 +98,6 @@ order org* year month
 
 *******************************************************************************
 
-* Merge data with health service utilization data 
-merge m:m orgunitlevel2 orgunitlevel3 organisationunitname year month using "$user/$data/Data for analysis/Nepal_su_24months_for_analyses.dta"
-drop if year == 2019
-drop _merge
 
 * Merge data with Covid case 
 merge m:1 orgunitlevel3 year month using "$user/$data/Data for analysis/Nepal_covid_cases.dta"
@@ -157,8 +157,9 @@ by organisationunitname,  sort: egen temp= sum(eased_8_20 )
 replace eased_8_20 = temp if eased_8_20==.
 drop temp 
 
+rename fp_sa_util fp_util
 
-save "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta", replace
+save "$user/$data/Data for analysis/epal_palika_March20-Oct20_LONG_NK_1.dta", replace
 
 
 /* Old code

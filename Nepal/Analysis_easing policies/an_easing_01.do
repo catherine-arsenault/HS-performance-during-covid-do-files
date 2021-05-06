@@ -5,7 +5,7 @@
 
 clear all
 
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta", clear
+use "$user/$data/Data for analysis/epal_palika_March20-Oct20_LONG_NK_1.dta", clear
 
 
 global vars fp_util anc_util del_util cs_util pnc_util
