@@ -2,9 +2,12 @@
 ********************************************************************************
 * CHILE (region level )
 ********************************************************************************
+
+global CHLall anc_util del_util cs_util pnc_util
+
 use "$user/$CHLdata/Data for analysis/Chile_su_22months_for_analyses.dta", clear
 
-collapse (sum)  anc_util del_util, by (region year month )
+collapse (sum)  anc_util del_util cs_util pnc_util, by (region year month )
 /* Vars needed for ITS (we expect both a change in level and in slope: 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
@@ -29,13 +32,13 @@ save  "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
 * Call GEE, export RR to excel
 xtset reg rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Chile)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Chile)  modify
 putexcel A1 = "CHILE region-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in  anc_util del_util  {
+foreach var of global CHLall  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
@@ -76,13 +79,13 @@ gen winter= month==12 | month==1 | month==2
 xtset facid rmonth 
 
 *Linear model
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Chile)  modify
-putexcel A9 = "CHILE facility-level GEE linear model"
-putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Chile)  modify
+putexcel E1 = "CHILE facility-level GEE linear model"
+putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
 
-local i = 10
+local i = 2
 
-foreach var in  anc_util del_util  {
+foreach var of global CHLall  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
@@ -90,20 +93,20 @@ foreach var in  anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel E`i' = "`var'"
+	putexcel F`i'= (_b[rr])
+	putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
-*Poisson
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Chile)  modify
-putexcel A13 = "CHILE facility-level GEE poisson w. log link"
-putexcel A14 = "Indicator" B14="RR postCovid" C14="LCL" D14="UCL" 
+*Poisson with log link
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Chile)  modify
+putexcel I1 = "CHILE facility-level GEE poisson w. log link"
+putexcel I2 = "Indicator" J2="RR postCovid" K2="LCL" L2="UCL" 
 
-local i = 14
+local i = 2
 
-foreach var in  anc_util del_util  {
+foreach var of global CHLall  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
@@ -111,32 +114,32 @@ foreach var in  anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel I`i' = "`var'"
+	putexcel J`i'= (_b[rr])
+	putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
 
-*Poisson
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Chile)  modify
-putexcel A20 = "CHILE facility-level GEE neg. binomial w. power link"
-putexcel A21 = "Indicator" B21="RR postCovid" C21="LCL" D21="UCL" 
+*Negative binomial with power link
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Chile)  modify
+putexcel M1 = "CHILE facility-level GEE neg. binomial w. power link"
+putexcel M2 = "Indicator" N2="RR postCovid" O2="LCL" P2="UCL" 
 
-local i = 21
+local i = 2
 
-foreach var in  anc_util del_util  {
+foreach var of global CHLall  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(poisson) link(log) corr(exchangeable) vce(robust)	
+	, family(nbinomial) link(power) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel M`i' = "`var'"
+	putexcel N`i'= (_b[rr])
+	putexcel O`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel P`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
 ********************************************************************************
