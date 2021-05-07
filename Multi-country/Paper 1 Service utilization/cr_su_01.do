@@ -45,7 +45,8 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
- 
+ drop if region=="Tigray" // Tigray stopped reporting in October 2020 due to violence	
+ rename sam_util malnu_util
 save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", replace 
 
 * Creates appendix to assess completeness
