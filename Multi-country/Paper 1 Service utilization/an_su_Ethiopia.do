@@ -1,24 +1,29 @@
-* Level of analysis (facility and regional or regional everywhere?)
-* Testing different models for opd_util anc_util del_util
+* Health system performance during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
+* Created by Catherine Arsenault, May 4, 2021
+
 ********************************************************************************
-* Ethiopia - regional analysis
+* Ethiopia - regression models, at regional level
 ********************************************************************************
+
+global ETHall opd_util er_util ipd_util fp_util sti_util anc_util del_util ///
+cs_util pnc_util diarr_util pneum_util malnu_util vacc_qual bcg_qual pent_qual ///
+measles_qual opv3_qual pneum_qual rota_qual  art_util ///
+hivsupp_qual_num road_util
+
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta",  clear
 
-collapse (sum) opd_util anc_util del_util, by (region year month)
+collapse (sum) $ETHall, by (region year month)
 encode region, gen(reg)
 
-**************** Tigray is missing 3 last months *******************************
-drop if reg==11
-
-/* Vars needed for ITS (we expect both a change in level and in slope: 
+/* Vars needed for ITS (we expect both a change in level and in slope) 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid */ 
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort reg rmonth
-gen postCovid = rmonth>15 // Starting April
+gen postCovid = rmonth>15 // Starting April, timing of interruption might change.
 
 * Number of months since Covid / lockdowns 
 gen timeafter= rmonth-15
@@ -31,17 +36,16 @@ gen winter= month==12 | month==1 | month==2
 
 save "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta",  replace
 
-
-* Call GEE, export RR to excel
+* GEE models, linear, exchangeable correlation structure
 xtset reg rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Ethiopia)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia)  modify
 putexcel A1 = "Ethiopia regional GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global ETHall {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
@@ -57,15 +61,11 @@ foreach var in opd_util anc_util del_util  {
 }
 
 ********************************************************************************
-* Ethiopia - facility/woreda
+* Ethiopia - regression models, at lowest level of analysis: facility/woreda
 ********************************************************************************
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta",  clear
 
-**************** Tigray is missing 3 last months *******************************
-drop if region=="Tigray"
-
-
-/* Vars needed for ITS (we expect both a change in level and in slope: 
+/* Vars needed for ITS (we expect both a change in level and in slope) 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid */ 
@@ -84,52 +84,55 @@ gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
 
-* Call GEE, export RR to excel
+* GEE models, linear, exchangeable correlation structure
 xtset unique_id rmonth 
 
 *Linear model
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Ethiopia)  modify
-putexcel A9 = "Ethio facility-level GEE - linear model"
-putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia)  modify
+putexcel E1 = "Ethio facility-level GEE - linear model"
+putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
 
-local i = 10
+local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global ETHall {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a covariate
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
 	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
-	margins postCovid, post
-	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	cap margins postCovid, post
+	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel E`i' = "`var'"
+	cap putexcel F`i'= (_b[rr])
+	cap putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	cap putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
-* Negative binomial with. power link
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Ethiopia)  modify
-putexcel A20 = "Ethio facility-level GEE -  neg binomial w. power link"
-putexcel A21 = "Indicator" B21="RR postCovid" C21="LCL" D21="UCL" 
+* GEE models, negative binomial distribution, power link, exchangeable correlation
 
-local i = 21
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia)  modify
+putexcel I1 = "Ethio facility-level GEE -  neg binomial w. power link"
+putexcel I2 = "Indicator" J2="RR postCovid" K2="LCL" L2="UCL" 
 
-foreach var in opd_util anc_util del_util  {
+local i = 2
+
+foreach var of global ETHall {
 	local i = `i'+1
 	* POWER LINK OR LOG LINK???
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	family(nbinomial) link(power) corr(exchangeable) vce(robust)	
 	
-	margins postCovid, post
-	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	cap margins postCovid, post
+	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel I`i' = "`var'"
+	cap putexcel J`i'= (_b[rr])
+	cap putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	cap putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
-********************************************************************************
+
+
+/********************************************************************************
 * Ethiopia GRAPHS
 ********************************************************************************
 * Deliveries
@@ -196,5 +199,5 @@ foreach var in opd_util anc_util del_util  {
 			graph export "$user/$analysis/Results/Graphs/Ethiopia_opd_util.pdf", replace
 			
 
-rm "$user/$NEPdata/Data for analysis/Nepaltmp.dta"
+rm "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta"
 
