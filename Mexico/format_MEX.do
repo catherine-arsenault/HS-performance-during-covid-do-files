@@ -4,7 +4,7 @@
 * Updated Jan 8, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
-use "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", clear
+use "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", clear
 
 *******************************************************************************
 * RESHAPE TO LONG FORM
