@@ -1,10 +1,17 @@
+* Health system performance during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
+* Created by Catherine Arsenault, May 4, 2021
 
 ********************************************************************************
-* LAO (regional)
+* LAO - regression models, at regional level
 ********************************************************************************
+global LAOall opd_util ipd_util fp_util anc_util del_util cs_util pnc_util ///
+		bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util road_util
+
 use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
+
 rename orgunitlevel2 Province
-collapse (sum) opd_util anc_util del_util, by (Province year month)
+collapse (sum) $LAOall, by (Province year month)
 encode Province, gen(prov)
 
 /* Vars needed for ITS (we expect both a change in level and in slope: 
@@ -30,13 +37,13 @@ save "$user/$LAOdata/Data for analysis/LAOtmp.dta",  replace
 * Call GEE, export RR to excel
 xtset prov rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Lao)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Lao)  modify
 putexcel A1 = "LAO regional GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global LAOall {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
@@ -79,13 +86,13 @@ gen winter= month==12 | month==1 | month==2
 xtset id rmonth 
 
 * Linear
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Lao)  modify
-putexcel A9 = "LAO facility-level GEE linear"
-putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Lao)  modify
+putexcel E1 = "LAO facility-level GEE linear"
+putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
 
-local i = 10
+local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global LAOall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
@@ -94,20 +101,20 @@ foreach var in opd_util anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel E`i' = "`var'"
+	putexcel F`i'= (_b[rr])
+	putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
 * Negative binomial 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Lao)  modify
-putexcel A15 = "LAO facility-level GEE neg binomial"
-putexcel A16 = "Indicator" B16="RR postCovid" C16="LCL" D16="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Lao)  modify
+putexcel I1 = "LAO facility-level GEE neg binomial"
+putexcel I2 = "Indicator" J2="RR postCovid" K2="LCL" L2="UCL" 
 
-local i = 16
+local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global LAOall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
@@ -116,13 +123,15 @@ foreach var in opd_util anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel I`i' = "`var'"
+	putexcel J`i'= (_b[rr])
+	putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
-********************************************************************************
+
+
+/********************************************************************************
 * LAO GRAPHS
 ********************************************************************************
 * Deliveries
