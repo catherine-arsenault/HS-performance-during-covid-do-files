@@ -103,6 +103,7 @@ foreach var of global KZNall  {
 	cap putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
 	cap putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
+
 * GEE models at facility level, poisson distribution, log link, exchangeable corr structure
 putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
 putexcel  I1 = "KZN facility-level GEE poisson w. log link"
@@ -110,18 +111,18 @@ putexcel I2 = "Indicator" J2="RR postCovid" K2="LCL" L2="UCL"
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global KZNall {
 	local i = `i'+1
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	family(poisson) link(log) corr(exchangeable) vce(robust)	
 	
-	margins postCovid, post
-	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	cap margins postCovid, post
+	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
 	putexcel E`i' = "`var'"
-	putexcel J`i'= (_b[rr])
-	putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	cap putexcel J`i'= (_b[rr])
+	cap putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	cap putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
 * GEE models at facility level, negative binomial distribution, power link, exchangeable corr structure
@@ -133,7 +134,7 @@ local i = 2
 
 foreach var of global KZNall  {
 	local i = `i'+1
-	* POWER LINK OR LOG LINK?
+	* Power link of log link?
 	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	family(nbinomial) link(power) corr(exchangeable) vce(robust)	
 	
