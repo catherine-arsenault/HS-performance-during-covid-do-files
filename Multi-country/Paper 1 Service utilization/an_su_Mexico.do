@@ -1,7 +1,14 @@
+* Health system performance during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
+* Created by Catherine Arsenault, May 4, 2021
 
 ********************************************************************************
 * Mexico (delegation level)
 ********************************************************************************
+global MEXall opd_util er_util ipd_util fp_util sti_util anc_util del_util ///
+		cs_util diarr_util pneum_util malnu_util bcg_qual pent_qual measles_qual ///
+		opv3_qual pneum_qual rota_qual art_util diab_util hyper_util cerv_util ///
+		breast_util
 
 u "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", clear
 
@@ -29,13 +36,13 @@ save  "$user/$MEXdata/Data for analysis/MEXtmp.dta", replace
 * Call GEE, export RR to excel
 xtset del rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Mexico)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Mexico)  modify
 putexcel A1 = "MEX delegation-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global MEXall {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
@@ -49,7 +56,7 @@ foreach var in opd_util anc_util del_util  {
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
-********************************************************************************
+/********************************************************************************
 * MEXICO GRAPHS
 ********************************************************************************
 * Deliveries
