@@ -1,13 +1,21 @@
-* Level of analysis (facility and regional or regional everywhere?)
-* Testing different models for opd_util anc_util del_util
+* Health system performance during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
+* Created by Catherine Arsenault, May 4, 2021
+
 ********************************************************************************
-* KZN (district)
+* KwaZulu-Natal - regression models, at district level
 ********************************************************************************
+
+global KZNall opd_util ipd_util anc_util del_util cs_util kmc_qual pnc_util ///
+		diarr_util pneum_util malnu_util vacc_qual bcg_qual pent_qual measles_qual ///
+		pneum_qual rota_qual tbscreen_qual tbdetect_qual art_util diab_util ///
+		road_util cerv_qual
+
 use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
 
-collapse (sum) opd_util anc_util del_util, by (dist year month rmonth)
+collapse (sum) $KZNall, by (dist year month rmonth)
 
-/* Vars needed for ITS (we expect both a change in level and in slope: 
+/* Vars needed for ITS (we expect both a change in level and in slope): 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid */ 
@@ -26,16 +34,16 @@ gen winter= month==12 | month==1 | month==2
 
 save "$user/$KZNdata/Data for analysis/KZNtmp.dta",  replace
 
-* Call GEE, export RR to excel
+* GEE models at district level, linear distribution, exchangeable correlation structure
 xtset dist rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
 putexcel A1 = "KZN district-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global KZNall {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
@@ -49,17 +57,20 @@ foreach var in opd_util anc_util del_util  {
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 ********************************************************************************
-* KZN facility level 
+* KwaZulu-Natal - regression models, at lowest level of analysis: facilities
 ********************************************************************************
+
 use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
+
 egen unique_id = concat(dist subdist Facility)
 encode unique_id, gen(id)
+
 /* Vars needed for ITS (we expect both a change in level and in slope: 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid */ 
 sort id rmonth
-gen postCovid = rmonth>14 // Starting March
+gen postCovid = rmonth>15 // Starting April
 
 * Number of months since Covid / lockdowns 
 gen timeafter= rmonth-15
@@ -70,35 +81,34 @@ gen summer = month>=6 & month<=8
 gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
-* Call GEE, export RR to excel
+* GEE models at facility level, linear distribution, exchangeable corr structure
 xtset id rmonth 
 
-* Linear model
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
-putexcel A7 = "KZN facility-level GEE linear"
-putexcel A8 = "Indicator" B8="RR postCovid" C8="LCL" D8="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
+putexcel E1 = "KZN facility-level GEE linear"
+putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
 
-local i = 8
+local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global KZNall  {
 	local i = `i'+1
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
-	margins postCovid, post
-	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	cap margins postCovid, post
+	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel E`i' = "`var'"
+	cap putexcel F`i'= (_b[rr])
+	cap putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	cap putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
-* Poisson with log link
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
-putexcel A13 = "KZN facility-level GEE poisson w. log link"
-putexcel A14 = "Indicator" B14="RR postCovid" C14="LCL" D14="UCL" 
+* GEE models at facility level, poisson distribution, log link, exchangeable corr structure
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
+putexcel  I1 = "KZN facility-level GEE poisson w. log link"
+putexcel I2 = "Indicator" J2="RR postCovid" K2="LCL" L2="UCL" 
 
-local i = 14
+local i = 2
 
 foreach var in opd_util anc_util del_util  {
 	local i = `i'+1
@@ -108,33 +118,36 @@ foreach var in opd_util anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel E`i' = "`var'"
+	putexcel J`i'= (_b[rr])
+	putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
-* Negative binomial with. power link
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(KZN)  modify
-putexcel A20 = "KZN facility-level GEE neg binomia w. power link"
-putexcel A21 = "Indicator" B21="RR postCovid" C21="LCL" D21="UCL" 
 
-local i = 21
+* GEE models at facility level, negative binomial distribution, power link, exchangeable corr structure
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
+putexcel M1 = "KZN facility-level GEE neg binomia w. power link"
+putexcel M2 = "Indicator" N2="RR postCovid" O2="LCL" P2="UCL" 
 
-foreach var in opd_util anc_util del_util  {
+local i = 2
+
+foreach var of global KZNall  {
 	local i = `i'+1
-	* POWER LINK OR LOG LINK???
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	* POWER LINK OR LOG LINK?
+	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	family(nbinomial) link(power) corr(exchangeable) vce(robust)	
 	
-	margins postCovid, post
-	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	cap margins postCovid, post
+	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel M`i' = "`var'"
+	cap putexcel N`i'= (_b[rr])
+	cap putexcel O`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	cap putexcel P`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
-********************************************************************************
+
+
+/********************************************************************************
 * KZN GRAPHS
 ********************************************************************************
 * Deliveries

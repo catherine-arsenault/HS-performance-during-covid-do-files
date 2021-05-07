@@ -36,7 +36,7 @@ gen winter= month==12 | month==1 | month==2
 
 save "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta",  replace
 
-* GEE models, linear, exchangeable correlation structure
+* GEE models at regional level, linear, exchangeable correlation structure
 xtset reg rmonth 
 
 putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia)  modify
