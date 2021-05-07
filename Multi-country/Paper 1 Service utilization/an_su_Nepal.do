@@ -1,10 +1,18 @@
+* Health system performance during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
+* Created by Catherine Arsenault, May 4, 2021
 
 ********************************************************************************
 * Nepal (regional)
 ********************************************************************************
+global NEPall opd_util er_util ipd_util fp_util anc_util del_util cs_util pnc_util ///
+		diarr_util pneum_util bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///
+		tbdetect_qual hivtest_qual diab_util hyper_util
+
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
 rename orgunitlevel2 Province
-collapse (sum) opd_util anc_util del_util, by (Province year month)
+
+collapse (sum) $NEPall, by (Province year month)
 encode Province, gen(prov)
 
 /* Vars needed for ITS (we expect both a change in level and in slope: 
@@ -30,13 +38,13 @@ save "$user/$NEPdata/Data for analysis/Nepaltmp.dta",  replace
 * Call GEE, export RR to excel
 xtset prov rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Nepal)  modify
 putexcel A1 = "Nepal regional GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global NEPall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
@@ -76,13 +84,13 @@ gen winter= month==12 | month==1 | month==2
 xtset unique_id rmonth 
 
 *Linear 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Nepal)  modify
-putexcel A9 = "Nepal Palika GEE"
-putexcel A10 = "Indicator" B10="RR postCovid" C10="LCL" D10="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Nepal)  modify
+putexcel E1 = "Nepal Palika GEE linear"
+putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
 
-local i = 10
+local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach  var of global NEPall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a covariate
@@ -91,12 +99,37 @@ foreach var in opd_util anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel E`i' = "`var'"
+	putexcel F`i'= (_b[rr])
+	putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
-********************************************************************************
+
+* Neg binomial, power link
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Nepal)  modify
+putexcel i1 = "Nepal Palika GEE neg binomial"
+putexcel i2 = "Indicator" j2="RR postCovid" k2="LCL" l2="UCL" 
+
+local i = 2
+
+foreach  var of global NEPall  {
+	local i = `i'+1
+	* Regression coefficients represent the expected change in the log of the 
+	* mean of the dependent variable for each change in a covariate
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(nbinomial) link(power) corr(exchangeable) vce(robust)	
+	
+	margins postCovid, post
+	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel i`i' = "`var'"
+	putexcel j`i'= (_b[rr])
+	putexcel k`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel l`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+}
+
+
+
+/********************************************************************************
 * Nepal GRAPHS
 ********************************************************************************
 * Deliveries
