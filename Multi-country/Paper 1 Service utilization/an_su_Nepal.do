@@ -94,15 +94,15 @@ foreach  var of global NEPall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a covariate
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
 	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
-	margins postCovid, post
-	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	cap margins postCovid, post
+	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
 	putexcel E`i' = "`var'"
-	putexcel F`i'= (_b[rr])
-	putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	cap putexcel F`i'= (_b[rr])
+	cap putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	cap putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
 * Neg binomial, power link
