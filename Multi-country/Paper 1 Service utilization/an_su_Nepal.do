@@ -22,10 +22,10 @@ encode Province, gen(prov)
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort prov rmonth
-gen postCovid = rmonth>15 // Starting April
+gen postCovid = rmonth>14 // Starting March
 
 * Number of months since Covid / lockdowns 
-gen timeafter= rmonth-15
+gen timeafter= rmonth-14
 replace timeafter=0 if timeafter<0
 * Seasons
 gen spring = month>=3 & month<=5
@@ -69,10 +69,10 @@ use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clea
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort unique_id rmonth
-gen postCovid = rmonth>15 // Starting April
+gen postCovid = rmonth>14 // Starting March
 
 * Number of months since Covid / lockdowns 
-gen timeafter= rmonth-15
+gen timeafter= rmonth-14
 replace timeafter=0 if timeafter<0
 * Seasons
 gen spring = month>=3 & month<=5
@@ -129,33 +129,54 @@ foreach  var of global NEPall  {
 
 
 
-/********************************************************************************
+********************************************************************************
 * Nepal GRAPHS
 ********************************************************************************
-* Deliveries
+* fp
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>15
+			 drop if rmonth>14
 			 xtset prov rmonth
-			 xtgee del_util rmonth , family(gaussian) ///
+			 xtgee fp_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename del_util del_util_real
-			predict del_util
+			rename fp_util fp_util_real
+			predict fp_util
 
-			collapse (sum) del_util_real del_util , by(rmonth)
+			collapse (sum) fp_util_real fp_util , by(rmonth)
 
-			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			twoway (line fp_util_real rmonth,  sort) (line fp_util rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Deliveries", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)70000, labsize(small))
+			graphregion(color(white)) title("fp", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(200000(100000)600000, labsize(small))
 			
-			graph export "$analysis/Results/Graphs/Nepal_del_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Nepal_fp_util.pdf", replace
+
+* PNC
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			 drop if rmonth>14
+			 xtset prov rmonth
+			 xtgee pnc_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
+
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			rename pnc_util pnc_util_real
+			predict pnc_util
+
+			collapse (sum) pnc_util_real pnc_util , by(rmonth)
+
+			twoway (line pnc_util_real rmonth,  sort) (line pnc_util rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("PNC", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)20000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/Nepal_pnc_util.pdf", replace
 
 * ANC			
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>15 
+			 drop if rmonth>14 
 			 xtset prov rmonth
 			 xtgee anc_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -167,16 +188,16 @@ foreach  var of global NEPall  {
 			collapse (sum) anc_util_real anc_util , by(rmonth)
 
 			twoway (line anc_util_real rmonth, sort) (line anc_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)70000, labsize(small))
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)80000, labsize(small))
 			
 			graph export "$analysis/Results/Graphs/Nepal_anc_util.pdf", replace
 			
 * OPD		
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>15
+			 drop if rmonth>14
 			xtset prov rmonth
 			 xtgee opd_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -188,13 +209,54 @@ foreach  var of global NEPall  {
 			collapse (sum) opd_util_real opd_util , by(rmonth)
 
 			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Outpatient visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(250000)2000000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/Nepal_opd_util.pdf", replace
+
+* Deliveries		
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			 drop if rmonth>14
+			xtset prov rmonth
+			 xtgee del_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
+
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			rename del_util del_util_real
+			predict del_util
+
+			collapse (sum) del_util_real del_util , by(rmonth)
+
+			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Deliveries", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)50000, labsize(vsmall))
 			
+			graph export "$analysis/Results/Graphs/Nepal_del_util.pdf", replace
+*C-sections		
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			 drop if rmonth>14
+			xtset prov rmonth
+			 xtgee cs_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
+
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			rename cs_util cs_util_real
+			predict cs_util
+
+			collapse (sum) cs_util_real cs_util , by(rmonth)
+
+			twoway (line cs_util_real rmonth,  sort) (line cs_util rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("c-sections", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)12000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/Nepal_cs_util.pdf", replace
+		
 
 rm "$user/$NEPdata/Data for analysis/Nepaltmp.dta"
 
