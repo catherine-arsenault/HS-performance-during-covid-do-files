@@ -17,7 +17,7 @@ global volume fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pne
 			  malnu_util
 global vaccine tt_qual vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual 
 global other opd_util ipd_util road_util diab_util hyper_util malaria_util ///
-			 tbdetect_qual surg_util
+			 tbdetect_qual 
 global mortality ipd_mort_num newborn_mort_num sb_mort_num mat_mort_num totaldel
 global all $volume $vaccine $other $mortality 
 
