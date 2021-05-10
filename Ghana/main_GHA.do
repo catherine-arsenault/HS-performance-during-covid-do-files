@@ -9,6 +9,7 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ghana"
 
+
 ********************************************************************************
 * Creation do files
 * Imports raw data and renames variables for January 2019 - August 2020

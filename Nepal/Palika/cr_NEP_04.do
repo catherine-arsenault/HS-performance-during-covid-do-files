@@ -347,7 +347,46 @@ merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WID
 	drop _merge
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
 	
+********************************************************************************
+* New Hypertension and Diabetes indicators (missed on first extraction)
+********************************************************************************	
+import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_Hyper_Diab.csv", clear
+* Replace facility identifiers so that new dataset match old dataset
+	rename ïorgunitlevel1 orgunitlevel1
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"	
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
 	
+	replace orgunitlevel3="206 RAUTAHAT" if orgunitlevel3=="206 RAUTAHAT "
+*Hypertension
+rename (opdmorbiditycardiovascularrespir-v29) ///
+    (hyper_util1_19 hyper_util2_19 ///
+	hyper_util3_19  hyper_util4_19 hyper_util5_19 hyper_util6_19 ///
+	hyper_util7_19 hyper_util8_19 hyper_util9_19 hyper_util10_19 ///
+	hyper_util11_19 hyper_util12_19 hyper_util1_20 hyper_util2_20 ///
+	hyper_util3_20  hyper_util4_20 hyper_util5_20 hyper_util6_20 ///
+	hyper_util7_20 hyper_util8_20 hyper_util9_20 hyper_util10_20 ///
+	hyper_util11_20 hyper_util12_20)
+	
+* Diabetes
+rename (outpatientmorbiditynutritionalme-v53) ///
+  (diab_util1_19 diab_util2_19 ///
+	diab_util3_19  diab_util4_19 diab_util5_19 diab_util6_19 ///
+	diab_util7_19 diab_util8_19 diab_util9_19 diab_util10_19 ///
+	diab_util11_19 diab_util12_19 diab_util1_20 diab_util2_20 ///
+	diab_util3_20  diab_util4_20 diab_util5_20 diab_util6_20 ///
+	diab_util7_20 diab_util8_20 diab_util9_20 diab_util10_20 ///
+	diab_util11_20 diab_util12_20)
+
+merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
+
+
 /*old codes - we have removed this indicator because we added a neonatal mortality indicator. 
 *Perinatal mortality = totaldel-livebirth 	
 	gen peri_mort_num1_20 = totaldel1_20 - live_births1_20

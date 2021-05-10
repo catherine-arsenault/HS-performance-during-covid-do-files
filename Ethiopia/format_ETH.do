@@ -128,11 +128,12 @@ drop *_report *_sum *_mean
 ***************************************************************************/
 merge 1:1  region zone org*  using "$user/$data/Data for analysis/Ethiopia_Jan19-Jun20_WIDE_CCA_TB.dta"
 drop _merge
-*931 were not merged 
+
 save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_CCA_DB_Complete.dta", replace 
 
 /****************************************************************
  COLLAPSE  BY FACILITY TYPES, REGION TYPES AND AT NATIONAL LEVEL
+ FOR THE DASHBOARD 
 *****************************************************************/
 * Totals by facility types
 	gen factype = "Facility type: Hospitals" if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
@@ -144,9 +145,9 @@ preserve
 	save "$user/$data/Data for analysis/tmpfactype.dta", replace
 restore
 
-* Totals by region type
+* Collapse by region 
 	collapse (sum) fp_util1_19-tbdenom_qual4_20 , by(region)	
-	
+* Totals by region type	
 	gen regtype = "Region type: Urban" if region=="Addis Ababa" ///
 	                          | region=="Dire Dawa" | region=="Harari"
 	replace regtype = "Region type: Agrarian" if region == "Amhara" | region=="Oromiya" ///
@@ -240,6 +241,60 @@ rm "$user/$data/Data for analysis/tmpregtype.dta"
 ********************************************************************************
 * THIS IS THE CSV FILE FOR GOOGLE DATA STUDIO
 export delimited using "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Ethiopia_Jan19-Dec20_fordashboard.csv", replace
+
+/****************************************************************
+ FORMAT DATASET FOR ANALYSES
+*****************************************************************/
+
+use "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_CCA_DB_Complete.dta", clear 
+sort region zone organisationunitname orgunitlevel1 orgunitlevel4
+*Facility/woreda id
+gen unique_id=_n
+
+reshape long diab_util hyper_util diab_qual_num hyper_qual_num fp_util sti_util anc_util ///
+			  del_util cs_util pnc_util diarr_util pneum_util sam_util opd_util ipd_util ///
+			  er_util road_util    art_util hivsupp_qual_num  ///
+			  vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual ///
+			  newborn_mort_num sb_mort_num mat_mort_num er_mort_num  totaldel ///
+			  tbnum_qual tbdenom_qual tbdetect_qual totalipd_mort_num diab_detec hyper_detec , ///
+				i(region zone org* unique_id) j(month) string
+
+* Month and year
+gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
+				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
+replace year = 2019 if year==.
+gen mo = 1 if month =="1_19" | month =="1_20"
+replace mo = 2 if month =="2_19" | month =="2_20"
+replace mo = 3 if month =="3_19" | month =="3_20"
+replace mo = 4 if month =="4_19" | month =="4_20"
+replace mo = 5 if month =="5_19" | month =="5_20"
+replace mo = 6 if month =="6_19" | month =="6_20"
+replace mo = 7 if month =="7_19" | month =="7_20"
+replace mo = 8 if month =="8_19" | month =="8_20"
+replace mo = 9 if month =="9_19" | month =="9_20"
+replace mo = 10 if month =="10_19" | month =="10_20"
+replace mo = 11 if month =="11_19" | month =="11_20"
+replace mo = 12 if month =="12_19" | month =="12_20"
+drop month	
+rename mo month
+sort region zone org* unique_id year month 
+
+
+* Hospital indicator
+gen Hospital = 1 if regexm(organ, "[Hh]ospital") | regexm(organ, "HOSPITAL") 
+replace Hospital =0 if Hospital==.
+* Region type indicator 
+gen regtype = "Urban" if region=="Addis Ababa" | region=="Dire Dawa" | region=="Harari"
+replace regtype = "Agrarian" if region == "Amhara" | region=="Oromiya" ///
+| region== "SNNP" | region=="Tigray"
+replace regtype = "Pastoral" if region == "Afar" | region=="Ben Gum" ///
+                              | region=="Gambella" | region=="Somali" 
+lab var regtype "Region type"
+
+order region regtype zone org* unique_id Hospital  year month 
+
+save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months.dta", replace 
 
 /* Code to identify clinics (private) 
 replace factype =2 if regexm(organ, "[Cc]linic") | regexm(organ, "CLINIC") | ///

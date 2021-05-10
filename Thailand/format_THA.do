@@ -64,6 +64,7 @@ order Province year mo
 drop month 
 rename mo month 
 
+
 ********************************************************************************
 * CREATE NATIONAL TOTALS FOR MONTHLY DATA
 ******************************************************************************** 
@@ -77,9 +78,13 @@ foreach v in opd_util ipd_util dental_util diab_util dengue_util diarr_util ///
 
 save "$user/$data/Data for analysis/Thailand_Oct18-Dec20_foranalysis.dta", replace
 
+drop if Province=="National"
+drop if year ==2018
+save "$user/$data/Data for analysis/Thailand_su_24months.dta", replace
 ********************************************************************************
 * RESHAPE FOR DASHBOARD FOR VARIABLES AVAILABLE MONTHLY
 ********************************************************************************
+use "$user/$data/Data for analysis/Thailand_Oct18-Dec20_foranalysis.dta", clear
 global varlist opd_util ipd_util dental_util diab_util dengue_util diarr_util ///
 heart_util hyper_util stroke_util predel_util totaldel road_util road_mort_num ///
 malaria_util pneum_util anc_util			   

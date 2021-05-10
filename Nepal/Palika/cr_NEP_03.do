@@ -67,6 +67,11 @@ we last extracted the data. We have renamed them to merge with previous data. */
 	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
 	replace orgunitlevel4 = "20611 Boudhimai Municipality" if orgunitlevel4 =="20611 Baudhimai Municipality"
 	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
+	
+*2 Palika reported decimal points so we are going to round them up. this is more likely typos
+	replace fp_la_util8_20 = 942 if orgunitlevel3=="11403 Triyuga Municipality"
+	replace fp_sa_util8_20 = 2205 if orgunitlevel4=="20807 Birgunj Metropolitan City"
+
 	drop if tag==1 & total==. //no observation 
 	drop tag total
 	save "$user/$data/Data for analysis/Nepal_palika_Jan20-Nov20_WIDE.dta", replace

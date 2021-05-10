@@ -31,7 +31,8 @@ del_util*_20 cs_util*_19 cs_util*_20 ///
 totaldel*19 totaldel*20  pnc_util*_19 pnc_util*_20 diarr_util*_19 ///
 diarr_util*_20 pneum_util*_19 pneum_util*_20  ///
 opd_util*_19 opd_util*_20 ipd_util*_19 ipd_util*_20 er_util*_19 er_util*_20  ///
-tbdetect_qual*_19 tbdetect_qual*_20  hivtest_qual*19 hivtest_qual*20 ///
+tbdetect_qual*_19 tbdetect_qual*_20  hyper_util*19 hyper_util*20 ///
+diab_util*19 diab_util*20 hivtest_qual*19 hivtest_qual*20 ///
 pent_qual*_19 pent_qual*_20 bcg_qual*_19 bcg_qual*_20 measles_qual*_19 ///
 measles_qual*_20 opv3_qual*_19 opv3_qual*_20 pneum_qual*_19 pneum_qual*_20  ///
 sb_mort*_19 sb_mort*_20 mat_mort*_19 mat_mort*_20 ipd_mort*_19 ipd_mort*_20 ///
@@ -40,7 +41,7 @@ neo_mort_num*_19 neo_mort_num*_20
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
-export excel tbdetect* using "$user/$data/Data cleaning/Nepal_palika_Jan19-Dec20_fordatacleaning1.xlsx", firstrow(variable) replace	 
+*export excel  using "$user/$data/Data cleaning/Nepal_palika_Jan19-Dec20_fordatacleaning1.xlsx", firstrow(variable) replace	 
 
 ******************************************************************
 * 753 palika. Dropping all palika that don't report any indicators all year
@@ -52,7 +53,7 @@ drop all_visits
 
 global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util diarr_util pneum_util  opd_util ipd_util er_util ////
-			   tbdetect_qual  hivtest_qual  totaldel pent_qual bcg_qual ///
+			   tbdetect_qual  hivtest_qual hyper_util diab_util totaldel pent_qual bcg_qual ///
 			   measles_qual opv3_qual pneum_qual 
 global mortality sb_mort_num mat_mort_num ipd_mort_num neo_mort_num 
 global all $volumes $mortality 
@@ -82,7 +83,7 @@ drop *report
 preserve
 	local all fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
 			   pnc_util diarr_util pneum_util   opd_util ipd_util er_util ////
-			   tbdetect_qual  hivtest_qual   totaldel pent_qual bcg_qual ///
+			   tbdetect_qual  hivtest_qual  hyper_util diab_util totaldel pent_qual bcg_qual ///
 			   measles_qual opv3_qual pneum_qual sb_mort_num mat_mort_num ///
 			   ipd_mort_num neo_mort_num 
 			   
@@ -182,7 +183,7 @@ above 90% for all variables. */
 	u "$user/$data/Data for analysis/tmpfp_perm_util.dta", clear
 
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util pneum_util totaldel ///
-                 opd_util ipd_util er_util  tbdetect_qual hivtest_qual   ///
+                 opd_util ipd_util er_util  tbdetect_qual hivtest_qual hyper_util diab_util  ///
 			   pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
 			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num  {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
@@ -237,7 +238,7 @@ foreach x of global all {
 
 	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util ///
 				pneum_util totaldel   opd_util ipd_util er_util  tbdetect_qual  ///
-				hivtest_qual   pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
+				hivtest_qual   pent_qual bcg_qual measles_qual opv3_qual hyper_util diab_util pneum_qual  ///
 			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num  {
 			 	merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
 				drop _merge
@@ -266,7 +267,7 @@ foreach x of global all {
 }
 			 
 * Reshape for analyses
-reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util pnc_util ///
+reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util hyper_util diab_util cs_util pnc_util ///
 			diarr_util pneum_util   opd_util ipd_util er_util tbdetect_qual ///
 			hivtest_qual   pent_qual bcg_qual totaldel measles_qual opv3_qual pneum_qual ///
 			sb_mort_num mat_mort_num neo_mort_num ///
@@ -318,7 +319,7 @@ foreach x of global all {
 				}
 	u "$user/$data/Data for analysis/tmpfp_perm_util.dta", clear
 
-	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util pnc_util diarr_util ///
+	foreach x in  fp_sa_util fp_la_util anc_util del_util cs_util hyper_util diab_util pnc_util diarr_util ///
 				pneum_util totaldel   opd_util ipd_util er_util  tbdetect_qual  ///
 				hivtest_qual   pent_qual bcg_qual measles_qual opv3_qual pneum_qual  ///
 			   sb_mort_num mat_mort_num ipd_mort_num neo_mort_num  {
@@ -350,7 +351,7 @@ foreach x of global all {
 			 
 * Reshape for analyses
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util pnc_util ///
-			diarr_util pneum_util   opd_util ipd_util er_util tbdetect_qual ///
+			diarr_util pneum_util   opd_util ipd_util er_util tbdetect_qual hyper_util diab_util ///
 			hivtest_qual   pent_qual bcg_qual totaldel measles_qual opv3_qual pneum_qual ///
 			sb_mort_num mat_mort_num neo_mort_num ///
 			 ipd_mort_num , i(org*) j(month) string	

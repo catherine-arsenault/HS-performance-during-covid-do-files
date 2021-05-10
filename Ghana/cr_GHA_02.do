@@ -53,6 +53,7 @@ keep period region fp_util sti_util anc_util del_util cs_util pnc_util diarr_uti
 	 pneum_qual measles_qual rota_qual ipd_mort_num newborn_mort_num ///
 	 sb_mort_num mat_mort_num surg_util totaldel
 
+
 order region fp_util* sti_util* anc_util* del_util* cs_util* pnc_util* diarr_util*  ///
 			 pneum_util*  malnu_util* tt_qual* vacc_qual* pent_qual* bcg_qual* ///
 			  measles_qual* opv3_qual* pneum_qual* rota_qual* opd_util* ipd_util* ///
@@ -63,6 +64,7 @@ order region fp_util* sti_util* anc_util* del_util* cs_util* pnc_util* diarr_uti
 drop surg_util* // values seem improbable
 
 save "$user/$data/Data for analysis/GHA_Jan19-Dec20_WIDE.dta", replace	
+
 
 
 

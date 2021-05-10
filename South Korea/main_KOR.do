@@ -1,11 +1,13 @@
 * HS performance during Covid - South Korea, Regional-level analysis
 * Master do file 
 * PI Catherine Arsenault
+* Created by MK Kim 
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (South Korea)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/South Korea"
+
+global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/South Korea"
 
 ********************************************************************************
