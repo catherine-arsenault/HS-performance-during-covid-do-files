@@ -110,7 +110,7 @@ drop _merge
 drop if month == 1 | month == 2
 * Post intervention = easing period which coincides with Aug-November
 * Post intervention = 8_20 9_20 10_20 
-drop if month==11 | month == 12
+drop if month==10 | month==11 | month == 12
 * Retains 9 months of data per palika 
 /* Remove July from the analysis (lockdown happens mid-month, also, data quality
  issue for policy change in july)*/
@@ -121,7 +121,7 @@ replace eased = . if month==7
 
 * Simple two-period DD  
 gen post = month == 8 
-replace post = . if month == 3 | month == 4 | month == 5 | month == 7 | month == 9 | month == 10 
+replace post = . if month == 3 | month == 4 | month == 5 | month == 7 | month == 9 
 
 
 * Created the three-part variable - districts that full eased in post-period, districts that fully maintained in post-period, districts that switched in the post-period
@@ -159,7 +159,11 @@ drop temp
 
 rename fp_sa_util fp_util
 
-save "$user/$data/Data for analysis/epal_palika_March20-Oct20_LONG_NK_1.dta", replace
+*DROP PALIKAS THAT EASE AND THEN REIMPOSE
+
+drop if orgunitlevel3 == "501 RUKUM EAST"  | orgunitlevel3 == "407 TANAHU"
+
+save "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_LONG_NK_1.dta", replace
 
 
 /* Old code
