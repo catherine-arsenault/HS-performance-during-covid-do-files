@@ -20,7 +20,16 @@ reshape wide  fp_util sti_util anc_util del_util cs_util pnc_util diarr_util  //
 			  road_util diab_util hyper_util malaria_util tbdetect_qual ///
 			  surg_util ipd_mort_num newborn_mort_num sb_mort_num ///
 			  mat_mort_num totaldel, i(region) j(month)  
+			  
+order region fp_util* sti_util* anc_util* del_util* cs_util* pnc_util* diarr_util*  ///
+			  pneum_util*  malnu_util* tt_qual* vacc_qual* pent_qual* bcg_qual* ///
+			  measles_qual* opv3_qual* pneum_qual* rota_qual* opd_util* ipd_util* ///
+			  road_util* diab_util* hyper_util* malaria_util* tbdetect_qual* ///
+			  surg_util* ipd_mort_num* newborn_mort_num* sb_mort_num* ///
+			  mat_mort_num* totaldel*
 
+export excel using "$user/$data/Cleaning/Raw data recoded.xlsx", firstrow(variables) replace
+			  
 *Removes positive outliers - 3.5 standard deviation higher than mean 
 global volume fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 			  malnu_util
