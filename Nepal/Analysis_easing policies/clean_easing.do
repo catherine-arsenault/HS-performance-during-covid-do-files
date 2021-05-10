@@ -65,7 +65,7 @@ foreach x of global volumes {
 	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
 }
 
-drop *19 *1_20 *2_20 *11_20 *12_20 
+drop *19 *1_20 *2_20 *10_20 *11_20 *12_20 
 
 
 save "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_WIDE_NK_easing.dta", replace 
@@ -73,7 +73,7 @@ save "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_WIDE_NK_easing.dt
 
 **************************************************************
                  *COMPLETE CASE ANALYSIS 1 
-				 *All 8/8 months reported 
+				 *All 7/7 months reported 
 ****************************************************************
 
 u "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_WIDE_NK_easing.dta", clear 
@@ -82,8 +82,8 @@ foreach x of global volumes {
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=8 
-					/* keep if at least 8 out of 8 are reported */
+					keep if total`x'>=7 
+					/* keep if at least 7 out of 7 are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
@@ -104,7 +104,7 @@ foreach x of global volumes {
 
 **************************************************************
                  *COMPLETE CASE ANALYSIS 2 
-				 *7/8 months reported 
+				 *6/7 months reported 
 ****************************************************************
 *To change your months reported, please change the line 120 
 
@@ -114,8 +114,8 @@ foreach x of global volumes {
 			 	preserve
 					keep org* `x'* 
 					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=7 
-					/* keep if at least 7 out of 8 are reported */
+					keep if total`x'>=6 
+					/* keep if at least 6 out of 7 are reported */
 					drop total`x'
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore

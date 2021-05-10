@@ -5,7 +5,8 @@
 
 clear all
 
-use "$user/$data/Data for analysis/epal_palika_March20-Oct20_LONG_NK_1.dta", clear
+use "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_LONG_NK_1.dta", clear
+
 
 
 global vars fp_util anc_util del_util cs_util pnc_util
@@ -23,7 +24,6 @@ foreach x of global vars {
 	table month , c(N `x' sum `x' ) by(eased_8_20)
 }
 
-*CATHERINE - Why are there some decimals in the sum? fp_util month 8?? 
 
 *Parrallel trends graphs - Two-category: fully eased and fully maintained
 preserve
