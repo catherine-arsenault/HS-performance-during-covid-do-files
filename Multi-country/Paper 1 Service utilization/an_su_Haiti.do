@@ -3,7 +3,8 @@
 * Haiti (by département)
 ********************************************************************************
 
-global HTIall diab_util 
+global HTIall opd_util fp_util anc_util del_util pnc_util vacc_qual diab_util ///
+				hyper_util cerv_qual
 
 use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clear
 
@@ -34,13 +35,13 @@ save "$user/$HTIdata/Data for analysis/HTItmp.dta",  replace
 * Call GEE, export RR to excel
 xtset dpt rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Haiti)  modify
-putexcel A1 = "Haiti departement GEE"
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Haiti)  modify
+putexcel A1 = "Departement-level GEE linear"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global HTIall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a predictor
@@ -81,13 +82,13 @@ gen winter= month==12 | month==1 | month==2
 xtset Number rmonth 
 
 *Linear 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Haiti)  modify
-putexcel A7 = "Haiti Facility GEE linear"
-putexcel A8 = "Indicator" B8="RR postCovid" C8="LCL" D8="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Haiti)  modify
+putexcel E1 = "Facility GEE linear"
+putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
 
-local i = 8
+local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global HTIall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a covariate
@@ -96,20 +97,20 @@ foreach var in opd_util anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel E`i' = "`var'"
+	putexcel F`i'= (_b[rr])
+	putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
 *Negative binomial 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Haiti)  modify
-putexcel A13 = "Haiti Facility GEE Neg. binomial"
-putexcel A14 = "Indicator" B14="RR postCovid" C14="LCL" D14="UCL" 
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Haiti)  modify
+putexcel I1 = "Facility GEE Neg. binomial"
+putexcel I2 = "Indicator" J2="RR postCovid" K2="LCL" L2="UCL" 
 
-local i = 14
+local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global HTIall  {
 	local i = `i'+1
 	* Regression coefficients represent the expected change in the log of the 
 	* mean of the dependent variable for each change in a covariate
@@ -118,11 +119,14 @@ foreach var in opd_util anc_util del_util  {
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel I`i' = "`var'"
+	putexcel J`i'= (_b[rr])
+	putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
+
+
+
 ********************************************************************************
 * Haiti GRAPHS
 ********************************************************************************

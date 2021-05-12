@@ -2,8 +2,10 @@
 ********************************************************************************
 * South Korea (regional level)
 ********************************************************************************
-u "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", clear 
+global KORall opd_util er_util ipd_util sti_util anc_util del_util cs_util ///
+		kmc_qual diarr_util pneum_util art_util diab_util hyper_util
 
+u "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", clear 
 
 /* Vars needed for ITS (we expect both a change in level and in slope: 
 	rmonth from 1 to 24 = underlying trend in the outcome
@@ -29,13 +31,13 @@ save  "$user/$KORdata/Data for analysis/KORtmp.dta", replace
 * Call GEE, export RR to excel
 xtset reg rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Korea)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Korea)  modify
 putexcel A1 = "KOR region-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util anc_util del_util  {
+foreach var of global KORall  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
@@ -48,6 +50,7 @@ foreach var in opd_util anc_util del_util  {
 	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
+
 
 ********************************************************************************
 * KOREA GRAPHS
