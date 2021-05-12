@@ -23,6 +23,7 @@ gen summer = month>=6 & month<=8
 gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
+rename totaldel del_util
 save  "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 
 * Call GEE, export RR to excel
@@ -51,7 +52,26 @@ foreach var in opd_util totaldel  {
 ********************************************************************************
 * THAILAND GRAPHS
 ********************************************************************************
+* deliveries		
+			u "$user/$THAdata/Data for analysis/THAtmp.dta", clear
+			 drop if rmonth>14
+			xtset prov rmonth
+			 xtgee del_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
+			u "$user/$THAdata/Data for analysis/THAtmp.dta", clear
+			rename del_util del_util_real
+			predict del_util
+
+			collapse (sum) del_util_real del_util , by(rmonth)
+
+			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Thailand", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(4000)32000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/THA_del_util.pdf", replace
 
 * ANC			
 			u "$user/$THAdata/Data for analysis/THAtmp.dta", clear

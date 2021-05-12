@@ -131,12 +131,12 @@ foreach var of global LAOall  {
 
 
 
-/********************************************************************************
+********************************************************************************
 * LAO GRAPHS
 ********************************************************************************
 * Deliveries
 			u "$user/$LAOdata/Data for analysis/LAOtmp.dta", clear
-			 drop if rmonth>15 
+			 drop if rmonth>14 
 			 xtset prov rmonth
 			 xtgee del_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -148,10 +148,10 @@ foreach var of global LAOall  {
 			collapse (sum) del_util_real del_util , by(rmonth)
 
 			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Deliveries", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)11000, labsize(small))
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)12000, labsize(small))
 			
 			graph export "$analysis/Results/Graphs/LAO_del_util.pdf", replace
 

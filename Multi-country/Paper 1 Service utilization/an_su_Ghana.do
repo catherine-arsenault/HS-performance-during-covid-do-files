@@ -29,12 +29,13 @@ gen summer = month>=6 & month<=8
 gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
-* Create % var for graphs
+/* Create % var for graphs
 foreach x in opd anc del {
 		gen ref_`x' = `x'_util if rmonth==1
 		by reg, sort: carryforward ref_`x', replace
 		gen `x'_pct = `x'_util*100/ref_`x' 
-	}
+	} */
+	
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 
 * Call GEE, export RR to excel
@@ -65,7 +66,7 @@ foreach var of global GHAall  {
 ********************************************************************************
 * Deliveries
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			 drop if rmonth>15 
+			 drop if rmonth>14 
 			 xtset reg rmonth
 			 xtgee del_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -77,10 +78,10 @@ foreach var of global GHAall  {
 			collapse (sum) del_util_real del_util , by(rmonth)
 
 			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Deliveries", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)75000, labsize(small))
+			graphregion(color(white)) title("Ghana", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)80000, labsize(small))
 			
 			graph export "$analysis/Results/Graphs/GHA_del_util.pdf", replace
 
@@ -104,27 +105,59 @@ foreach var of global GHAall  {
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(150000)450000, labsize(small))
 			
 			graph export "$analysis/Results/Graphs/GHA_anc_util.pdf", replace
+* ANC (scatter)			
+			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			
+			collapse (sum)  anc_util , by(rmonth)
+			
+			twoway (scatter anc_util rmonth, msize(small) sort) ///
+			(lfit anc_util rmonth if rmonth<15) (lfit anc_util rmonth if rmonth>=15, lcolor(green)) , ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Chile", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(100000)450000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/GHA_anc_util.pdf", replace			
 * OPD		
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			drop if rmonth>15
 			xtset reg rmonth
-			 xtgee opd_pct rmonth , family(gaussian) ///
+			 xtgee opd_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
 
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename opd_pct opd_pct_real
-			predict opd_pct
+			rename opd_util opd_util_real
+			predict opd_util
 
-			collapse (mean) opd_pct_real opd_pct , by(rmonth)
+			collapse (mean) opd_util_real opd_util , by(rmonth)
 
-			twoway (line opd_pct_real rmonth,  sort) (line opd_pct rmonth), ///
+			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Outpatient visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(25)150, labsize(vsmall))
+			graphregion(color(white)) title("Ghana", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(25000)200000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
+* Diabetes
+			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			 drop if rmonth>14 
+			 xtset reg rmonth
+			 xtgee diab_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
+
+			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			rename diab_util diab_util_real
+			predict diab_util
+
+			collapse (sum) diab_util_real diab_util , by(rmonth)
+
+			twoway (line diab_util_real rmonth,  sort) (line diab_util rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Ghana", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)18000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/GHA_diab_util.pdf", replace
 			
 
 rm "$user/$GHAdata/Data for analysis/GHAtmp.dta"

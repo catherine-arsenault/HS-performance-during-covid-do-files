@@ -232,7 +232,7 @@ foreach  var of global NEPall  {
 			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Deliveries", size(small)) ///
+			graphregion(color(white)) title("Nepal", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)50000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/Nepal_del_util.pdf", replace

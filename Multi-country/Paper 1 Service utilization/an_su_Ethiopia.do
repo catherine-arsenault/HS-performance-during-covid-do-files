@@ -132,12 +132,12 @@ foreach var of global ETHall {
 }
 
 
-/********************************************************************************
+********************************************************************************
 * Ethiopia GRAPHS
 ********************************************************************************
 * Deliveries
 			u "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta", clear
-			 drop if rmonth>15
+			 drop if rmonth>14
 			 xtset reg rmonth
 			 xtgee del_util rmonth , family(poisson) ///
 				link(identity) corr(exchangeable) vce(robust)
@@ -151,7 +151,7 @@ foreach var of global ETHall {
 			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Deliveries", size(small)) ///
+			graphregion(color(white)) title("Ethiopia", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(40000)200000, labsize(small))
 			
 			graph export "$user/$analysis/Results/Graphs/Ethiopia_del_util.pdf", replace
@@ -174,8 +174,20 @@ foreach var of global ETHall {
 			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(40000)140000, labsize(small))
 			
-			graph export "$user/$analysis/Results/Graphs/Nepal_anc_util.pdf", replace
+			graph export "$user/$analysis/Results/Graphs/Ethiopia_anc_util.pdf", replace
+* ANC(scatter)			
+			u "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta", clear
 			
+			collapse (sum) anc_util , by(rmonth)
+			
+			twoway (scatter anc_util rmonth, msize(small) sort) ///
+			(lfit anc_util rmonth if rmonth<15) (lfit anc_util rmonth if rmonth>=15, lcolor(green)) , ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Ethiopia", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(50000)350000, labsize(small))
+			
+			graph export "$user/$analysis/Results/Graphs/Ethiopia_anc_util.pdf", replace			
 * OPD		
 			u "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta", clear
 			 drop if rmonth>15
@@ -191,10 +203,8 @@ foreach var of global ETHall {
 			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Outpatient visits - Oromia", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) 
-			
-			ylabel(0(1500000)9000000, labsize(vsmall))
+			graphregion(color(white)) title("Ethiopia", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(1500000)9000000, labsize(vsmall))
 			
 			graph export "$user/$analysis/Results/Graphs/Ethiopia_opd_util.pdf", replace
 			

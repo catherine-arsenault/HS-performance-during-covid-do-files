@@ -148,37 +148,31 @@ foreach var of global KZNall  {
 
 
 
-/********************************************************************************
+********************************************************************************
 * KZN GRAPHS
 ********************************************************************************
 * Deliveries
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			
-			collapse (sum)  del_util , by(rmonth)
+			 drop if rmonth>14
+			xtset dist rmonth
+			 xtgee del_util rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
-			twoway (scatter del_util rmonth,  sort msize(small)) (lfit del_util rmonth if rmonth<16) ///
-			(lfit del_util rmonth if rmonth>=16, lcolor(green)), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+			rename del_util del_util_real
+			predict del_util
+
+			collapse (sum) del_util_real del_util , by(rmonth)
+
+			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Deliveries", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2500)15000, labsize(small))
+			graphregion(color(white)) title("KwaZulu-Natal", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2500)15500, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
-
-* ANC			
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-		
-			collapse (sum) anc_util , by(rmonth)
-
-			twoway (scatter anc_util rmonth, msize(small) sort) ///
-			(lfit anc_util rmonth if rmonth<16) (lfit anc_util rmonth if rmonth>=16, lcolor(green)) , ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(5000)30000, labsize(small))
 			
-			graph export "$analysis/Results/Graphs/KZN_anc_util.pdf", replace
-			
+
 * OPD		
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			 drop if rmonth>15
@@ -199,6 +193,43 @@ foreach var of global KZNall  {
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(50000)500000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/KZN_opd_util.pdf", replace
+			
+
+
+
+
+
+
+
+
+
+/* Deliveries
+			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+			
+			collapse (sum)  del_util , by(rmonth)
+
+			twoway (scatter del_util rmonth,  sort msize(small)) (lfit del_util rmonth if rmonth<16) ///
+			(lfit del_util rmonth if rmonth>=16, lcolor(green)), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Deliveries", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2500)15000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
+
+* ANC			
+			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+		
+			collapse (sum) anc_util , by(rmonth)
+
+			twoway (scatter anc_util rmonth, msize(small) sort) ///
+			(lfit anc_util rmonth if rmonth<16) (lfit anc_util rmonth if rmonth>=16, lcolor(green)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(5000)30000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/KZN_anc_util.pdf", replace
 			
 
 rm "$user/$KZNdata/Data for analysis/KZNtmp.dta"

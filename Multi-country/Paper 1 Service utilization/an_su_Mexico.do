@@ -56,12 +56,12 @@ foreach var of global MEXall {
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
 
-/********************************************************************************
+********************************************************************************
 * MEXICO GRAPHS
 ********************************************************************************
 * Deliveries
 			u "$user/$MEXdata/Data for analysis/MEXtmp.dta", clear
-			 drop if rmonth>15 
+			 drop if rmonth>14
 			 xtset del rmonth
 			 xtgee del_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -73,7 +73,7 @@ foreach var of global MEXall {
 			collapse (sum) del_util_real del_util , by(rmonth)
 
 			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(4000)22000, labsize(small))

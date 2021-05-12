@@ -54,7 +54,7 @@ foreach var in opd_util anc_util del_util  {
 ********************************************************************************
 * Deliveries
 			u "$user/$KORdata/Data for analysis/KORtmp.dta", clear
-			 drop if rmonth>15 
+			 drop if rmonth>14
 			 xtset reg rmonth
 			 xtgee del_util rmonth , family(gaussian) ///
 				link(identity) corr(exchangeable) vce(robust)	
@@ -66,7 +66,7 @@ foreach var in opd_util anc_util del_util  {
 			collapse (sum) del_util_real del_util , by(rmonth)
 
 			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
 			graphregion(color(white)) title("Deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(3000)15000, labsize(small))
