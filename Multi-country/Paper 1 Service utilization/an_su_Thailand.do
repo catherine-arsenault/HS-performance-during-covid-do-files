@@ -2,6 +2,11 @@
 ********************************************************************************
 * Thailand (Province level)
 ********************************************************************************
+global THAall opd_util ipd_util del_util malaria_util ///
+	diab_util hyper_util road_util
+* Removed anc_util as it is missing from Jan to Sep 2019
+* Removed pneum_util and diarr_util as it is for all cases, not only children.
+
 u "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear
 
 /* Vars needed for ITS (we expect both a change in level and in slope: 
@@ -29,17 +34,17 @@ save  "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 * Call GEE, export RR to excel
 xtset prov rmonth 
 
-putexcel set "$analysis/Results/Prelim results APR28.xlsx", sheet(Thailand)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Thailand)  modify
 putexcel A1 = "THA province-level GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
 local i = 2
 
-foreach var in opd_util totaldel  {
+foreach var of global THAall  {
 	local i = `i'+1
 	
 	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(nbinomial) link(power) corr(exchangeable) vce(robust)	
+	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
