@@ -21,6 +21,7 @@ drop v27 v52 v77 v102 v127 v152 v177 v202 v227 v252 v277 v302 v327 v352 v377 v40
 rename (numberofconsultationsforsticarej - v26) ///
 		(sti_util1_19	sti_util2_19	sti_util3_19	sti_util4_19	///
 		sti_util5_19	sti_util6_19	sti_util7_19	sti_util8_19	///
+		sti_util9_19	sti_util10_19	sti_util11_19	sti_util12_19 ///
 		sti_util1_20	sti_util2_20	sti_util3_20	sti_util4_20	///
 		sti_util5_20	sti_util6_20	sti_util7_20	sti_util8_20 ///
 		sti_util9_20 	sti_util10_20 	sti_util11_20 	sti_util12_20)
