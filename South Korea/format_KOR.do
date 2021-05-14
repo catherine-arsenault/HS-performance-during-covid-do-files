@@ -1,5 +1,5 @@
 * HS performance during Covid
-* February 4 2021
+* May 14 2021
 * South Korea
 * PI Catherine Arsenault, Analyst MK Kim
 * Formating for google data studio dashboard
@@ -9,7 +9,7 @@ created in google data studio
 ****************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
-u "$user/$data/Data for analysis/Kor_Jan19-Sep20_WIDE.dta", replace	
+u "$user/$data/Data for analysis/Kor_Jan19-Dec20_WIDE.dta", replace	
 
 global volume sti_util anc_util cs_util diarr_util pneum_util del_util totaldel
 global other diab_util hyper_util art_util mental_util opd_util er_util ipd_util kmc_qual
@@ -19,7 +19,7 @@ global all $volume $other $mortality
 *********************************************************************************
 * Create national totals
 *********************************************************************************
-	collapse (sum) sti_util1_19 - del_util9_20 , by(region)
+	collapse (sum) sti_util1_19 - del_util12_20 , by(region)
 	encode region, gen(reg)
 	drop region
 	order reg
@@ -79,13 +79,13 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Kor_Jan19-Sep20_fordashboard.csv", replace
+export delimited using "$user/$data/Kor_Jan19-Dec20_fordashboard.csv", replace
 
 		
 *********************************************************************************
 * Final dataset for analyses
 *********************************************************************************	
-u "$user/$data/Data for analysis/Kor_Jan19-Sep20_WIDE.dta", replace	
+u "$user/$data/Data for analysis/Kor_Jan19-Dec20_WIDE.dta", replace	
 reshape long sti_util anc_util totaldel cs_util diarr_util pneum_util diab_util ///
 		hyper_util art_util mental_util opd_util er_util ipd_util kmc_qual ///
 		newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num del_util, i(region) j(month) string 
@@ -112,7 +112,7 @@ gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20"
 		sort  region year month
 		order region year month 	
 		
-save "$user/$data/Data for analysis/Korea_su_21months.dta", replace		
+save "$user/$data/Data for analysis/Korea_su_24months.dta", replace		
 		
 		
 		
