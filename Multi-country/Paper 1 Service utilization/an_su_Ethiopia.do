@@ -24,6 +24,8 @@ gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort reg rmonth
 gen postCovid = rmonth>15 // Starting April, timing of interruption might change.
+gen stringent = rmonth>=16 & rmonth<=20 // April to August
+gen less_stringent= rmonth>=21 & rmonth <=24 // Sep to Dec
 
 * Number of months since Covid / lockdowns 
 gen timeafter= rmonth-15
@@ -59,6 +61,77 @@ foreach var of global ETHall {
 	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
 }
+
+********************************************************************************
+* Region level, OLS with FEs
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia OLS)  modify
+putexcel E1 = "Ethiopia Region OLS FE"
+putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
+
+local i = 2
+
+foreach var of global ETHall {
+	local i = `i'+1
+	xtreg `var'  i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	i(reg) fe cluster(reg)
+	
+	margins postCovid, post
+	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel E`i' = "`var'"
+	putexcel F`i'= (_b[rr])
+	putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel h`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+}
+
+********************************************************************************
+* Ethiopia - OLS at zone level
+********************************************************************************
+use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta",  clear
+
+collapse (sum) $ETHall, by (zone year month)
+encode zone, gen(zo)
+
+gen rmonth= month if year==2019
+replace rmonth = month+12 if year ==2020
+sort zo rmonth
+
+gen stringent = rmonth>=16 & rmonth<=20 // April to August
+gen less_stringent= rmonth>=21 & rmonth <=24 // Sep to Dec
+
+gen postCovid = rmonth>15 // Starting April
+
+* Number of months since Covid / lockdowns 
+gen timeafter= rmonth-15
+replace timeafter=0 if timeafter<0
+* Seasons
+gen spring = month>=3 & month<=5
+gen summer = month>=6 & month<=8
+gen fall = month>=9 & month<=11
+gen winter= month==12 | month==1 | month==2
+
+
+* Zone level, OLS with FEs
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia OLS)  modify
+putexcel A1 = "Ethiopia Zone OLS FE"
+putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
+
+local i = 2
+
+foreach var of global ETHall {
+	local i = `i'+1
+	* Regression coefficients represent the expected change in the log of the 
+	* mean of the dependent variable for each change in a predictor
+	xtreg `var'  i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	i(zo) fe cluster(zo)
+	
+	margins postCovid, post
+	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
+	putexcel A`i' = "`var'"
+	putexcel B`i'= (_b[rr])
+	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+}
+
 
 ********************************************************************************
 * Ethiopia - regression models, at lowest level of analysis: facility/woreda
@@ -211,3 +284,33 @@ foreach var of global ETHall {
 
 rm "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta"
 
+/* ********************************************************************************
+* Region level, OLS with FEs - multiple period
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia OLS)  modify
+putexcel I1 = "Ethiopia Region OLS FE - multiple periods"
+putexcel I2 = "Indicator" J2="RR April-August" K2="LCL" L2="UCL" 
+
+local i = 2
+
+foreach var of global ETHall {
+	local i = `i'+1
+	xtreg `var'  i.stringent i.less_stringent rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	i(reg) fe cluster(reg)
+	
+	margins stringent, post
+	nlcom (rr: (_b[1.stringent]/_b[0.stringent])) , post
+	putexcel I`i' = "`var'"
+	putexcel J`i'= (_b[rr])
+	putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	
+	xtreg `var'  i.stringent i.less_stringent rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	i(reg) fe cluster(reg)
+	
+	putexcel M2="RR Sept-December" N2="LCL" O2="UCL" 
+	margins less_stringent, post
+	nlcom (rr: (_b[1.less_stringent]/_b[0.less_stringent])) , post
+	putexcel M`i'= (_b[rr])
+	putexcel N`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel O`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+}
