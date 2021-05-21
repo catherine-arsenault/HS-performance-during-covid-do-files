@@ -84,6 +84,26 @@ foreach var of global GHAall  {
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)80000, labsize(small))
 			
 			graph export "$analysis/Results/Graphs/GHA_del_util.pdf", replace
+* TB case detection
+			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			 drop if rmonth>15 
+			 xtset reg rmonth
+			 xtgee tbdetect_qual rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
+
+			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			rename tbdetect_qual tbdetect_qual_real
+			predict tbdetect_qual
+
+			collapse (sum) tbdetect_qual_real tbdetect_qual , by(rmonth)
+
+			twoway (line tbdetect_qual_real rmonth,  sort) (line tbdetect_qual rmonth), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("TB case detection in Ghana", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(1000)3000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/GHA_tbdetect_qual.pdf", replace
 
 * ANC			
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
