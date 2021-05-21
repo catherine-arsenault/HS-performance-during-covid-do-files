@@ -172,7 +172,47 @@ foreach var of global KZNall  {
 			
 			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
 			
+* TB case detection
+			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+			 drop if rmonth>15
+			xtset dist rmonth
+			 xtgee tbdetect_qual rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
 
+			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+			rename tbdetect_qual tbdetect_qual_real
+			predict tbdetect_qual
+
+			collapse (sum) tbdetect_qual_real tbdetect_qual , by(rmonth)
+
+			twoway (line tbdetect_qual_real rmonth,  sort) (line tbdetect_qual rmonth), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("TB case detection in KwaZulu-Natal", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(1000)4000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/KZN_tbdetect_qual.pdf", replace
+
+* TB screening
+			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+			 drop if rmonth>15
+			xtset dist rmonth
+			 xtgee tbscreen_qual rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
+
+			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+			rename tbscreen_qual tbscreen_qual_real
+			predict tbscreen_qual
+
+			collapse (sum) tbscreen_qual_real tbscreen_qual , by(rmonth)
+
+			twoway (line tbscreen_qual_real rmonth,  sort) (line tbscreen_qual rmonth), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("Number screened for TB symptoms in KwaZulu-Natal", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(300000)2200000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/KZN_tbscreen_qual.pdf", replace
 * OPD		
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
 			 drop if rmonth>15
