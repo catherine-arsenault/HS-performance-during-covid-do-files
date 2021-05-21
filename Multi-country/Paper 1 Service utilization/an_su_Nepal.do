@@ -18,11 +18,14 @@ encode Province, gen(prov)
 /* Vars needed for ITS (we expect both a change in level and in slope: 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
-	timeafter = slope change after Covid */ 
+	timeafter = slope change after Covid 
+	"February 2020" month 14 is actually Feb13 to Mar13. so postCovid is month 15
+	*/ 
+	
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort prov rmonth
-gen postCovid = rmonth>14 // Starting March
+gen postCovid = rmonth>14 // after March 11 
 
 * Number of months since Covid / lockdowns 
 gen timeafter= rmonth-14
@@ -132,7 +135,7 @@ foreach  var of global NEPall  {
 ********************************************************************************
 * Nepal GRAPHS
 ********************************************************************************
-* fp
+* FP
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
 			 drop if rmonth>14
 			 xtset prov rmonth
@@ -152,6 +155,40 @@ foreach  var of global NEPall  {
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(200000(100000)600000, labsize(small))
 			
 			graph export "$analysis/Results/Graphs/Nepal_fp_util.pdf", replace
+* TB detection
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			 drop if rmonth>14
+			 xtset prov rmonth
+			 xtgee tbdetect_qual rmonth , family(gaussian) ///
+				link(identity) corr(exchangeable) vce(robust)	
+
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			rename tbdetect_qual tbdetect_qual_real
+			predict tbdetect_qual
+
+			collapse (sum) tbdetect_qual_real tbdetect_qual , by(rmonth)
+
+			twoway (line tbdetect_qual_real rmonth,  sort) (line tbdetect_qual rmonth), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("TB case detection Nepal", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(500)2000, labsize(small))
+			
+			graph export "$analysis/Results/Graphs/Nepal_tbdetect_qual.pdf", replace
+* TB different graph
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			collapse (sum) tbdetect_qual , by(rmonth)
+	
+			twoway (scatter tbdetect_qual rmonth,  sort msize(small)) (lfit tbdetect_qual rmonth if rmonth<16) ///
+			(lfit tbdetect_qual rmonth if rmonth>=16, lcolor(green)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("Months since January 2019", size(small)) legend(off) ///
+			graphregion(color(white)) title("TB cases detected in Nepal", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) 
+			
+			
+			ylabel(0(6000)32000, labsize(small))
+			
 
 * PNC
 			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
