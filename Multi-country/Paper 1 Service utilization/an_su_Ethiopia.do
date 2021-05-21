@@ -19,16 +19,15 @@ encode region, gen(reg)
 /* Vars needed for ITS (we expect both a change in level and in slope) 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
-	timeafter = slope change after Covid */ 
+	timeafter = slope change after Covid 
+	Month 14 is actually Feb9-Mar9, so pandemic starts month 15 */ 
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 sort reg rmonth
-gen postCovid = rmonth>15 // Starting April, timing of interruption might change.
-gen stringent = rmonth>=16 & rmonth<=20 // April to August
-gen less_stringent= rmonth>=21 & rmonth <=24 // Sep to Dec
+gen postCovid = rmonth>14 // Starting April, timing of interruption might change.
 
 * Number of months since Covid / lockdowns 
-gen timeafter= rmonth-15
+gen timeafter= rmonth-14
 replace timeafter=0 if timeafter<0
 * Seasons
 gen spring = month>=3 & month<=5
@@ -38,10 +37,11 @@ gen winter= month==12 | month==1 | month==2
 
 save "$user/$ETHdata/Data for analysis/Ethiopiatmp.dta",  replace
 
+
 * GEE models at regional level, linear, exchangeable correlation structure
 xtset reg rmonth 
 
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ethiopia)  modify
+putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(EthiopiaMar)  modify
 putexcel A1 = "Ethiopia regional GEE"
 putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
 
