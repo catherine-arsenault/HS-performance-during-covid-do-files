@@ -512,7 +512,7 @@ twoway (line ethiopia_opd time if time>12, lcolor(green)) (line ghana_opd time i
 	   lcolor(none)) bmargin(tiny)) xtitle("Month", size(small)) ytitle("Percent relative to Jan 2020", size(small)) ///
 	   saving("$analysis/Graphs/opd2.gph", replace)
 	   
-twoway (line chile_anc time if time>12 , lcolor(black)) (line ethiopia_anc time if time>12, lcolor(green)) (line ghana_anc time if time>12, lcolor(red)) ///
+twoway (line ethiopia_anc time if time>12, lcolor(green)) (line ghana_anc time if time>12, lcolor(red)) ///
 	   (line haiti_anc time if time>12, lcolor(yellow))  (line korea_anc time if time>12, lcolor(blue))  ///
 	   (line kzn_anc time if time>12, lcolor(mint)) (line lao_anc time if time>12, lcolor(ltblue)) ///
 	   (line mexico_anc time if time>12, lcolor(orange)) (line nepal_anc time if time>12, lcolor(purple)) ///
@@ -524,10 +524,10 @@ twoway (line chile_anc time if time>12 , lcolor(black)) (line ethiopia_anc time 
 	   lcolor(none)) bmargin(tiny))	xtitle("Month", size(small)) ytitle("Percent relative to Jan 2020", size(small)) ///
 	   saving("$analysis/Graphs/anc2.gph", replace) 
 
-twoway (line chile_del time, lcolor(black)) (line ethiopia_del time, lcolor(green)) (line ghana_del time, lcolor(red)) ///
-	   (line haiti_del time, lcolor(yellow))  (line korea_del time, lcolor(blue))  ///
-	   (line kzn_del time, lcolor(mint)) (line lao_del time, lcolor(ltblue)) ///
-	   (line mexico_del time, lcolor(orange)) (line nepal_del time, lcolor(purple)) ///
+twoway (line ethiopia_del time if time>12, lcolor(green)) (line ghana_del time if time>12, lcolor(red)) ///
+	   (line haiti_del time if time>12, lcolor(yellow))  (line korea_del time if time>12, lcolor(blue))  ///
+	   (line kzn_del time if time>12, lcolor(mint)) (line lao_del time if time>12, lcolor(ltblue)) ///
+	   (line mexico_del time if time>12, lcolor(orange)) (line nepal_del time if time>12, lcolor(purple)) ///
 	   , ylabel(#6, labsize(vsmall)) xlabel(#12,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
 	   xline(15) graphregion(color(white)) xtitle("") ///
 	   title("Deliveries relative to Jan 2020 (Jan-Dec 2020)", size(small)) ///
