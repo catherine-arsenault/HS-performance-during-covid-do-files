@@ -5,7 +5,7 @@
 
 set scheme s1color
 
-***********************************************************
+/***********************************************************
 *Jan 2019 as reference
 ***********************************************************
 * Chile
@@ -278,7 +278,7 @@ grc1leg "$analysis/Graphs/opd_ethiopia.gph" "$analysis/Graphs/opd_ghana.gph" ///
 		title("Outpatient visits relative to January 2019 (January 2019-December 2020)", size(small)) 
 * Removeed legend by hand
 
-
+*/
 
 ***********************************************************
 *Jan 2020 as reference
@@ -491,43 +491,46 @@ foreach x in opd anc {
 merge 1:1 time using "$analysis/tmp.dta"
 drop _merge 
 
+lab def month_lbl 13 "Jan" 14 "Feb" 15 "Mar" 16 "Apr" 17 "May" 18 "Jun" 19 "Jul" 20 "Aug" 21 "Sep" 22 "Oct" 23 "Nov" 24 "Dec"
+lab val time month_lbl
+
 drop ref* *_util
 save "$analysis/tmp.dta", replace
 
 *****************
 * LINE GRAPH 
 *****************
-twoway (line ethiopia_opd time, lcolor(green)) (line ghana_opd time, lcolor(red)) ///
-	   (line haiti_opd time, lcolor(yellow))  (line korea_opd time, lcolor(blue))  ///
-	   (line kzn_opd time, lcolor(mint)) (line lao_opd time, lcolor(ltblue)) ///
-	   (line mexico_opd time, lcolor(orange)) (line nepal_opd time, lcolor(purple)) ///
-	   (line thailand_opd time, lcolor(gs5)) ///
-	   , ylabel(#6, labsize(vsmall)) xlabel(#24,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
+twoway (line ethiopia_opd time if time>12, lcolor(green)) (line ghana_opd time if time>12, lcolor(red)) ///
+	   (line haiti_opd time if time>12, lcolor(yellow))  (line korea_opd time if time>12, lcolor(blue))  ///
+	   (line kzn_opd time if time>12, lcolor(mint)) (line lao_opd time if time>12, lcolor(ltblue)) ///
+	   (line mexico_opd time if time>12, lcolor(orange)) (line nepal_opd time if time>12, lcolor(purple)) ///
+	   (line thailand_opd time if time>12, lcolor(gs5)) ///
+	   , ylabel(#6, labsize(vsmall)) xlabel(#12,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
 	   xline(15) graphregion(color(white)) xtitle("") ///
-	   title("Outpatient visits relative to Jan 2020 (Jan 2019-Dec 2020)", size(small)) ///
+	   title("Outpatient visits relative to Jan 2020 (Jan-Dec 2020)", size(small)) ///
 	   legend(rows(2) rowgap(tiny) colgap(tiny) keygap(tiny) size(vsmall) region(margin(tiny) ///
 	   lcolor(none)) bmargin(tiny)) xtitle("Month", size(small)) ytitle("Percent relative to Jan 2020", size(small)) ///
 	   saving("$analysis/Graphs/opd2.gph", replace)
 	   
-twoway (line chile_anc time, lcolor(black)) (line ethiopia_anc time, lcolor(green)) (line ghana_anc time, lcolor(red)) ///
-	   (line haiti_anc time, lcolor(yellow))  (line korea_anc time, lcolor(blue))  ///
-	   (line kzn_anc time, lcolor(mint)) (line lao_anc time, lcolor(ltblue)) ///
-	   (line mexico_anc time, lcolor(orange)) (line nepal_anc time, lcolor(purple)) ///
-	   (line thailand_anc time, lcolor(gs5)) ///
-	   , ylabel(#6, labsize(vsmall)) xlabel(#24,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
+twoway (line ethiopia_anc time if time>12, lcolor(green)) (line ghana_anc time if time>12, lcolor(red)) ///
+	   (line haiti_anc time if time>12, lcolor(yellow))  (line korea_anc time if time>12, lcolor(blue))  ///
+	   (line kzn_anc time if time>12, lcolor(mint)) (line lao_anc time if time>12, lcolor(ltblue)) ///
+	   (line mexico_anc time if time>12, lcolor(orange)) (line nepal_anc time if time>12, lcolor(purple)) ///
+	   (line thailand_anc time if time>12, lcolor(gs5)) ///
+	   , ylabel(#6, labsize(vsmall)) xlabel(#12,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
 	   xline(15) graphregion(color(white)) xtitle("") ///
-	   title("ANC visits relative to Jan 2020 (Jan 2019-Dec 2020)", size(small)) ///
+	   title("ANC visits relative to Jan 2020 (Jan-Dec 2020)", size(small)) ///
 	   legend(rows(2) rowgap(tiny) colgap(tiny) keygap(tiny) size(vsmall) region(margin(tiny) ///
 	   lcolor(none)) bmargin(tiny))	xtitle("Month", size(small)) ytitle("Percent relative to Jan 2020", size(small)) ///
 	   saving("$analysis/Graphs/anc2.gph", replace) 
 
-twoway (line chile_del time, lcolor(black)) (line ethiopia_del time, lcolor(green)) (line ghana_del time, lcolor(red)) ///
-	   (line haiti_del time, lcolor(yellow))  (line korea_del time, lcolor(blue))  ///
-	   (line kzn_del time, lcolor(mint)) (line lao_del time, lcolor(ltblue)) ///
-	   (line mexico_del time, lcolor(orange)) (line nepal_del time, lcolor(purple)) ///
-	   , ylabel(#6, labsize(vsmall)) xlabel(#24,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
+twoway (line ethiopia_del time if time>12, lcolor(green)) (line ghana_del time if time>12, lcolor(red)) ///
+	   (line haiti_del time if time>12, lcolor(yellow))  (line korea_del time if time>12, lcolor(blue))  ///
+	   (line kzn_del time if time>12, lcolor(mint)) (line lao_del time if time>12, lcolor(ltblue)) ///
+	   (line mexico_del time if time>12, lcolor(orange)) (line nepal_del time if time>12, lcolor(purple)) ///
+	   , ylabel(#6, labsize(vsmall)) xlabel(#12,  labsize(vsmall) valuelabel grid glwidth(thin)) ///
 	   xline(15) graphregion(color(white)) xtitle("") ///
-	   title("Deliveries relative to Jan 2020 (Jan 2019-Dec 2020)", size(small)) ///
+	   title("Deliveries relative to Jan 2020 (Jan-Dec 2020)", size(small)) ///
 	   legend(rows(2) rowgap(tiny) colgap(tiny) keygap(tiny) size(vsmall) region(margin(tiny) ///
 	   lcolor(none)) bmargin(tiny))	xtitle("Month", size(small)) ytitle("Percent relative to Jan 2020", size(small)) ///
 	   saving("$analysis/Graphs/del2.gph", replace) 
