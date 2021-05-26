@@ -713,7 +713,6 @@ save "$analysis/tmp.dta", replace
 
 * Thailand
 use "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear 
-rename totaldel del_util
 
 collapse (sum) opd anc del, by( year month)
 
