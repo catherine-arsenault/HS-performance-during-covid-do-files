@@ -195,6 +195,7 @@ local dl_modif
 			local dl_modif `dl_modif' `x'
        }
  }
+rename totaldel del_util
 cap drop `dl_modif'
 
 save "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", replace 
