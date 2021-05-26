@@ -59,8 +59,25 @@ foreach var of global GHAall  {
 	putexcel B`i'= (_b[rr])
 	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
+	
+	margins, at(timeafter= (1 9)) post
+	nlcom (_b[2._at]/_b[1._at]), post
+
 }
 
+********************************************************************************
+* PREDICTED LEVEL
+********************************************************************************
+	xtgee opd_util rmonth i.spring i.summer i.fall i.winter if rmonth<16 , ///
+	family(gaussian) link(identity) corr(exchangeable) vce(robust)		
+	
+	predict prd_opd // linear predictions based on preCovid months
+	predict stdp_opd, stdp // SEs of the predictions
+	collapse (sum) opd prd_opd , by(rmonth)
+	
 ********************************************************************************
 * GHANA GRAPHS
 ********************************************************************************
@@ -151,9 +168,13 @@ foreach var of global GHAall  {
 
 			collapse (mean) opd_util_real opd_util , by(rmonth)
 
-			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
+			twoway (scatter opd_util_real rmonth, msize(vsmall)  sort) ///
+			(line opd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(lfit opd_util_real rmonth if rmonth<16, lcolor(green)) ///
+			(lfit opd_util_real rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
+			ytitle("Average number per region", size(small)) ///
 			graphregion(color(white)) title("Ghana", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(25000)200000, labsize(vsmall))
 			

@@ -54,6 +54,12 @@ foreach var of global MEXall {
 	putexcel B`i'= (_b[rr])
 	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
 	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	
+	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
+	, family(gaussian) link(identity) corr(exchangeable) vce(robust)
+	
+	margins, at(timeafter= (1 9)) post
+	nlcom (_b[2._at]/_b[1._at]), post
 }
 
 ********************************************************************************
@@ -114,10 +120,13 @@ foreach var of global MEXall {
 
 			collapse (sum) opd_util_real opd_util , by(rmonth)
 
-			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
+			twoway (scatter opd_util_real rmonth, msize(vsmall)  sort) ///
+			(line opd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(lfit opd_util_real rmonth if rmonth<16, lcolor(green)) ///
+			(lfit opd_util_real rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Outpatient visits", size(small)) ///
+			graphregion(color(white)) title("Mexico", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(500000(1500000)10000000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/MEX_opd_util.pdf", replace

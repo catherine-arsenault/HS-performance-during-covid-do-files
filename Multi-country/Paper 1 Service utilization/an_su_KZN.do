@@ -226,10 +226,13 @@ foreach var of global KZNall  {
 
 			collapse (sum) opd_util_real opd_util , by(rmonth)
 
-			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
+			twoway (scatter opd_util_real rmonth, msize(vsmall)  sort) ///
+			(line opd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(lfit opd_util_real rmonth if rmonth<16, lcolor(green)) ///
+			(lfit opd_util_real rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Outpatient visits", size(small)) ///
+			graphregion(color(white)) title("KZN", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(50000)500000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/KZN_opd_util.pdf", replace
