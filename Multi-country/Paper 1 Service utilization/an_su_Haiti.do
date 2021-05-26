@@ -2,10 +2,6 @@
 ********************************************************************************
 * Haiti (by département)
 ********************************************************************************
-
-global HTIall opd_util fp_util anc_util del_util pnc_util vacc_qual diab_util ///
-				hyper_util cerv_qual
-
 use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clear
 
 rename orgunitlevel2 departement

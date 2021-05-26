@@ -6,11 +6,6 @@
 * KwaZulu-Natal - regression models, at district level
 ********************************************************************************
 
-global KZNall opd_util ipd_util anc_util del_util cs_util kmc_qual pnc_util ///
-		diarr_util pneum_util malnu_util vacc_qual bcg_qual pent_qual measles_qual ///
-		pneum_qual rota_qual tbscreen_qual tbdetect_qual art_util diab_util ///
-		road_util cerv_qual
-
 use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
 
 collapse (sum) $KZNall, by (dist year month rmonth)

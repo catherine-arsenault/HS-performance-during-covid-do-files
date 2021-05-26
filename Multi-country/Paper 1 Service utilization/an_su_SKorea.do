@@ -2,8 +2,6 @@
 ********************************************************************************
 * South Korea (regional level)
 ********************************************************************************
-global KORall opd_util er_util ipd_util sti_util anc_util del_util cs_util ///
-		kmc_qual diarr_util pneum_util art_util diab_util hyper_util
 
 u "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", clear 
 

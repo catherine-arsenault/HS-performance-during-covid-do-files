@@ -3,11 +3,6 @@
 * GHANA (Region level)
 ********************************************************************************
 
-global GHAall opd_util ipd_util fp_util sti_util anc_util del_util cs_util ///
-pnc_util diarr_util pneum_util malnu_util vacc_qual bcg_qual pent_qual ///
-measles_qual opv3_qual pneum_qual rota_qual malaria_util tbdetect_qual ///
-diab_util hyper_util road_util
-
 use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
 
 /* Vars needed for ITS (we expect both a change in level and in slope: 

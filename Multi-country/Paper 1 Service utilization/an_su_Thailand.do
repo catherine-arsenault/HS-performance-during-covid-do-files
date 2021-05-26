@@ -2,8 +2,7 @@
 ********************************************************************************
 * Thailand (Province level)
 ********************************************************************************
-global THAall opd_util ipd_util del_util malaria_util ///
-	diab_util hyper_util road_util
+
 * Removed anc_util as it is missing from Jan to Sep 2019
 * Removed pneum_util and diarr_util as it is for all cases, not only children.
 

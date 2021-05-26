@@ -3,8 +3,6 @@
 * CHILE (region level )
 ********************************************************************************
 
-global CHLall anc_util del_util cs_util pnc_util
-
 use "$user/$CHLdata/Data for analysis/Chile_su_22months_for_analyses.dta", clear
 
 collapse (sum)  anc_util del_util cs_util pnc_util, by (region year month )

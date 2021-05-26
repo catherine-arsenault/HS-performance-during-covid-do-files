@@ -5,9 +5,6 @@
 ********************************************************************************
 * LAO - regression models, at regional level
 ********************************************************************************
-global LAOall opd_util ipd_util fp_util anc_util del_util cs_util pnc_util ///
-		bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util road_util
-
 use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
 
 rename orgunitlevel2 Province

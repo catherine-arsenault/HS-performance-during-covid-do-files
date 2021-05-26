@@ -5,11 +5,6 @@
 ********************************************************************************
 * Mexico (delegation level)
 ********************************************************************************
-global MEXall opd_util er_util ipd_util fp_util sti_util anc_util del_util ///
-		cs_util diarr_util pneum_util malnu_util bcg_qual pent_qual measles_qual ///
-		opv3_qual pneum_qual rota_qual art_util diab_util hyper_util cerv_qual ///
-		breast_util
-
 u "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", clear
 
 /* Vars needed for ITS (we expect both a change in level and in slope: 
