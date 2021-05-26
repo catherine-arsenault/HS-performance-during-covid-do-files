@@ -174,7 +174,7 @@ export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(Nepal) f
 
 ********************************************************************************
 * 9 SOUTH KOREA (region)
-u  "$user/$KORdata/Data for analysis/Korea_su_21months.dta", clear
+u  "$user/$KORdata/Data for analysis/Korea_su_24months.dta", clear
 local dl_modif
     foreach x of global droplist {
        cap confirm variable `x'
