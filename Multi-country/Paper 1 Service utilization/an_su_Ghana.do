@@ -1,8 +1,9 @@
-
+* Health system performance during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
+* Created by Catherine Arsenault, May 4, 2021
 ********************************************************************************
 * GHANA (Region level)
 ********************************************************************************
-
 use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
 
 /* Vars needed for ITS (we expect both a change in level and in slope: 
@@ -13,187 +14,108 @@ gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
 encode region, gen(reg)	
 sort region rmonth
-gen postCovid = rmonth>15 // Starting April
-
-* Number of months since Covid / lockdowns 
+gen postCovid = rmonth>15 // pandemic period is months 16-24
 gen timeafter= rmonth-15
 replace timeafter=0 if timeafter<0
-* Seasons
-gen spring = month>=3 & month<=5
-gen summer = month>=6 & month<=8
-gen fall = month>=9 & month<=11
-gen winter= month==12 | month==1 | month==2
-
-/* Create % var for graphs
-foreach x in opd anc del {
-		gen ref_`x' = `x'_util if rmonth==1
-		by reg, sort: carryforward ref_`x', replace
-		gen `x'_pct = `x'_util*100/ref_`x' 
-	} */
 	
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
-
-* Call GEE, export RR to excel
+********************************************************************************
+* Level change during the pandemic
+********************************************************************************
 xtset reg rmonth 
 
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Ghana)  modify
-putexcel A1 = "GHA region-level GEE"
-putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
-
+putexcel set "$analysis/Results/Tables/Results MAY28.xlsx", sheet(Ghana)  modify
+putexcel A1 = "Ghana Region OLS FE"
+putexcel A2 = "Health service" B2="Intercept" C2="RR postCovid" D2="LCL" E2="UCL" 
+putexcel F2 ="p-value"
 local i = 2
 
-foreach var of global GHAall  {
+foreach var of global GHAall {
 	local i = `i'+1
+	xtreg `var'  i.postCovid rmonth timeafter i.month, i(reg) fe cluster(reg)
+	// we will adjust SEs for small number of clusters
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
-	
+	putexcel A`i' = "`var'"
+	putexcel B`i'=(_b[_cons]) // intercept, 95% CI and p-value?
+
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
-	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
-	
-	margins, at(timeafter= (1 9)) post
-	nlcom (_b[2._at]/_b[1._at]), post
+	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
 
+	putexcel c`i'= (_b[rr])
+	putexcel d`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel e`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel f`i'= `r(p)'	 	
 }
-
 ********************************************************************************
-* PREDICTED LEVEL
+* Resumption at Dec 31, 2020: ratio of predicted
 ********************************************************************************
-	xtgee opd_util rmonth i.spring i.summer i.fall i.winter if rmonth<16 , ///
-	family(gaussian) link(identity) corr(exchangeable) vce(robust)		
+putexcel G2="%predicted" H2="LCL" I2="UCL" J2 ="p-value"
+local i = 2
+foreach var of global GHAall {
+	local i = `i'+1
+	xtreg `var' i.postCovid rmonth timeafter i.month, ///
+	i(reg) fe cluster(reg)
 	
-	predict prd_opd // linear predictions based on preCovid months
-	predict stdp_opd, stdp // SEs of the predictions
-	collapse (sum) opd prd_opd , by(rmonth)
+	margins, at(postCovid=(0 1) timeafter=(0 10) rmonth==24) post 
+	nlcom (rr: (_b[4._at]/_b[1bn._at])), post
+	// nlcom is testing the null hypothesis the the ratio is equal to zero.
+	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
 	
+	putexcel g`i'= (_b[rr])
+	putexcel h`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel i`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel j`i'= `r(p)'
+}
 ********************************************************************************
 * GHANA GRAPHS
 ********************************************************************************
-* Deliveries
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			 drop if rmonth>14 
-			 xtset reg rmonth
-			 xtgee del_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename del_util del_util_real
-			predict del_util
-
-			collapse (sum) del_util_real del_util , by(rmonth)
-
-			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Ghana", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)80000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/GHA_del_util.pdf", replace
-* TB case detection
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			 drop if rmonth>15 
-			 xtset reg rmonth
-			 xtgee tbdetect_qual rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename tbdetect_qual tbdetect_qual_real
-			predict tbdetect_qual
-
-			collapse (sum) tbdetect_qual_real tbdetect_qual , by(rmonth)
-
-			twoway (line tbdetect_qual_real rmonth,  sort) (line tbdetect_qual rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("TB case detection in Ghana", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(1000)3000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/GHA_tbdetect_qual.pdf", replace
-
-* ANC			
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			 drop if rmonth>15
-			 xtset reg rmonth
-			 xtgee anc_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename anc_util anc_util_real
-			predict anc_util
-
-			collapse (sum) anc_util_real anc_util , by(rmonth)
-
-			twoway (line anc_util_real rmonth, sort) (line anc_util rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(150000)450000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/GHA_anc_util.pdf", replace
-* ANC (scatter)			
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			
-			collapse (sum)  anc_util , by(rmonth)
-			
-			twoway (scatter anc_util rmonth, msize(small) sort) ///
-			(lfit anc_util rmonth if rmonth<15) (lfit anc_util rmonth if rmonth>=15, lcolor(green)) , ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Chile", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(100000)450000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/GHA_anc_util.pdf", replace			
 * OPD		
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			drop if rmonth>15
 			xtset reg rmonth
-			 xtgee opd_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
+			xtreg opd_util rmonth , i(reg) fe cluster(reg)
 
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			rename opd_util opd_util_real
 			predict opd_util
 
-			collapse (mean) opd_util_real opd_util , by(rmonth)
+			collapse opd_util_real opd_util , by(rmonth)
 
 			twoway (scatter opd_util_real rmonth, msize(vsmall)  sort) ///
 			(line opd_util rmonth, lpattern(dash) lcolor(green)) ///
 			(lfit opd_util_real rmonth if rmonth<16, lcolor(green)) ///
 			(lfit opd_util_real rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			ytitle("Average number per region", size(small)) ///
-			graphregion(color(white)) title("Ghana", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(25000)200000, labsize(vsmall))
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana Outpatient Visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(25000)200000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
-* Diabetes
+* DELIVERIES
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			 drop if rmonth>14 
-			 xtset reg rmonth
-			 xtgee diab_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
+			drop if rmonth>15
+			xtset reg rmonth
+			xtreg del_util rmonth , i(reg) fe cluster(reg)
 
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename diab_util diab_util_real
-			predict diab_util
+			rename del_util del_util_real
+			predict del_util
 
-			collapse (sum) diab_util_real diab_util , by(rmonth)
+			collapse del_util_real del_util , by(rmonth)
 
-			twoway (line diab_util_real rmonth,  sort) (line diab_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Ghana", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)18000, labsize(small))
+			twoway (scatter del_util_real rmonth, msize(vsmall)  sort) ///
+			(line del_util rmonth, lpattern(dash) lcolor(green)) ///
+			(lfit del_util_real rmonth if rmonth<16, lcolor(green)) ///
+			(lfit del_util_real rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana Deliveries", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(1000)5000, labsize(vsmall))
 			
-			graph export "$analysis/Results/Graphs/GHA_diab_util.pdf", replace
+			graph export "$analysis/Results/Graphs/GHA_del_util.pdf", replace
 			
 
 rm "$user/$GHAdata/Data for analysis/GHAtmp.dta"
