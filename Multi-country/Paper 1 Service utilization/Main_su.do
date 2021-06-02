@@ -30,8 +30,8 @@ global ETHall fp_util anc_util del_util cs_util pnc_util  diarr_util pneum_util 
 	   malnu_util vacc_qual bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///
 	   rota_qual art_util opd_util er_util ipd_util  road_util 
 
-global GHAall fp_util anc_util del_util cs_util pnc_util   ///
-	   diarr_util pneum_util malnu_util vacc_qual bcg_qual pent_qual ///
+global GHAall fp_util anc_util del_util cs_util pnc_util diarr_util ///
+       pneum_util malnu_util vacc_qual bcg_qual pent_qual ///
 	   measles_qual opv3_qual pneum_qual rota_qual opd_util ipd_util road_util ///
 	   diab_util hyper_util malaria_util tbdetect_qual 
  
