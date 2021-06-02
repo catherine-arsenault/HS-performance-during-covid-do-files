@@ -10,10 +10,10 @@
 global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_num ///
 				ipd_mort_num sb_mort_denom livebirths_denom sti_util kmc_qual ///
                 totalipd_mort_num  tbnum_qual tbdenom_qual surg_util ///
-				tt_qual trauma_util tbtreat_qual icu_mort_num trauma_mort_num icu_util ///
+				tt_qual trauma_util  icu_mort_num trauma_mort_num icu_util ///
 				fp_perm_util fp_la_util breast_denom2020 breast_denom2019 hospit_covid ///
 				hospit_pending hospit_negative death_covid death_negative ///
-				death_pending  mental_util diab_qual_num hyper_qual_num ///
+				death_pending  diab_qual_num hyper_qual_num ///
 				cerv_denom2020 cerv_denom2019 road_mort_num predel_util ///
 				stroke_util heart_util dental_util dengue_util peri_mort_num hivsupp_qual_num
 
@@ -184,7 +184,7 @@ local dl_modif
  }
 cap drop `dl_modif'
 
-save "$user/$KORdata/Data for analysis/Korea_su_21months_for_analyses.dta", replace
+save "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", replace
 ********************************************************************************
 * 10 THAILAND (region)
 u "$user/$THAdata/Data for analysis/Thailand_su_24months.dta", clear 
