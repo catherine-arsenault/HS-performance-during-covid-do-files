@@ -2,7 +2,6 @@
 * Effect of Covid on health service utilization in 10 countries
 * Created by Catherine Arsenault
 
-
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global analysis "/Users/acatherine/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 1 Service utilization"
