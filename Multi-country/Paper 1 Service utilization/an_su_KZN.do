@@ -5,9 +5,7 @@
 ********************************************************************************
 * KwaZulu-Natal - regression models, at district level
 ********************************************************************************
-
 use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
-
 collapse (sum) $KZNall, by (dist year month rmonth)
 
 /* Vars needed for ITS (we expect both a change in level and in slope): 
@@ -15,259 +13,112 @@ collapse (sum) $KZNall, by (dist year month rmonth)
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid */ 
 sort dist rmonth
-gen postCovid = rmonth>15 // PostCovid starting April
-
-* Number of months since Covid / lockdowns 
+rename dist reg
+gen postCovid = rmonth>15 // Pandemic period is months 16-24
 gen timeafter= rmonth-15
 replace timeafter=0 if timeafter<0
-
-* Seasons
 gen spring = month>=3 & month<=5
 gen summer = month>=6 & month<=8
 gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
 save "$user/$KZNdata/Data for analysis/KZNtmp.dta",  replace
+********************************************************************************
+* Level change during the pandemic
+********************************************************************************
+xtset reg rmonth 
 
-* GEE models at district level, linear distribution, exchangeable correlation structure
-xtset dist rmonth 
-
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
-putexcel A1 = "KZN district-level GEE"
-putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
-
+putexcel set "$analysis/Results/Tables/Results MAY28.xlsx", sheet(KZN)  modify
+putexcel A1 = "KZN Region OLS FE"
+putexcel A2 = "Health service" B2="Intercept" C2="RR postCovid" D2="LCL" E2="UCL" 
+putexcel F2 ="p-value"
 local i = 2
 
 foreach var of global KZNall {
 	local i = `i'+1
+	xtreg `var'  i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+		i(reg) fe cluster(reg)
+	// we will adjust SEs for small number of clusters
 	
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
-	
+	putexcel A`i' = "`var'"
+	putexcel B`i'=(_b[_cons]) // intercept, 95% CI and p-value?
+
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
+
+	putexcel c`i'= (_b[rr])
+	putexcel d`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel e`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel f`i'= `r(p)'	 	
 }
 ********************************************************************************
-* KwaZulu-Natal - regression models, at lowest level of analysis: facilities
+* Resumption at Dec 31, 2020: ratio of predicted
 ********************************************************************************
-
-use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
-
-egen unique_id = concat(dist subdist Facility)
-encode unique_id, gen(id)
-
-/* Vars needed for ITS (we expect both a change in level and in slope: 
-	rmonth from 1 to 24 = underlying trend in the outcome
-	PostCovid = level change in the outcome after Covid
-	timeafter = slope change after Covid */ 
-sort id rmonth
-gen postCovid = rmonth>15 // Starting April
-
-* Number of months since Covid / lockdowns 
-gen timeafter= rmonth-15
-replace timeafter=0 if timeafter<0
-* Seasons
-gen spring = month>=3 & month<=5
-gen summer = month>=6 & month<=8
-gen fall = month>=9 & month<=11
-gen winter= month==12 | month==1 | month==2
-
-* GEE models at facility level, linear distribution, exchangeable corr structure
-xtset id rmonth 
-
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
-putexcel E1 = "KZN facility-level GEE linear"
-putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
-
+putexcel G2="%predicted" H2="LCL" I2="UCL" J2 ="p-value"
 local i = 2
-
-foreach var of global KZNall  {
-	local i = `i'+1
-	
-	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
-	family(gaussian) link(identity) corr(exchangeable) vce(robust)	
-	
-	cap margins postCovid, post
-	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel E`i' = "`var'"
-	cap putexcel F`i'= (_b[rr])
-	cap putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	cap putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
-}
-
-* GEE models at facility level, poisson distribution, log link, exchangeable corr structure
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
-putexcel  I1 = "KZN facility-level GEE poisson w. log link"
-putexcel I2 = "Indicator" J2="RR postCovid" K2="LCL" L2="UCL" 
-
-local i = 2
-
 foreach var of global KZNall {
 	local i = `i'+1
+	xtreg `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	i(reg) fe cluster(reg)
 	
-	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
-	family(poisson) link(log) corr(exchangeable) vce(robust)	
+	margins, at(postCovid=(0 1) timeafter=(0 10) rmonth==24) post 
+	nlcom (rr: (_b[4._at]/_b[1bn._at])), post
+	// nlcom is testing the null hypothesis the the ratio is equal to zero.
+	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
 	
-	cap margins postCovid, post
-	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel E`i' = "`var'"
-	cap putexcel J`i'= (_b[rr])
-	cap putexcel K`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	cap putexcel L`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel g`i'= (_b[rr])
+	putexcel h`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel i`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel j`i'= `r(p)'
 }
-
-* GEE models at facility level, negative binomial distribution, power link, exchangeable corr structure
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(KZN)  modify
-putexcel M1 = "KZN facility-level GEE neg binomia w. power link"
-putexcel M2 = "Indicator" N2="RR postCovid" O2="LCL" P2="UCL" 
-
-local i = 2
-
-foreach var of global KZNall  {
-	local i = `i'+1
-	* Power link of log link?
-	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
-	family(nbinomial) link(power) corr(exchangeable) vce(robust)	
-	
-	cap margins postCovid, post
-	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel M`i' = "`var'"
-	cap putexcel N`i'= (_b[rr])
-	cap putexcel O`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	cap putexcel P`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
-}
-
-
-
 ********************************************************************************
 * KZN GRAPHS
 ********************************************************************************
+* OPD
+			qui xtreg opd_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_opd_util
+			qui xtreg opd_util rmonth i.spring i.summer i.fall i.winter if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_opd_util 
+			
+			collapse opd_util linear_opd_util season_opd_util  , by(rmonth)
+
+			twoway (scatter opd_util rmonth, msize(vsmall)  sort) ///
+			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_opd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit opd_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit opd_util rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per district", size(vsmall)) ///
+			graphregion(color(white)) title("KwaZulu-Natal outpatient visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)45000, labsize(vsmall))
+		
+			graph export "$analysis/Results/Graphs/KZN_opd_util.pdf", replace
+
 * Deliveries
 			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			 drop if rmonth>14
-			xtset dist rmonth
-			 xtgee del_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			rename del_util del_util_real
-			predict del_util
-
-			collapse (sum) del_util_real del_util , by(rmonth)
-
-			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("KwaZulu-Natal", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2500)15500, labsize(vsmall))
+			qui xtreg del_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_del_util
+			qui xtreg del_util rmonth i.spring i.summer i.fall i.winter if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_del_util 
 			
-			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
-			
-* TB case detection
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			 drop if rmonth>15
-			xtset dist rmonth
-			 xtgee tbdetect_qual rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
+			collapse del_util linear_del_util season_del_util  , by(rmonth)
 
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			rename tbdetect_qual tbdetect_qual_real
-			predict tbdetect_qual
-
-			collapse (sum) tbdetect_qual_real tbdetect_qual , by(rmonth)
-
-			twoway (line tbdetect_qual_real rmonth,  sort) (line tbdetect_qual rmonth), ///
+			twoway (scatter del_util rmonth, msize(vsmall)  sort) ///
+			(line linear_del_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_del_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit del_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit del_util rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("TB case detection in KwaZulu-Natal", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(1000)4000, labsize(vsmall))
-			
-			graph export "$analysis/Results/Graphs/KZN_tbdetect_qual.pdf", replace
-
-* TB screening
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			 drop if rmonth>15
-			xtset dist rmonth
-			 xtgee tbscreen_qual rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			rename tbscreen_qual tbscreen_qual_real
-			predict tbscreen_qual
-
-			collapse (sum) tbscreen_qual_real tbscreen_qual , by(rmonth)
-
-			twoway (line tbscreen_qual_real rmonth,  sort) (line tbscreen_qual rmonth), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Number screened for TB symptoms in KwaZulu-Natal", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(300000)2200000, labsize(vsmall))
-			
-			graph export "$analysis/Results/Graphs/KZN_tbscreen_qual.pdf", replace
-* OPD		
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			 drop if rmonth>15
-			xtset dist rmonth
-			 xtgee opd_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			rename opd_util opd_util_real
-			predict opd_util
-
-			collapse (sum) opd_util_real opd_util , by(rmonth)
-
-			twoway (scatter opd_util_real rmonth, msize(vsmall)  sort) ///
-			(line opd_util rmonth, lpattern(dash) lcolor(green)) ///
-			(lfit opd_util_real rmonth if rmonth<16, lcolor(green)) ///
-			(lfit opd_util_real rmonth if rmonth>=16, lcolor(red)), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("KZN", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(50000)500000, labsize(vsmall))
-			
-			graph export "$analysis/Results/Graphs/KZN_opd_util.pdf", replace
-			
-
-
-
-
-
-
-
-
-
-/* Deliveries
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
-			
-			collapse (sum)  del_util , by(rmonth)
-
-			twoway (scatter del_util rmonth,  sort msize(small)) (lfit del_util rmonth if rmonth<16) ///
-			(lfit del_util rmonth if rmonth>=16, lcolor(green)), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Deliveries", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2500)15000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
-
-* ANC			
-			u "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per district", size(vsmall)) ///
+			graphregion(color(white)) title("KwaZulu-Natal deliveries", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(500)1500, labsize(vsmall))
 		
-			collapse (sum) anc_util , by(rmonth)
-
-			twoway (scatter anc_util rmonth, msize(small) sort) ///
-			(lfit anc_util rmonth if rmonth<16) (lfit anc_util rmonth if rmonth>=16, lcolor(green)) , ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(5000)30000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/KZN_anc_util.pdf", replace
+			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
 			
 
 rm "$user/$KZNdata/Data for analysis/KZNtmp.dta"

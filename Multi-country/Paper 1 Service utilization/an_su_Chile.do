@@ -18,9 +18,12 @@ sort region rmonth
 gen postCovid = rmonth>15 // months 16-24 are pandemic months
 gen timeafter= rmonth-15
 replace timeafter=0 if timeafter<0
+gen spring = month>=3 & month<=5
+gen summer = month>=6 & month<=8
+gen fall = month>=9 & month<=11
+gen winter= month==12 | month==1 | month==2
 
-save  "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
-
+save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
 xtset reg rmonth 
 
 putexcel set "$analysis/Results/Tables/Results MAY28.xlsx", sheet(Chile)  modify
@@ -31,7 +34,7 @@ local i = 2
 
 foreach var of global CHLall {
 	local i = `i'+1
-	xtreg `var'  i.postCovid rmonth timeafter i.month, ///
+	xtreg `var'  i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	i(reg) fe cluster(reg) // we will adjust SEs for small number of clusters
 	
 	putexcel A`i' = "`var'"
@@ -44,8 +47,7 @@ foreach var of global CHLall {
 	putexcel c`i'= (_b[rr])
 	putexcel d`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
 	putexcel e`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
-	putexcel f`i'= `r(p)'
-	 	
+	putexcel f`i'= `r(p)' 	
 }
 ********************************************************************************
 * Resumption at Dec 31, 2020: ratio of predicted
@@ -54,7 +56,7 @@ putexcel G2="%predicted" H2="LCL" I2="UCL" J2 ="p-value"
 local i = 2
 foreach var of global CHLall {
 	local i = `i'+1
-	xtreg `var' i.postCovid rmonth timeafter i.month, ///
+	xtreg `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
 	i(reg) fe cluster(reg)
 	* 1 predicts the outcome using pre-pandemic trend, and slope at month 24
 	* 4 predicts the outcome usingpandemic trend and slope at month 24
@@ -73,27 +75,25 @@ foreach var of global CHLall {
 * CHILE GRAPHS
 ********************************************************************************
 * Deliveries
-			u "$user/$CHLdata/Data for analysis/CHLtmp.dta", clear
-			 drop if rmonth>15
-			 xtset reg rmonth
-			 xtreg del_util rmonth , i(reg) fe cluster(reg)
-
-			u "$user/$CHLdata/Data for analysis/CHLtmp.dta", clear
-			rename del_util del_util_real
-			predict del_util
-
-			collapse del_util_real del_util , by(rmonth)
-
-			twoway (scatter del_util_real rmonth, msize(vsmall)  sort) ///
-			(line del_util rmonth, lpattern(dash) lcolor(green)) ///
-			(lfit del_util_real rmonth if rmonth<16, lcolor(green)) ///
-			(lfit del_util_real rmonth if rmonth>=16, lcolor(red)), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("", size(small)) legend(off) ///
-			ytitle("Average number per region", size(small)) ///
-			graphregion(color(white)) title("Chile Deliveries", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)800, labsize(vsmall))
+			qui xtreg del_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+			predict linear_del_util
+			qui xtreg del_util rmonth i.spring i.summer i.fall i.winter ///
+				if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+			predict season_del_util 
+			
+			collapse del_util linear_del_util season_del_util  , by(rmonth)
+			
+			twoway (scatter del_util rmonth, msize(vsmall)  sort) ///
+				(line linear_del_util rmonth, lpattern(dash) lcolor(green)) ///
+				(line season_del_util rmonth , lpattern(vshortdash) lcolor(eltblue)) ///
+				(lfit del_util rmonth if rmonth<16, lcolor(green)) ///
+				(lfit del_util rmonth if rmonth>=16, lcolor(red)), ///
+				ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+				xtitle("", size(small)) legend(off) ///
+				ytitle("Average number per region", size(vsmall)) ///
+				graphregion(color(white)) title("Chile Deliveries", size(small)) ///
+				xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)800, labsize(vsmall))
+			
 			graph export "$analysis/Results/Graphs/CHL_del_util.pdf", replace
 
-		
 rm "$user/$CHLdata/Data for analysis/CHLtmp.dta"

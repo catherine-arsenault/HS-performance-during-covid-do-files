@@ -7,23 +7,20 @@
 ********************************************************************************
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
 rename orgunitlevel2 Province
+rename orgunitlevel3 District
 
-collapse (sum) $NEPall, by (Province year month)
-encode Province, gen(prov)
-
+collapse (sum) $NEPall, by (Dist year month)
+encode Dist, gen(reg)
 /* Vars needed for ITS (we expect both a change in level and in slope: 
 	rmonth from 1 to 24 = underlying trend in the outcome
 	PostCovid = level change in the outcome after Covid
 	timeafter = slope change after Covid 
 	"February 2020" month 14 is actually Feb13 to Mar13. so postCovid is month 15
-	*/ 
-	
+	*/ 	
 gen rmonth= month if year==2019
 replace rmonth = month+12 if year ==2020
-sort prov rmonth
-gen postCovid = rmonth>14 // after March 11 
-
-* Number of months since Covid / lockdowns 
+sort reg rmonth
+gen postCovid = rmonth>14 // pandemic is months 15-24
 gen timeafter= rmonth-14
 replace timeafter=0 if timeafter<0
 * Seasons
@@ -33,264 +30,101 @@ gen fall = month>=9 & month<=11
 gen winter= month==12 | month==1 | month==2
 
 save "$user/$NEPdata/Data for analysis/Nepaltmp.dta",  replace
+********************************************************************************
+* Level change during the pandemic
+********************************************************************************
+xtset reg rmonth 
 
-* Call GEE, export RR to excel
-xtset prov rmonth 
-
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Nepal)  modify
-putexcel A1 = "Nepal regional GEE"
-putexcel A2 = "Indicator" B2="RR postCovid" C2="LCL" D2="UCL" 
-
+putexcel set "$analysis/Results/Tables/Results MAY28.xlsx", sheet(Nepal)  modify
+putexcel A1 = "Nepal district OLS FE"
+putexcel A2 = "Health service" B2="Intercept" C2="RR postCovid" D2="LCL" E2="UCL" 
+putexcel F2 ="p-value"
 local i = 2
 
-foreach var of global NEPall  {
+foreach var of global NEPall {
 	local i = `i'+1
-	* Regression coefficients represent the expected change in the log of the 
-	* mean of the dependent variable for each change in a predictor
-	xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
+	xtreg `var'  i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	i(reg) fe cluster(reg) // we will adjust SEs for small number of clusters
+	
+	putexcel A`i' = "`var'"
+	putexcel B`i'=(_b[_cons]) // intercept, 95% CI and p-value?
 	
 	margins postCovid, post
 	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel A`i' = "`var'"
-	putexcel B`i'= (_b[rr])
-	putexcel C`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel D`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
+	
+	putexcel c`i'= (_b[rr])
+	putexcel d`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel e`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel f`i'= `r(p)'	 	
 }
 ********************************************************************************
-* Nepal (Palika)
+* Resumption at Dec 31, 2020: ratio of predicted
 ********************************************************************************
-use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
-/* Vars needed for ITS (we expect both a change in level and in slope: 
-	rmonth from 1 to 24 = underlying trend in the outcome
-	PostCovid = level change in the outcome after Covid
-	timeafter = slope change after Covid */ 
-gen rmonth= month if year==2019
-replace rmonth = month+12 if year ==2020
-sort unique_id rmonth
-gen postCovid = rmonth>14 // Starting March
-
-* Number of months since Covid / lockdowns 
-gen timeafter= rmonth-14
-replace timeafter=0 if timeafter<0
-* Seasons
-gen spring = month>=3 & month<=5
-gen summer = month>=6 & month<=8
-gen fall = month>=9 & month<=11
-gen winter= month==12 | month==1 | month==2
-
-* Call GEE, export RR to excel
-xtset unique_id rmonth 
-
-*Linear 
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Nepal)  modify
-putexcel E1 = "Nepal Palika GEE linear"
-putexcel E2 = "Indicator" F2="RR postCovid" G2="LCL" H2="UCL" 
-
+putexcel G2="%predicted" H2="LCL" I2="UCL" J2 ="p-value"
 local i = 2
-
-foreach  var of global NEPall  {
+foreach var of global NEPall {
 	local i = `i'+1
-	* Regression coefficients represent the expected change in the log of the 
-	* mean of the dependent variable for each change in a covariate
-	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
+	xtreg `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+	i(reg) fe cluster(reg)
 	
-	cap margins postCovid, post
-	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel E`i' = "`var'"
-	cap putexcel F`i'= (_b[rr])
-	cap putexcel G`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	cap putexcel H`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	margins, at(postCovid=(0 1) timeafter=(0 10) rmonth==24) post 
+	nlcom (rr: (_b[4._at]/_b[1bn._at])), post
+	// nlcom is testing the null hypothesis the the ratio is equal to zero.
+	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
+	
+	putexcel g`i'= (_b[rr])
+	putexcel h`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
+	putexcel i`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
+	putexcel j`i'= `r(p)'
 }
-
-* Neg binomial, power link
-putexcel set "$analysis/Results/Prelim results MAY4.xlsx", sheet(Nepal)  modify
-putexcel i1 = "Nepal Palika GEE neg binomial"
-putexcel i2 = "Indicator" j2="RR postCovid" k2="LCL" l2="UCL" 
-
-local i = 2
-
-foreach  var of global NEPall  {
-	local i = `i'+1
-	* Regression coefficients represent the expected change in the log of the 
-	* mean of the dependent variable for each change in a covariate
-	cap xtgee `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter ///
-	, family(nbinomial) link(power) corr(exchangeable) vce(robust)	
-	
-	cap margins postCovid, post
-	cap nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	putexcel i`i' = "`var'"
-	cap putexcel j`i'= (_b[rr])
-	cap putexcel k`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	cap putexcel l`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
-}
-
-
-
 ********************************************************************************
-* Nepal GRAPHS
-********************************************************************************
-* FP
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>14
-			 xtset prov rmonth
-			 xtgee fp_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
+* NEPAL GRAPHS
+********************************************************************************	
+* OPD			
+			qui xtreg opd_util rmonth if rmonth<15 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_opd_util
+			qui xtreg opd_util rmonth i.spring i.summer i.fall i.winter if rmonth<15, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_opd_util 
+			
+			collapse opd_util linear_opd_util season_opd_util  , by(rmonth)
 
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename fp_util fp_util_real
-			predict fp_util
-
-			collapse (sum) fp_util_real fp_util , by(rmonth)
-
-			twoway (line fp_util_real rmonth,  sort) (line fp_util rmonth), ///
+			twoway (scatter opd_util rmonth, msize(vsmall)  sort) ///
+			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_opd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit opd_util rmonth if rmonth<15, lcolor(green)) ///
+			(lfit opd_util rmonth if rmonth>=15, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("fp", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(200000(100000)600000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/Nepal_fp_util.pdf", replace
-* TB detection
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>14
-			 xtset prov rmonth
-			 xtgee tbdetect_qual rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename tbdetect_qual tbdetect_qual_real
-			predict tbdetect_qual
-
-			collapse (sum) tbdetect_qual_real tbdetect_qual , by(rmonth)
-
-			twoway (line tbdetect_qual_real rmonth,  sort) (line tbdetect_qual rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("TB case detection Nepal", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(500)2000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/Nepal_tbdetect_qual.pdf", replace
-* TB different graph
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			collapse (sum) tbdetect_qual , by(rmonth)
-	
-			twoway (scatter tbdetect_qual rmonth,  sort msize(small)) (lfit tbdetect_qual rmonth if rmonth<16) ///
-			(lfit tbdetect_qual rmonth if rmonth>=16, lcolor(green)), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("TB cases detected in Nepal", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) 
-			
-			
-			ylabel(0(6000)32000, labsize(small))
-			
-
-* PNC
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>14
-			 xtset prov rmonth
-			 xtgee pnc_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename pnc_util pnc_util_real
-			predict pnc_util
-
-			collapse (sum) pnc_util_real pnc_util , by(rmonth)
-
-			twoway (line pnc_util_real rmonth,  sort) (line pnc_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("PNC", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)20000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/Nepal_pnc_util.pdf", replace
-
-* ANC			
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>14 
-			 xtset prov rmonth
-			 xtgee anc_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename anc_util anc_util_real
-			predict anc_util
-
-			collapse (sum) anc_util_real anc_util , by(rmonth)
-
-			twoway (line anc_util_real rmonth, sort) (line anc_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Antenatal care visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)80000, labsize(small))
-			
-			graph export "$analysis/Results/Graphs/Nepal_anc_util.pdf", replace
-			
-* OPD		
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>14
-			xtset prov rmonth
-			 xtgee opd_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename opd_util opd_util_real
-			predict opd_util
-
-			collapse (sum) opd_util_real opd_util , by(rmonth)
-
-			twoway (line opd_util_real rmonth,  sort) (line opd_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Outpatient visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(250000)2000000, labsize(vsmall))
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per district", size(vsmall)) ///
+			graphregion(color(white)) title(" Nepal outpatient visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/Nepal_opd_util.pdf", replace
-
-* Deliveries		
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>14
-			xtset prov rmonth
-			 xtgee del_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename del_util del_util_real
-			predict del_util
-
-			collapse (sum) del_util_real del_util , by(rmonth)
-
-			twoway (line del_util_real rmonth,  sort) (line del_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("Nepal", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(10000)50000, labsize(vsmall))
 			
+* Deliveries
+			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			qui xtreg del_util rmonth if rmonth<15 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_del_util
+			qui xtreg del_util rmonth i.spring i.summer i.fall i.winter if rmonth<15, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_del_util 
+			
+			collapse del_util linear_del_util season_del_util  , by(rmonth)
+
+			twoway (scatter del_util rmonth, msize(vsmall)  sort) ///
+			(line linear_del_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_del_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit del_util rmonth if rmonth<15, lcolor(green)) ///
+			(lfit del_util rmonth if rmonth>=15, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per district", size(vsmall)) ///
+			graphregion(color(white)) title("Nepal deliveries", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)600, labsize(vsmall))
 			graph export "$analysis/Results/Graphs/Nepal_del_util.pdf", replace
-*C-sections		
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			 drop if rmonth>14
-			xtset prov rmonth
-			 xtgee cs_util rmonth , family(gaussian) ///
-				link(identity) corr(exchangeable) vce(robust)	
-
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
-			rename cs_util cs_util_real
-			predict cs_util
-
-			collapse (sum) cs_util_real cs_util , by(rmonth)
-
-			twoway (line cs_util_real rmonth,  sort) (line cs_util rmonth), ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
-			xtitle("Months since January 2019", size(small)) legend(off) ///
-			graphregion(color(white)) title("c-sections", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(2000)12000, labsize(vsmall))
 			
-			graph export "$analysis/Results/Graphs/Nepal_cs_util.pdf", replace
-		
-
 rm "$user/$NEPdata/Data for analysis/Nepaltmp.dta"
 
 

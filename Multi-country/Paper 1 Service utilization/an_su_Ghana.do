@@ -17,7 +17,11 @@ sort region rmonth
 gen postCovid = rmonth>15 // pandemic period is months 16-24
 gen timeafter= rmonth-15
 replace timeafter=0 if timeafter<0
-	
+gen spring = month>=3 & month<=5
+gen summer = month>=6 & month<=8
+gen fall = month>=9 & month<=11
+gen winter= month==12 | month==1 | month==2
+
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 ********************************************************************************
 * Level change during the pandemic
@@ -32,7 +36,8 @@ local i = 2
 
 foreach var of global GHAall {
 	local i = `i'+1
-	xtreg `var'  i.postCovid rmonth timeafter i.month, i(reg) fe cluster(reg)
+	xtreg `var'  i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+		i(reg) fe cluster(reg)
 	// we will adjust SEs for small number of clusters
 	
 	putexcel A`i' = "`var'"
@@ -54,8 +59,8 @@ putexcel G2="%predicted" H2="LCL" I2="UCL" J2 ="p-value"
 local i = 2
 foreach var of global GHAall {
 	local i = `i'+1
-	xtreg `var' i.postCovid rmonth timeafter i.month, ///
-	i(reg) fe cluster(reg)
+	xtreg `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
+		i(reg) fe cluster(reg)
 	
 	margins, at(postCovid=(0 1) timeafter=(0 10) rmonth==24) post 
 	nlcom (rr: (_b[4._at]/_b[1bn._at])), post
@@ -71,44 +76,41 @@ foreach var of global GHAall {
 * GHANA GRAPHS
 ********************************************************************************
 * OPD		
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			drop if rmonth>15
-			xtset reg rmonth
-			xtreg opd_util rmonth , i(reg) fe cluster(reg)
+			qui xtreg opd_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_opd_util
+			qui xtreg opd_util rmonth i.spring i.summer i.fall i.winter if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_opd_util 
+			
+			collapse opd_util linear_opd_util season_opd_util  , by(rmonth)
 
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename opd_util opd_util_real
-			predict opd_util
-
-			collapse opd_util_real opd_util , by(rmonth)
-
-			twoway (scatter opd_util_real rmonth, msize(vsmall)  sort) ///
-			(line opd_util rmonth, lpattern(dash) lcolor(green)) ///
-			(lfit opd_util_real rmonth if rmonth<16, lcolor(green)) ///
-			(lfit opd_util_real rmonth if rmonth>=16, lcolor(red)), ///
+			twoway (scatter opd_util rmonth, msize(vsmall)  sort) ///
+			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_opd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit opd_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit opd_util rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("", size(small)) legend(off) ///
 			ytitle("Average number per region", size(vsmall)) ///
 			graphregion(color(white)) title("Ghana Outpatient Visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(25000)200000, labsize(vsmall))
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(40000)220000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
 * DELIVERIES
 			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			drop if rmonth>15
-			xtset reg rmonth
-			xtreg del_util rmonth , i(reg) fe cluster(reg)
+			qui xtreg del_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_del_util
+			qui xtreg del_util rmonth i.spring i.summer i.fall i.winter if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_del_util 
+			
+			collapse del_util linear_del_util season_del_util  , by(rmonth)
 
-			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			rename del_util del_util_real
-			predict del_util
-
-			collapse del_util_real del_util , by(rmonth)
-
-			twoway (scatter del_util_real rmonth, msize(vsmall)  sort) ///
-			(line del_util rmonth, lpattern(dash) lcolor(green)) ///
-			(lfit del_util_real rmonth if rmonth<16, lcolor(green)) ///
-			(lfit del_util_real rmonth if rmonth>=16, lcolor(red)), ///
+			twoway (scatter del_util rmonth, msize(vsmall)  sort) ///
+			(line linear_del_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_del_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit del_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit del_util rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("", size(small)) legend(off) ///
 			ytitle("Average number per region", size(vsmall)) ///
