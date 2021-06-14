@@ -9,12 +9,12 @@ created in google data studio
 ****************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
-u "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE_CCA_AN.dta", clear
-global all pnc_util cs_util del_util anc_util
+u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
+global all road_util surg_util pnc_util fp_util er_util 
 
 * Create national total
-	rename (org1-org5) (country region level facname facid)
-	collapse (sum) pnc_util1_19-anc_util10_20 , by(region)
+	rename (org1-org5) (region municipality levelofattention facilityname id)
+	collapse (sum) road_util1_19 - er_util12_20 , by(region)
 	encode region, gen(reg)
 	drop region 
 	order reg
@@ -29,7 +29,7 @@ global all pnc_util cs_util del_util anc_util
 	drop reg 
 	order region 
 	
-reshape long pnc_util cs_util del_util anc_util, i(region) j(month) string 
+reshape long road_util surg_util pnc_util fp_util er_util , i(region) j(month) string 
 	
 * Month and year
 	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
@@ -72,14 +72,14 @@ drop _merge
 
 
 rm "$user/$data/temp.dta"
-export delimited using "$user/$data/Chile_Jan19-Oct20_fordashboard.csv", replace
+export delimited using "$user/$data/Chile_Jan19-Dec20_fordashboard.csv", replace
 /****************************************************************
 		CREATE FINAL DATASET AT FACILITY-LEVEL FOR ANALYSES
 *****************************************************************/
-u "$user/$data/Data for analysis/Chile_Jan19-Oct20_WIDE_CCA_AN.dta", clear
-rename (org1-org5) (country region level facname facid)
+u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
+rename (org1-org5) (region municipality levelofattention facilityname id)
 
-reshape long pnc_util cs_util del_util anc_util, i(country region level facname facid) j(month) string 
+reshape long road_util surg_util pnc_util fp_util er_util, i(region municipality levelofattention facilityname id) j(month) string 
 	
 * Month and year
 	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	///
@@ -101,10 +101,10 @@ reshape long pnc_util cs_util del_util anc_util, i(country region level facname 
 		replace mo = 12 if month =="12_19" | month =="12_20"
 		drop month	
 		rename mo month
-		sort country region level facname facid year month
-		order country region level facname facid year month		
+		sort region municipality levelofattention facilityname id year month
+		order region municipality levelofattention facilityname id year month		
 * Saves dataset for analyses 		
-save "$user/$data/Data for analysis/Chile_su_22months.dta", replace
+save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
 		
 		
 		
