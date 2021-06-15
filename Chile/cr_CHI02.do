@@ -9,26 +9,16 @@ import delimited "/$user/$data/Raw data/061421/CL - ER visits.csv", clear
 rename (_01-v29) ///
 (er_util1_19	er_util2_19	er_util3_19	er_util4_19	er_util5_19	er_util6_19	er_util7_19	er_util8_19	er_util9_19	er_util10_19	er_util11_19	er_util12_19 er_util1_20	er_util2_20	er_util3_20	er_util4_20	er_util5_20	er_util6_20	er_util7_20	er_util8_20	er_util9_20	er_util10_20	er_util11_20	er_util12_20)
 
-duplicates tag id, gen(dup_id)
-drop if dup_id==1 
-*10 observations were dropped
-drop dup_id
-
 save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace	
 
-**********************************************************************************
+*******************************************************************************
 *Modern contraceptive Use - 2070 obs
 import delimited "/$user/$data/Raw data/061421/CL - Modern Contraceptive Use.csv", clear 
 rename (_01-v29 ) ///
 (fp_util1_19	fp_util2_19	fp_util3_19	fp_util4_19	fp_util5_19	fp_util6_19	fp_util7_19	fp_util8_19	fp_util9_19	fp_util10_19	fp_util11_19	fp_util12_19 fp_util1_20	fp_util2_20	fp_util3_20	fp_util4_20	fp_util5_20	fp_util6_20	fp_util7_20	fp_util8_20	fp_util9_20	fp_util10_20	fp_util11_20	fp_util12_20)  
-	
-duplicates tag id, gen(dup_id)
-drop if dup_id==1 
-*no observations were dropped
-drop dup_id
 
-	merge 1:1 id using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
-	drop _merge // 2406 out 2525 were not merged 
+	merge 1:1 id facilityname municipality region using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
+	drop _merge 
 	save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace	
 
 *******************************************************************************
@@ -40,14 +30,9 @@ rename (_01-v29) ///
 	pnc_util11_19	pnc_util12_19 pnc_util1_20	pnc_util2_20	pnc_util3_20 ///
 	pnc_util4_20	pnc_util5_20	pnc_util6_20 pnc_util7_20    pnc_util8_20 ///
 	pnc_util9_20    pnc_util10_20 pnc_util11_20 pnc_util12_20)
-
-duplicates tag id, gen(dup_id)
-drop if dup_id==1 
-*no observations were dropped
-drop dup_id
 	
-	merge 1:1 id using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
-	drop _merge // 803 out of 2525 not merged
+	merge 1:1 id facilityname municipality region  using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
+	drop _merge 
 	save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace	
 
 ******************************************************************************
@@ -61,13 +46,8 @@ surg_util1_20	surg_util2_20	surg_util3_20	surg_util4_20 ///
 surg_util5_20	surg_util6_20	surg_util7_20	surg_util8_20 ///
 surg_util9_20	surg_util10_20	surg_util11_20	surg_util12_20)
 
-duplicates tag id, gen(dup_id)
-drop if dup_id==1 
-*no observations were dropped
-drop dup_id
-
-	merge 1:1 id using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
-	drop _merge // 2317 out of 2654 not matched
+	merge 1:1 id facilityname municipality region using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
+	drop _merge 
 	save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
 	
 ******************************************************************************
@@ -81,13 +61,9 @@ road_util1_20	road_util2_20	road_util3_20	road_util4_20 ///
 road_util5_20	road_util6_20	road_util7_20	road_util8_20 ///
 road_util9_20	road_util10_20	road_util11_20	road_util12_20)
 
-duplicates tag id, gen(dup_id)
-drop if dup_id==1 
-*10 observations were dropped 
-drop dup_id
-
-	merge 1:1 id using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
-	drop _merge // 1967 out of 2541 not matched
+*getting an error due to 8 duplicate observations 
+	merge 1:1 id facilityname municipality region using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
+	drop _merge 
 	save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
 	*n= 2541 observations 
 	
