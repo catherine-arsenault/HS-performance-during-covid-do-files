@@ -11,8 +11,11 @@ global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-
 
 ********************************************************************************
 * Creation do files
-* Imports raw data and renames variables for January 2019-December 2019
-do "$dofiles/cr_CHI.do"
+* Imports raw data and renames variables for January 2019-October 2020
+*do "$dofiles/cr_CHI01.do"
+
+* Imports raw data and renames variables for January 2019-December 2020
+do "$dofiles/cr_CHI02.do"
 
 ********************************************************************************
 * Cleaning do files
