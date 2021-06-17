@@ -28,7 +28,7 @@ rename (region-id) (org1 org2 org3 org4 org5)
 * 2541 facilities 
 * Dropping all facilities that don't report any indicators all period
 egen all_visits = rowtotal(mental_util1_19 - er_util12_20), m
-drop if all_visits==. //no observation drop
+drop if all_visits==0 //6 observations dropped
 drop all_visits 
 ********************************************************************
 *1 facility has no information on region, municipality, and level of attention 
@@ -94,8 +94,6 @@ of the series is greater or equal to 1. This technique avoids flagging as
 outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
 common for mortality indicators.  
 
-We do not assess outliers for diabetes and hypertension because they were not 
-collected until October 2019 
 */
 
 foreach x of global volumes {
