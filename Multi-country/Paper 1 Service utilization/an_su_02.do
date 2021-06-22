@@ -4,8 +4,13 @@
 * Program by Sebastian Bauhoff
 ********************************************************************************
 * Collapse facility level datasets & create country codes
-
-*2
+* 1
+use "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", clear
+	collapse (sum)  $CHLall, by (region year month )
+	encode region, gen(reg)	
+	gen country="CHL"
+save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace	
+* 2
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta",  clear
 	collapse (sum) $ETHall, by (region year month)
 	encode region, gen(reg)
@@ -52,13 +57,14 @@ save "$user/$NEPdata/Data for analysis/NEPtmp.dta", replace
 * 9 
 u "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", clear 
 	encode region, gen(reg)
-	gen country="KOR"
+	replace country="KOR"
 save "$user/$KORdata/Data for analysis/KORtmp.dta", replace
 * 10 
 u "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear
 	encode Province, gen(reg)	
 	gen country="THA"
 save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
+
 ********************************************************************************
 	* Program for G-2 adjustment (call after xtreg)
 ********************************************************************************
@@ -84,7 +90,7 @@ save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 
 		end		
 		
-foreach c in CHL ETH GHA HTI KZN LAO {
+foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	
 ********************************************************************************
 	* Creates variables for analyses
@@ -98,10 +104,10 @@ foreach c in CHL ETH GHA HTI KZN LAO {
 		
 		gen postCovid=.
 		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") // pandemic period is month 15 to 24 in ETH and NEP
-		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", ) // pandemic period is month 16 to 24 in all other countries
+		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA" ) // pandemic period is month 16 to 24 in all other countries
 		gen timeafter= . 
 		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
-		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI") 
+		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace timeafter=0 if timeafter<0
 		
 		gen season = .
@@ -117,7 +123,7 @@ foreach c in CHL ETH GHA HTI KZN LAO {
 		* "Temporary" post-Covid period now excludes december
 		gen postCovid_dec=. 
 		replace postCovid_dec = rmonth>14 if inlist(country, "ETH", "NEP") 
-		replace postCovid_dec = rmonth>15 if inlist(country, "CHL", "GHA", "HTI")
+		replace postCovid_dec = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace postCovid_dec=0 if rmonth==24
 		* Indicator for December (withdrawal of the postCovid period)
 		gen dec20= rmonth==24 
