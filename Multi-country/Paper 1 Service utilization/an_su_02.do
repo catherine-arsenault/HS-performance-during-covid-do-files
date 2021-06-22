@@ -5,6 +5,13 @@
 ********************************************************************************
 * Collapse facility level datasets & create country codes
 
+*1
+use "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta",  clear
+	collapse (sum) $CHLall, by (region year month)
+	encode region, gen(reg)
+	gen country="CHL"
+save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
+
 *2
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta",  clear
 	collapse (sum) $ETHall, by (region year month)
@@ -52,6 +59,7 @@ save "$user/$NEPdata/Data for analysis/NEPtmp.dta", replace
 * 9 
 u "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", clear 
 	encode region, gen(reg)
+	cap drop country
 	gen country="KOR"
 save "$user/$KORdata/Data for analysis/KORtmp.dta", replace
 * 10 
@@ -98,7 +106,7 @@ foreach c in CHL ETH GHA HTI KZN LAO {
 		
 		gen postCovid=.
 		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") // pandemic period is month 15 to 24 in ETH and NEP
-		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", ) // pandemic period is month 16 to 24 in all other countries
+		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO") // pandemic period is month 16 to 24 in all other countries
 		gen timeafter= . 
 		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
 		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI") 

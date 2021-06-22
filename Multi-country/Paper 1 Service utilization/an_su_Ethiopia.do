@@ -148,6 +148,8 @@ foreach var of global ETHall {
 /********************************************************************************
 * Ethiopia GRAPHS
 ********************************************************************************	
+putexcel set "$analysis/Results/Tables/Missed visits graph.xlsx", modify
+
 lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" ///
 			13"J" 14"F" 15"M" 16"A" 17"M" 18"J" 19"J" 20"A" ///
 			21"S" 22"O" 23"N" 24"D"
@@ -157,11 +159,20 @@ save "$user/$ETHdata/Data for analysis/ETHtmp.dta", replace
 * OPD			
 			qui xtreg opd_util rmonth if rmonth<15 , i(reg) fe cluster(reg) // linear prediction
 				predict linear_opd_util
-			qui xtreg opd_util rmonth spring-winter if rmonth<15, ///
+			qui xtreg opd_util rmonth i.season if rmonth<15, ///
 				i(reg) fe cluster(reg) // w. seasonal adj
-				predict season_opd_util 
+				predict season_opd_util
+			qui xtreg opd_util rmonth if rmonth>14 , i(reg) fe cluster(reg) // linear prediction
+				predict linearpost_opd_util				
 			
-			collapse opd_util linear_opd_util season_opd_util  , by(rmonth)
+			gen missed_opd = linear_opd_util-linearpost_opd_util if rmonth>14
+			qui sum missed_opd
+			putexcel A2 = "Ethiopia"
+			putexcel B1 = "OPD"
+			putexcel B2 = `r(sum)'
+			
+			
+			collapse opd_util linear_opd_util season_opd_util, by(rmonth)
 
 			twoway (scatter opd_util rmonth, msize(vsmall)  sort) ///
 			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
