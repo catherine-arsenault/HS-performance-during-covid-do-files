@@ -9,7 +9,7 @@
 * global droplist holds the list of variables that are not in the analysis
 global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_num ///
 				ipd_mort_num sb_mort_denom livebirths_denom sti_util kmc_qual ///
-                totalipd_mort_num  tbnum_qual tbdenom_qual surg_util ///
+                totalipd_mort_num  tbnum_qual tbdenom_qual ///
 				tt_qual trauma_util  icu_mort_num trauma_mort_num icu_util ///
 				fp_perm_util fp_la_util breast_denom2020 breast_denom2019 hospit_covid ///
 				hospit_pending hospit_negative death_covid death_negative ///
@@ -20,7 +20,7 @@ global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_n
 ********************************************************************************
 * 1 CHILE (facility)
 
-u "$user/$CHLdata/Data for analysis/Chile_su_22months.dta", clear 
+u "$user/$CHLdata/Data for analysis/Chile_su_24months.dta", clear 
 
 local dl_modif
     foreach x of global droplist {
@@ -31,7 +31,7 @@ local dl_modif
  }
  cap drop `dl_modif'
  
-save "$user/$CHLdata/Data for analysis/Chile_su_22months_for_analyses.dta", replace 
+save "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", replace 
 ********************************************************************************
 * 2 ETHIOPIA (facility/woreda)
 
@@ -71,7 +71,7 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
- 
+ drop surg_util
 save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", replace 	 
 	 
 ********************************************************************************
