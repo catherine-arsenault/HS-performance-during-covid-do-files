@@ -23,7 +23,7 @@ global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
 global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 ********************************************************************************
 * Variables available in each country
-global CHLall anc_util del_util cs_util pnc_util
+global CHLall fp_util anc_util pnc_util er_util surg_util road_util mental_util 
 
 global ETHall fp_util anc_util del_util cs_util pnc_util  diarr_util pneum_util ///
 	   malnu_util vacc_qual bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///
@@ -55,7 +55,7 @@ global NEPall fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util /
 	   ipd_util  diab_util hyper_util tbdetect_qual hivtest_qual 
    
 global KORall anc_util del_util cs_util diarr_util pneum_util diab_util hyper_util ///
-	   art_util mental_util opd_util er_util ipd_util    
+	   art_util mental_util opd_util er_util ipd_util 
 
 global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_util  		
    
@@ -72,8 +72,11 @@ do "$dofiles/cr_su_02.do"
 do "$dofiles/an_su_01.do"
 
 ********************************************************************************
-* Regression analyses by country 
-do "$dofiles/an_su_Chile"
+* Regression analyses 
+do "$dofiles/an_su_02.do"
+
+
+/* do "$dofiles/an_su_Chile"
 do "$dofiles/an_su_Ethiopia"
 do "$dofiles/an_su_Ghana"
 do "$dofiles/an_su_Haiti"
