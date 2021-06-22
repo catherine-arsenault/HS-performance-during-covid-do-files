@@ -111,24 +111,24 @@ local i = 2
 
 foreach var of global GHAall {
 	local i = `i'+1
-	xtreg `var' i.postCovid_dec rmonth  timeafter dec20 i.season, i(reg) fe cluster(reg) 
+	xtreg `var' i.postCovid_dec rmonth timeafter dec20 i.season, i(reg) fe cluster(reg) 
 	putexcel H`i'=(_b[dec20])
 	mat m2= r(table)
-	mat b2 = m2[1, 4...]'
+	mat b2 = m2[1, 5...]'
 	scalar beta = b2[1,1]
 	
 	* Call program to adjust for G-2 degrees of freedom
 	adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
 	
-	mat cil = adjci_l[1, 4...]'
+	mat cil = adjci_l[1, 5...]'
 	scalar lcl= cil[1,1]
 	putexcel I`i'=lcl
 	
-	mat ciu= adjci_u[1, 4...]'
+	mat ciu= adjci_u[1, 5...]'
 	scalar ucl = ciu[1,1]
 	putexcel J`i'=ucl
 	
-	mat pval= adjp[1, 4...]'
+	mat pval= adjp[1, 5...]'
 	scalar p = pval[1,1]
 	putexcel K`i'=p
 	
@@ -168,6 +168,52 @@ save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(40000)220000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
+			
+* Csections		
+			qui xtreg cs_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_cs_util
+			qui xtreg cs_util rmonth i.season if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_cs_util 
+			
+			collapse cs_util linear_cs_util season_cs_util  , by(rmonth)
+
+			twoway (scatter cs_util rmonth, msize(vsmall)  sort) ///
+			(line linear_cs_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_cs_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit cs_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit cs_util rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana C-sections", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_cs_util.pdf", replace
+			
+* PNC	
+u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			qui xtreg pnc_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_pnc_util
+			qui xtreg pnc_util rmonth i.season if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_pnc_util 
+			
+			collapse pnc_util linear_pnc_util season_pnc_util  , by(rmonth)
+
+			twoway (scatter pnc_util rmonth, msize(vsmall)  sort) ///
+			(line linear_pnc_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_pnc_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit pnc_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit pnc_util rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana PNC visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(500)5000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_pnc_util.pdf", replace			
+
 * DELIVERIES
 u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			qui xtreg del_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
