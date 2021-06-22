@@ -280,7 +280,28 @@ u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1200, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_diab_util.pdf", replace
+* Malaria
+u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear		
+			qui xtreg malaria_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_malaria_util
+			qui xtreg malaria_util rmonth i.season if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_malaria_util 
+			
+			collapse  malaria_util linear_malaria_util season_malaria_util  , by(rmonth)
 
+			twoway (scatter malaria_util rmonth, msize(vsmall)  sort) ///
+			(line linear_malaria_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_malaria_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit malaria_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit malaria_util rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana malaria visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)50000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_malaria_util.pdf", replace
 
 u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear	
 			qui xtreg diarr_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
