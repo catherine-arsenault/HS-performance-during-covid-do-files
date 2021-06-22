@@ -92,7 +92,7 @@ save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 
 		end		
 		
-foreach c in CHL ETH GHA HTI KZN LAO {
+foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	
 ********************************************************************************
 	* Creates variables for analyses
@@ -105,11 +105,13 @@ foreach c in CHL ETH GHA HTI KZN LAO {
 		sort reg rmonth
 		
 		gen postCovid=.
-		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") // pandemic period is month 15 to 24 in ETH and NEP
-		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO") // pandemic period is month 16 to 24 in all other countries
+		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") 
+		// pandemic period is month 15 to 24 in ETH and NEP
+		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "NEP", "KOR", "THA") 
+		// pandemic period is month 16 to 24 in all other countries
 		gen timeafter= . 
 		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
-		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI") 
+		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "NEP", "KOR", "THA") 
 		replace timeafter=0 if timeafter<0
 		
 		gen season = .
@@ -125,7 +127,7 @@ foreach c in CHL ETH GHA HTI KZN LAO {
 		* "Temporary" post-Covid period now excludes december
 		gen postCovid_dec=. 
 		replace postCovid_dec = rmonth>14 if inlist(country, "ETH", "NEP") 
-		replace postCovid_dec = rmonth>15 if inlist(country, "CHL", "GHA", "HTI")
+		replace postCovid_dec = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "NEP", "KOR", "THA") 
 		replace postCovid_dec=0 if rmonth==24
 		* Indicator for December (withdrawal of the postCovid period)
 		gen dec20= rmonth==24 
