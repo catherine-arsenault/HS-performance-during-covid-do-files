@@ -28,8 +28,7 @@ gen season = .
 recode season (.=1) if ( month>=3 & month<=5  )
 recode season (.=2) if ( month>=6 & month<=8  )
 recode season (.=3) if ( month>=9 & month<=11 )
-recode season (.=4) if inlist(month, 1, 2, 12)
-               
+recode season (.=4) if inlist(month, 1, 2, 12)             
 la var season "Season"
 la def season 1 "Spring" 2 "Summer" 3 "Fall" 4 "Winter"
 la val season season
@@ -38,7 +37,7 @@ la val season season
 * "Temporary" post-Covid period now excludes december
 gen postCovid_dec = rmonth>14 
 replace postCovid_dec=0 if rmonth==24
-* Indicator for December (withdrawal)
+* Indicator for December (withdrawal of the postCovid period)
 gen dec20= rmonth==24 
 
 ********************************************************************************
@@ -113,7 +112,7 @@ foreach var of global ETHall {
 ********************************************************************************
 * Resumption at Dec 31, 2020: remaining level change 
 ********************************************************************************
-putexcel H2="RD remain level change Dec" I2="LCL" J2="UCL" K2="p-value" L2="% change"
+putexcel H2="RD remain. level change Dec" I2="LCL" J2="UCL" K2="p-value" L2="% change"
 local i = 2
 
 foreach var of global ETHall {
