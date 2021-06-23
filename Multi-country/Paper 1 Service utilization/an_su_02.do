@@ -107,11 +107,11 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		gen postCovid=.
 		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") 
 		// pandemic period is month 15 to 24 in ETH and NEP
-		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "NEP", "KOR", "THA") 
+		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		// pandemic period is month 16 to 24 in all other countries
 		gen timeafter= . 
 		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
-		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "NEP", "KOR", "THA") 
+		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace timeafter=0 if timeafter<0
 		
 		gen season = .
@@ -123,14 +123,20 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		la def season 1 "Spring" 2 "Summer" 3 "Fall" 4 "Winter"
 		la val season season
 
-		* To assess resumption by Dec 31, 2020
+		* Variables to assess resumption by Dec 31, 2020
 		* "Temporary" post-Covid period now excludes december
 		gen postCovid_dec=. 
 		replace postCovid_dec = rmonth>14 if inlist(country, "ETH", "NEP") 
-		replace postCovid_dec = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "NEP", "KOR", "THA") 
+		replace postCovid_dec = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace postCovid_dec=0 if rmonth==24
 		* Indicator for December (withdrawal of the postCovid period)
 		gen dec20= rmonth==24 
+		* Slope change excludes Dec 2020
+		gen timeafter_dec= . 
+		replace timeafter_dec = rmonth-14 if inlist(country, "ETH", "NEP")
+		replace timeafter_dec = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
+		replace timeafter_dec=0 if timeafter_dec<0
+		replace timeafter_dec=0 if rmonth==24
 
 	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
 	
@@ -186,24 +192,25 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	foreach var of global `c'all {
 		local i = `i'+1
-		xtreg `var' i.postCovid_dec rmonth timeafter dec20 i.season, i(reg) fe cluster(reg) 
+		xtreg `var' postCovid_dec rmonth timeafter_dec dec20 i.season, i(reg) fe cluster(reg) 
+		
 		putexcel H`i'=(_b[dec20])
 		mat m2= r(table)
-		mat b2 = m2[1, 5...]'
+		mat b2 = m2[1, 4...]'
 		scalar beta = b2[1,1]
 		
 		* Call program to adjust for G-2 degrees of freedom
 		adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
 		
-		mat cil = adjci_l[1, 5...]'
+		mat cil = adjci_l[1, 4...]'
 		scalar lcl= cil[1,1]
 		putexcel I`i'=lcl
 		
-		mat ciu= adjci_u[1, 5...]'
+		mat ciu= adjci_u[1, 4...]'
 		scalar ucl = ciu[1,1]
 		putexcel J`i'=ucl
 		
-		mat pval= adjp[1, 5...]'
+		mat pval= adjp[1, 4...]'
 		scalar p = pval[1,1]
 		putexcel K`i'=p
 		
