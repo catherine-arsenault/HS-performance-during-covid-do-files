@@ -105,7 +105,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		sort reg rmonth
 		
 		gen postCovid=.
-		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") 
+		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") // remove last month?
 		// pandemic period is month 15 to 24 in ETH and NEP
 		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		// pandemic period is month 16 to 24 in all other countries
@@ -140,11 +140,11 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
 	
-	********************************************************************************
-	* Level change during the pandemic 
-	********************************************************************************
+********************************************************************************
+	* Regression analysis: Level change during the pandemic 
+********************************************************************************
 	putexcel set "$analysis/Results/Tables/Results JUNE23.xlsx", sheet("`c'")  modify
-	putexcel A1 = "`c'"
+	putexcel A1 = "`c'" B1="Nb of units" 
 	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
 	putexcel C2= "RD postCovid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change"
 	local i = 2
@@ -159,6 +159,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		mat b1 = m1[1, 2...]'
 		scalar beta = b1[1,1]
 		putexcel A`i' = "`var'"
+		putexcel C1=`e(N_clust)'
 		putexcel C`i'=(_b[1.postCovid])
 
 		* Call program to adjust for G-2 degrees of freedom
@@ -184,9 +185,9 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		
 		scalar drop _all
 	}
-	********************************************************************************
+********************************************************************************
 	* Resumption at Dec 31, 2020: remaining level change 
-	********************************************************************************
+********************************************************************************
 	putexcel H2="RD remain. level change Dec" I2="LCL" J2="UCL" K2="p-value" L2="% change"
 	local i = 2
 
