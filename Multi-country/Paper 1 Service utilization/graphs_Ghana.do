@@ -1,152 +1,34 @@
-* Health system performance during Covid-19 
-* Effect of Covid on health service utilization in 10 countries
-* Created by Catherine Arsenault, May 4, 2021
-********************************************************************************
-* GHANA (Region level)
-********************************************************************************
-use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
-
-/* Vars needed for ITS (we expect both a change in level and in slope: 
-	rmonth from 1 to 24 = underlying trend in the outcome
-	PostCovid = level change in the outcome after Covid
-	timeafter = slope change after Covid */ 
-gen rmonth= month if year==2019
-replace rmonth = month+12 if year ==2020
-encode region, gen(reg)	
-sort region rmonth
-gen postCovid = rmonth>15 // pandemic period is months 16-24
-gen timeafter= rmonth-15
-replace timeafter=0 if timeafter<0
-
-gen season = .
-recode season (.=1) if ( month>=3 & month<=5  )
-recode season (.=2) if ( month>=6 & month<=8  )
-recode season (.=3) if ( month>=9 & month<=11 )
-recode season (.=4) if inlist(month, 1, 2, 12)             
-la var season "Season"
-la def season 1 "Spring" 2 "Summer" 3 "Fall" 4 "Winter"
-la val season season
-
-* To assess resumption by Dec 31, 2020
-* "Temporary" post-Covid period now excludes december
-gen postCovid_dec = rmonth>15
-replace postCovid_dec=0 if rmonth==24
-* Indicator for December (withdrawal of the postCovid period)
-gen dec20= rmonth==24 
 
 ********************************************************************************
-* Program for G-2 adjustment (call after xtreg)
-********************************************************************************
-* Add adjusted p-value and 95% CI to -xtreg, cluster()- estimation output
-* Use t(G-2) distribution instead of Stata's t(G-1) where G = number of clusters as per Donald and Lang (2007)
-			
-cap program drop adjpvalues
-program adjpvalues, rclass
-			
-version 11
-				
-syntax , p( string ) cil( string ) ciu( string )
-			
-* Use t-distribution with G-2 d.f. where G = e(N_clust) from xtreg
-mata: st_matrix("adjp", 2*ttail( st_numscalar( "e(N_clust)")-2 , abs(  st_matrix("e(b)") :/ sqrt( diagonal( st_matrix("e(V)") )')   ))  )				
-mata: st_matrix("adjci_l", st_matrix("e(b)") - invttail( st_numscalar( "e(N_clust)")-2, 0.025 ) *sqrt( diagonal( st_matrix("e(V)") )') )
-mata: st_matrix("adjci_u", st_matrix("e(b)") + invttail( st_numscalar( "e(N_clust)")-2, 0.025 ) *sqrt( diagonal( st_matrix("e(V)") )') )
-			
-* Need same varnames as e(b)
-mat colnames adjp    = `: colnames e(b)'
-mat colnames adjci_l = `: colnames e(b)'
-mat colnames adjci_u = `: colnames e(b)'
-
-end		
-
-********************************************************************************
-* Level change during the pandemic 
-********************************************************************************
-putexcel set "$analysis/Results/Tables/Results JUNE22.xlsx", sheet(Ghana)  modify
-putexcel A1 = "Ghana"
-putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
-putexcel C2= "RD postCovid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change"
-local i = 2
-
-xtset reg rmonth 
-
-foreach var of global GHAall {
-	local i = `i'+1
-	xtreg `var' i.postCovid rmonth timeafter i.season, i(reg) fe cluster(reg) 
-	
-	mat m1= r(table) 
-	mat b1 = m1[1, 2...]'
-	scalar beta = b1[1,1]
-	putexcel A`i' = "`var'"
-	putexcel C`i'=(_b[1.postCovid])
-
-	* Call program to adjust for G-2 degrees of freedom
-	adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
-	
-	mat cil = adjci_l[1, 2...]'
-	scalar lcl= cil[1,1]
-	putexcel D`i'=lcl
-
-	mat ciu= adjci_u[1, 2...]'
-	scalar ucl = ciu[1,1]
-	putexcel E`i'=ucl
-	
-	mat pval= adjp[1, 2...]'
-	scalar p = pval[1,1]
-	putexcel F`i'=p
-	
-	su `var' if postCovid==0 // average over the pre-Covid period
-	scalar avg = r(mean) 
-	putexcel B`i' = `r(mean)'
-	scalar pct_chg= beta/avg
-	putexcel G`i'=pct_chg
-	
-	scalar drop _all
-}
-********************************************************************************
-* Resumption at Dec 31, 2020: remaining level change 
-********************************************************************************
-putexcel H2="RD remain. level change Dec" I2="LCL" J2="UCL" K2="p-value" L2="% change"
-local i = 2
-
-foreach var of global GHAall {
-	local i = `i'+1
-	xtreg `var' i.postCovid_dec rmonth timeafter dec20 i.season, i(reg) fe cluster(reg) 
-	putexcel H`i'=(_b[dec20])
-	mat m2= r(table)
-	mat b2 = m2[1, 5...]'
-	scalar beta = b2[1,1]
-	
-	* Call program to adjust for G-2 degrees of freedom
-	adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
-	
-	mat cil = adjci_l[1, 5...]'
-	scalar lcl= cil[1,1]
-	putexcel I`i'=lcl
-	
-	mat ciu= adjci_u[1, 5...]'
-	scalar ucl = ciu[1,1]
-	putexcel J`i'=ucl
-	
-	mat pval= adjp[1, 5...]'
-	scalar p = pval[1,1]
-	putexcel K`i'=p
-	
-	su `var' if postCovid==0 // average over the pre-Covid period
-	scalar avg = r(mean) 
-	scalar pct_chg= beta/avg
-	putexcel L`i'=pct_chg
-	
-	scalar drop _all
-}
-/********************************************************************************
 * GHANA GRAPHS
 ********************************************************************************
+u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear 
 lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" ///
 			13"J" 14"F" 15"M" 16"A" 17"M" 18"J" 19"J" 20"A" ///
 			21"S" 22"O" 23"N" 24"D"
 			lab val rmonth rmonth 
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
+* anc		
+			qui xtreg anc_util rmonth if postCovid==0 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_anc_util
+			qui xtreg anc_util rmonth i.season if postCovid==0, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_anc_util 
+			
+			collapse anc_util linear_anc_util season_anc_util postCovid  , by(rmonth)
+
+			twoway (scatter anc_util rmonth, msize(vsmall)  sort) ///
+			(line linear_anc_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_anc_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit anc_util rmonth if postCovid==0, lcolor(green)) ///
+			(lfit anc_util rmonth if postCovid==1, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana Outpatient Visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_anc_util.pdf", replace
 * OPD		
 			qui xtreg opd_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
 				predict linear_opd_util
@@ -262,7 +144,7 @@ u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear		
 			qui xtreg diab_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
 				predict linear_diab_util
-			qui xtreg diab_util rmonth spring-winter if rmonth<16, ///
+			qui xtreg diab_util rmonth i.season if rmonth<16, ///
 				i(reg) fe cluster(reg) // w. seasonal adj
 				predict season_diab_util 
 			
@@ -284,8 +166,7 @@ u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear		
 			qui xtreg malaria_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
 				predict linear_malaria_util
-			qui xtreg malaria_util rmonth i.season if rmonth<16, ///
-				i(reg) fe cluster(reg) // w. seasonal adj
+			qui xtreg malaria_util  rmonth cos* sin* if rmonth<16, i(reg) fe cluster(reg) // w. seasonal adj
 				predict season_malaria_util 
 			
 			collapse  malaria_util linear_malaria_util season_malaria_util  , by(rmonth)
@@ -299,32 +180,97 @@ u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			xtitle("", size(small)) legend(off) ///
 			ytitle("Average number per region", size(vsmall)) ///
 			graphregion(color(white)) title("Ghana malaria visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)50000, labsize(vsmall))
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(10000)100000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_malaria_util.pdf", replace
-
+* Road
 u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear	
-			qui xtreg diarr_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
-				predict linear_diarr_util
-			qui xtreg diarr_util rmonth spring-winter if rmonth<16, ///
+			qui xtreg road_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_road_util
+			qui xtreg road_util rmonth i.season if rmonth<16, ///
 				i(reg) fe cluster(reg) // w. seasonal adj
-				predict season_diarr_util 
+				predict season_road_util 
 			
-			collapse  diarr_util linear_diarr_util season_diarr_util  , by(rmonth)
+			collapse  road_util linear_road_util season_road_util  , by(rmonth)
 
-			twoway (scatter diarr_util rmonth, msize(vsmall)  sort) ///
-			(line linear_diarr_util rmonth, lpattern(dash) lcolor(green)) ///
-			(line season_diarr_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
-			(lfit diarr_util rmonth if rmonth<16, lcolor(green)) ///
-			(lfit diarr_util rmonth if rmonth>=16, lcolor(red)), ///
+			twoway (scatter road_util rmonth, msize(vsmall)  sort) ///
+			(line linear_road_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_road_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit road_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit road_util rmonth if rmonth>=16, lcolor(red)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xtitle("", size(small)) legend(off) ///
 			ytitle("Average number per region", size(vsmall)) ///
-			graphregion(color(white)) title("Ghana child diarrhea visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(500)4000, labsize(vsmall))
+			graphregion(color(white)) title("Ghana road traffic injuries", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)1000, labsize(vsmall))
 			
-			graph export "$analysis/Results/Graphs/GHA_diarr_util.pdf", replace
+			graph export "$analysis/Results/Graphs/GHA_road_util.pdf", replace
+* pneum
+u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear	
+			qui xtreg pneum_util rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_pneum_util
+			qui xtreg pneum_util rmonth i.season if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_pneum_util 
+			
+			collapse  pneum_util linear_pneum_util season_pneum_util  , by(rmonth)
 
+			twoway (scatter pneum_util rmonth, msize(vsmall)  sort) ///
+			(line linear_pneum_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_pneum_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit pneum_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit pneum_util rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana child pneumonia visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(250)3000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_pneum_util.pdf", replace
+* bcg
+u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear	
+			qui xtreg bcg_qual rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_bcg_qual
+			qui xtreg bcg_qual rmonth i.season if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_bcg_qual 
+			
+			collapse  bcg_qual linear_bcg_qual season_bcg_qual  , by(rmonth)
+
+			twoway (scatter bcg_qual rmonth, msize(vsmall)  sort) ///
+			(line linear_bcg_qual rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_bcg_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit bcg_qual rmonth if rmonth<16, lcolor(green)) ///
+			(lfit bcg_qual rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Ghana child bcgonia visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(1000)10000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_bcg_qual.pdf", replace
+* Penta
+			u "$user/$LAOdata/Data for analysis/LAOtmp.dta", clear
+			qui xtreg pent_qual rmonth if rmonth<16 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_pent_qual
+			qui xtreg pent_qual rmonth i.season if rmonth<16, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_pent_qual 
+			
+			collapse pent_qual linear_pent_qual season_pent_qual  , by(rmonth)
+
+			twoway (scatter pent_qual rmonth, msize(vsmall)  sort) ///
+			(line linear_pent_qual rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_pent_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit pent_qual rmonth if rmonth<16, lcolor(green)) ///
+			(lfit pent_qual rmonth if rmonth>=16, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per region", size(vsmall)) ///
+			graphregion(color(white)) title("Lao PDR Pentavalent vaccinations", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/LAO_pent_qual.pdf", replace			
 rm "$user/$GHAdata/Data for analysis/GHAtmp.dta"
 
 /********************************************************************************
