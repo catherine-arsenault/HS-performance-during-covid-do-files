@@ -1,86 +1,34 @@
-* Health system performance during Covid-19 
-* Effect of Covid on health service utilization in 10 countries
-* Created by Catherine Arsenault, May 4, 2021
 
-********************************************************************************
-* Nepal (regional)
-********************************************************************************
-use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
-rename orgunitlevel2 Province
-rename orgunitlevel3 District
-
-collapse (sum) $NEPall, by (Dist year month)
-encode Dist, gen(reg)
-/* Vars needed for ITS (we expect both a change in level and in slope: 
-	rmonth from 1 to 24 = underlying trend in the outcome
-	PostCovid = level change in the outcome after Covid
-	timeafter = slope change after Covid 
-	"February 2020" month 14 is actually Feb13 to Mar13. so postCovid is month 15
-	*/ 	
-gen rmonth= month if year==2019
-replace rmonth = month+12 if year ==2020
-sort reg rmonth
-gen postCovid = rmonth>14 // pandemic is months 15-24
-gen timeafter= rmonth-14
-replace timeafter=0 if timeafter<0
-* Seasons
-gen spring = month>=3 & month<=5
-gen summer = month>=6 & month<=8
-gen fall = month>=9 & month<=11
-gen winter= month==12 | month==1 | month==2
-
-save "$user/$NEPdata/Data for analysis/Nepaltmp.dta",  replace
-********************************************************************************
-* Level change during the pandemic
-********************************************************************************
-xtset reg rmonth 
-
-putexcel set "$analysis/Results/Tables/Results MAY28.xlsx", sheet(Nepal)  modify
-putexcel A1 = "Nepal district OLS FE"
-putexcel A2 = "Health service" B2="Intercept" C2="RR postCovid" D2="LCL" E2="UCL" 
-putexcel F2 ="p-value"
-local i = 2
-
-foreach var of global NEPall {
-	local i = `i'+1
-	xtreg `var'  i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
-	i(reg) fe cluster(reg) // we will adjust SEs for small number of clusters
-	
-	putexcel A`i' = "`var'"
-	putexcel B`i'=(_b[_cons]) // intercept, 95% CI and p-value?
-	
-	margins postCovid, post
-	nlcom (rr: (_b[1.postCovid]/_b[0.postCovid])) , post
-	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
-	
-	putexcel c`i'= (_b[rr])
-	putexcel d`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel e`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
-	putexcel f`i'= `r(p)'	 	
-}
-********************************************************************************
-* Resumption at Dec 31, 2020: ratio of predicted
-********************************************************************************
-putexcel G2="%predicted" H2="LCL" I2="UCL" J2 ="p-value"
-local i = 2
-foreach var of global NEPall {
-	local i = `i'+1
-	xtreg `var' i.postCovid rmonth timeafter i.spring i.summer i.fall i.winter, ///
-	i(reg) fe cluster(reg)
-	
-	margins, at(postCovid=(0 1) timeafter=(0 10) rmonth==24) post 
-	nlcom (rr: (_b[4._at]/_b[1bn._at])), post
-	// nlcom is testing the null hypothesis the the ratio is equal to zero.
-	test (_b[rr]) =1 // tests whether calculated ratio is diff. from 1
-	
-	putexcel g`i'= (_b[rr])
-	putexcel h`i'= (_b[rr]-invnormal(1-.05/2)*_se[rr])  
-	putexcel i`i'= (_b[rr]+invnormal(1-.05/2)*_se[rr])
-	putexcel j`i'= `r(p)'
-}
 ********************************************************************************
 * NEPAL GRAPHS
 ********************************************************************************	
+u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
+	
+lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" ///
+			13"J" 14"F" 15"M" 16"A" 17"M" 18"J" 19"J" 20"A" ///
+			21"S" 22"O" 23"N" 24"D"
+			lab val rmonth rmonth 
+* ANC			
+			qui xtreg anc_util rmonth if rmonth<15 , i(reg) fe cluster(reg) // linear prediction
+				predict linear_anc_util
+			qui xtreg anc_util rmonth i.season if rmonth<15, ///
+				i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_anc_util 
+			
+			collapse anc_util linear_anc_util season_anc_util  , by(rmonth)
+
+			twoway (scatter anc_util rmonth, msize(vsmall)  sort) ///
+			(line linear_anc_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_anc_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit anc_util rmonth if rmonth<15, lcolor(green)) ///
+			(lfit anc_util rmonth if rmonth>=15, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			xtitle("", size(small)) legend(off) ///
+			ytitle("Average number per district", size(vsmall)) ///
+			graphregion(color(white)) title(" Nepal outpatient visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/NEP_anc_util.pdf", replace
 * OPD			
 			qui xtreg opd_util rmonth if rmonth<15 , i(reg) fe cluster(reg) // linear prediction
 				predict linear_opd_util
@@ -101,10 +49,10 @@ foreach var of global NEPall {
 			graphregion(color(white)) title(" Nepal outpatient visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
 			
-			graph export "$analysis/Results/Graphs/Nepal_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/NEP_opd_util.pdf", replace
 			
 * Deliveries
-			u "$user/$NEPdata/Data for analysis/Nepaltmp.dta", clear
+			u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
 			qui xtreg del_util rmonth if rmonth<15 , i(reg) fe cluster(reg) // linear prediction
 				predict linear_del_util
 			qui xtreg del_util rmonth i.spring i.summer i.fall i.winter if rmonth<15, ///
@@ -123,8 +71,8 @@ foreach var of global NEPall {
 			ytitle("Average number per district", size(vsmall)) ///
 			graphregion(color(white)) title("Nepal deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)600, labsize(vsmall))
-			graph export "$analysis/Results/Graphs/Nepal_del_util.pdf", replace
+			graph export "$analysis/Results/Graphs/NEP_del_util.pdf", replace
 			
-rm "$user/$NEPdata/Data for analysis/Nepaltmp.dta"
+rm "$user/$NEPdata/Data for analysis/NEPtmp.dta"
 
 
