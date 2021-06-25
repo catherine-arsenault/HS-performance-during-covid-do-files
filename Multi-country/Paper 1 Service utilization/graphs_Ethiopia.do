@@ -2,14 +2,13 @@
 ********************************************************************************
 * Ethiopia GRAPHS
 ********************************************************************************	
-			
 * Deliveries
 			u "$user/$ETHdata/Data for analysis/ETHtmp.dta", clear
 			
 			graphregion(color(white)) title(" Ethiopia deliveries", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)20000, labsize(vsmall))
 			graph export "$analysis/Results/Graphs/Ethiopia_del_util.pdf", replace
-* Cs 		
+* CSections		
 			u "$user/$ETHdata/Data for analysis/ETHtmp.dta", clear
 			
 			graphregion(color(white)) title(" Ethiopia C-sections", size(small)) ///
@@ -26,7 +25,21 @@
 			graph export "$analysis/Results/Graphs/Ethiopia_art_util.pdf", replace
 * IPD
 			u "$user/$ETHdata/Data for analysis/ETHtmp.dta", clear
+			qui xtreg ipd_util rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_ipd_util
+			qui xtreg ipd_util rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_ipd_util 
+			
+			collapse ipd_util linear_ipd_util season_ipd_util, by(rmonth)
 
+			twoway (scatter ipd_util rmonth, msize(vsmall)  sort) ///
+			(line linear_ipd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_ipd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit ipd_util rmonth if rmonth<15, lcolor(green)) ///
+			(lfit ipd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title(" Ethiopia Inpatient Admissions", size(small)) ///
 			xlabel(1(1)24 , labsize(vsmall) valuelabel)  ylabel(0(2000)12000,   labsize(vsmall) )
 			
