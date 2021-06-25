@@ -127,16 +127,13 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		replace timeafter=0 if timeafter<0
 		replace timeafter=0 if resumption==1
 
-		gen degrees=(rmonth/12)*360
-		fourier degrees, n(2)
-
 	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
 
 ********************************************************************************
 	* Regression analysis: Level change during the first 6 months of the 
 	* pandemic and resumption in the last quarter of 2020
 ********************************************************************************
-	putexcel set "$analysis/Results/Tables/Results JUNE23_fourier.xlsx", sheet("`c'")  modify
+	putexcel set "$analysis/Results/Tables/Results JUNE25.xlsx", sheet("`c'")  modify
 	putexcel A1 = "`c'" B1="Nb of units" 
 	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
 	putexcel C2= "RD Covid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change from pre-Covid average"
@@ -147,7 +144,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	foreach var of global `c'all {
 		local i = `i'+1
-		xtreg `var' postCovid rmonth timeafter cos* sin* resumption, i(reg) fe cluster(reg) 		
+		xtreg `var' postCovid rmonth timeafter i.season resumption, i(reg) fe cluster(reg) 		
 		mat m1= r(table) 
 		mat b1 = m1[1, 1...]'
 		scalar beta1 = b1[1,1]
@@ -232,3 +229,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		* GEE AR1
 		xtgee `var' postCovid rmonth timeafter i.season resumption ///
 		, family(gaussian) link(identity) corr(ar1) vce(robust)	
+		
+		* Fourier terms for seasonality adjustment: result in overfitted model
+		gen degrees=(rmonth/12)*360
+		fourier degrees, n(2)
