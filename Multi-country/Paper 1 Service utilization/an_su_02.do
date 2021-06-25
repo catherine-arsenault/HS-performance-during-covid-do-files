@@ -188,66 +188,6 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		scalar drop _all
 	}
 
-
-********************************************************************************/
-	* Testing GEE models (linear, exchangeable correlation structure)
-********************************************************************************
-	putexcel set "$analysis/Results/Tables/Results JUNE23_GEE.xlsx", sheet("`c'")  modify
-	putexcel A1 = "`c'" B1="Nb of units" 
-	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
-	putexcel C2= "RD Covid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change from pre-Covid average"
-	putexcel H2= "RD Q4 2020" I2="LCL" J2="UCL" K2="p-value" L2 ="% change from pre-Covid average"
-	local i = 2
-
-	xtset reg rmonth 
-
-	foreach var of global `c'all {
-		local i = `i'+1
-		 
-		xtgee `var' postCovid rmonth timeafter i.season resumption ///
-		, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
-	
-		putexcel C1=`e(N_g)'
-		
-		mat m1= r(table) 
-		mat b1 = m1[1, 1...]'
-		scalar beta1 = b1[1,1]
-		scalar beta2 = b1[8,1]
-		
-		mat lcl = m1[5, 1...]'
-		scalar lcl1=lcl[1,1]
-		scalar lcl2=lcl[8,1]
-		mat ucl = m1[6, 1...]'
-		scalar ucl1=ucl[1,1]
-		scalar ucl2=ucl[8,1]
-		mat pval= m1[4, 1...]'
-		scalar p1=pval[1,1]
-		scalar p2=pval[8,1]
-		
-		putexcel A`i' = "`var'"
-		
-		putexcel C`i'=(_b[postCovid])
-		putexcel D`i'=lcl1
-		putexcel E`i'=ucl1
-		putexcel f`i'=p1
-		
-		putexcel H`i'= (_b[resumption])
-		putexcel I`i'=lcl2
-		putexcel J`i'=ucl2
-		putexcel k`i'=p2
-		
-		su `var' if postCovid==0 // average over the pre-Covid period
-		scalar avg = r(mean) 
-		putexcel B`i' = `r(mean)'
-		scalar pct_chg1= beta1/avg
-		scalar pct_chg2= beta2/avg
-		putexcel G`i'=pct_chg1
-		putexcel L`i'=pct_chg2
-		
-		
-		scalar drop _all
-	}
-
 }
 
 /*
