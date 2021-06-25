@@ -11,7 +11,6 @@ use "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta",  clea
 	encode region, gen(reg)
 	gen country="CHL"
 save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
-
 *2
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta",  clear
 	collapse (sum) $ETHall, by (region year month)
@@ -97,22 +96,11 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 ********************************************************************************
 	* Creates variables for analyses
 ********************************************************************************
-
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 
 		gen rmonth= month if year==2019
 		replace rmonth = month+12 if year ==2020
 		sort reg rmonth
-		
-		gen postCovid=.
-		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") // remove last month?
-		// pandemic period is month 15 to 24 in ETH and NEP
-		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
-		// pandemic period is month 16 to 24 in all other countries
-		gen timeafter= . 
-		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
-		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
-		replace timeafter=0 if timeafter<0
 		
 		gen season = .
 		recode season (.=1) if ( month>=3 & month<=5  )
@@ -123,6 +111,157 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		la def season 1 "Spring" 2 "Summer" 3 "Fall" 4 "Winter"
 		la val season season
 
+		* "Temporary" Covid period 
+		gen postCovid=. 
+		replace postCovid = rmonth>=16 & rmonth<=21 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
+		replace postCovid = rmonth>=15 & rmonth<=20 if inlist(country, "ETH", "NEP") 
+		* Resumption period 
+		gen resumption=. 
+		replace resumption = rmonth>=22 & rmonth<=24 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
+		replace resumption = rmonth>=21 & rmonth<=24 if inlist(country, "ETH", "NEP") 
+		
+		* Slope change excludes Dec 2020
+		gen timeafter= . 
+		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
+		replace timeafter= rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
+		replace timeafter=0 if timeafter<0
+		replace timeafter=0 if resumption==1
+
+	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
+
+********************************************************************************
+	* Regression analysis: Level change during the first 6 months of the 
+	* pandemic and resumption in the last quarter of 2020
+********************************************************************************
+	putexcel set "$analysis/Results/Tables/Results JUNE23_quarters.xlsx", sheet("`c'")  modify
+	putexcel A1 = "`c'" B1="Nb of units" 
+	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
+	putexcel C2= "RD Covid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change from pre-Covid average"
+	putexcel H2= "RD Q4 2020" I2="LCL" J2="UCL" K2="p-value" L2 ="% change from pre-Covid average"
+	local i = 2
+
+	xtset reg rmonth 
+
+	foreach var of global `c'all {
+		local i = `i'+1
+		xtreg `var' postCovid rmonth timeafter i.season resumption, i(reg) fe cluster(reg) 
+		
+		mat m1= r(table) 
+		mat b1 = m1[1, 1...]'
+		scalar beta1 = b1[1,1]
+		scalar beta2 = b1[8,1]
+		putexcel A`i' = "`var'"
+		putexcel C1=`e(N_clust)'
+		putexcel C`i'=(_b[postCovid])
+		putexcel H`i'= (_b[resumption])
+		
+		* Call program to adjust for G-2 degrees of freedom
+		adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
+		
+		mat cil = adjci_l[1, 1...]'
+		scalar lcl1= cil[1,1]
+		scalar lcl2= cil[8,1]
+		putexcel D`i'=lcl1
+		putexcel I`i'=lcl2
+		
+		mat ciu= adjci_u[1, 1...]'
+		scalar ucl1 = ciu[1,1]
+		scalar ucl2 = ciu[8,1]
+		putexcel E`i'=ucl1
+		putexcel J`i'=ucl2	
+		
+		mat pval= adjp[1, 1...]'
+		scalar p1 = pval[1,1]
+		scalar p2 = pval[8,1]
+		putexcel F`i'=p1
+		putexcel K`i'=p2
+		
+		su `var' if postCovid==0 // average over the pre-Covid period
+		scalar avg = r(mean) 
+		putexcel B`i' = `r(mean)'
+		scalar pct_chg1= beta1/avg
+		scalar pct_chg2= beta2/avg
+		putexcel G`i'=pct_chg1
+		putexcel L`i'=pct_chg2
+		
+		
+		scalar drop _all
+	}
+
+
+********************************************************************************/
+	* Testing GEE models (linear, exchangeable correlation structure)
+********************************************************************************
+	putexcel set "$analysis/Results/Tables/Results JUNE23_GEE.xlsx", sheet("`c'")  modify
+	putexcel A1 = "`c'" B1="Nb of units" 
+	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
+	putexcel C2= "RD Covid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change from pre-Covid average"
+	putexcel H2= "RD Q4 2020" I2="LCL" J2="UCL" K2="p-value" L2 ="% change from pre-Covid average"
+	local i = 2
+
+	xtset reg rmonth 
+
+	foreach var of global `c'all {
+		local i = `i'+1
+		 
+		xtgee `var' postCovid rmonth timeafter i.season resumption ///
+		, family(gaussian) link(identity) corr(exchangeable) vce(robust)	
+	
+		putexcel C1=`e(N_g)'
+		
+		mat m1= r(table) 
+		mat b1 = m1[1, 1...]'
+		scalar beta1 = b1[1,1]
+		scalar beta2 = b1[8,1]
+		
+		mat lcl = m1[5, 1...]'
+		scalar lcl1=lcl[1,1]
+		scalar lcl2=lcl[8,1]
+		mat ucl = m1[6, 1...]'
+		scalar ucl1=ucl[1,1]
+		scalar ucl2=ucl[8,1]
+		mat pval= m1[4, 1...]'
+		scalar p1=pval[1,1]
+		scalar p2=pval[8,1]
+		
+		putexcel A`i' = "`var'"
+		
+		putexcel C`i'=(_b[postCovid])
+		putexcel D`i'=lcl1
+		putexcel E`i'=ucl1
+		putexcel f`i'=p1
+		
+		putexcel H`i'= (_b[resumption])
+		putexcel I`i'=lcl2
+		putexcel J`i'=ucl2
+		putexcel k`i'=p2
+		
+		su `var' if postCovid==0 // average over the pre-Covid period
+		scalar avg = r(mean) 
+		putexcel B`i' = `r(mean)'
+		scalar pct_chg1= beta1/avg
+		scalar pct_chg2= beta2/avg
+		putexcel G`i'=pct_chg1
+		putexcel L`i'=pct_chg2
+		
+		
+		scalar drop _all
+	}
+
+}
+
+/*
+		gen postCovid=.
+		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") // remove last month?
+		// pandemic period is month 15 to 24 in ETH and NEP
+		replace postCovid = rmonth>15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
+		// pandemic period is month 16 to 24 in all other countries
+		gen timeafter= . 
+		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
+		replace timeafter = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
+		replace timeafter=0 if timeafter<0
+		
+		
 		* Variables to assess resumption by Dec 31, 2020
 		* "Temporary" post-Covid period now excludes december
 		gen postCovid_dec=. 
@@ -137,89 +276,3 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		replace timeafter_dec = rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace timeafter_dec=0 if timeafter_dec<0
 		replace timeafter_dec=0 if rmonth==24
-
-	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
-	
-********************************************************************************
-	* Regression analysis: Level change during the pandemic 
-********************************************************************************
-	putexcel set "$analysis/Results/Tables/Results JUNE23.xlsx", sheet("`c'")  modify
-	putexcel A1 = "`c'" B1="Nb of units" 
-	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
-	putexcel C2= "RD postCovid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change"
-	local i = 2
-
-	xtset reg rmonth 
-
-	foreach var of global `c'all {
-		local i = `i'+1
-		xtreg `var' i.postCovid rmonth timeafter i.season, i(reg) fe cluster(reg) 
-		
-		mat m1= r(table) 
-		mat b1 = m1[1, 2...]'
-		scalar beta = b1[1,1]
-		putexcel A`i' = "`var'"
-		putexcel C1=`e(N_clust)'
-		putexcel C`i'=(_b[1.postCovid])
-
-		* Call program to adjust for G-2 degrees of freedom
-		adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
-		
-		mat cil = adjci_l[1, 2...]'
-		scalar lcl= cil[1,1]
-		putexcel D`i'=lcl
-
-		mat ciu= adjci_u[1, 2...]'
-		scalar ucl = ciu[1,1]
-		putexcel E`i'=ucl
-		
-		mat pval= adjp[1, 2...]'
-		scalar p = pval[1,1]
-		putexcel F`i'=p
-		
-		su `var' if postCovid==0 // average over the pre-Covid period
-		scalar avg = r(mean) 
-		putexcel B`i' = `r(mean)'
-		scalar pct_chg= beta/avg
-		putexcel G`i'=pct_chg
-		
-		scalar drop _all
-	}
-********************************************************************************
-	* Resumption at Dec 31, 2020: remaining level change 
-********************************************************************************
-	putexcel H2="RD remain. level change Dec" I2="LCL" J2="UCL" K2="p-value" L2="% change"
-	local i = 2
-
-	foreach var of global `c'all {
-		local i = `i'+1
-		xtreg `var' postCovid_dec rmonth timeafter_dec dec20 i.season, i(reg) fe cluster(reg) 
-		
-		putexcel H`i'=(_b[dec20])
-		mat m2= r(table)
-		mat b2 = m2[1, 4...]'
-		scalar beta = b2[1,1]
-		
-		* Call program to adjust for G-2 degrees of freedom
-		adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
-		
-		mat cil = adjci_l[1, 4...]'
-		scalar lcl= cil[1,1]
-		putexcel I`i'=lcl
-		
-		mat ciu= adjci_u[1, 4...]'
-		scalar ucl = ciu[1,1]
-		putexcel J`i'=ucl
-		
-		mat pval= adjp[1, 4...]'
-		scalar p = pval[1,1]
-		putexcel K`i'=p
-		
-		su `var' if postCovid==0 // average over the pre-Covid period
-		scalar avg = r(mean) 
-		scalar pct_chg= beta/avg
-		putexcel L`i'=pct_chg
-		
-		scalar drop _all
-	}	
-}
