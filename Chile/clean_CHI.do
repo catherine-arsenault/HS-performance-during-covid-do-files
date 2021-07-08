@@ -32,7 +32,7 @@ drop if all_visits==0 //6 observations dropped
 drop all_visits 
 ********************************************************************
 *1 facility has no information on region, municipality, and level of attention 
-drop if org1 == "#N/A" 
+* drop if org1 == "#N/A" I used the information from google.
 ********************************************************************
 global volumes road_util surg_util pnc_util fp_util er_util mental_util anc_util
 
