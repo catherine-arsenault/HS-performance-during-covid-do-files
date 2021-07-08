@@ -47,7 +47,7 @@ global LAOall opd_util ipd_util fp_util anc_util del_util cs_util pnc_util ///
 	   
 global MEXall fp_util anc_util del_util cs_util diarr_util pneum_util malnu_util ///
 	   bcg_qual pent_qual measles_qual opd_util opv3_qual pneum_qual ///
-	   rota_qual diab_util hyper_util  art_util mental_util opd_util ///
+	   rota_qual diab_util hyper_util  art_util mental_util  ///
 	   er_util ipd_util cerv_qual breast_util	
 		   
 global NEPall fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
