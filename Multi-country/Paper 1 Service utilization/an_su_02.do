@@ -128,12 +128,29 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		replace timeafter=0 if resumption==1
 
 	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
-
+********************************************************************************
+	* Descriptives for table 1: average before and during Covid
+	* For sentinel services
+********************************************************************************	
+putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
+	local i = 29
+	putexcel A29="Average before and during Covid"
+		foreach x of global sentinel {
+			local i = `i'+1
+			putexcel A`i'="`x'"
+				cap confirm variable `x'
+				if _rc==0 {
+					su `x' if postCovid==0 
+						putexcel B`i'= `r(mean)'
+					su `x' if postCovid==1
+						putexcel C`i'= `r(mean)'
+					}
+		}
 ********************************************************************************
 	* Regression analysis: Level change during the first 6 months of the 
 	* pandemic and resumption in the last quarter of 2020
 ********************************************************************************
-	putexcel set "$analysis/Results/Tables/Results JUNE25.xlsx", sheet("`c'")  modify
+	putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
 	putexcel A1 = "`c'" B1="Nb of units" 
 	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
 	putexcel C2= "RD Covid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change from pre-Covid average"
