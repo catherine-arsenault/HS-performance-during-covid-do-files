@@ -10,6 +10,7 @@ created in google data studio
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
 *****************************************************************/
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
+
 global all road_util surg_util pnc_util fp_util er_util mental_util anc_util
 
 * Create national total
@@ -26,6 +27,7 @@ global all road_util surg_util pnc_util fp_util er_util mental_util anc_util
 	}
 	decode reg, gen(region)
 	replace region ="National" if region=="" 
+	drop if reg==.
 	drop reg 
 	order region 
 	
@@ -102,7 +104,8 @@ reshape long road_util surg_util pnc_util fp_util er_util mental_util anc_util, 
 		drop month	
 		rename mo month
 		sort region municipality levelofattention facilityname id year month
-		order region municipality levelofattention facilityname id year month		
+		order region municipality levelofattention facilityname id year month	
+		
 * Saves dataset for analyses 		
 save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
 		
