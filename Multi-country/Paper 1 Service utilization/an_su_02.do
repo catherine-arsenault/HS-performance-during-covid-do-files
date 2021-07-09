@@ -2,71 +2,7 @@
 * Effect of Covid on health service utilization in 10 countries
 * Created by Catherine Arsenault, June 2021
 * Program by Sebastian Bauhoff
-* Stata package "Circular" is needed for Fourier transformation
-********************************************************************************
-* Collapse facility level datasets & create country codes
 
-*1
-use "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta",  clear
-	collapse (sum) $CHLall, by (region year month)
-	encode region, gen(reg)
-	gen country="CHL"
-save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
-*2
-use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta",  clear
-	collapse (sum) $ETHall, by (region year month)
-	encode region, gen(reg)
-	gen country="ETH"
-save "$user/$ETHdata/Data for analysis/ETHtmp.dta", replace
-* 3
-use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
-	encode region, gen(reg)	
-	gen country="GHA"
-save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
-* 4
-use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clear
-	rename orgunitlevel2 departement
-	collapse (sum) $HTIall, by (departement year month)
-	encode departement, gen(reg)
-	gen country="HTI"
-save "$user/$HTIdata/Data for analysis/HTItmp.dta", replace
-* 5
-use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
-	collapse (sum) $KZNall, by (dist year month rmonth)
-	drop rmonth
-	rename dist reg
-	gen country="KZN"
-save "$user/$KZNdata/Data for analysis/KZNtmp.dta", replace
-* 6
-use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
-	rename orgunitlevel2 Province
-	collapse (sum) $LAOall, by (Province year month)
-	encode Province, gen(reg)
-	gen country="LAO"
-save "$user/$LAOdata/Data for analysis/LAOtmp.dta", replace
-* 7
-u "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", clear
-	encode Deleg, gen(reg)	
-	gen country="MEX"
-save "$user/$MEXdata/Data for analysis/MEXtmp.dta", replace
-* 8
-use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
-	rename (orgunitlevel2 orgunitlevel3) (Province District)
-	collapse (sum) $NEPall, by (Dist year month)
-	encode Dist, gen(reg)
-	gen country="NEP"
-save "$user/$NEPdata/Data for analysis/NEPtmp.dta", replace
-* 9 
-u "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", clear 
-	encode region, gen(reg)
-	cap drop country
-	gen country="KOR"
-save "$user/$KORdata/Data for analysis/KORtmp.dta", replace
-* 10 
-u "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear
-	encode Province, gen(reg)	
-	gen country="THA"
-save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 ********************************************************************************
 	* Program for G-2 adjustment (call after xtreg)
 ********************************************************************************
@@ -128,6 +64,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		replace timeafter=0 if resumption==1
 
 	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
+
 ********************************************************************************
 	* Descriptives for table 1: average before and during Covid
 	* For sentinel services
@@ -200,7 +137,6 @@ putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
 		putexcel G`i'=pct_chg1
 		putexcel L`i'=pct_chg2
 		
-		
 		scalar drop _all
 	}
 
@@ -250,3 +186,4 @@ putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
 		* Fourier terms for seasonality adjustment: result in overfitted model
 		gen degrees=(rmonth/12)*360
 		fourier degrees, n(2)
+		* Stata package "Circular" is needed for Fourier transformation
