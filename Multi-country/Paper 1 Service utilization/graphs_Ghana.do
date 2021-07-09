@@ -31,8 +31,8 @@ save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("Ghana Outpatient Visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(40000)220000, labsize(vsmall))
+			graphregion(color(white)) title("Ghana outpatient visits (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(50000)250000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
 			
