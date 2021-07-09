@@ -21,7 +21,6 @@ global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_n
 * 1 CHILE (facility)
 
 u "$user/$CHLdata/Data for analysis/Chile_su_24months.dta", clear 
-
 local dl_modif
     foreach x of global droplist {
        cap confirm variable `x'
@@ -200,7 +199,70 @@ cap drop `dl_modif'
 
 save "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", replace 
 
+********************************************************************************
+* Collapse facility level datasets & create country codes
 
+*1
+use "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta",  clear
+	collapse (sum) $CHLall, by (region year month)
+	encode region, gen(reg)
+	gen country="CHL"
+save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
+*2
+use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
+	collapse (sum) $ETHall, by (region year month)
+	encode region, gen(reg)
+	gen country="ETH"
+save "$user/$ETHdata/Data for analysis/ETHtmp.dta", replace
+* 3
+use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
+	encode region, gen(reg)	
+	gen country="GHA"
+save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
+* 4
+use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clear
+	rename orgunitlevel2 departement
+	collapse (sum) $HTIall, by (departement year month)
+	encode departement, gen(reg)
+	gen country="HTI"
+save "$user/$HTIdata/Data for analysis/HTItmp.dta", replace
+* 5
+use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
+	collapse (sum) $KZNall, by (dist year month rmonth)
+	drop rmonth
+	rename dist reg
+	gen country="KZN"
+save "$user/$KZNdata/Data for analysis/KZNtmp.dta", replace
+* 6
+use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
+	rename orgunitlevel2 Province
+	collapse (sum) $LAOall, by (Province year month)
+	encode Province, gen(reg)
+	gen country="LAO"
+save "$user/$LAOdata/Data for analysis/LAOtmp.dta", replace
+* 7
+u "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", clear
+	encode Deleg, gen(reg)	
+	gen country="MEX"
+save "$user/$MEXdata/Data for analysis/MEXtmp.dta", replace
+* 8
+use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
+	rename (orgunitlevel2 orgunitlevel3) (Province District)
+	collapse (sum) $NEPall, by (Dist year month)
+	encode Dist, gen(reg)
+	gen country="NEP"
+save "$user/$NEPdata/Data for analysis/NEPtmp.dta", replace
+* 9 
+u "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", clear 
+	encode region, gen(reg)
+	cap drop country
+	gen country="KOR"
+save "$user/$KORdata/Data for analysis/KORtmp.dta", replace
+* 10 
+u "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear
+	encode Province, gen(reg)	
+	gen country="THA"
+save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 
 
 
