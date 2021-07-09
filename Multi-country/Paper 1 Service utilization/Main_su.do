@@ -23,6 +23,8 @@ global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
 global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 ********************************************************************************
 * Variables available in each country
+global sentinel opd_util del_util pnc_util art_util diab_util 
+
 global CHLall fp_util anc_util pnc_util er_util surg_util road_util mental_util 
 
 global ETHall fp_util anc_util del_util cs_util pnc_util  diarr_util pneum_util ///
@@ -62,14 +64,11 @@ global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_
 * Creates datasets for paper 1 analyses
 do "$dofiles/cr_su_01.do"
 
-* Creates multi country graphs
-do "$dofiles/cr_su_02.do"
-
-* Descriptives
-do "$dofiles/an_su_01.do"
-
 * Regression analyses 
 do "$dofiles/an_su_02.do"
+
+* Creates multi country graphs
+do "$dofiles/cr_su_02.do"
 
 * Country-specific graphs
 run "$dofiles/graphs_Chile.do"
