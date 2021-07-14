@@ -3,9 +3,9 @@
 * South Korea, Jan19 - Dec 2020 data
 
 * Call in dataset
-import delimited "/$user/$data/Raw data/SouthKorea_Jan19_Dec20_051421.csv", numericcols(3/400) clear
+import delimited "/$user/$data/Raw data/SouthKorea_Jan19_Dec20_071321.csv", numericcols(3/480) clear
 
-rename (ïorgunitlevel1 orgunitlevel2) (country region)
+rename (orgunitlevel1 orgunitlevel2) (country region)
 
 * Drop national total 
 drop if region=="total" | region ==""
