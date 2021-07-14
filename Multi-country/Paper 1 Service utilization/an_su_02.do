@@ -65,24 +65,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
 
-********************************************************************************
-	* Descriptives for table 1: average before and during Covid
-	* For sentinel services
-********************************************************************************	
-putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
-	local i = 29
-	putexcel A29="Average before and during Covid"
-		foreach x of global sentinel {
-			local i = `i'+1
-			putexcel A`i'="`x'"
-				cap confirm variable `x'
-				if _rc==0 {
-					su `x' if postCovid==0 
-						putexcel B`i'= `r(mean)'
-					su `x' if postCovid==1
-						putexcel C`i'= `r(mean)'
-					}
-		}
+
 ********************************************************************************
 	* Regression analysis: Level change during the first 6 months of the 
 	* pandemic and resumption in the last quarter of 2020
@@ -97,6 +80,9 @@ putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
 	xtset reg rmonth 
 
 	foreach var of global `c'all {
+		
+		assert rmonth==24 // ensures we have 24 months od data for each indicator
+		
 		local i = `i'+1
 		xtreg `var' postCovid rmonth timeafter i.season resumption, i(reg) fe cluster(reg) 		
 		mat m1= r(table) 
@@ -187,3 +173,22 @@ putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
 		gen degrees=(rmonth/12)*360
 		fourier degrees, n(2)
 		* Stata package "Circular" is needed for Fourier transformation
+
+********************************************************************************
+	* Descriptives for table 1: average before and during Covid
+	* For sentinel services
+********************************************************************************	
+putexcel set "$analysis/Results/Tables/Results JUL8.xlsx", sheet("`c'")  modify
+	local i = 29
+	putexcel A29="Average before and during Covid"
+		foreach x of global sentinel {
+			local i = `i'+1
+			putexcel A`i'="`x'"
+				cap confirm variable `x'
+				if _rc==0 {
+					su `x' if postCovid==0 
+						putexcel B`i'= `r(mean)'
+					su `x' if postCovid==1
+						putexcel C`i'= `r(mean)'
+					}
+		} 
