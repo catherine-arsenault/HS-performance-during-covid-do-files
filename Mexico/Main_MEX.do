@@ -6,8 +6,6 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
 
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
 
 ********************************************************************************
 * Creation do files
@@ -54,7 +52,7 @@ do "$dofiles/cr_MEX_13.do"
 * Update december 2020 data
 do "$dofiles/cr_MEX_14.do"
 
-* Final data for January-Dec2020 ART, this completes the 24-month data 
+* Adding data for ART, editing measles vaccine.
 do "$dofiles/cr_MEX_15.do"
 
 
