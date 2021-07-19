@@ -1,12 +1,12 @@
 * HS performance during Covid
-* April 8, 2021
+* July 16, 2021
 * Mexico - IMSS, update Jan20-Dec20 ART data 
-* MK Kim 
+* MK Kim, C.Arsenault
 
 clear all
 set more off	
 
-// Received by Svetlana April 8, 2021
+// Received April 8, 2021
 import excel using "$user/$data/Raw/ART_2020_data_edit.xlsx", sheet(Data) firstrow clear
 
 replace Deleg= "D.F. Norte" if Deleg=="CDMX Norte"
@@ -36,3 +36,38 @@ rename Delegación Delegation
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta"
 drop _merge
 save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
+
+* Correcting measles vaccination data, Jul 16, 2021
+
+drop measles_qual*
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
+
+import excel using "$user/$data/Raw/26.Indic26_31_Vacunas2019.xlsx", sheet("SRP_formatted") firstrow clear
+drop E
+drop if year==.
+egen yrmo= concat(year month)
+drop year month
+reshape wide srp, i(Deleg) j(yrmo) string
+
+rename(srp20191 srp201910 srp201911 srp201912 srp20192 srp20193 srp20194 srp20195 ///
+srp20196 srp20197 srp20198 srp20199 ) ///
+(measles_qual1_19 measles_qual10_19 measles_qual11_19 measles_qual12_19 ///
+measles_qual2_19 measles_qual3_19 measles_qual4_19 measles_qual5_19 ///
+measles_qual6_19 measles_qual7_19 measles_qual8_19 measles_qual9_19 )
+
+save "$user/$data/Data for analysis/tmp.dta", replace
+
+import excel using "$user/$data/Raw/Vacunas_Aplicadas_Dosis_Deleg_Harvard_202001_202012.xlsx", sheet("SRP_formatted") firstrow clear
+reshape wide srp , i(Deleg) j(date) string
+rename (srp202001-srp202012) ///
+(measles_qual1_20 measles_qual2_20 measles_qual3_20 measles_qual4_20 measles_qual5_20 ///
+measles_qual6_20 measles_qual7_20 measles_qual8_20 measles_qual9_20 measles_qual10_20 ///
+measles_qual11_20 measles_qual12_20)
+
+merge 1:1 Delegation using "$user/$data/Data for analysis/tmp.dta"
+drop _merge 
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta"
+drop _merge
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
+
+rm "$user/$data/Data for analysis/tmp.dta"
