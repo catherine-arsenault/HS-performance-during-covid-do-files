@@ -68,6 +68,13 @@ merge 1:1 Delegation using "$user/$data/Data for analysis/tmp.dta"
 drop _merge 
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta"
 drop _merge
+
+* Correction to cervical cancer screening in Sonora
+* May and April were inverted
+replace cerv_util4_20 = 1656 if Deleg=="Sonora"
+replace cerv_util5_20 = 268 if Deleg=="Sonora"
+replace cerv_util6_20 = 739 if Deleg=="Sonora"
+
 save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
 
 rm "$user/$data/Data for analysis/tmp.dta"

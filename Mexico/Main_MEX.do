@@ -52,7 +52,7 @@ do "$dofiles/cr_MEX_13.do"
 * Update december 2020 data
 do "$dofiles/cr_MEX_14.do"
 
-* Adding data for ART, editing measles vaccine.
+* Adding data for ART, editing measles vaccine, correction to cervical cancer (July 21, 2021)
 do "$dofiles/cr_MEX_15.do"
 
 
