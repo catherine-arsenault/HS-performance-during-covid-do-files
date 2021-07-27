@@ -42,7 +42,7 @@ global HTIall opd_util fp_util anc_util del_util pnc_util vacc_qual diab_util //
 global KZNall anc_util del_util cs_util pnc_util diarr_util pneum_util malnu_util ///
 	   art_util opd_util ipd_util road_util diab_util cerv_qual	tbscreen_qual ///
 	   tbdetect_qual tbtreat_qual vacc_qual bcg_qual pent_qual measles_qual ///
-	   pneum_qual rota_qual   
+	   pneum_qual rota_qual  trauma_util  icu_util
 		 		  
 global LAOall opd_util ipd_util fp_util anc_util del_util cs_util pnc_util ///
 	   bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util road_util

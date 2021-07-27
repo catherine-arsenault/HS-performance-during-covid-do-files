@@ -10,7 +10,7 @@
 global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_num ///
 				ipd_mort_num sb_mort_denom livebirths_denom sti_util kmc_qual ///
                 totalipd_mort_num  tbnum_qual tbdenom_qual ///
-				tt_qual trauma_util  icu_mort_num trauma_mort_num icu_util ///
+				tt_qual  icu_mort_num trauma_mort_num icu_util ///
 				fp_perm_util fp_la_util breast_denom2020 breast_denom2019 hospit_covid ///
 				hospit_pending hospit_negative death_covid death_negative ///
 				death_pending  diab_qual_num hyper_qual_num ///
