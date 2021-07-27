@@ -264,8 +264,44 @@ u "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clea
 	gen country="THA"
 save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 
+********************************************************************************
+	* Creates variables for analyses
+********************************************************************************
+foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
+	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 
+		gen rmonth= month if year==2019
+		replace rmonth = month+12 if year ==2020
+		sort reg rmonth
+		
+		gen season = .
+		recode season (.=1) if ( month>=3 & month<=5  )
+		recode season (.=2) if ( month>=6 & month<=8  )
+		recode season (.=3) if ( month>=9 & month<=11 )
+		recode season (.=4) if inlist(month, 1, 2, 12)             
+		la var season "Season"
+		la def season 1 "Spring" 2 "Summer" 3 "Fall" 4 "Winter"
+		la val season season
 
+		* "Temporary" Covid period 
+		gen postCovid=. 
+		replace postCovid = rmonth>=16 & rmonth<=21 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
+		replace postCovid = rmonth>=15 & rmonth<=20 if inlist(country, "ETH", "NEP") 
+		* Resumption period 
+		gen resumption=. 
+		replace resumption = rmonth>=22 & rmonth<=24 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
+		replace resumption = rmonth>=21 & rmonth<=24 if inlist(country, "ETH", "NEP") 
+		
+		* Slope change excludes Dec 2020
+		gen timeafter= . 
+		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
+		replace timeafter= rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
+		replace timeafter=0 if timeafter<0
+		replace timeafter=0 if resumption==1
+
+	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
+
+}
 
 
