@@ -85,7 +85,7 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
-
+	drop cerv_qual
 save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace 
 ********************************************************************************
 * 5 KZN, SA (facility)
