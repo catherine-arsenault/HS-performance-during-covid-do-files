@@ -60,16 +60,20 @@ global KORall anc_util del_util cs_util diarr_util pneum_util diab_util hyper_ut
 	   art_util mental_util opd_util er_util ipd_util 
 
 global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_util  		
-   
+  
+******************************************************************************** 
 * Creates datasets for paper 1 analyses
 do "$dofiles/cr_su_01.do"
 
+********************************************************************************
 * Regression analyses 
 do "$dofiles/an_su_02.do"
 
+********************************************************************************
 * Creates multi country graphs
 do "$dofiles/cr_su_02.do"
 
+********************************************************************************
 * Country-specific graphs
 run "$dofiles/graphs_Chile.do"
 run "$dofiles/graphs_Ethiopia.do"
