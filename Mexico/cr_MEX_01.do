@@ -156,9 +156,8 @@ egen pent_qual3_20 =rowtotal ( Indic26*mar20 ) , m
 egen pent_qual4_20 =rowtotal (Indic26*abr20     ) , m
 egen pent_qual5_20 =rowtotal (Indic26*may20) , m
 drop Indic26_penta*
-* BCG - unique dose
-drop Indic27_BCG_P_ene19-Indic27_BCG_A_dic19
-rename (Indic27_BCG_U_ene19-Indic27_BCG_U_may20) (bcg_qual1_19 ///
+/* BCG - unique dose
+rename (Indic27_BCG_U_ene19-Indic27_BCG_U_dic19 Indic27_BCG_U_ene20-Indic27_BCG_U_may20) (bcg_qual1_19 ///
  bcg_qual2_19 ///
  bcg_qual3_19 ///
  bcg_qual4_19 ///
@@ -175,7 +174,25 @@ rename (Indic27_BCG_U_ene19-Indic27_BCG_U_may20) (bcg_qual1_19 ///
  bcg_qual3_20 ///
  bcg_qual4_20 ///
  bcg_qual5_20 )
-
+ */
+* BCG any dose
+egen bcg_qual1_19 =rowtotal ( Indic27*ene19) , m
+egen bcg_qual2_19 =rowtotal (Indic27*feb19 ) , m
+egen bcg_qual3_19 =rowtotal ( Indic27*mar19) , m
+egen bcg_qual4_19 =rowtotal ( Indic27*abr19), m
+egen bcg_qual5_19 =rowtotal (Indic27*may19 ) , m
+egen bcg_qual6_19 =rowtotal ( Indic27*jun19) , m
+egen bcg_qual7_19 =rowtotal ( Indic27*jul19) , m
+egen bcg_qual8_19 =rowtotal ( Indic27*ago19) , m
+egen bcg_qual9_19 =rowtotal ( Indic27*sept19) , m
+egen bcg_qual10_19 =rowtotal (Indic27*oct9) , m
+egen bcg_qual11_19 =rowtotal ( Indic27*nov19) , m
+egen bcg_qual12_19 =rowtotal (Indic27*dic19 ) , m
+egen bcg_qual1_20 =rowtotal ( Indic27*ene20) , m
+egen bcg_qual2_20 =rowtotal (Indic27*feb20 ) , m
+egen bcg_qual3_20 =rowtotal ( Indic27*mar20) , m
+egen bcg_qual4_20 =rowtotal ( Indic27*abr20), m
+egen bcg_qual5_20 =rowtotal (Indic27*may20 ) , m
 drop Indic27*
 
 * MCV
