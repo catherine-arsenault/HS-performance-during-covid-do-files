@@ -35,7 +35,27 @@ save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(50000)250000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
+* Penta		
+		u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear 
+			qui xtreg pent_qual rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_pent_qual
+			qui xtreg pent_qual rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_pent_qual 
 			
+			collapse pent_qual linear_pent_qual season_pent_qual, by(rmonth)
+
+			twoway (scatter pent_qual rmonth, msize(vsmall)  sort) ///
+			(line linear_pent_qual rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_pent_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit pent_qual rmonth if rmonth<16, lcolor(green)) ///
+			(lfit pent_qual rmonth if rmonth>=16 & rmonth<=21, lcolor(red)), ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title("Ghana pentavalent vaccinations (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(1000)7000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_pent_qual.pdf", replace			
 * Csections	
 	u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear 	
 			qui xtreg cs_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction

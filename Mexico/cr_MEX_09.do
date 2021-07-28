@@ -90,17 +90,8 @@ egen pent_qual12_20 =rowtotal (Indic26_penta_dic20 Indic26_pentaacel_dic20) , m
 drop Indic26_penta*
 
 * BCG 
-egen bcg_qual10_20 =rowtotal(Indic27_BCG_U_oct20 Indic27_BCG_P_oct20 ///
-							 Indic27_BCG_S_oct20 Indic27_BCG_T_oct20 ///
-							 Indic27_BCG_R_oct20 Indic27_BCG_A_oct20) , m
-							 
-egen bcg_qual11_20 =rowtotal(Indic27_BCG_U_nov20 Indic27_BCG_P_nov20 ///
-							 Indic27_BCG_S_nov20 Indic27_BCG_T_nov20 ///
-							 Indic27_BCG_R_nov20 Indic27_BCG_A_nov20 ), m
-							 
-egen bcg_qual12_20 =rowtotal(Indic27_BCG_U_dic20 Indic27_BCG_P_dic20 ///
-							 Indic27_BCG_S_dic20 Indic27_BCG_T_dic20 ///
-							 Indic27_BCG_R_dic20 Indic27_BCG_A_dic20 ), m
+rename (Indic27_BCG_U_oct20 Indic27_BCG_U_nov20 Indic27_BCG_U_dic20 ) ///
+(bcg_qual10_20 bcg_qual11_20 bcg_qual12_20 )
 drop Indic27_BCG*
 
 * MCV 

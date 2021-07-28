@@ -42,7 +42,7 @@ global HTIall opd_util fp_util anc_util del_util pnc_util vacc_qual diab_util //
 global KZNall anc_util del_util cs_util pnc_util diarr_util pneum_util malnu_util ///
 	   art_util opd_util ipd_util road_util diab_util cerv_qual	tbscreen_qual ///
 	   tbdetect_qual tbtreat_qual vacc_qual bcg_qual pent_qual measles_qual ///
-	   pneum_qual rota_qual   
+	   pneum_qual rota_qual  trauma_util  
 		 		  
 global LAOall opd_util ipd_util fp_util anc_util del_util cs_util pnc_util ///
 	   bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util road_util
@@ -60,16 +60,20 @@ global KORall anc_util del_util cs_util diarr_util pneum_util diab_util hyper_ut
 	   art_util mental_util opd_util er_util ipd_util 
 
 global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_util  		
-   
+  
+******************************************************************************** 
 * Creates datasets for paper 1 analyses
 do "$dofiles/cr_su_01.do"
 
+********************************************************************************
 * Regression analyses 
 do "$dofiles/an_su_02.do"
 
+********************************************************************************
 * Creates multi country graphs
 do "$dofiles/cr_su_02.do"
 
+********************************************************************************
 * Country-specific graphs
 run "$dofiles/graphs_Chile.do"
 run "$dofiles/graphs_Ethiopia.do"
