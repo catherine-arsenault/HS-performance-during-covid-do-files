@@ -70,7 +70,7 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
- drop surg_util
+ drop surg_util malnu_util // too many outliers for surgeries, too few visits for malnutrition
 save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", replace 	 
 	 
 ********************************************************************************
@@ -85,7 +85,7 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
-	drop cerv_qual
+	drop cerv_qual // too few visits
 save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace 
 ********************************************************************************
 * 5 KZN, SA (facility)
@@ -100,7 +100,7 @@ local dl_modif
  cap drop `dl_modif'
 
  rename (kmcn_qual sam_util anc1_util)  (kmc_qual malnu_util anc_util)
- 
+ drop malnu_util // too few visits
 save "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
 
 collapse (count) anc_util-rota_qual, by (year month)
