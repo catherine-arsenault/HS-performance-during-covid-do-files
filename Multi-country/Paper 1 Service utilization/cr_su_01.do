@@ -1,8 +1,8 @@
 /* 
   Health system performance during Covid-19. Created by Catherine Arsenault
   Paper title: Effect of Covid-19 on health service utilization in 10 countries
-  This do file creates final datasets for the service utilisation paper, standardizesand
-  variable names and creates an  appendix to assess completeness 
+  This do file creates final datasets for the service utilisation paper, 
+  standardizes variable names and creates an  appendix to assess completeness 
   (in countries with facility-level data).
   */
 
