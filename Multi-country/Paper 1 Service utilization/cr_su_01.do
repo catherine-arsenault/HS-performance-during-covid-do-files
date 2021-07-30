@@ -31,6 +31,15 @@ local dl_modif
  cap drop `dl_modif'
  
 save "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", replace 
+* Completeness appendix
+collapse (count) mental_util-er_util, by (year month)		  
+foreach x of global all {
+	cap egen max`x'=max(`x')
+	cap gen completeness_`x'= `x'/max`x'
+	cap drop max`x'
+}		
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(CHL) firstrow(variable)  
+	
 ********************************************************************************
 * 2 ETHIOPIA (facility/woreda)
 
@@ -48,7 +57,7 @@ local dl_modif
  rename sam_util malnu_util
 save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", replace 
 
-* Creates appendix to assess completeness
+* Completeness appendix
 collapse (count) fp_util-tbdetect_qual , by (year month)
 			  
 foreach x of global all {
@@ -56,7 +65,7 @@ foreach x of global all {
 	cap gen completeness_`x'= `x'/max`x'
 	cap drop max`x'
 }		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(Ethiopia) firstrow(variable) replace  
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(ETH) firstrow(variable) replace  
 
 ********************************************************************************
 * 3 GHANA (region)
@@ -87,6 +96,16 @@ local dl_modif
  cap drop `dl_modif'
 	drop cerv_qual // too few visits
 save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace 
+* Completeness appendix
+collapse (count) opd_util-hyper_util, by (year month)		  
+foreach x of global all {
+	cap egen max`x'=max(`x')
+	cap gen completeness_`x'= `x'/max`x'
+	cap drop max`x'
+}		
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(HTI) firstrow(variable)  
+	
+
 ********************************************************************************
 * 5 KZN, SA (facility)
 use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear 
@@ -102,9 +121,8 @@ local dl_modif
  rename (kmcn_qual sam_util anc1_util)  (kmc_qual malnu_util anc_util)
  drop malnu_util // too few visits
 save "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
-
-collapse (count) anc_util-rota_qual, by (year month)
-			  
+* Completeness appendix
+collapse (count) anc_util-rota_qual, by (year month)		  
 foreach x of global all {
 	cap egen max`x'=max(`x')
 	cap gen completeness_`x'= `x'/max`x'
@@ -125,15 +143,14 @@ local dl_modif
  cap drop `dl_modif'
  rename fp_sa_util fp_util 
 save "$user/$LAOdata/Data for analysis/Lao_su_24months_for_analyses.dta", replace
-
-collapse (count) fp_util-road_util , by (year month)
-			  
+* Completeness appendix
+collapse (count) fp_util-road_util , by (year month)			  
 foreach x of global LAOall {
 	cap egen max`x'=max(`x')
 	cap gen completeness_`x'= `x'/max`x'
 	cap drop max`x'
 }		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(Lao) firstrow(variable)  
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(LAO) firstrow(variable)  
 
 ********************************************************************************
 * 7 MEXICO (region)
@@ -161,15 +178,14 @@ local dl_modif
 cap drop `dl_modif'
 rename fp_sa_util fp_util 
 save "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta", replace
-
-collapse (count) fp_util-pneum_qual , by (year month)
-			  
+* Completeness appendix
+collapse (count) fp_util-pneum_qual , by (year month)		  
 foreach x of global all {
 	cap egen max`x'=max(`x')
 	cap gen completeness_`x'= `x'/max`x'
 	cap drop max`x'
 }		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(Nepal) firstrow(variable)  
+export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(NEP) firstrow(variable)  
 
 ********************************************************************************
 * 9 SOUTH KOREA (region)
