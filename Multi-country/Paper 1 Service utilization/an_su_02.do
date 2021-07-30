@@ -97,16 +97,11 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 	
-	putexcel set "$analysis/Results/Tables/Relative %drop by country JUL26.xlsx", sheet("`c'")  modify
-	putexcel A1 = "service" B1="Avg_preCovid" 
-	
-	putexcel C1= "pct_change" D1="LCL_pct_change" E1="UCL_pct_change" 
+	putexcel set "$analysis/Results/Tables/Relative %drop by country JUL26.xlsx", sheet("`c'")  replace
+	putexcel A1 = "service" B1="Avg_preCovid" C1= "pct_change" D1="LCL_pct_change" E1="UCL_pct_change" 
 	local i = 1
-
 	xtset reg rmonth 
-
-	foreach var of global `c'all {
-		
+	foreach var of global `c'all {	
 		local i = `i'+1
 		xtreg `var' postCovid rmonth timeafter i.season resumption, i(reg) fe cluster(reg) 		
 		mat m1= r(table) 
@@ -136,11 +131,48 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		putexcel F`i'="`c'"
 		scalar drop _all
 	}
-
 }
-
 ********************************************************************************
+	* Resumption by quarter 4 2020 for the heatmap
+********************************************************************************		
+foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
+
+	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
+	putexcel set "$analysis/Results/Tables/Relative % resumption JUL26.xlsx", sheet("`c'")  replace
+	putexcel A1 = "service" B1="Avg_preCovid" C1= "pct_remain" D1="LCL_pct_remain" E1="UCL_pct_remain" 
+	local i = 1
+	xtset reg rmonth 
+	foreach var of global `c'all {
+		local i = `i'+1
+		xtreg `var' postCovid rmonth timeafter i.season resumption, i(reg) fe cluster(reg) 		
+		mat m1= r(table) 
+		mat b1 = m1[1, 1...]'
+		scalar beta2 = b1[8,1]
+		putexcel A`i' = "`var'"
+		su `var' if postCovid==0 // average over the pre-Covid period
+		scalar avg = r(mean) 
+		putexcel B`i' = `r(mean)'
+		scalar pct_remain= (beta2/avg)*100
+		putexcel C`i'=pct_remain
+		* Call program to adjust for G-2 degrees of freedom
+		adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
+		
+		mat cil = adjci_l[1, 1...]'
+		scalar lcl2= cil[8,1]
+		scalar lcl_pct_remain=(lcl2/avg)*100
+		putexcel D`i'=lcl_pct_remain
+		
+		mat ciu= adjci_u[1, 1...]'
+		scalar ucl2 = ciu[8,1]
+		scalar ucl_pct_remain=(ucl2/avg)*100
+		putexcel E`i'=ucl_pct_remain
+		putexcel F`i'="`c'"	
+		scalar drop _all
+	}
+}		   
+********************************************************************************	
 	* Forest plots
+	
 ********************************************************************************		
 	import excel using "$analysis/Results/Tables/Relative %drop by country JUL26.xlsx", sheet(CHL) firstrow clear
 	save "$analysis/Results/Tables/tmp.dta", replace
@@ -165,6 +197,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		   nobox force graphregion(color(white)) label(namevar=country) effect(Percent change from pre-Covid level) ///
 		   xlabel(-100, -50, 0, 50, 100) xtick (-100, -50, 0, 50, 100) ciopt(lcolor(blue) lwidth(thin)) ///
 		   pointopt(msize(tiny) mcolor(blue)) title("Summative measures of health system contacts", size(vsmall))
+		   graph export "$analysis/Results/Graphs/Forest plot-summative.pdf", replace
 	********************************************************************************
 	* Reproductive and maternal
 	u "$analysis/Results/Tables/tmp.dta", clear
@@ -180,6 +213,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		   nobox force graphregion(color(white)) label(namevar=country) effect(Percent change from pre-Covid level) ///
 		   xlabel(-100, -50, 0, 50, 100) xtick (-100, -50, 0, 50, 100) ciopt(lcolor(pink) lwidth(thin)) ///
 		   pointopt(msize(tiny) mcolor(pink)) title("Reproductive and maternal health services", size(vsmall))
+		   graph export "$analysis/Results/Graphs/Forest plot-rep maternal.pdf", replace
 	********************************************************************************
 	* Child care 
 	u "$analysis/Results/Tables/tmp.dta", clear
@@ -195,6 +229,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		   nobox force graphregion(color(white)) label(namevar=country) effect(Percent change from pre-Covid level) ///
 		   xlabel(-100, -50, 0, 50, 100) xtick (-100, -50, 0, 50, 100) ciopt(lcolor(green) lwidth(thin)) ///
 		   pointopt(msize(tiny) mcolor(green)) title("Child health services", size(vsmall))
+		   graph export "$analysis/Results/Graphs/Forest plot-child care.pdf", replace
 	********************************************************************************
 	* Vaccinations 
 	u "$analysis/Results/Tables/tmp.dta", clear
@@ -210,6 +245,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		   nobox force graphregion(color(white)) label(namevar=country) effect(Percent change from pre-Covid level) ///
 		   xlabel(-100, -50, 0, 50, 100) xtick (-100, -50, 0, 50, 100) ciopt(lcolor(orange) lwidth(thin)) ///
 		   pointopt(msize(tiny) mcolor(orange)) title("Child vaccinations", size(vsmall)) 
+		    graph export "$analysis/Results/Graphs/Forest plot-child vaccines.pdf", replace
 	 ********************************************************************************  	   
 	* HIV TB Malaria
 	u "$analysis/Results/Tables/tmp.dta", clear
@@ -227,6 +263,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		   nobox force graphregion(color(white)) label(namevar=country) effect(Percent change from pre-Covid level) ///
 		   xlabel(-100, -50, 0, 50, 100) xtick (-100, -50, 0, 50, 100) ciopt(lcolor(red) lwidth(thin)) ///
 		   pointopt(msize(tiny) mcolor(red)) title("HIV, TB and malaria services", size(vsmall)) texts(75)
+		   graph export "$analysis/Results/Graphs/Forest plot-HIV TB.pdf", replace
 	********************************************************************************  	   
 	* Chronic diseases and accidents
 	u "$analysis/Results/Tables/tmp.dta", clear
@@ -244,12 +281,32 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		   nobox force graphregion(color(white)) label(namevar=country) effect(Percent change from pre-Covid level) ///
 		   xlabel(-100, -50, 0, 50, 100) xtick (-100, -50, 0, 50, 100) ciopt(lcolor(purple) lwidth(thin)) ///
 		   pointopt(msize(tiny) mcolor(purple)) title("Chronic diseases and accidents", size(vsmall))
+	  graph export "$analysis/Results/Graphs/Forest plot-chronic.pdf", replace
+
+********************************************************************************		   
+* 	Heatmap
+********************************************************************************
+	import excel using "$analysis/Results/Tables/Relative % resumption JUL26.xlsx", sheet(CHL) firstrow clear
+	save "$analysis/Results/Tables/tmp.dta", replace
+	foreach c in  ETH GHA HTI KZN LAO MEX NEP KOR THA {
+		import excel using "$analysis/Results/Tables/Relative % resumption JUL26.xlsx", sheet(`c') firstrow clear
+		append using "$analysis/Results/Tables/tmp.dta"
+		save "$analysis/Results/Tables/tmp.dta", replace
+	}
+	rename F country
+	sort service country
+	reshape wide Avg_preCovid pct_remain LCL_pct_remain UCL_pct_remain, i(service) j(country) string
+	save "$analysis/Results/Tables/tmp.dta", replace   
+		   
 	
-		   
-		   
-		   
-		   
-		   
+	
+	
+	
+	
+	
+	
+	
+	
 /*
 		gen postCovid=.
 		replace postCovid = rmonth>14 if inlist(country, "ETH", "NEP") // remove last month?
