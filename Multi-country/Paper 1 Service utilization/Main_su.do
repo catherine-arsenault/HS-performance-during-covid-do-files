@@ -32,14 +32,14 @@ global ETHall fp_util anc_util del_util cs_util pnc_util  diarr_util pneum_util 
 	   rota_qual art_util opd_util er_util ipd_util  road_util 
 
 global GHAall fp_util anc_util del_util cs_util pnc_util diarr_util ///
-       pneum_util malnu_util vacc_qual bcg_qual pent_qual ///
+       pneum_util vacc_qual bcg_qual pent_qual ///
 	   measles_qual opv3_qual pneum_qual rota_qual opd_util ipd_util road_util ///
 	   diab_util hyper_util malaria_util tbdetect_qual 
  
 global HTIall opd_util fp_util anc_util del_util pnc_util vacc_qual diab_util ///
-	   hyper_util cerv_qual
+	   hyper_util 
 			  
-global KZNall anc_util del_util cs_util pnc_util diarr_util pneum_util malnu_util ///
+global KZNall anc_util del_util cs_util pnc_util diarr_util pneum_util  ///
 	   art_util opd_util ipd_util road_util diab_util cerv_qual	tbscreen_qual ///
 	   tbdetect_qual tbtreat_qual vacc_qual bcg_qual pent_qual measles_qual ///
 	   pneum_qual rota_qual  trauma_util  
