@@ -31,6 +31,28 @@
 			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(50000)300000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/MEX_opd_util.pdf", replace
+
+* Pentavalent
+			u  "$user/$MEXdata/Data for analysis/MEXtmp.dta", clear 
+			qui xtreg pent_qual rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_pent_qual
+			qui xtreg pent_qual rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_pent_qual 
 			
+			collapse pent_qual linear_pent_qual season_pent_qual, by(rmonth)
+
+			twoway (scatter pent_qual rmonth, msize(vsmall)  sort) ///
+			(line linear_pent_qual rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_pent_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit pent_qual rmonth if rmonth<16, lcolor(green)) ///
+			(lfit pent_qual rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit pent_qual rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xline(21, lpattern(dash) lcolor(gs10)) xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title("Mexico (IMSS) pentavalent vaccinations (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(500)3000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/MEX_pent_qual.pdf", replace
+
 
 rm "$user/$MEXdata/Data for analysis/MEXtmp.dta"
