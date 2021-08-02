@@ -44,7 +44,8 @@ u "$user/$KORdata/Data for analysis/KORtmp.dta", clear
 			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_opd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit opd_util rmonth if rmonth<16, lcolor(green)) ///
-			(lfit opd_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)), ///
+			(lfit opd_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit opd_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
@@ -52,6 +53,29 @@ u "$user/$KORdata/Data for analysis/KORtmp.dta", clear
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(500000)4500000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/KOR_opd_util.pdf", replace
+
+* Diabetes		
+			u "$user/$KORdata/Data for analysis/KORtmp.dta", clear
+			qui xtreg diab_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_diab_util
+			qui xtreg diab_util rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_diab_util 
+			
+			collapse diab_util linear_diab_util season_diab_util, by(rmonth)
+
+			twoway (scatter diab_util rmonth, msize(vsmall)  sort) ///
+			(line linear_diab_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_diab_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit diab_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit diab_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit diab_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title("South Korea diabetes visits (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(25000)250000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/KOR_diab_util.pdf", replace
 			
 * Hypertension
 u "$user/$KORdata/Data for analysis/KORtmp.dta", clear
