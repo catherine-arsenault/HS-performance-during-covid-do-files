@@ -27,7 +27,8 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_opd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit opd_util rmonth if rmonth<15, lcolor(green)) ///
-			(lfit opd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)), ///
+			(lfit opd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+				(lfit opd_util rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
@@ -57,7 +58,30 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/NEP_pent_qual.pdf", replace
-				
+
+* Diabetes			
+			u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
+			qui xtreg diab_util rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_diab_util
+			qui xtreg diab_util rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_diab_util 
+			
+			collapse diab_util linear_diab_util season_diab_util, by(rmonth)
+
+			twoway (scatter diab_util rmonth, msize(vsmall)  sort) ///
+			(line linear_diab_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_diab_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit diab_util rmonth if rmonth<15, lcolor(green)) ///
+			(lfit diab_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+				(lfit diab_util rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title(" Nepal diabetes visits", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)800, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/NEP_diab_util.pdf", replace
+
 * Deliveries
 		u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
 			qui xtreg del_util rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction

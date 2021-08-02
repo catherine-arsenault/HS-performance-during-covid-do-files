@@ -21,7 +21,8 @@
 			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_opd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit opd_util rmonth if rmonth<15, lcolor(green)) ///
-			(lfit opd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)), ///
+			(lfit opd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+			(lfit opd_util rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
@@ -42,7 +43,8 @@
 			(line linear_pent_qual rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_pent_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit pent_qual rmonth if rmonth<15, lcolor(green)) ///
-			(lfit pent_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)), ///
+			(lfit pent_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+			(lfit pent_qual rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
