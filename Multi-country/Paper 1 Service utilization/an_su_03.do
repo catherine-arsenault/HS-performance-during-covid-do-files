@@ -30,7 +30,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	cap qui xtreg `s' rmonth i.season if postCovid==0 & resumption==0, i(reg) fe cluster(reg) // linear prediction
 		//postCovid, timeafter and resumption drop out of the pre-period regression
 		cap predict pre_`s'
-	cap qui xtreg `s' postCovid rmonth timeafter i.season if postCovid==1 | resumption==1, i(reg) fe cluster(reg) // linear prediction
+	cap qui xtreg `s' rmonth i.season if postCovid==1 | resumption==1, i(reg) fe cluster(reg) // linear prediction
 		//Include the distinction beteen postCovid and resumption period? Resumption drops out
 		cap predict post_`s'				
 			
