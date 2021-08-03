@@ -34,14 +34,14 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 	
 	putexcel set "$analysis/Appendices/Country profiles AUG03.xlsx", sheet("`c'")  modify
-	putexcel A1= "`c'" B1="Nb of units" F1="Pandemic impact"
+	putexcel A1= "`c'" B1="Nb of units" G1="Pandemic impact" O1="Potential resumption period"
 	putexcel A2= "Health service" B2="Average over the pre-Covid period" 
-	putexcel C2="Avg monthly change before the pandemic" D2="LCL" E2="UCL" F2="p-value"
-	putexcel G2= "Level change due to COVID-19" H2="LCL"  I2="UCL" J2="p-value"
-	putexcel K2="Avg monthly change during the pandemic" L2="LCL" M2="UCL" N2="p-value"
-	putexcel O2="Remaining level change at the end of 2020" P2="LCL" Q2="UCL" R2="p-value"
+	putexcel C2="Avg monthly change before the pandemic" C3="Coeff" D3="LCL" E3="UCL" F3="p-value"
+	putexcel G2= "Level change due to COVID-19" G3="Coeff" H3="LCL"  I3="UCL" J3="p-value"
+	putexcel K2="Avg monthly change during the pandemic" K3="Coeff" L3="LCL" M3="UCL" N3="p-value"
+	putexcel O2="Remaining level change at the end of 2020" O3="Coeff" P3="LCL" Q3="UCL" R3="p-value"
 	
-	local i = 2
+	local i = 3
 
 	xtset reg rmonth 
 
