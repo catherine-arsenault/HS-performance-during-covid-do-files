@@ -60,7 +60,8 @@ egen pent_qual9_20 =rowtotal (Indic26_penta*sept20) , m
 drop Indic26_penta*
 
 * BCG 
-rename Indic27_BCG_U_sept20  bcg_qual9_20 
+egen bcg_qual9_20 =rowtotal(Indic27_BCG_U_sept20 Indic27_BCG_P_sept20 Indic27_BCG_S_sept20 Indic27_BCG_T_sept20 Indic27_BCG_R_sept20 Indic27_BCG_A_sept20) , m
+*rename Indic27_BCG_U_sept20  bcg_qual9_20 
 drop Indic27_BCG*
 
 * MCV 
