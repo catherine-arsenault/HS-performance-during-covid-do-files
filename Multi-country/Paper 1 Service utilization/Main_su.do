@@ -23,7 +23,6 @@ global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
 global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 ********************************************************************************
 * Variables available in each country
-global sentinel opd_util del_util pnc_util art_util diab_util 
 
 global CHLall fp_util anc_util pnc_util er_util surg_util road_util mental_util 
 
