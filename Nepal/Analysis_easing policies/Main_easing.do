@@ -3,12 +3,16 @@
 * Main do file
 * Created by Catherine Arsenault and Neena Kappoor
 
-global user "/Users/acatherine/Dropbox (Harvard University)"
-*global user "/Users/neenakapoor/Dropbox (Harvard University)"
+*global user "/Users/acatherine/Dropbox (Harvard University)"
+global user "/Users/nek096/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
-global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
-*global dofiles "/Users/neenakapoor/Desktop/HS-performance-during-covid-do-files/Nepal"
-global analysis "/QuEST Network/Core Research/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal"
+*global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
+global dofiles "/Users/nek0906/Desktop/HS-performance-during-covid-do-files/Nepal"
+global analysis "SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Country-specific papers/Nepal/Policy removal"
+
+**********************************************************************
+*Cleans data for months used in this analysis 
+do "$dofiles/Analysis_easing policies/clean_easing.do"
 
 
 **********************************************************************
