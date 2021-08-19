@@ -112,7 +112,6 @@ local i= 2
 	}
 drop *_report *_sum *_mean
 
-
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
@@ -127,27 +126,7 @@ forval i= 1/12 {
 	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & del_util`i'_19!=.	
 	replace sb_mort_num`i'_20 = 0     if sb_mort_num`i'_20== . & del_util`i'_20!=.
 }
-/****************************************************************
-         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
-	               AND SET THEM TO MISSING 
-***************************************************************** 
-Identifying extreme outliers over the period. Any value that is greater than 
-3.5SD from the mean  trend is set to missing.This is only applied if the mean 
-of the series is greater or equal to 1. This technique avoids flagging as 
-outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
-common for mortality indicators.  */
-foreach x of global all {
-	egen rowmean`x'= rowmean(`x'*)
-	egen rowsd`x'= rowsd(`x'*)
-	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
-	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
-		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
-		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
-	}
-	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
-}
+
 save "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
 
 /****************************************************************
@@ -186,6 +165,27 @@ above 90% for all variables. */
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
 	
+/****************************************************************
+         IDENTIFY OUTLIERS  BASED ON ANNUAL TREND
+	               AND SET THEM TO MISSING 
+***************************************************************** 
+Identifying extreme outliers over the period. Any value that is greater than 
+3.5SD from the mean  trend is set to missing.This is only applied if the mean 
+of the series is greater or equal to 1. This technique avoids flagging as 
+outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is 
+common for mortality indicators.  */
+foreach x of global all {
+	egen rowmean`x'= rowmean(`x'*)
+	egen rowsd`x'= rowsd(`x'*)
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
+				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
+		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace `x'`v'=. if flag_outlier_`x'`v'==1 // replaces value to missing if flag is = 1
+	}
+	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
+}
 save "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 
 /***************************************************************
@@ -193,7 +193,7 @@ save "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_DB.dta", replace
 				 COMPARING QUARTERS 2 (2020 vs. 2019)
 ****************************************************************
 For analyses (Quater comparisons), we keep only those facilities 
-that reported the months of interest) */
+that reported the months of interest) 
 
 u "$user/$data/Data for analysis/Haiti_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
