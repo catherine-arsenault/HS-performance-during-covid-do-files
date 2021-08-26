@@ -12,9 +12,8 @@ created in google data studio
 
 *****************************************************************/
 
-u "$user/$data/Data for analysis/GHA_Jan19-Dec20_WIDE_final.dta", clear
-
-
+u "$user/$data/Data for analysis/GHA_Jan19-Dec20_WIDE.dta", clear
+								 
 global volume fp_util sti_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 			  malnu_util
 global vaccine tt_qual vacc_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual rota_qual 
@@ -46,8 +45,8 @@ drop period
 order region year month 
 
 * Save dataset for analyses
-save "$user/$data/Data for analysis/Ghana_su_24months.dta"
-
+save "$user/$data/Data for analysis/Ghana_su_24months.dta", replace
+								  
 
 * Reshaping for data visualisations
 preserve

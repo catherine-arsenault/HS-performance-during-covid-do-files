@@ -79,7 +79,7 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
- drop surg_util malnu_util // too many outliers for surgeries, too few visits for malnutrition
+ drop  malnu_util //  too few visits for malnutrition
 save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", replace 	 
 	 
 ********************************************************************************
