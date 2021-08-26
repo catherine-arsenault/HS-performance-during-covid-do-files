@@ -35,7 +35,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 	
 
-	putexcel set "$analysis/Results/Tables/Results by country AUG19.xlsx", sheet("`c'")  modify
+	putexcel set "$analysis/Results/Tables/Results by country AUG26.xlsx", sheet("`c'")  modify
 	putexcel A1 = "`c'" B1="Nb of units" 
 	putexcel A2 = "Health service" B2="Average over the pre-Covid period" 
 	putexcel C2= "RD Covid" D2="LCL" E2="UCL" F2="p-value" G2 ="% change from pre-Covid average"
@@ -97,7 +97,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 	
-	putexcel set "$analysis/Results/Tables/Relative %drop by country AUG19.xlsx", sheet("`c'")  modify
+	putexcel set "$analysis/Results/Tables/Relative %drop by country AUG26.xlsx", sheet("`c'")  modify
 	putexcel A1 = "service" B1="Avg_preCovid" C1= "pct_change" D1="LCL_pct_change" E1="UCL_pct_change" 
 	local i = 1
 	xtset reg rmonth 
@@ -138,7 +138,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
-	putexcel set "$analysis/Results/Tables/Relative % resumption AUG19.xlsx", sheet("`c'")  modify
+	putexcel set "$analysis/Results/Tables/Relative % resumption AUG26.xlsx", sheet("`c'")  modify
 	putexcel A1 = "service" B1="Avg_preCovid" C1= "pct_remain" D1="LCL_pct_remain" E1="UCL_pct_remain" 
 	local i = 1
 	xtset reg rmonth 
@@ -286,10 +286,10 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 ********************************************************************************		   
 * 	Heatmap
 ********************************************************************************
-	import excel using "$analysis/Results/Tables/Relative % resumption AUG19.xlsx", sheet(CHL) firstrow clear
+	import excel using "$analysis/Results/Tables/Relative % resumption AUG26.xlsx", sheet(CHL) firstrow clear
 	save "$analysis/Results/Tables/tmp.dta", replace
 	foreach c in  ETH GHA HTI KZN LAO MEX NEP KOR THA {
-		import excel using "$analysis/Results/Tables/Relative % resumption AUG19.xlsx", sheet(`c') firstrow clear
+		import excel using "$analysis/Results/Tables/Relative % resumption AUG26.xlsx", sheet(`c') firstrow clear
 		append using "$analysis/Results/Tables/tmp.dta"
 		save "$analysis/Results/Tables/tmp.dta", replace
 	}
