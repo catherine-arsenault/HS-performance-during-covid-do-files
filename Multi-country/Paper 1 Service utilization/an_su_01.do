@@ -296,6 +296,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	rename F country
 	sort service country
 	reshape wide Avg_preCovid pct_remain LCL_pct_remain UCL_pct_remain, i(service) j(country) string
+	order service pct* 
 	save "$analysis/Results/Tables/tmp.dta", replace   
 		   
 	
