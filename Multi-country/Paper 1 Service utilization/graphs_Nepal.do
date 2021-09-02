@@ -9,9 +9,25 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			21"S" 22"O" 23"N" 24"D"
 			lab val rmonth rmonth 
 * ANC			
-		
+			u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
+			qui xtreg anc_util rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_anc_util
+			qui xtreg anc_util rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_anc_util 
+			
+			collapse anc_util linear_anc_util season_anc_util, by(rmonth)
+
+			twoway (scatter anc_util rmonth, msize(vsmall)  sort) ///
+			(line linear_anc_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_anc_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit anc_util rmonth if rmonth<15, lcolor(green)) ///
+			(lfit anc_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+				(lfit anc_util rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title(" Nepal ANC visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1200, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/NEP_anc_util.pdf", replace
 * OPD			

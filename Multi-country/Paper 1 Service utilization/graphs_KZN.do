@@ -81,6 +81,26 @@
 		
 			graph export "$analysis/Results/Graphs/KZN_del_util.pdf", replace
 			
+* ANC
+	u  "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear 
+			qui xtreg anc_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_anc_util
+			qui xtreg anc_util rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_anc_util
 			
+			collapse anc_util linear_anc_util season_anc_util, by(rmonth)
 
-rm "$user/$KZNdata/Data for analysis/KZNtmp.dta"
+			twoway (scatter anc_util rmonth, msize(vsmall)  sort) ///
+			(line linear_anc_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_anc_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit anc_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit anc_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit anc_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title("KwaZulu-Natal ANC visits (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(500)2500, labsize(vsmall))
+		
+			graph export "$analysis/Results/Graphs/KZN_anc_util.pdf", replace
+
