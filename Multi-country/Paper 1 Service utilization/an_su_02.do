@@ -12,9 +12,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 	
-	foreach s in fp_util pnc_util bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///   
-	   rota_qual hivtest_qual tbscreen_qual diab_util hyper_util cerv_qual breast_util mental_util {
-
+	foreach s in anc_util pnc_util del_util bcg_qual pent_qual pneum_qual measles_qual diab_util hyper_util {
 
 	cap qui xtreg `s' rmonth i.season if postCovid==0 & resumption==0, i(reg) fe cluster(reg) // linear prediction
 		//postCovid, timeafter and resumption drop out of the pre-period regression
@@ -33,8 +31,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		}
 		cap collapse (sum) missed_* se2_*
 	
-	foreach s in fp_util pnc_util bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///   
-	   rota_qual hivtest_qual tbscreen_qual diab_util hyper_util cerv_qual breast_util mental_util {	
+	foreach s in anc_util pnc_util del_util bcg_qual pent_qual pneum_qual measles_qual diab_util hyper_util  {	
 		gen lcl`s'=.
 		gen ucl`s'=.
 		replace lcl`s' = round(missed_`s'-(invnormal(1-.05/2)*sqrt(se2_`s')))
