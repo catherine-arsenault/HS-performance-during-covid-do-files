@@ -93,73 +93,33 @@ esttab, ci r2 ar2 compress nobaselevels title("Table 8: DD regression with multi
 eststo clear
 restore
 
-preserve
-keep if inlist(month, 3, 4, 5, 6, 8)
-
-eststo: xtreg fp_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress nobaselevels title("Table 9: DD regression with multiple pre and post periods, time-varying treatment status, Months 3 through 8") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8") 
-
-eststo clear
-restore
-
 * eased_ is the DD coefficient 
 
 
 *** MODEL 4 *** NOT SURE 
 *** Multiple pre-periods and August and September as post period, looking at if the effect differs based on easing in months 8 and 9, or easing in just month 9 ***
 
-preserve 
-
-keep if inlist(month, 3, 4, 5, 6, 8, 9)
-
 gen early = eased_cat == 2
 
 gen maintained_all = eased_cat == 1
 
 gen late = eased_cat == 3
 
-
-eststo: xtreg fp_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress nobaselevels drop(1.eased_#4.month 1.eased_#5.month 1.eased_#6.month 1.eased_#9.month 1.late#4.month 1.late#5.month 1.late#6.month 1.late#9.month) title("Table 10: Difference-in differences regression looking at easing in month 8 versus month 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(1.eased_ "Eased" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" 1.eased_#8.month "EasedxMo 8" 1.late "Late" 1.late#8.month "LatexMo 8" covid_case "Covid cases")
-
-* 1.switch#8.month and 1.eased_#8.month are DD coefficents 
-
-eststo clear
-restore
-
-*** OR ***
-
 preserve 
 
 keep if inlist(month, 3, 4, 5, 6, 8, 9)
 
-gen early = eased_cat == 2
+eststo: xtreg fp_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg del_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg cs_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
 
-gen maintained_all = eased_cat == 1
+esttab, ci r2 ar2 compress nobaselevels title("Table 10: Difference-in differences regression looking at easing in month 8 versus month 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ "Eased" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" early "Early" late "Late"  covid_case "Covid cases")
 
-gen late = eased_cat == 3
-
-
-eststo: xtreg fp_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress nobaselevels drop(1.early#4.month 1.early#5.month 1.early#6.month 1.early#9.month 1.late#4.month 1.late#5.month 1.late#6.month 1.late#9.month) title("Table 10: Difference-in differences regression looking at easing in month 8 versus month 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(1.early "Early" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" 1.early#8.month "EarlyxMo 8" 1.late "Late" 1.late#8.month "LatexMo 8" covid_case "Covid cases")
-
-eststo clear
+eststo clear 
 restore
+
 
 
 
