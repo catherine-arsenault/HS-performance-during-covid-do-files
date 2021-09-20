@@ -72,10 +72,11 @@ save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 			twoway (scatter cs_util rmonth, msize(vsmall)  sort) ///
 			(line linear_cs_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_cs_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
-			(lfit cs_util rmonth if rmonth<16, lcolor(green)) ///
-			(lfit cs_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)), ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			 xline(21, lpattern(dash) lcolor(gs10)) ///
+				(lfit cs_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit cs_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit cs_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(16, lpattern(dash) lcolor(black)) ///
+			 xline(22, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title("Ghana C-sections", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))

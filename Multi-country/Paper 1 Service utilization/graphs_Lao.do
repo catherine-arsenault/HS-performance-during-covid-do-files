@@ -5,6 +5,28 @@
 ********************************************************************************
 * LAO GRAPHS
 ********************************************************************************
+* Contraceptives
+		u  "$user/$LAOdata/Data for analysis/LAOtmp.dta", clear 
+			qui xtreg fp_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_fp_util
+			qui xtreg fp_util rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_fp_util 
+			
+			collapse fp_util linear_fp_util season_fp_util, by(rmonth)
+
+			twoway (scatter fp_util rmonth, msize(vsmall)  sort) ///
+			(line linear_fp_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_fp_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit fp_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit fp_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit fp_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(16, lpattern(dash) lcolor(black)) ///
+			 xline(22, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title("Lao PDR contraceptive users (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/LAO_fp_util.pdf", replace
 * Deliveries
 		
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(50)650, labsize(vsmall))
@@ -32,7 +54,7 @@
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)35000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/LAO_opd_util.pdf", replace
-/* ANC
+* ANC
 			u  "$user/$LAOdata/Data for analysis/LAOtmp.dta", clear 
 			qui xtreg anc_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
 				predict linear_anc_util
