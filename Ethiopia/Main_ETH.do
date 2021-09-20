@@ -7,8 +7,6 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 
-
-
 ********************************************************************************
 * Creation do files
 
