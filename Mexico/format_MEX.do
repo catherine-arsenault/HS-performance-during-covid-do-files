@@ -4,13 +4,14 @@
 * Updated Jan 8, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
-use "$user/$data/Data for analysis/IMSS_Jan19-Oct20_WIDE.dta", clear
+use "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", clear
 
 *******************************************************************************
 * RESHAPE TO LONG FORM
 ********************************************************************************
 	set obs 36
 	replace Delegation="National" if Deleg==""
+	
 
 	reshape long  sti_util  del_util  cs_util  diarr_util  pneum_util  malnu_util ///
 			art_util  er_util  ipd_util  dental_util diab_util   hyper_util  mental_util ///
@@ -84,16 +85,21 @@ replace mo = 10 if month =="10_19" | month =="10_20"
 replace mo = 11 if month =="11_19" | month =="11_20"
 replace mo = 12 if month =="12_19" | month =="12_20"
 
-drop month num_del-population2020
+drop month num_del-women2020
 
 order Delegation year mo 
 sort  year mo 
 rename mo month
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_foranalysis.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", replace
+
+drop if Delegation=="National"
+
+save "$user/$data/Data for analysis/Mexico_su_24months.dta", replace 
 ********************************************************************************
 * CREATE NATIONAL TOTALS
 ********************************************************************************
+u "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", clear
 
 foreach v in cerv_denom2019 cerv_denom2020 breast_denom2019 breast_denom2020 ///
 sti_util del_util cs_util diarr_util pneum_util malnu_util art_util er_util ///
@@ -107,7 +113,7 @@ death_negative hospit_negative death_pending hospit_pending {
 	drop `v'tot
 }
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Oct20_foranalysis.dta", replace 
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20_foranalysis.dta", replace 
 
 
 ********************************************************************************
@@ -138,7 +144,7 @@ drop year cerv_denom2020 breast_denom2020
 merge m:m  Delegation month using "$user/$data/temp.dta"
 drop  _merge 
 
-export delimited using "$user/$data/IMSS_Jan19-Oct20_fordashboard.csv", replace
+export delimited using "$user/$data/IMSS_Jan19-Dec20_fordashboard.csv", replace
 
 rm "$user/$data/temp.dta"
 

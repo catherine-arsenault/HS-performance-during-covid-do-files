@@ -1096,10 +1096,33 @@ set more off
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta", replace
 	
-	
-****************************************************************************************************
+
+*******************************************************************************
+*To merge with new Jan20-Dec20 dataset 
+*Drop Jan20-Oct20 data 
+
+u "$user/$data/Data for analysis/Lao_Jan19-Oct20_WIDE.dta", clear
+
+global volumes fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
+			   pnc_util bcg_qual totaldel pent_qual measles_qual opv3_qual pneum_qual ///
+			   diab_util hyper_util opd_util ipd_util road_util 
+global mortality neo_mort_num sb_mort_num mat_mort_num 
+global all $volumes $mortality 
+
+foreach var of global all {
+	drop `var'1_20 - `var'10_20
+}
+
+* Drop empty facilities
+egen total = rowtotal(mat_mort_num1_19-totaldel12_19), m 
+drop if total==.
+drop total
+
+save "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta", replace
+
+********************************************************************************************
 *END
-****************************************************************************************************
+********************************************************************************************
 
 
 	

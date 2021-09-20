@@ -144,22 +144,31 @@ save "$user/$data/Data for analysis/IMSS_Jan19-May20_WIDE.dta", replace
 1) Covid mortality = Hospital deaths per month in patients with a positive COVID test  /Hospitalized IMSS patient with positive Covid test  
 2) Mortality in  IMSS patient with probable COVID but with negative COVID test  / Hospitalized IMSS patient with probable COVID but with negative COVID test 
 3)Hospital deaths per month in patients with a pending COVID test April 2020 / Hospitalized IMSS patient in patients with a pending COVID test April 2020 */
+
+// linking 32 States to Delegations
 import excel using "$user/$data/Raw/link.xlsx", firstrow clear
-save "$user/$data/Raw/link.dta", replace
+save "$user/$data/Raw/link.dta", replace 
+
 import spss using "$user/$data/Raw/Hospital_mortalityCOVID_march-july2020.sav", clear
 drop if delegacion==""
 sort delegacion
 merge 1:1 delegacion using "$user/$data/Raw/link.dta"
+
 rename (death_covid_march death_covid_april death_covid_may death_covid_june death_covid_july) ///
 	  (death_covid3_20 death_covid4_20 death_covid5_20 death_covid6_20 death_covid7_20)
+	  
 rename (hospit_covid_march hospit_covid_april hospit_covid_may hospit_covid_june hospit_covid_juliy) ///
 		(hospit_covid3_20 hospit_covid4_20 hospit_covid5_20 hospit_covid6_20 hospit_covid7_20)
+		
 rename (death_negative_march death_negative_april death_negative_mayo death_negative_june death_negative_july) ///
 		(death_negative3_20 death_negative4_20 death_negative5_20 death_negative6_20 death_negative7_20)
+		
 rename (hospit_negative_march hospit_negative_april hospit_negative_mayo hospit_negative_june hospit_negative_july) ///
 		(hospit_negative3_20 hospit_negative4_20 hospit_negative5_20 hospit_negative6_20 hospit_negative7_20 )	
+		
 rename (death_pending_april death_pending_may death_pending_june death_pending_july) ///
 		(death_pending4_20 death_pending5_20 death_pending6_20 death_pending7_20)
+		
 rename (hospit_pending_march hospit_pending_april hospit_pending_may hospit_pending_june hospit_pending_july ) ///
 	   (hospit_pending3_20 hospit_pending4_20 hospit_pending5_20 hospit_pending6_20 hospit_pending7_20)
 	   

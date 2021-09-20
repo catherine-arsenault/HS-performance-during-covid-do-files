@@ -5,116 +5,142 @@
 
 clear all
 set more off
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta"
 
-* DID estimates fixed policy change
-reg fp_sa_util post eased_8_20  did_eased_8_20 , r
-reg anc_util post eased_8_20  did_eased_8_20 , r
-reg del_util post eased_8_20  did_eased_8_20 , r
-reg cs_util post eased_8_20  did_eased_8_20 , r
-reg pnc_util post eased_8_20  did_eased_8_20 , r
-* could also do reg anc_util post##eased_8_20
+use "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_LONG_NK_1.dta"
 
 
-*DID estimates with variable policy changes
-quietly reg fp_sa_util i.palikaid i.month eased_ , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+* eased_: whether the municpality eased or not in that month 
+* post: pre period is month 6, post period is month 8 
+* eased_cat: three-category, fully eased, fully maintained and switched in months 8 and 9 
 
-reg anc_util i.palikaid i.month eased_ , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-reg del_util i.palikaid i.month eased_ , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-reg cs_util i.palikaid i.month eased_ , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-reg pnc_util i.palikaid i.month eased_ , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+*** TABLE 4 ***
+* Simple comparison of means - two period comparison of just April to June compared to August to October 
+tabstat fp_util anc_util del_util cs_util pnc_util if month == 3 | 4 | 5 | 6, stat(N mean) col(stat)
+tabstat fp_util anc_util del_util cs_util pnc_util if month == 8 | 9 & eased_ == 0, stat(N mean) col(stat)
+tabstat fp_util anc_util del_util cs_util pnc_util if month == 8 | 9 & eased_ == 1 , stat(N mean) col(stat)
 
 
+*** MODEL 1 **** 
+*** Simple DD with two time periods - pre period is month 6, post period is month 8 *** 
+eststo: xtreg fp_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
+eststo: xtreg del_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
+eststo: xtreg cs_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
+esttab, rename(post Post)
+esttab, ci r2 ar2 compress title("Table 5: Simple DD regression, eased in August, controlling for Covid-19 cases") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(post Post eased_ Eased "covid_case" "Covid case")
 
-**** IF AUGUST WERE TREATMENT INDICATOR 
+* eased_ is the DD coeffcients 
 
-* Placebo tests
-* Family planning - placebo test 
-reg fp_sa_util post_plac eased_8_20 did_eased_8_20_plac, r
+eststo clear 
 
-* Antenatal care visits - placebo test 
-reg anc_util post_plac eased_8_20 did_eased_8_20_plac, r
+*** MODEL 2***
+*** Multiple pre-periods and August as the post-period ***
+preserve 
+* Only keep 3 months before and 1 month after, omitting July
+keep if inlist(month, 4, 5, 6, 8)
 
-* Facility deliveries - placebo test 
-reg del_util post_plac eased_8_20 did_eased_8_20_plac, r
-
-* C-sections - placebo test 
-reg cs_util post_plac eased_8_20 did_eased_8_20_plac, r
-
-* Postnatal care visits - placebo test 
-reg pnc_util post_plac eased_8_20 did_eased_8_20_plac, r 
-***failed, p < 0.05 
-
-
-* DID estimates 
-* Family planning 
-reg fp_sa_util post eased_8_20 did_eased_8_20, r
-
-* Antenatal care visits 
-reg anc_util post eased_8_20 did_eased_8_20, r
-
-* Facility deliveries 
-reg del_util post eased_8_20 did_eased_8_20, r
-
-* C-sections
-reg cs_util post eased_8_20 did_eased_8_20, r
-
-* Postnatal care visits
-reg pnc_util post eased_8_20 did_eased_8_20, r 
+* Create a variable = 1 for those areas that eased by August
+* It's = 1 also for the pre-period: it's a defining and fixed characteristic of the places that at some time eased restrictions.
+	gen tmp = 1 if eased_==1
+	recode tmp (.=0)
+	bysort palikaid:egen evereased = max(tmp)
 
 
-*** MULTIPLE POST PERIODS 
-* Family planning 
-reg fp_sa_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
+eststo: xtreg fp_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
 
-* Antenatal care visits 
-reg anc_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
+test 5.month#1.evereased  6.month#1.evereased
 
-* Facility deliveries 
-reg del_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
+eststo: xtreg anc_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
 
-* C-sections
-reg cs_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
+test 5.month#1.evereased  6.month#1.evereased
 
-* Postnatal care visits
-reg pnc_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
+eststo: xtreg pnc_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+test 5.month#1.evereased  6.month#1.evereased
+
+eststo: xtreg del_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+test 5.month#1.evereased  6.month#1.evereased
+
+eststo: xtreg cs_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+
+test 5.month#1.evereased  6.month#1.evereased
+
+esttab, ci r2 ar2 compress nobaselevels drop(1.evereased) title("Table 6: DD regression analysis with 4 time periods, fixed treatment status") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(covid_case "Covid cases" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 5.month#1.evereased "Eased*Mo 5" 6.month#1.evereased "Eased*Mo 6" 8.month#1.evereased "Eased*Mo 8")
+
+* 8.month#evereased is DD coefficient 
+
+eststo clear 
+
+restore
+
+*** MODEL 3 ***
+* Difference-in-differences regression with multiple pre and post periods, time-varying treatment 
+
+preserve  
+
+keep if inlist(month, 3, 4, 5, 6, 8, 9)
+
+eststo: xtreg fp_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+
+esttab, ci r2 ar2 compress nobaselevels title("Table 8: DD regression with multiple pre and post periods, time-varying treatment status, Months 3 through 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9")
+
+eststo clear
+restore
+
+* eased_ is the DD coefficient 
 
 
-*** IF TREATMENT VARIED OVER TIME 
-*** THIS CODE DOESNT WORK - And I think it's because the treated is exactly same as the DID? 
-	
-*Family Planning
-reg fp_sa_util post eased_treated did_eased, r
+*** MODEL 4 *** NOT SURE 
+*** Multiple pre-periods and August and September as post period, looking at if the effect differs based on easing in months 8 and 9, or easing in just month 9 ***
 
-* Antenatal care visits 
-reg anc_util post eased_treated did_eased, r
+gen early = eased_cat == 2
 
-* Facility deliveries 
-reg del_util post eased_treated did_eased, r
+gen maintained_all = eased_cat == 1
 
-* C-sections
-reg cs_util post eased_treated did_eased, r
+gen late = eased_cat == 3
 
-* Postnatal care visits
-reg pnc_util post eased_treated did_eased, r 
+preserve 
 
-*** Is it because of FE?
-*** TRYING FIXED EFFECT 
-** Family Planning
-xtset post
-xtreg fp_sa_util i.post did_eased, r
+keep if inlist(month, 3, 4, 5, 6, 8, 9)
+
+eststo: xtreg fp_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg del_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg cs_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+
+esttab, ci r2 ar2 compress nobaselevels title("Table 10: Difference-in differences regression looking at easing in month 8 versus month 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ "Eased" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" early "Early" late "Late"  covid_case "Covid cases")
+
+eststo clear 
+restore
 
 
+
+
+/*  
+
+*TIME VARYING POLICY CHANGE
+* Cluster SEs at the palika level because of serial correlation: you have multiple months of observation for each palika
+
+*DID estimates with variable policy changes without covid case
+xtreg fp_sa_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ i.month, i(palikaid) fe cluster(palikaid)
+
+*Sensitivity analyses (will add here)
+preserve
+keep if inlist(orgunitlevel2, "5 Province 5", "6 Karnali Province", "7 Sudurpashchim Province")
+xtreg fp_sa_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
+restore

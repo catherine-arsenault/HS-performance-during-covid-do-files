@@ -1,22 +1,25 @@
-* HS performance during Covid - South Korea
+* HS performance during Covid - South Korea, Regional-level analysis
 * Master do file 
 * PI Catherine Arsenault
+* Created by MK Kim 
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (South Korea)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/South Korea"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/South Korea"
+
+global user "/Users/nek096/Dropbox (Harvard University)"
+global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/South Korea"
 
 ********************************************************************************
 * Creation do files
 * Imports raw data and renames variables for January 2019 - August 2020
-do "$dofiles/cr_KOR.do"
+*do "$dofiles/cr_KOR_01.do"
 
-********************************************************************************
-* Cleaning do files - Not needed since it's province level data
-* Cleans data (see cleaning protocol in shared folder) 
-*do "$dofiles/clean_KOR.do"
+* Imports raw data and renames variables for January 2019 - September 2020
+*do "$dofiles/cr_KOR_02.do"
+
+* Imports raw data and renames variables for January 2019 - December 2020
+do "$dofiles/cr_KOR_03.do"
 
 ********************************************************************************
 * Format do files
