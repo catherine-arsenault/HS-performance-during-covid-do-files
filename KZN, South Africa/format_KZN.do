@@ -13,7 +13,7 @@ SUM AND AVERAGE SERVICES PER UNIT)
 ****************************************************************/
 u "$user/$data/Data for analysis/KZN_Jan19-Dec20_WIDE_CCA_DB.dta", clear
 
-* Number of palika reporting any data, for each indicator
+* Number of facilities reporting any data, for each indicator
 foreach var of global all {
 egen `var'_report = rownonmiss(`var'*)
 }
