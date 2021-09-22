@@ -46,8 +46,8 @@ u "$user/$KORdata/Data for analysis/KORtmp.dta", clear
 			(lfit opd_util rmonth if rmonth<16, lcolor(green)) ///
 			(lfit opd_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
 			(lfit opd_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			ylabel(, labsize(small)) xline(16, lpattern(dash) lcolor(black)) ///
+			 xline(22, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title("South Korea outpatient visits (2019-2020)", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(small)) ylabel(0(500000)4500000, labsize(vsmall))
