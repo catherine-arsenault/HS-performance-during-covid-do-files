@@ -264,7 +264,13 @@ gen year = 2019
 replace year= 2020 if month>=13	
 replace month=month-12 if month>=13
 
+*** NOT SURE WHAT's HAPPENING HERE - If you so sum instead the values are as expected 
+
+* collapse (sum) anc1_util-pent_qual , by (year month)
+
 collapse (count) anc1_util-pent_qual , by (year month)
+
+
 			  
 foreach x of global sentinel {
 	cap egen max`x'=max(`x')
