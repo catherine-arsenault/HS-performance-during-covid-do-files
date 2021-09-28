@@ -20,8 +20,8 @@
 			(lfit opd_util rmonth if rmonth<16, lcolor(green)) ///
 			(lfit opd_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
 			(lfit opd_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
-			ylabel(, labsize(small)) xline(16, lpattern(dash) lcolor(black)) ///
-			 xline(22, lpattern(dash) lcolor(gs10)) ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title("Mexico (IMSS) outpatient visits (2019-2020)", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(50000)300000, labsize(vsmall))
@@ -49,7 +49,7 @@
 			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(200)1600, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/MEX_art_util.pdf", replace
-			/* Deliveries
+* Deliveries
 			u  "$user/$MEXdata/Data for analysis/MEXtmp.dta", clear 
 			qui xtreg del_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
 				predict linear_del_util
@@ -67,8 +67,9 @@
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("Mexico (IMSS) outpatient visits (2019-2020)", size(small)) ///
+			graphregion(color(white)) title("Mexico (IMSS) outpatient visits (2019-2020)", size(small))  ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(50)650, labsize(vsmall))
+		
 			
 			graph export "$analysis/Results/Graphs/MEX_del_util.pdf", replace
 

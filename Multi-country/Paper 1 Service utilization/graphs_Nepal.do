@@ -23,8 +23,8 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			(lfit opd_util rmonth if rmonth<15, lcolor(green)) ///
 			(lfit opd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
 				(lfit opd_util rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
-			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			 xline(20, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title(" Nepal outpatient visits (2019-2020)", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
