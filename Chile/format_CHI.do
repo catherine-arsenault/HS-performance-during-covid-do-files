@@ -11,7 +11,7 @@ created in google data studio
 *****************************************************************/
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
-global all road_util surg_util pnc_util fp_util er_util mental_util anc_util
+global all del_util cs_util ipd_util road_util surg_util pnc_util fp_util er_util mental_util anc_util
 
 * Create national total
 	rename (org1-org5) (region municipality levelofattention facilityname id)
@@ -31,7 +31,8 @@ global all road_util surg_util pnc_util fp_util er_util mental_util anc_util
 	drop reg 
 	order region 
 	
-reshape long road_util surg_util pnc_util fp_util er_util mental_util anc_util, i(region) j(month) string 
+reshape long del_util cs_util ipd_util road_util surg_util pnc_util fp_util er_util ///
+             mental_util anc_util, i(region) j(month) string 
 	
 * Month and year
 	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
@@ -81,7 +82,9 @@ export delimited using "$user/$data/Chile_Jan19-Dec20_fordashboard.csv", replace
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 rename (org1-org5) (region municipality levelofattention facilityname id)
 
-reshape long road_util surg_util pnc_util fp_util er_util mental_util anc_util, i(region municipality levelofattention facilityname id) j(month) string 
+reshape long del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
+			er_util mental_util anc_util, i(region municipality levelofattention ///
+			facilityname id) j(month) string 
 	
 * Month and year
 	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	///
