@@ -187,6 +187,7 @@ merge 1:1 region facname using "$user/$data/Data for analysis/Chile_Jan19-Dec20_
 drop _merge tag
 save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
 
+replace region="Región Del Bíobío" if region=="Región del Bío Bío"
 
 rm "$user/$data/Data for analysis/tmp.dta"	
 *******************************************************************************
