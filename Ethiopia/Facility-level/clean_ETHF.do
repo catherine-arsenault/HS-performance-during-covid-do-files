@@ -12,7 +12,7 @@ u "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", clear
 ********************************************************************
 * 28,866 health facilities 
 * Dropping all facilities that don't report any indicators all period
-egen all_visits = rowtotal(fp_util1_19- totaldel11_20), m
+egen all_visits = rowtotal(fp_util1_19- icu_mort_num11_20), m
 drop if all_visits==.
 drop all_visits 
 * Retains 23,910 facilities with some data from Jan19-Nov20
@@ -21,92 +21,16 @@ drop all_visits
 duplicates tag org*, gen(dup)
 drop if dup==1 
 drop dup
-* 8 facilities were dropped 
+* 8 duplicates facilities were dropped 
 * Retains 23,902 facilities 
 ********************************************************************
 global volumes fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
 			   ipd_util er_util opd_util vacc_qual pent_qual bcg_qual ///
-			   measles_qual opv3_qual pneum_qual rota_qual art_util totaldel
+			   measles_qual opv3_qual pneum_qual rota_qual art_util 
 				
 global mortality newborn_mort_num mat_mort_num er_mort_num ipd_mort_num icu_mort_num
 
 global all $volumes $mortality
-
-/****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel 
-****************************************************************/
-*Total number
-foreach var of global all {
-	egen `var'_report = rownonmiss(`var'*)
-}
-recode *_report (0=0) (1/23=1) //Jan19-Nov20:23 months 
-
-putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Fac_Total, replace)  modify
-putexcel A2 = "Variable"
-putexcel B2 = "Reported any data"	
-local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'_report
-	putexcel B`i' = `r(sum)'
-}
-drop *report
-
-*Min/Max number 
-preserve
-	local all fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
-		  ipd_util er_util opd_util vacc_qual pent_qual bcg_qual ///
-		  measles_qual opv3_qual pneum_qual rota_qual art_util ///
-		  newborn_mort_num mat_mort_num er_mort_num ipd_mort_num totaldel icu_mort_num 
-	reshape long `all', i(org*) j(month, string)	  
-	recode `all' (.=0) (0/999999999=1)
-	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Fac_MinMax, replace)  modify
-	
-	putexcel A1 = "Min and Max number of facilities reporting any month"
-	putexcel A2 = "Variable"
-	putexcel B2 = "Min month report data"	
-	putexcel C2 = "Max month report data"
-	local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'
-	putexcel B`i' = `r(min)'
-	putexcel C`i' = `r(max)'
-}
-restore
-
-
-* Overall mean 
-foreach var of global all {
-	egen `var'_report = rownonmiss(`var'*)
-	recode `var'_report (0=0) (1/999999=1) 
-	egen `var'_total_report = total(`var'_report)
-	egen `var'_sum = rowtotal(`var'1_19 -`var'11_20) 
-	egen `var'_total_sum = total(`var'_sum) 
-	gen `var'_total_mean = `var'_total_sum /`var'_total_report
-}
-
-putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Fac_Overall_mean)  modify
-putexcel A2 = "Variable"
-putexcel B2 = "Mean per facility"	
-local i= 2
-foreach var of global all {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'_total_mean
-	putexcel B`i' = `r(mean)'
-}
-drop *_report *_sum *_mean
-
-/****************************************************************
-EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
-Took too long/ Instead, just browse the mortality indicators (MK-2/25) 
-****************************************************************/
-*export excel using "$user/$data/Data cleaning/Ethio_Jan19-October20_fordatacleaning1_fac.xlsx", firstrow(variable) replace
-*bro org* *_mort* totaldel*
 
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
@@ -115,21 +39,19 @@ REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
 For mortality, we inpute 0s if the facility had the service that the deaths
 relate to that month. E.g. deliveries, ER visits or Inpatient admissions */
 forval i = 1/12 {
-	replace newborn_mort_num`i'_19 = 0 if newborn_mort_num`i'_19==. & totaldel`i'_19!=. 
-	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & totaldel`i'_19!=. 
+	replace newborn_mort_num`i'_19 = 0 if newborn_mort_num`i'_19==. & del_util`i'_19!=. 
+	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & del_util`i'_19!=. 
 	replace er_mort_num`i'_19 = 0      if er_mort_num`i'_19==. & er_util`i'_19!=.
 	replace ipd_mort_num`i'_19 = 0     if ipd_mort_num`i'_19==. & ipd_util`i'_19!=.
 	replace icu_mort_num`i'_19 = 0     if icu_mort_num`i'_19==. & ipd_util`i'_19!=.
 }
 forval i = 1/11 {
-	replace newborn_mort_num`i'_20 = 0 if newborn_mort_num`i'_20==. & totaldel`i'_20!=. 
-	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & totaldel`i'_20!=. 
+	replace newborn_mort_num`i'_20 = 0 if newborn_mort_num`i'_20==. & del_util`i'_20!=. 
+	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & del_util`i'_20!=. 
 	replace er_mort_num`i'_20 = 0      if er_mort_num`i'_20==. & er_util`i'_20!=. 
 	replace ipd_mort_num`i'_20 = 0     if ipd_mort_num`i'_20==. & ipd_util`i'_20!=.
 	replace icu_mort_num`i'_20 = 0     if icu_mort_num`i'_20==. & ipd_util`i'_20!=.
 }
-
-*bro org* *_mort* totaldel*
 
 /****************************************************************
          IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
@@ -148,12 +70,12 @@ foreach x in  fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util /
 			  sam_util ipd_util er_util opd_util vacc_qual pent_qual bcg_qual ///
 		      measles_qual opv3_qual pneum_qual rota_qual art_util ///
 			  newborn_mort_num mat_mort_num er_mort_num ipd_mort_num icu_mort_num ///
-			  totaldel {
+			   {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
 			gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold 
 			foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
-				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20  11_20{  // until Nov 2020 
+				         1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 {  // until Nov 2020 
 				         *   12_20
 		gen flagout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
 		replace flagout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
@@ -177,7 +99,6 @@ forval i = 1/11 {
 	rename totalipd_mort`i'_20 totalipd_mort_num`i'_20
 }
 
-
 save "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE_CCA_AN.dta", replace 
 
 
@@ -194,7 +115,7 @@ u "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE_CCA_AN.dta",
 			      sam_util ipd_util er_util opd_util vacc_qual pent_qual bcg_qual ///
 		          measles_qual opv3_qual pneum_qual rota_qual art_util ///
 			      newborn_mort_num mat_mort_num er_mort_num totalipd_mort_num ///
-				  totaldel {
+				  {
 			  preserve
 					keep  org* `x'* 
 					keep if `x'1_20!=. & `x'2_20!=. & `x'3_20!=. & ///
@@ -210,7 +131,7 @@ u "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE_CCA_AN.dta",
 			          sam_util ipd_util er_util opd_util vacc_qual pent_qual bcg_qual ///
 		              measles_qual opv3_qual pneum_qual rota_qual art_util ///
 			          newborn_mort_num mat_mort_num er_mort_num totalipd_mort_num ///
-					  totaldel {
+					  del_util {
 		merge 1:1  org* using "$user/$data/Data for analysis/tmp`x'.dta", force 
 		drop _merge
 		save "$user/$data/Data for analysis/Ethiopia_Facility_Q1_Q2_2020_comparisons.dta", replace
@@ -219,7 +140,7 @@ u "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE_CCA_AN.dta",
 reshape long fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
 			 sam_util ipd_util er_util opd_util vacc_qual pent_qual bcg_qual ///
 		     measles_qual opv3_qual pneum_qual rota_qual art_util ///
-			 newborn_mort_num mat_mort_num er_mort_num totalipd_mort_num totaldel, ///
+			 newborn_mort_num mat_mort_num er_mort_num totalipd_mort_num del_util, ///
 			 i( org*) j(month) string	
 * Region names	
 rename (orgunitlevel3 orgunitlevel2) (zone region) 
@@ -267,7 +188,7 @@ drop orgunitlevel1 organisationunitdescription
 	*lab var cerv_qual "# women 30-49 screened with VIA for cervical cancer"
 	*lab var diab_qual_num "Number of diabetic patients enrolled to care"
 	*lab var hyper_qual_num "Number of hypertensive patients enrolled to care"
-	lab var totaldel "Total number of births attended by skilled health personnel"
+	lab var del_util "Total number of births attended by skilled health personnel"
 	*lab var hivsupp_qual_num "Nb of adult and pediatric patients with viral load <1,000 copies/ml"
 	*lab var kmc_qual_num "Nb of newborns weighting <2000g and/or premature newborns for which KMC initiated" 
 	*lab var kmc_qual_denom "Total number of newborns weighting <2000gm and/or premature"
@@ -311,6 +232,74 @@ keep if (month >=1 & month<=3 & year ==2020) | (month >=4 & month<=6 & year ==20
 * THIS IS THE DATASET USED TO COMPARE Q2 2020 TO Q2 2019: 
 save "$user/$data/Data for analysis/Ethiopia_Facility_Q1_Q2_2020_comparisons.dta", replace
 
+/* 
+/****************************************************************
+TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel 
+****************************************************************/
+*Total number
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+}
+recode *_report (0=0) (1/23=1) //Jan19-Nov20:23 months 
 
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Fac_Total, replace)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Reported any data"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+*Min/Max number 
+preserve
+	local all fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util sam_util ///
+		  ipd_util er_util opd_util vacc_qual pent_qual bcg_qual ///
+		  measles_qual opv3_qual pneum_qual rota_qual art_util ///
+		  newborn_mort_num mat_mort_num er_mort_num ipd_mort_num del_util icu_mort_num 
+	reshape long `all', i(org*) j(month, string)	  
+	recode `all' (.=0) (0/999999999=1)
+	collapse (sum) `all', by(month)
+	putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Fac_MinMax, replace)  modify
+	
+	putexcel A1 = "Min and Max number of facilities reporting any month"
+	putexcel A2 = "Variable"
+	putexcel B2 = "Min month report data"	
+	putexcel C2 = "Max month report data"
+	local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'
+	putexcel B`i' = `r(min)'
+	putexcel C`i' = `r(max)'
+}
+restore
+
+
+* Overall mean 
+foreach var of global all {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	egen `var'_total_report = total(`var'_report)
+	egen `var'_sum = rowtotal(`var'1_19 -`var'11_20) 
+	egen `var'_total_sum = total(`var'_sum) 
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+
+putexcel set "$user/$data/Codebook for Ethiopia.xlsx", sheet(Fac_Overall_mean)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Mean per facility"	
+local i= 2
+foreach var of global all {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_total_mean
+	putexcel B`i' = `r(mean)'
+}
+drop *_report *_sum *_mean
 
 
