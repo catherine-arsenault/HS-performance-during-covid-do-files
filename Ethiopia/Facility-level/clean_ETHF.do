@@ -32,6 +32,8 @@ global mortality newborn_mort_num mat_mort_num er_mort_num ipd_mort_num icu_mort
 
 global all $volumes $mortality
 
+encode factype, gen(facility_type)
+drop factype
 /*******************************************************************
 MORTALITY: REPLACE ALL MISSINGNESS TO 0 AS LONG AS FACILITY
 REPORTS THE SERVICE THAT MONTH (E.G. DELIVERIES, INPATIENT ADMISSIONS)
@@ -107,7 +109,7 @@ save "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE_CCA_AN.dt
 			       COMPARING QUARTERS 1 AND 2 OF 2020
 ****************************************************************
 we keep only those facilities that reported all months of interest. In this case,
-we are comparing the first and second quarters of 2020 */
+we are comparing the first and second quarters of 2020 *
 
 u "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE_CCA_AN.dta", clear
 
