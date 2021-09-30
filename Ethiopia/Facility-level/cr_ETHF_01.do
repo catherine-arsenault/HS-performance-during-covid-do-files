@@ -168,9 +168,8 @@ rename (totaldeathinicuinthereportingper-v898) ///
 		
 drop *12_20 // December likely incomplete		
 keep org* *_19 *_20 
-				
+gen factype="Public Hospital"				
 save "$user/$data/Data for analysis/Ethiopia_Facility_Public_Hosp_Jan19-Nov20_WIDE.dta", replace	
-
 
 ********************************************************************************
 *Private hospitals (N=60)
@@ -336,12 +335,9 @@ rename (totaldeathinicuinthereportingper- v897) ///
 drop *12_20 // December likely incomplete	
 
 keep org* *_19 *_20 
-
-save "$user/$data/Data for analysis/Ethiopia_Facility_Private_Hosp_Jan19-Nov20_WIDE.dta", replace
-
-*append with previously data
+gen factype="Private hospitals"
+*append with previous data
 append using "$user/$data/Data for analysis/Ethiopia_Facility_Public_Hosp_Jan19-Nov20_WIDE.dta", force
-
 save "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", replace
 
 ********************************************************************************
@@ -509,15 +505,13 @@ rename (totaldeathinicuinthereportingper - v899) ///
 drop *12_20 // December likely incomplete	
 
 keep org* *_19 *_20 
-
-save "$user/$data/Data for analysis/Ethiopia_Facility_Health_post_Jan19-Nov20_WIDE.dta", replace
-
+gen factype="Health centers"
 *append with previous data
 append using "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", force
 
 save "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", replace
 ********************************************************************************
-*Clinics 
+*Clinics N=7041
 import delimited "$user/$data/Raw/By levels/Received Jan292021/Ethiopia_Health system performance during Covid_data extraction_2020_January to December_29_01 _2021_GC/Facility Type/Ethiopia_2020_January to December_ by clinics_29_01_2021.csv", clear
 
 *RMNCH 
@@ -676,21 +670,17 @@ rename (totaldeathinicuinthereportingper - v898) ///
 (icu_mort_num1_19	icu_mort_num2_19	icu_mort_num3_19	icu_mort_num4_19	icu_mort_num5_19	icu_mort_num6_19	icu_mort_num7_19	icu_mort_num8_19	icu_mort_num9_19	icu_mort_num10_19	icu_mort_num11_19	icu_mort_num12_19 icu_mort_num1_20	icu_mort_num2_20	icu_mort_num3_20	icu_mort_num4_20	icu_mort_num5_20 ///
 	icu_mort_num6_20	icu_mort_num7_20 icu_mort_num8_20 icu_mort_num9_20 ///
 	icu_mort_num10_20 icu_mort_num11_20 icu_mort_num12_20)
-
 		
 drop *12_20 // December likely incomplete	
-
 keep org* *_19 *_20 
-
-save "$user/$data/Data for analysis/Ethiopia_Facility_clinic_Jan19-Nov20_WIDE.dta", replace
-
+gen factype="Clinics"
 *append with previously saved data
 append using "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", force
 
 save "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", replace
 
 ********************************************************************************
-*Health posts 
+*Health posts N=17697
 import delimited "$user/$data/Raw/By levels/Received Jan292021/Ethiopia_Health system performance during Covid_data extraction_2020_January to December_29_01 _2021_GC/Facility Type/Ethiopia_2020_January to December_ by Health Posts_29_01_2021.csv", clear
 
 *RMNCH 
@@ -854,37 +844,9 @@ rename (totaldeathinicuinthereportingper-v899) ///
 drop *12_20 // December likely incomplete	
 
 keep org* *_19 *_20 	
-
-save "$user/$data/Data for analysis/Ethiopia_Facility_health_post_Jan19-Nov20_WIDE.dta", replace
-
+gen factype="Health posts"
 *append with previously saved data
 append using "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", force
-
-* Total deliveries
-	egen totaldel1_19 = rowtotal(del_util1_19 cs_util1_19), m
-	egen totaldel2_19 =	rowtotal(del_util2_19 cs_util2_19), m
-	egen totaldel3_19 =	rowtotal(del_util3_19 cs_util3_19), m
-	egen totaldel4_19 =	rowtotal(del_util4_19 cs_util4_19), m
-	egen totaldel5_19=	rowtotal(del_util5_19 cs_util5_19), m
-	egen totaldel6_19=	rowtotal(del_util6_19 cs_util6_19), m
-	egen totaldel7_19=	rowtotal(del_util7_19 cs_util7_19), m
-	egen totaldel8_19=	rowtotal(del_util8_19 cs_util8_19), m
-	egen totaldel9_19=	rowtotal(del_util9_19 cs_util9_19), m 
-	egen totaldel10_19=	rowtotal(del_util10_19 cs_util10_19), m
-	egen totaldel11_19=	rowtotal(del_util11_19  cs_util11_19), m
-	egen totaldel12_19=	rowtotal(del_util12_19  cs_util12_19), m
-	egen totaldel1_20 = rowtotal(del_util1_20  cs_util1_20), m
-	egen totaldel2_20 =	rowtotal(del_util2_20 cs_util2_20), m
-	egen totaldel3_20 =	rowtotal(del_util3_20 cs_util3_20), m
-	egen totaldel4_20 =	rowtotal(del_util4_20 cs_util4_20), m
-	egen totaldel5_20=	rowtotal(del_util5_20 cs_util5_20), m
-	egen totaldel6_20=	rowtotal(del_util6_20 cs_util6_20), m
-	egen totaldel7_20=	rowtotal(del_util7_20 cs_util7_20), m
-	egen totaldel8_20=	rowtotal(del_util8_20 cs_util8_20), m
-	egen totaldel9_20=	rowtotal(del_util9_20 cs_util9_20), m
-	egen totaldel10_20=	rowtotal(del_util10_20 cs_util10_20), m
-	egen totaldel11_20=	rowtotal(del_util11_20 cs_util11_20), m
-
 
 save "$user/$data/Data for analysis/Ethiopia_Facility_Jan19-Nov20_WIDE.dta", replace	
 *N=28,866
