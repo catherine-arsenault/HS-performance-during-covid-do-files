@@ -282,7 +282,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		   xlabel(-100, -50, 0, 50, 100) xtick (-100, -50, 0, 50, 100) ciopt(lcolor(purple) lwidth(thin)) ///
 		   pointopt(msize(tiny) mcolor(purple)) title("Chronic diseases and accidents", size(vsmall))
 	  graph export "$analysis/Results/Graphs/Forest plot-chronic.pdf", replace
-*/
+
 ********************************************************************************		   
 * 	Heatmap
 ********************************************************************************

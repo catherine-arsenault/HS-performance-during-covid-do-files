@@ -25,7 +25,8 @@ global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 * Variables available in each country
 
 global CHLall del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
-	   er_util mental_util anc_util
+	   er_util mental_util anc_util hyper_util diab_util measles_qual pent_qual ///
+	   bcg_qual pneum_qual 
 
 global ETHall fp_util anc_util del_util cs_util pnc_util  diarr_util pneum_util ///
 	   malnu_util vacc_qual bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///
