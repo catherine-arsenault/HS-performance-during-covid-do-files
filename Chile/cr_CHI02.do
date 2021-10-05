@@ -79,11 +79,6 @@ road_util9_20	road_util10_20	road_util11_20	road_util12_20)
 *duplicate id corrected 
 replace id=118808 if facilityname=="SAPU San Pedro de La Paz" & municipality=="San Pedro de la Paz"
 
-*drop missing observation 
-egen total =rowtotal(road_util1_19 - road_util12_20)
-drop if total==0 
-drop total 
-
 *6 observations with duplicate ids were dropped 
 duplicates tag id, generate(dup_id)
 drop if dup_id ==1 
@@ -122,22 +117,53 @@ mental_util9_20	mental_util10_20	mental_util11_20	mental_util12_20)
 
 merge 1:1 id using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
 drop _merge 
-gen str facname = facilityname
-egen total =rowtotal(mental_util1_19-er_util12_20)
-drop if total==0 
-drop total 
-duplicates tag region facname, gen(tag)
-
-replace facname = "Centro de Salud Familiar Cardenal Silva Henríquez_Peñalolén" ///
-		if facname=="Centro de Salud Familiar Cardenal Silva Henríquez" & municipality=="Peñalolén"
-replace facname ="Posta de Salud Rural Cayumapu_Pangui" if facname=="Posta de Salud Rural Cayumapu" ///
-	& municipality=="Panguipulli"		
-replace facname="Posta de Salud Rural Idahue_Colta" if facname=="Posta de Salud Rural Idahue" & municipality=="Coltauco"
-replace facname="SAPU Eduardo Frei Montalva_Cisterna" if facname=="SAPU Eduardo Frei Montalva" & municipality=="La Cisterna"
-replace facname="SAPU Juan Pablo II_Serena" if facname=="SAPU Juan Pablo II" & municipality=="La Serena"
-replace facname="SAR Alemania_Calama" if facname=="SAR Alemania" & municipality=="Calama"
 save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
+
 * Data received September 2021
+******************************************************************************
+* Diabetes - 1,863 facilities 
+import delimited "/$user/$data/Raw data/CL - Care Diabetes.csv", clear delim(";")
+rename (_0enero-v29) ///
+(		diab_util1_19	diab_util2_19	diab_util3_19	diab_util4_19	diab_util5_19	diab_util6_19 ///
+	    diab_util7_19	diab_util8_19	diab_util9_19	diab_util10_19  diab_util11_19	diab_util12_19 ///
+		diab_util1_20	diab_util2_20	diab_util3_20	diab_util4_20	diab_util5_20	diab_util6_20 ///
+		diab_util7_20   diab_util8_20   diab_util9_20   diab_util10_20 diab_util11_20 diab_util12_20)
+rename (establecimiento comuna nivelatencion) (facilityname municipality levelofattention)
+merge 1:1 id using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
+drop _merge 
+save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
+******************************************************************************
+* Hypertension - 1914 facilities
+import delimited "/$user/$data/Raw data/CL - Care Hypertension.csv", clear delim(";")
+rename (_0enero-v29) ///
+(	hyper_util1_19	hyper_util2_19	hyper_util3_19	hyper_util4_19	hyper_util5_19	hyper_util6_19	///
+	hyper_util7_19 	hyper_util8_19	hyper_util9_19	hyper_util10_19	hyper_util11_19	hyper_util12_19 ///
+	hyper_util1_20	hyper_util2_20	hyper_util3_20	hyper_util4_20	hyper_util5_20	hyper_util6_20 ///
+	hyper_util7_20  hyper_util8_20  hyper_util9_20  hyper_util10_20 hyper_util11_20 hyper_util12_20)
+rename (establecimiento comuna nivelatencion) (facilityname municipality levelofattention)
+merge 1:1 id using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
+drop _merge 
+
+replace region="Biobío" if region=="Región del Bío Bío" | region=="Región Del Bíobío"
+replace region="Antofagasta" if region=="Región De Antofagasta"
+replace region="Arica y Parinacota" if region=="Región De Arica Parinacota"
+replace region="Atacama" if region=="Región De Atacama"
+replace region="Aysén del General Carlos Ibáñez del Campo" if region=="Región De Aysén del General Carlos Ibañez del Campo"
+replace region="Coquimbo" if region=="Región De Coquimbo"
+replace region="La Araucanía" if region=="Región De La Araucanía"
+replace region="Los Lagos" if region=="Región De Los Lagos"
+replace region="Los Ríos" if region=="Región De Los Ríos"
+replace region="Magallanes y de la Antártica Chilena" if region=="Región De Magallanes y de la Antártica Chilena"
+replace region="Tarapacá" if region=="Región De Tarapacá"
+replace region="Valparaíso" if region=="Región De Valparaíso"
+replace region="Ñuble" if region=="Región De Ñuble"
+replace region="Libertador General Bernardo O'Higgins" if region=="Región Del Libertador Gral. B. O'Higgins"
+replace region="Maule" if region=="Región Del Maule"
+replace region="Metropolitana de Santiago" if region=="Región Metropolitana de Santiago"
+
+save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
+******************************************************************************
+* HOSPITAL LEVEL DATA (PUBLIC AND PRIVATE)
 ******************************************************************************
 * Deliveries - 340 public and private hospitals
 import excel using "/$user/$data/Raw data/Hosp_O80_O84_PARTOS TOTALES.xlsx",  firstrow clear
@@ -150,7 +176,7 @@ rename (O - AL) ///
 	del_util4_20	del_util5_20	del_util6_20 del_util7_20    del_util8_20 ///
 	del_util9_20    del_util10_20 del_util11_20 del_util12_20)  
 
-save "$user/$data/Data for analysis/tmp.dta", replace
+save "$user/$data/Data for analysis/tmpH.dta", replace
 ******************************************************************************
 * C-sections - 340 public and private hospitals	
 import excel using "/$user/$data/Raw data/Hosp_O82_O842_PARTOS CESAREAS.xlsx",  firstrow clear
@@ -165,7 +191,7 @@ rename (N-AK) ///
 
 merge 1:1 GLOSA_ESTABLECIMIENTO_SALUD using "$user/$data/Data for analysis/tmp.dta"
 drop _merge 
-save "$user/$data/Data for analysis/tmp.dta", replace
+save "$user/$data/Data for analysis/tmpH.dta", replace
 
 ******************************************************************************
 * Inpatient admissions - 340 public and private hospitals	
@@ -178,21 +204,88 @@ rename (N-AK) ///
 	ipd_util11_19	ipd_util12_19 ipd_util1_20		ipd_util2_20		ipd_util3_20 ///
 	ipd_util4_20		ipd_util5_20		ipd_util6_20 ipd_util7_20     ipd_util8_20 ///
     ipd_util9_20     ipd_util10_20 ipd_util11_20 ipd_util12_20)	
-
-merge 1:1 GLOSA_ESTABLECIMIENTO_SALUD using "$user/$data/Data for analysis/tmp.dta"
+merge 1:1 GLOSA_ESTABLECIMIENTO_SALUD using "$user/$data/Data for analysis/tmpH.dta"
 drop _merge 
-rename GLOSA_ESTABLECIMIENTO_SALUD facname 
+rename GLOSA_ESTABLECIMIENTO_SALUD facilityname 
 
-merge 1:1 region facname using "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta"
-drop _merge tag
-replace region="Región Del Bíobío" if region=="Región del Bío Bío"
+replace region="Biobío" if region=="Región del Bío Bío" | region=="Región Del Bíobío"
+replace region="Antofagasta" if region=="Región De Antofagasta"
+replace region="Arica y Parinacota" if region=="Región De Arica Parinacota"
+replace region="Atacama" if region=="Región De Atacama"
+replace region="Aysén del General Carlos Ibáñez del Campo" if region=="Región De Aysén del General Carlos Ibañez del Campo"
+replace region="Coquimbo" if region=="Región De Coquimbo"
+replace region="La Araucanía" if region=="Región De La Araucanía"
+replace region="Los Lagos" if region=="Región De Los Lagos"
+replace region="Los Ríos" if region=="Región De Los Ríos"
+replace region="Magallanes y de la Antártica Chilena" if region=="Región De Magallanes y de la Antártica Chilena"
+replace region="Tarapacá" if region=="Región De Tarapacá"
+replace region="Valparaíso" if region=="Región De Valparaíso"
+replace region="Ñuble" if region=="Región De Ñuble"
+replace region="Libertador General Bernardo O'Higgins" if region=="Región Del Libertador Gral. B. O'Higgins"
+replace region="Maule" if region=="Región Del Maule"
+replace region="Metropolitana de Santiago" if region=="Región Metropolitana de Santiago"
 
-save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
+save "$user/$data/Data for analysis/tmpH.dta", replace
 
-rm "$user/$data/Data for analysis/tmp.dta"	
-*******************************************************************************
+******************************************************************************
+* COMUNA LEVEL DATA 
+******************************************************************************
+* Vaccines - 345 communities
+* Hexavalent
+import excel using "/$user/$data/Raw data/Hexavalente.xlsx",  firstrow clear
+rename (_Enero-Z) ///
+(pent_qual1_19	pent_qual2_19	pent_qual3_19	pent_qual4_19	pent_qual5_19	pent_qual6_19	pent_qual7_19	pent_qual8_19	pent_qual9_19	pent_qual10_19	pent_qual11_19	pent_qual12_19 ///
+pent_qual1_20	pent_qual2_20	pent_qual3_20	pent_qual4_20	pent_qual5_20	pent_qual6_20 pent_qual7_20   pent_qual8_20   pent_qual9_20   pent_qual10_20 pent_qual11_20 pent_qual12_20)
+save "$user/$data/Data for analysis/tmp.dta", replace
+	
+* BCG 
+import excel using "/$user/$data/Raw data/BCG.xlsx",  firstrow clear
+rename (_Enero-Z) ///
+(bcg_qual1_19	bcg_qual2_19	bcg_qual3_19	bcg_qual4_19	bcg_qual5_19	bcg_qual6_19	bcg_qual7_19	bcg_qual8_19	bcg_qual9_19	bcg_qual10_19	bcg_qual11_19	bcg_qual12_19 ///
+bcg_qual1_20	bcg_qual2_20	bcg_qual3_20	bcg_qual4_20	bcg_qual5_20	bcg_qual6_20 bcg_qual7_20    bcg_qual8_20    bcg_qual9_20    bcg_qual10_20 bcg_qual11_20 bcg_qual12_20)
+
+merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmp.dta"
+drop _merge 
+save "$user/$data/Data for analysis/tmp.dta", replace
+
+*PCV
+import excel using "/$user/$data/Raw data/Neumococica.xlsx",  firstrow clear
+rename (_Enero-Z) /// 
+(pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19 ///
+pneum_qual1_20	pneum_qual2_20	pneum_qual3_20	pneum_qual4_20	pneum_qual5_20	pneum_qual6_20 pneum_qual7_20  pneum_qual8_20  pneum_qual9_20  pneum_qual10_20 pneum_qual11_20 pneum_qual12_20)
+merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmp.dta"
+drop _merge 
+save "$user/$data/Data for analysis/tmp.dta", replace
+
+*MMR
+import excel using "/$user/$data/Raw data/Tresvirica.xlsx",  firstrow clear
+rename (_Enero-Z) /// 
+(measles_qual1_19	measles_qual2_19	measles_qual3_19	measles_qual4_19	measles_qual5_19	measles_qual6_19	measles_qual7_19	measles_qual8_19	measles_qual9_19	measles_qual10_19	measles_qual11_19	measles_qual12_19 measles_qual1_20	measles_qual2_20	measles_qual3_20	measles_qual4_20	measles_qual5_20 ///
+	measles_qual6_20	measles_qual7_20 measles_qual8_20 measles_qual9_20 measles_qual10_20 measles_qual11_20 measles_qual12_20)
+merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmp.dta"
+drop _merge 
+save "$user/$data/Data for analysis/tmp.dta", replace
+
+/*******************************************************************************
 *END
 *******************************************************************************
+
+
+*drop missing observation 
+egen total =rowtotal(hyper_util1_19 - road_util12_20)
+drop if total==0 
+drop total 
+gen str facname = facilityname
+duplicates tag region facname, gen(tag)
+
+replace facname = "Centro de Salud Familiar Cardenal Silva Henríquez_Peñalolén" ///
+		if facname=="Centro de Salud Familiar Cardenal Silva Henríquez" & municipality=="Peñalolén"
+replace facname ="Posta de Salud Rural Cayumapu_Pangui" if facname=="Posta de Salud Rural Cayumapu" ///
+	& municipality=="Panguipulli"		
+replace facname="Posta de Salud Rural Idahue_Colta" if facname=="Posta de Salud Rural Idahue" & municipality=="Coltauco"
+replace facname="SAPU Eduardo Frei Montalva_Cisterna" if facname=="SAPU Eduardo Frei Montalva" & municipality=="La Cisterna"
+replace facname="SAPU Juan Pablo II_Serena" if facname=="SAPU Juan Pablo II" & municipality=="La Serena"
+replace facname="SAR Alemania_Calama" if facname=="SAR Alemania" & municipality=="Calama"
 
 
 	
