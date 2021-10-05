@@ -11,7 +11,7 @@ global vars anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util d
 hyper_util hivtest_qual tbdetect_qual
  
 * Descriptives
-ta eased_fixed if tag // 237 out of 753 (31.47%) eased containment policies in August 
+ta eased_fixed if tag // 240 out of 753 (32.61%) eased containment policies in August 
 
 * Number of Palika and total volume of services by month
 table (month), nototals stat(count fp_util anc_util) stat(sum fp_util anc_util) 

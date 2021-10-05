@@ -13,11 +13,13 @@ use "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta"
 *** TABLE 4 ***
 * Simple comparison of means - two period comparison of just April to June compared to August to September
 tabstat anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
-hyper_util hivtest_qual tbdetect_qual if month == 3 | 4 | 5 | 6, stat(N mean) col(stat)
+hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0 & post == 0, stat(N mean) col(stat)
+tabstat anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
+hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 & post == 0, stat(N mean) col(stat)
 tabstat  anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util ///
-hyper_util hivtest_qual tbdetect_qual if month == 8 | 9 & eased_fixed == 0, stat(N mean) col(stat)
+hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0 & post == 1, stat(N mean) col(stat)
 tabstat  anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
-hyper_util hivtest_qual tbdetect_qual if month == 8 | 9 & eased_fixed == 1 , stat(N mean) col(stat)
+hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 & post == 1, stat(N mean) col(stat)
 
 
 *** Difference-in-differences analysis- treatment status fixed based on treatment in month 8 
