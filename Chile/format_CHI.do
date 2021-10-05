@@ -11,7 +11,7 @@ created in google data studio
 *****************************************************************/
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
-global all del_util cs_util ipd_util road_util surg_util pnc_util fp_util er_util mental_util anc_util
+global all del_util cs_util hyper_util diab_util ipd_util road_util surg_util pnc_util fp_util er_util mental_util anc_util
 
 * Create national total
 	rename (org1-org5) (region municipality levelofattention facilityname id)
@@ -31,7 +31,7 @@ global all del_util cs_util ipd_util road_util surg_util pnc_util fp_util er_uti
 	drop reg 
 	order region 
 	
-reshape long del_util cs_util ipd_util road_util surg_util pnc_util fp_util er_util ///
+reshape long del_util cs_util hyper_util diab_util ipd_util road_util surg_util pnc_util fp_util er_util ///
              mental_util anc_util, i(region) j(month) string 
 	
 * Month and year
@@ -83,7 +83,7 @@ u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 rename (org1-org5) (region municipality levelofattention facilityname id)
 
 reshape long del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
-			er_util mental_util anc_util, i(region municipality levelofattention ///
+			er_util mental_util anc_util hyper_util diab_util, i(region municipality levelofattention ///
 			facilityname id) j(month) string 
 	
 * Month and year
@@ -106,12 +106,67 @@ reshape long del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
 		replace mo = 12 if month =="12_19" | month =="12_20"
 		drop month	
 		rename mo month
-		sort region municipality levelofattention facilityname id year month
-		order region municipality levelofattention facilityname id year month	
-		
-* Saves dataset for analyses 		
-save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
-		
+		* Saves dataset for analyses 		
+		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
+/****************************************************************
+		ADDING HOSPITAL LEVEL DATA
+*****************************************************************/
+u "$user/$data/Data for analysis/tmpH.dta", clear 
+reshape long ipd_util del_util cs_util , i(region facilityname) j(month) string
+* Month and year
+	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	///
+	month=="4_20" |	month=="5_20" | month=="6_20"  | month=="7_20" | ///
+	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
+		replace year = 2019 if year==.
+		gen mo = 1 if month =="1_19" | month =="1_20"
+		replace mo = 2 if month =="2_19" | month =="2_20"
+		replace mo = 3 if month =="3_19" | month =="3_20"
+		replace mo = 4 if month =="4_19" | month =="4_20"
+		replace mo = 5 if month =="5_19" | month =="5_20"
+		replace mo = 6 if month =="6_19" | month =="6_20"
+		replace mo = 7 if month =="7_19" | month =="7_20"
+		replace mo = 8 if month =="8_19" | month =="8_20"
+		replace mo = 9 if month =="9_19" | month =="9_20"
+		replace mo = 10 if month =="10_19" | month =="10_20"
+		replace mo = 11 if month =="11_19" | month =="11_20"
+		replace mo = 12 if month =="12_19" | month =="12_20"
+		drop month	
+		rename mo month
+		append  using "$user/$data/Data for analysis/Chile_su_24months.dta"
+		order region municipality levelofattention facilityname id org6 year month 
+		* Saves dataset for analyses 		
+		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
+/****************************************************************
+		ADDING VACCINATION DATA AT THE COMUNA LEVEL
+*****************************************************************/
+u "$user/$data/Data for analysis/tmp.dta", clear 
+rename (Comuna REGION) (municipality region)
+reshape long measles_qual pneum_qual bcg_qual pent_qual, i(region municipality) j(month) string
+* Month and year
+	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	///
+	month=="4_20" |	month=="5_20" | month=="6_20"  | month=="7_20" | ///
+	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
+		replace year = 2019 if year==.
+		gen mo = 1 if month =="1_19" | month =="1_20"
+		replace mo = 2 if month =="2_19" | month =="2_20"
+		replace mo = 3 if month =="3_19" | month =="3_20"
+		replace mo = 4 if month =="4_19" | month =="4_20"
+		replace mo = 5 if month =="5_19" | month =="5_20"
+		replace mo = 6 if month =="6_19" | month =="6_20"
+		replace mo = 7 if month =="7_19" | month =="7_20"
+		replace mo = 8 if month =="8_19" | month =="8_20"
+		replace mo = 9 if month =="9_19" | month =="9_20"
+		replace mo = 10 if month =="10_19" | month =="10_20"
+		replace mo = 11 if month =="11_19" | month =="11_20"
+		replace mo = 12 if month =="12_19" | month =="12_20"
+		drop month	
+		rename mo month
+		append  using "$user/$data/Data for analysis/Chile_su_24months.dta"
+		order region municipality levelofattention facilityname id org6 year month 
+		* Saves dataset for analyses 		
+		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
 		
 		
 		
