@@ -97,7 +97,28 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1600, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/NEP_measles_qual.pdf", replace
+* hiv			
+			u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
+			qui xtreg hivtest_qual rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_hivtest_qual
+			qui xtreg hivtest_qual rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_hivtest_qual 
+			
+			collapse hivtest_qual linear_hivtest_qual season_hivtest_qual, by(rmonth)
 
+			twoway (scatter hivtest_qual rmonth, msize(vsmall)  sort) ///
+			(line linear_hivtest_qual rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_hivtest_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit hivtest_qual rmonth if rmonth<15, lcolor(green)) ///
+			(lfit hivtest_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+				(lfit hivtest_qual rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+			 xline(20, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title(" Nepal outpatient visits (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(250)2000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/NEP_hivtest_qual.pdf", replace
 /* ANC			
 			u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
 			qui xtreg anc_util rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
