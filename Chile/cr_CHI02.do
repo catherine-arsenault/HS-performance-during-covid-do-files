@@ -162,6 +162,7 @@ replace region="Maule" if region=="Región Del Maule"
 replace region="Metropolitana de Santiago" if region=="Región Metropolitana de Santiago"
 
 save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", replace
+
 ******************************************************************************
 * HOSPITAL LEVEL DATA (PUBLIC AND PRIVATE)
 ******************************************************************************
@@ -189,7 +190,7 @@ rename (N-AK) ///
 	cs_util4_20		cs_util5_20		cs_util6_20 cs_util7_20     cs_util8_20 ///
     cs_util9_20     cs_util10_20 cs_util11_20 cs_util12_20)	
 
-merge 1:1 GLOSA_ESTABLECIMIENTO_SALUD using "$user/$data/Data for analysis/tmp.dta"
+merge 1:1 GLOSA_ESTABLECIMIENTO_SALUD using "$user/$data/Data for analysis/tmpH.dta"
 drop _merge 
 save "$user/$data/Data for analysis/tmpH.dta", replace
 

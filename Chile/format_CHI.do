@@ -6,12 +6,12 @@
 /****************************************************************
 This do file formats the dataset for the interactive dashboard 
 created in google data studio
-****************************************************************
-		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
-*****************************************************************/
+********************************************************************************
+COLLAPSE PRIMARY CARE DATA TO PROVINCE LEVEL AND RESHAPE FOR DASHBOARD
+********************************************************************************/
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 
-global all del_util cs_util hyper_util diab_util ipd_util road_util surg_util pnc_util fp_util er_util mental_util anc_util
+global all  hyper_util diab_util  road_util surg_util pnc_util fp_util er_util mental_util anc_util
 
 * Create national total
 	rename (org1-org5) (region municipality levelofattention facilityname id)
@@ -31,7 +31,7 @@ global all del_util cs_util hyper_util diab_util ipd_util road_util surg_util pn
 	drop reg 
 	order region 
 	
-reshape long del_util cs_util hyper_util diab_util ipd_util road_util surg_util pnc_util fp_util er_util ///
+reshape long  hyper_util diab_util  road_util surg_util pnc_util fp_util er_util ///
              mental_util anc_util, i(region) j(month) string 
 	
 * Month and year
@@ -73,16 +73,13 @@ drop year
 merge m:m region month using "$user/$data/temp.dta"
 drop _merge
 
-
 rm "$user/$data/temp.dta"
 export delimited using "$user/$data/Chile_Jan19-Dec20_fordashboard.csv", replace
-/****************************************************************
-		CREATE FINAL DATASET AT FACILITY-LEVEL FOR ANALYSES
-*****************************************************************/
+
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
 rename (org1-org5) (region municipality levelofattention facilityname id)
 
-reshape long del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
+reshape long  road_util surg_util pnc_util fp_util ///
 			er_util mental_util anc_util hyper_util diab_util, i(region municipality levelofattention ///
 			facilityname id) j(month) string 
 	
@@ -108,6 +105,7 @@ reshape long del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
 		rename mo month
 		* Saves dataset for analyses 		
 		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
+		
 /****************************************************************
 		ADDING HOSPITAL LEVEL DATA
 *****************************************************************/
@@ -134,7 +132,7 @@ reshape long ipd_util del_util cs_util , i(region facilityname) j(month) string
 		drop month	
 		rename mo month
 		append  using "$user/$data/Data for analysis/Chile_su_24months.dta"
-		order region municipality levelofattention facilityname id org6 year month 
+		order region municipality levelofattention facilityname id  year month 
 		* Saves dataset for analyses 		
 		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
 /****************************************************************
@@ -164,7 +162,7 @@ reshape long measles_qual pneum_qual bcg_qual pent_qual, i(region municipality) 
 		drop month	
 		rename mo month
 		append  using "$user/$data/Data for analysis/Chile_su_24months.dta"
-		order region municipality levelofattention facilityname id org6 year month 
+		order region municipality levelofattention facilityname id  year month 
 		* Saves dataset for analyses 		
 		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
 		
