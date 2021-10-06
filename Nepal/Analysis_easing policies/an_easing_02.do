@@ -192,6 +192,7 @@ eststo clear
 
 restore
 
+
 *** MODEL 3 ***
 * Difference-in-differences regression with multiple pre and post periods, time-varying treatment
 
@@ -206,6 +207,7 @@ esttab, ci r2 ar2 compress nobaselevels title("Table 8: DD regression with multi
 eststo clear
 
 
+
 *** ADDING MORE INDICATORS ****
 
 eststo: xtreg pent_qual eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
@@ -216,15 +218,18 @@ eststo: xtreg pneum_qual eased_ covid_case i.month, i(palikaid) fe cluster(palik
 eststo: xtreg diarr_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
 eststo: xtreg pneum_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
 
+
 esttab, ci r2 ar2 compress nobaselevels title("DD regression with multiple pre and post periods, time-varying treatment status, Months 3 through 9") mtitles ("Pentavalent vaccine" "BCG vaccine" "Measles vaccine" "OPV vaccine" "Pneum vaccine" "Diarrhea visits" "Pneumonia visits") rename(eased_ Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9")
 
 eststo clear
+
 
 
 *** MODEL 4 *** NOT SURE 
 *** Multiple pre-periods and August and September as post period, looking at if the effect differs based on easing in months 8 and 9, or easing in just month 9 ***
 
 gen early = eased_cat == 2
+
 
 gen late = eased_cat == 3
 
@@ -242,7 +247,9 @@ eststo: xtreg anc_util early late covid_case i.month, i(palikaid) fe cluster(pal
 
 test early==late
 
+
 eststo: xtreg pnc_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
+
 
 test early==late
 
@@ -258,6 +265,7 @@ esttab, ci r2 ar2 compress nobaselevels title("Table 10: Difference-in differenc
 
 eststo clear 
 
+
 *** ADDING MORE INDICATORS *** 
 
 eststo: xtreg pent_qual early late covid_case i.month, i(palikaid) fe cluster(palikaid)
@@ -268,7 +276,9 @@ eststo: xtreg pneum_qual early late covid_case i.month, i(palikaid) fe cluster(p
 eststo: xtreg diarr_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
 eststo: xtreg pneum_util early late covid_case i.month, i(palikaid) fe cluster(palikaid)
 
+
 esttab, ci r2 ar2 compress nobaselevels title("Table 10: Difference-in differences regression looking at easing in month 8 versus month 9") mtitles ("Pentavalent vaccine" "BCG vaccine" "Measles vaccine" "OPV vaccine" "Pneum vaccine" "Diarrhea visits" "Pneumonia visits") rename(eased_ "Eased" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" early "Early" late "Late"covid_case "Covid cases")
+
 
 eststo clear 
 

@@ -3,12 +3,9 @@
 * PI Catherine Arsenault
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
+*global dofiles "/Users/annagage/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
 global data "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
-
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ethiopia"
-
 
 ********************************************************************************
 * Creation do files

@@ -15,6 +15,7 @@ ta eased_fixed if tag // 240 out of 753 (32.61%) eased containment policies in A
 
 * Number of Palika and total volume of services by month
 table (month), nototals stat(count fp_util anc_util) stat(sum fp_util anc_util) 
+
 table (month), nototals stat(count pnc_util diarr_util) stat(sum  pnc_util diarr_util) 
 table (month), nototals stat(count pneum_util pent_qual) stat(sum pneum_util pent_qual)
 table (month), nototals stat(count opd_util diab_uti) stat(sum opd_util diab_uti)
@@ -37,6 +38,7 @@ foreach var of global vars {
 twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) (line `var' month if eased_fixed == 1, lcolor(green)) (scatter `var' month if eased_fixed == 0, mcolor(navy)) (line `var' month if eased_fixed == 0, lcolor(navy)), title(`var') ytitle("Average number of visits") xtitle(Month) legend(label (1 "") label (2 "Eased policies (treated)") label (3 "") label (4 "Maintained policies (control)"))
 
 graph export "$user/$analysis/Graphs/fixed_`var'.pdf", replace
+
 
 }
 
@@ -69,7 +71,9 @@ twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) (line `var' mont
 
 graph export "$user/$analysis/Graphs/sum_fixed_`var'.pdf", replace
 
+
 }
+
 
 *Parrallel trends graphs - Lifted early, late or never - SUM
 clear
@@ -87,6 +91,8 @@ graph export "$user/$analysis/Graphs/sum_early_late_`var'.pdf", replace
 
 }
 
+
+restore
 
 /* Old code 
 * Graphs with confidence intervals 

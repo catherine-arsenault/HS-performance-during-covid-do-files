@@ -26,8 +26,7 @@ rename (diarrhoeadiseasesunder5years pneumoniacasesunder5years ///
 
 * Vaccines 
 egen vacc_qual = rowtotal(fullyimmunizedchildren011m ///
-						  fullyimmunizedchildren1223months ///
-						  fullyimmunizedchildren2459months), m 
+						  fullyimmunizedchildren1223months), m 
 rename 	(pregnantwomengiventd2 numberofchildrenimmunizedbyage1p ///
          numberofchildrenimmunizedbyage1b opvpolio3childrenvaccinated ///
 		 pcv3childrenvaccinated)	///

@@ -23,23 +23,24 @@ global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
 global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 ********************************************************************************
 * Variables available in each country
-global sentinel opd_util del_util pnc_util art_util diab_util 
 
-global CHLall fp_util anc_util pnc_util er_util surg_util road_util mental_util 
+global CHLall del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
+	   er_util mental_util anc_util hyper_util diab_util measles_qual pent_qual ///
+	   bcg_qual pneum_qual 
 
 global ETHall fp_util anc_util del_util cs_util pnc_util  diarr_util pneum_util ///
 	   malnu_util vacc_qual bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///
 	   rota_qual art_util opd_util er_util ipd_util  road_util 
 
 global GHAall fp_util anc_util del_util cs_util pnc_util diarr_util ///
-       pneum_util malnu_util vacc_qual bcg_qual pent_qual ///
+       pneum_util vacc_qual bcg_qual pent_qual ///
 	   measles_qual opv3_qual pneum_qual rota_qual opd_util ipd_util road_util ///
 	   diab_util hyper_util malaria_util tbdetect_qual 
  
 global HTIall opd_util fp_util anc_util del_util pnc_util vacc_qual diab_util ///
-	   hyper_util cerv_qual
+	   hyper_util 
 			  
-global KZNall anc_util del_util cs_util pnc_util diarr_util pneum_util malnu_util ///
+global KZNall anc_util del_util cs_util pnc_util diarr_util pneum_util  ///
 	   art_util opd_util ipd_util road_util diab_util cerv_qual	tbscreen_qual ///
 	   tbdetect_qual tbtreat_qual vacc_qual bcg_qual pent_qual measles_qual ///
 	   pneum_qual rota_qual  trauma_util  
@@ -62,16 +63,20 @@ global KORall anc_util del_util cs_util diarr_util pneum_util diab_util hyper_ut
 global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_util  		
   
 ******************************************************************************** 
-* Creates datasets for paper 1 analyses
+* Creates datasets for analyses
 do "$dofiles/cr_su_01.do"
 
 ********************************************************************************
-* Regression analyses 
+* Regression analyses, forest plots and heatmap
+do "$dofiles/an_su_01.do"
+
+********************************************************************************
+* Estimated missed visits
 do "$dofiles/an_su_02.do"
 
 ********************************************************************************
-* Creates multi country graphs
-do "$dofiles/cr_su_02.do"
+* Full regression results for appendix
+do "$dofiles/an_su_03.do"
 
 ********************************************************************************
 * Country-specific graphs

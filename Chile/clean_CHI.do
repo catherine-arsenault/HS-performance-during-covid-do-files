@@ -22,19 +22,16 @@ clear all
 set more off	
 
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta", clear
-order region municipality levelofattention facilityname id
-rename (region-id) (org1 org2 org3 org4 org5)
+order region municipality  levelofattention facilityname id
+rename (region-id) (org1 org2 org3 org4 org5 )
 ********************************************************************
-* 2541 facilities 
+* 2808 facilities 
 * Dropping all facilities that don't report any indicators all period
-egen all_visits = rowtotal(mental_util1_19 - er_util12_20), m
-drop if all_visits==0 //6 observations dropped
+egen all_visits = rowtotal(hyper_util1_19 - er_util12_20), m
+drop if all_visits==0 // 6 observations dropped
 drop all_visits 
 ********************************************************************
-*1 facility has no information on region, municipality, and level of attention 
-* drop if org1 == "#N/A" I used the information from google.
-********************************************************************
-global volumes road_util surg_util pnc_util fp_util er_util mental_util anc_util
+global volumes  diab_util hyper_util  road_util surg_util pnc_util fp_util er_util mental_util anc_util
 
 /****************************************************************
 TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
@@ -58,7 +55,7 @@ foreach var of global volumes {
 drop *report
 
 preserve
-	local volumes road_util surg_util pnc_util fp_util er_util mental_util anc_util
+	local volumes  hyper_util diab_util road_util surg_util pnc_util fp_util er_util mental_util anc_util
 			   
 	reshape long `volumes', i(org*) j(month, string)
 	recode `volumes' (.=0) (1/999999999=1)
@@ -82,7 +79,9 @@ restore
 ****************************************************************
 *EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
 ****************************************************************
-*export excel using "$user/$data/Data cleaning/Chile_Jan19-Dec20_fordatacleaning1.xlsx", firstrow(variable) replace
+*export excel using "$user/$data/Data cleaning/Chile_Jan19-Dec20_fordatacleaning2.xlsx", firstrow(variable) replace
+
+* No missing data in Chile. No need to run complete case analysis code.
 
 
 /****************************************************************
@@ -95,7 +94,6 @@ outlier a value of 1 if facility reports: 0 0 0 0 0 1 0 0 0 0 0 0  which is
 common for mortality indicators.  
 
 */
-
 foreach x of global volumes {
 			egen rowmean`x'= rowmean(`x'*)
 			egen rowsd`x'= rowsd(`x'*)
@@ -111,6 +109,7 @@ foreach x of global volumes {
 
 save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
 
+rm "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta" 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL
 ****************************************************************/
