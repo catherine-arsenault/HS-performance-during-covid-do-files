@@ -59,23 +59,16 @@ foreach x of global volumes {
 	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
 }
 
-/****************************************************************
-      DROPS THE MONTHS NOT USED IN THIS ANALYSIS
-*****************************************************************/
-drop *19 *1_20 *2_20 *7_20 *10_20 *11_20 *12_20 //  Jan2019 to Feb2020, July2020 and Oct-Dec2020
-* What remains is months 3-6 2020 and 8-9 2020
 **************************************************************
                  *COMPLETE CASE ANALYSIS 1 
-				 * 6/6 months reported 
+				 * 5/5 months reported 
 ****************************************************************
 			 
 foreach x of global volumes { 
 			 	preserve
 					keep org* `x'* 
-					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=6
-					/* keep if at least 6 out of 6 are reported */
-					drop total`x'
+					keep if `x'3_20!=. & `x'4_20!=. & `x'5_20!=. & `x'6_20!=. &`x'8_20!=.
+					/* keep if at least 5 out of 5 are reported */
 					save "$user/$data/Data for analysis/tmp`x'.dta", replace
 				restore
 				}

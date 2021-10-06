@@ -6,7 +6,6 @@
 clear all
 use "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta", clear
 
-
 global vars anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
 hyper_util hivtest_qual tbdetect_qual
  
@@ -15,7 +14,6 @@ ta eased_fixed if tag // 240 out of 753 (32.61%) eased containment policies in A
 
 * Number of Palika and total volume of services by month
 table (month), nototals stat(count fp_util anc_util) stat(sum fp_util anc_util) 
-
 table (month), nototals stat(count pnc_util diarr_util) stat(sum  pnc_util diarr_util) 
 table (month), nototals stat(count pneum_util pent_qual) stat(sum pneum_util pent_qual)
 table (month), nototals stat(count opd_util diab_uti) stat(sum opd_util diab_uti)
@@ -29,16 +27,21 @@ foreach x of global vars {
 }
 
 *Parrallel trends graphs - Treated/control: Fixed policy change based on treatment status in August - AVERAGE
-
-collapse (mean) anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
+collapse (sum) anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
 hyper_util hivtest_qual tbdetect_qual, by(month eased_fixed)
 
 foreach var of global vars {
 
-twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) (line `var' month if eased_fixed == 1, lcolor(green)) (scatter `var' month if eased_fixed == 0, mcolor(navy)) (line `var' month if eased_fixed == 0, lcolor(navy)), title(`var') ytitle("Average number of visits") xtitle(Month) legend(label (1 "") label (2 "Eased policies (treated)") label (3 "") label (4 "Maintained policies (control)"))
+twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) ///
+	   (line `var' month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter `var' month if eased_fixed == 0, mcolor(navy)) ///
+	   (line `var' month if eased_fixed == 0, lcolor(navy)), ///
+	   xline(7, lpattern(dash) lcolor(black)) graphregion(color(white)) ///
+	   xlabel(3(1)9) title(diarr_util) ytitle("Average number of visits") ///
+	   xtitle(Month) legend(label (1 "") label (2 "Eased policies (treated)") ///
+	   label (3 "") label (4 "Maintained policies (control)"))
 
 graph export "$user/$analysis/Graphs/fixed_`var'.pdf", replace
-
 
 }
 
