@@ -59,7 +59,7 @@ graph export "$user/$analysis/Graphs/early_late_`var'.pdf", replace
 
 /* Old code 
 * Graphs with confidence intervals 
-			collapse (mean) y = hivtest_qual (semean) se_y = anc_util, by(month eased_fixed)
+			collapse (mean) y = anc_util (semean) se_y = anc_util, by(month eased_fixed)
 			gen yu = y + 1.96*se_y
 			gen yl = y - 1.96*se_y
  
@@ -67,5 +67,5 @@ graph export "$user/$analysis/Graphs/early_late_`var'.pdf", replace
 			(rcap yu yl month if eased_fixed == 1) (line y month if eased_fixed==1) ///
 			(scatter y month if eased_fixed==0) ///
 			(rcap yu  yl month if eased_fixed==0) (line y month if eased_fixed==0), ///
-			title("HIV Tests") xtitle("Month") ytitle(Average) legend(off) scheme(s2mono)
+			title("ANC visits") xtitle("Month") ytitle(Average) legend(off) scheme(s2mono)
 			
