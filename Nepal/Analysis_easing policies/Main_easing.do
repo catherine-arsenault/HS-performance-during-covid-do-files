@@ -21,7 +21,7 @@ do "$dofiles/Analysis_easing policies/cr_easing_01.do"
 
 **********************************************************************
 * Analysis do file
-* Descriptives
+* Descriptives and graphs
 do "$dofiles/Analysis_easing policies/an_easing_01.do"
 
 * Regression analyses
