@@ -27,11 +27,10 @@ hivtest_qual*_19 hivtest_qual*_20
 
 drop *_mort_* fp_perm* fp_la* totaldel*19 totaldel*20 
 
-
 ******************************************************************
 * 753 palika. Dropping all palika that don't report any indicators all year
 egen all_visits = rowtotal(fp_sa_util1_19-hivtest_qual12_20), m
-drop if all_visits==.
+drop if all_visits==. // 0 palikas dropped
 drop all_visits 
 ******************************************************************
 
@@ -60,18 +59,15 @@ foreach x of global volumes {
 	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
 }
 
-drop *19 *1_20 *2_20 *7_20 *10_20 *11_20 *12_20 
-
-
-save "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_WIDE_easing.dta", replace 
-
-
+/****************************************************************
+      DROPS THE MONTHS NOT USED IN THIS ANALYSIS
+*****************************************************************/
+drop *19 *1_20 *2_20 *7_20 *10_20 *11_20 *12_20 //  Jan2019 to Feb2020, July2020 and Oct-Dec2020
+* What remains is months 3-6 2020 and 8-9 2020
 **************************************************************
                  *COMPLETE CASE ANALYSIS 1 
-				 *All 6/6 months reported 
+				 * 6/6 months reported 
 ****************************************************************
-
-u "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_WIDE_easing.dta", clear 
 			 
 foreach x of global volumes { 
 			 	preserve
@@ -92,7 +88,7 @@ foreach x of global volumes {
 				drop _merge
 				save "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_WIDE.dta", replace  
 		}
-		
+* Removes temp files		
 	foreach x of global volumes { 
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }

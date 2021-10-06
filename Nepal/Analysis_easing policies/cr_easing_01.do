@@ -6,7 +6,8 @@
 /********************************************************************
 SUMMARY: THIS DO FILE CREATES THE DATASET FOR ANALYSIS
 
-1 Merges COVID-19 case data, death data, containment policy (exposure status) data, and DHIS2 data (outcome)
+1 Merges COVID-19 cases and deaths data, containment policy (exposure status)
+  data, and DHIS2 data (service volumes outcomes)
 
 2 Reshapes data from wide to long 
 
@@ -17,13 +18,13 @@ Month 7 dropped since policy lifting happened mid-month
 clear all
 set more off
 
-***** Importing and Cleaning COVID case data *****
-
+* Importing and Cleaning COVID case data at the district level
 import excel using "$user/$analysis/COVID Cases new one.xlsx", firstrow clear
 drop sn  date patient_name age sex province district
 drop if orgunitlevel3 == ""
 drop if year == 2021
 collapse (sum) covid_case, by (year month day orgunitlevel3) 
+sort org year month day
 ** Changing Western dates to Nepali dates - January, February and March (mostly) are fine 
 gen month_new = . 
 *Magh: Jan 15 - Feb 12 is 1 
@@ -58,37 +59,35 @@ replace month_new = 10 if month == 11 & day == 1 | month == 11 & day == 2 | mont
 replace month_new = 11 if month == 11 & month_new == .
 replace month_new = 11 if month == 12 & day == 1 | month == 12 & day == 2 | month == 12 & day == 3 | month == 12 & day == 4 | month == 12 & day == 5 | month == 12 & day == 6 | month == 12 & day == 7 | month == 12 & day == 8 | month == 12 & day == 9 | month == 12 & day == 10 | month == 12 & day == 11 | month == 12 & day == 12 | month == 12 & day == 13 | month == 12 & day == 14 | month == 12 & day == 15 
 
-drop if month == 1 | month == 12 | month_new == 7 | month_new == 10 | month_new == 11
+* Drops months not included in this analysis (Jan, July, Oct, Nov, Dec)
+drop if month == 1 | month_new == 7 | month_new == 10 | month_new == 11 | month == 12 
 drop month day
 rename month_new month
 
 order orgunitlevel3 year month covid_case
 collapse (sum) covid_case, by (year month orgunitlevel3) 
 save "$user/$data/Data for analysis/Nepal_covid_cases.dta", replace
-clear
 
-***** Importing and saving COVID death data as .dta file *****
+* Importing and saving COVID death data as .dta file at the district level
 import excel using "$user/$analysis/Death_DistrictWise_EDCD Data_2033 Cases.xlsx", sheet("Sheet1") firstrow clear
 drop District K L
 save "$user/$data/Data for analysis/Nepal_covid_deaths.dta", replace
-clear
 
-***** Importing policy data for merging *****
+* Importing policy data for merging. This is at the palika level
 * For each month, did the palika "ease" containment policies or not 
 import excel using "$user/$analysis/policy_data.xlsx", firstrow clear 
-drop eased_7_20 eased_10_20 eased_11_20
+drop eased_7_20 eased_10_20 eased_11_20 // remove july, Oct, Nov
 
-***** Merge policy data with health service utilization data ****
+* Merge policy data with health service utilization data (DHIS2)
 merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_WIDE.dta"
-** Four palikas in master-only - dropped during cleaning 
-drop if _merge == 1
+drop if _merge == 1 // Four palikas in master-only - dropped during cleaning 
 drop _merge
 
-***** Merge data with Covid data death data *****
+* Merge data with Covid deaths data 
 merge m:1 orgunitlevel3 using "$user/$data/Data for analysis/Nepal_covid_deaths.dta"
 drop covid_death_7_20 covid_death_10_20 covid_death_11_20 covid_death_12_20 _merge
 
-***** RESHAPES FROM WIDE TO LONG FOR ANALYSES *****
+* RESHAPES FROM WIDE TO LONG FOR ANALYSES 
 reshape long fp_sa_util anc_util del_util cs_util pnc_util diarr_util pneum_util opd_util ipd_util er_util ///
 	tbdetect_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual hyper_util diab_util hivtest_qual /// 
 	eased_ covid_death_ , i(org*) j(month) string	
@@ -107,17 +106,16 @@ sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo
 rename mo month
 order org* year month 
 
-***** Merge data with Covid case ****
+* Merge with Covid cases 
 merge m:1 orgunitlevel3 year month using "$user/$data/Data for analysis/Nepal_covid_cases.dta"
 drop _merge
 
-***** Other cleaning *****
-
+* Other cleaning 
 * If covid case or death is missing, 0 cases or deaths 
 replace covid_death_ = 0 if covid_death_ == .
 replace covid_case = 0 if covid_case == .
 
-* DROP PALIKAS THAT EASE AND THEN REIMPOSE
+* DROP PALIKAS THAT REMOVED POLICIES AND THEN REIMPOSED THEM
 drop if orgunitlevel3 == "501 RUKUM EAST"  | orgunitlevel3 == "407 TANAHU"
 
 * Renaming family planning
@@ -130,24 +128,23 @@ encode organisationunitname, gen(palikaid)
 egen tag = tag(organisationunitname)
 
 *******************************************************************************
-
-* Time-varying treatment status 
+* Assign time-varying treatment status 
+*******************************************************************************
 rename eased_ eased_tv
 
 * Post variable 
 gen post = month == 8 | month == 9
-replace post = 0 if month == 3 | month == 4 | month == 5 | month == 6
 
-*** Applying treatment status in month 8 to the full post period - fixed treatment status (eased early) 
+* Applying treatment status in month 8 to the full post period - fixed treatment status (eased in month 8/early) 
 gen eased_fixed = 1 if eased_tv == 1 & month == 8
-by organisationunitname,  sort: egen temp= sum(eased_fixed)
+by organisationunitname,  sort: egen temp= sum(eased_fixed) // here you could use the carryforward command
 replace eased_fixed = temp if eased_fixed==.
 drop temp
 gen eased_fixed_post = eased_fixed*post
 
 * Creating easing_late & eased_late_post
 gen eased_late = 1 if eased_tv == 1 & month == 9 & eased_fixed == 0
-by organisationunitname,  sort: egen temp= sum(eased_late)
+by organisationunitname,  sort: egen temp= sum(eased_late)  // here you could use the carryforward command
 replace eased_late = temp if eased_late==.
 drop temp
 gen eased_late_post = eased_late*post
