@@ -86,37 +86,4 @@ foreach x of global volumes {
 			 rm "$user/$data/Data for analysis/tmp`x'.dta"
 			 }
 	 
-/*
-**************************************************************
-                 *COMPLETE CASE ANALYSIS 2 
-				 *5/6 months reported 
-****************************************************************
-*To change your months reported, please change the line 120 
-
-u "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_WIDE_easing.dta", clear 
-			 
-foreach x of global volumes { 
-			 	preserve
-					keep org* `x'* 
-					egen total`x'= rownonmiss(`x'*)
-					keep if total`x'>=5
-					/* keep if at least 5 out of 6 are reported */
-					drop total`x'
-					save "$user/$data/Data for analysis/tmp`x'.dta", replace
-				restore
-				}
-				
-	u "$user/$data/Data for analysis/tmpfp_sa_util.dta", clear
-
-	foreach x in anc_util del_util cs_util pnc_util { 
-		merge 1:1 org* using "$user/$data/Data for analysis/tmp`x'.dta"
-		drop _merge
-		save "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_WIDE_1.dta", replace 
-		}
-		
-	foreach x of global volumes { 
-			rm "$user/$data/Data for analysis/tmp`x'.dta"
-			 }
-	 
-**********************************************************************
 

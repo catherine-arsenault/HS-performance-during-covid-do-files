@@ -60,7 +60,7 @@ replace month_new = 11 if month == 11 & month_new == .
 replace month_new = 11 if month == 12 & day == 1 | month == 12 & day == 2 | month == 12 & day == 3 | month == 12 & day == 4 | month == 12 & day == 5 | month == 12 & day == 6 | month == 12 & day == 7 | month == 12 & day == 8 | month == 12 & day == 9 | month == 12 & day == 10 | month == 12 & day == 11 | month == 12 & day == 12 | month == 12 & day == 13 | month == 12 & day == 14 | month == 12 & day == 15 
 
 * Drops months not included in this analysis (Jan, July, Oct, Nov, Dec)
-drop if month == 1 | month_new == 7 | month_new == 10 | month_new == 11 | month == 12 
+drop if month == 1 | month_new == 7 | month_new == 9 |month_new == 10 | month_new == 11 | month == 12 
 drop month day
 rename month_new month
 
@@ -76,48 +76,43 @@ save "$user/$data/Data for analysis/Nepal_covid_deaths.dta", replace
 * Importing policy data for merging. This is at the palika level
 * For each month, did the palika "ease" containment policies or not 
 import excel using "$user/$analysis/policy_data.xlsx", firstrow clear 
-drop eased_7_20 eased_10_20 eased_11_20 // remove july, Oct, Nov
+drop eased_7_20 eased_9_20 eased_10_20 eased_11_20 // remove July, Sept, Oct, Nov
 
 * Merge policy data with health service utilization data (DHIS2)
 merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_WIDE.dta"
-drop if _merge == 1 // Four palikas in master-only - dropped during cleaning 
+drop if _merge == 1 // One palika in master-only - dropped during cleaning 
 drop _merge
 
 * Merge data with Covid deaths data 
 merge m:1 orgunitlevel3 using "$user/$data/Data for analysis/Nepal_covid_deaths.dta"
-drop covid_death_7_20 covid_death_10_20 covid_death_11_20 covid_death_12_20 _merge
+drop covid_death_7_20 covid_death_9_20 covid_death_10_20 covid_death_11_20 covid_death_12_20 _merge
 
 * RESHAPES FROM WIDE TO LONG FOR ANALYSES 
 reshape long fp_sa_util anc_util del_util cs_util pnc_util diarr_util pneum_util opd_util ipd_util er_util ///
 	tbdetect_qual pent_qual bcg_qual measles_qual opv3_qual pneum_qual hyper_util diab_util hivtest_qual /// 
 	eased_ covid_death_ , i(org*) j(month) string	
-
+drop if month== "7_20" | month== "9_20" | month== "10_20"  | month== "11_20"  | month== "12_20" // drop months 9 to 12 2020
+	
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	month=="5_20" | ///
-				   month=="6_20"  | month=="7_20" |	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
-				   month=="11_20" |	month=="12_20"
+				   month=="6_20"  |	month=="8_20" 
 replace year = 2019 if year==.
 gen mo = . 
-replace mo = 1 if month =="1_19"
-replace mo = 1 if month =="2_19"
-replace mo = 1 if month =="3_19"
-replace mo = 1 if month =="4_19"
-replace mo = 1 if month =="5_19"
-replace mo = 1 if month =="6_19"
-replace mo = 1 if month =="7_19"
-replace mo = 1 if month =="8_19"
-replace mo = 1 if month =="9_19"
-replace mo = 1 if month =="10_19"
-replace mo = 1 if month =="11_19"
-replace mo = 1 if month =="12_19"
+replace mo = 1 if month =="1_19" | month =="1_20"
+replace mo = 2 if month =="2_19" | month =="2_20"
+replace mo = 3 if month =="3_19" | month =="3_20"
+replace mo = 4 if month =="4_19" | month =="4_20"
+replace mo = 5 if month =="5_19" | month =="5_20"
+replace mo = 6 if month =="6_19" | month =="6_20"
+replace mo = 7 if month =="7_19" 
+replace mo = 8 if month =="8_19" | month =="8_20" 
+replace mo = 9 if month =="9_19" 
+replace mo = 10 if month =="10_19" 
+replace mo = 11 if month =="11_19" 
+replace mo = 12 if month =="12_19" 
 
-replace mo = 15 if month =="3_20"
-replace mo = 16 if month =="4_20"
-replace mo = 17 if month =="5_20"
-replace mo = 18 if month =="6_20"
-replace mo = 19 if month =="6_20"
-replace mo = 20 if month =="8_20"
-drop if month=="9_20" | // drop months 9 to 12 2020
+gen month_graph = mo
+replace month_graph = mo + 12 if year == 2020
 drop month
 sort orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname year mo 
 rename mo month
@@ -147,55 +142,22 @@ egen tag = tag(organisationunitname)
 *******************************************************************************
 * Assign time-varying treatment status 
 *******************************************************************************
-rename eased_ eased_tv
-
-* Post variable 
-gen post = month == 8 | month == 9
+rename eased_ eased
 
 * Applying treatment status in month 8 to the full post period - fixed treatment status (eased in month 8/early) 
-gen eased_fixed = 1 if eased_tv == 1 & month == 8
+gen eased_fixed = 1 if eased == 1 & month == 8
 by organisationunitname,  sort: egen temp= sum(eased_fixed) // here you could use the carryforward command
 replace eased_fixed = temp if eased_fixed==.
 drop temp
-gen eased_fixed_post = eased_fixed*post
 
-* Creating easing_late & eased_late_post
-gen eased_late = 1 if eased_tv == 1 & month == 9 & eased_fixed == 0
-by organisationunitname,  sort: egen temp= sum(eased_late)  // here you could use the carryforward command
-replace eased_late = temp if eased_late==.
-drop temp
-gen eased_late_post = eased_late*post
-replace eased_late_post = 0 if month == 8
+gen post = 0 if month_graph == 15 | month_graph == 16 | month_graph == 17 | month_graph == 18
+replace post = 1 if month_graph == 20 
 
-order org* year month eased* post
+order org* year month eased* 
 sort organisationunitname month
 
-lab var post "Pre/post period"
-lab var eased_tv "Time-varying treatment status"
-lab var eased_fixed "Fixed treatment status (eased early)"
-lab var eased_fixed_post "Fixed treatment status (eased early) * Post"
-lab var eased_late "Eased late (in month 9 and not 8)"
-lab var eased_late_post "Eased late (in month 9 and not 8) * Post"
+lab var eased "Eased policies in month 8"
+lab var eased_fixed "Fixed treatment status (eased in month 8)"
 
 save "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta", replace
-
-/*  Old code 
-* Created the three-part variable - districts that full eased in post-period, districts that fully maintained in post-period, districts that switched in the post-period
-
-by organisationunitname, sort: egen temp= sum(eased_tv) if month>=8 & month<=9
-gen eased_cat = 1 if temp==0
-replace eased_cat = 2 if temp==2
-replace eased_cat=3 if temp==1
-lab def eased_cat 1 "fully maintained" 2 "fully eased " 3 "switch "
-lab val eased_cat eased_cat
-drop temp
-
-gen post_cat = .
-replace post_cat = 1 if month == 8 | month == 9
-replace post_cat = 0 if month == 3 | month == 4 | month == 5 | month == 6 
-
-gen early = eased_cat == 2
-
-gen late = eased_cat == 3
-
 
