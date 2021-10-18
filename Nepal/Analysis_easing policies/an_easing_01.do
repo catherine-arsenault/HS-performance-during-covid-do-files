@@ -10,102 +10,160 @@ global vars anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util d
 hyper_util hivtest_qual tbdetect_qual
  
 * Descriptives
-ta eased_fixed if tag // 240 out of 753 (32.61%) eased containment policies in August 
+ta eased_fixed if tag // 249 out of 739 (32.48%) eased containment policies in August 
 
 * Number of Palika and total volume of services by month
-table (month), nototals stat(count fp_util anc_util) stat(sum fp_util anc_util) 
-table (month), nototals stat(count pnc_util diarr_util) stat(sum  pnc_util diarr_util) 
-table (month), nototals stat(count pneum_util pent_qual) stat(sum pneum_util pent_qual)
-table (month), nototals stat(count opd_util diab_uti) stat(sum opd_util diab_uti)
-table (month), nototals stat(count hyper_util hivtest_qual) stat(sum hyper_util hivtest_qual)
-table (month), nototals stat(count tbdetect_qual) stat(sum tbdetect_qual)
+table (year month), nototals stat(count fp_util anc_util) stat(sum fp_util anc_util) 
+table (year month), nototals stat(count pnc_util diarr_util) stat(sum  pnc_util diarr_util) 
+table (year month), nototals stat(count pneum_util pent_qual) stat(sum pneum_util pent_qual)
+table (year month), nototals stat(count opd_util diab_uti) stat(sum opd_util diab_uti)
+table (year month), nototals stat(count hyper_util hivtest_qual) stat(sum hyper_util hivtest_qual)
+table (year month), nototals stat(count tbdetect_qual) stat(sum tbdetect_qual)
 
 * Number of Palika and total volume of services by month and treatment statusn - AVERAGE
 foreach x of global vars {
 	di "`x'"
-	table (month)() (eased_fixed), stat(count `x') stat(sum `x' ) 
+	table (year month)() (eased_fixed), stat(count `x') stat(sum `x' ) 
 }
 
-*Parrallel trends graphs - Treated/control: Fixed policy change based on treatment status in August - AVERAGE
-collapse (sum) anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
-hyper_util hivtest_qual tbdetect_qual, by(month eased_fixed)
-
-foreach var of global vars {
-
-twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) ///
-	   (line `var' month if eased_fixed == 1, lcolor(green)) ///
-	   (scatter `var' month if eased_fixed == 0, mcolor(navy)) ///
-	   (line `var' month if eased_fixed == 0, lcolor(navy)), ///
-	   xline(7, lpattern(dash) lcolor(black)) graphregion(color(white)) ///
-	   xlabel(3(1)9) title(diarr_util) ytitle("Average number of visits") ///
-	   xtitle(Month) legend(label (1 "") label (2 "Eased policies (treated)") ///
-	   label (3 "") label (4 "Maintained policies (control)"))
-
-graph export "$user/$analysis/Graphs/fixed_`var'.pdf", replace
-
-}
-
-*Parrallel trends graphs - Lifted early, late or never - AVERAGE
-clear
-u "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta", clear
+*Parrallel trends graphs - Treated/control: Fixed policy change based on treatment status in August 
+collapse (mean) anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
+hyper_util hivtest_qual tbdetect_qual eased_fixed, by(month_graph palikaid)
 
 collapse (mean) anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
-hyper_util hivtest_qual tbdetect_qual, by(month eased_fixed eased_late)
+hyper_util hivtest_qual tbdetect_qual, by(month_graph eased_fixed)  
 
-foreach var of global vars {
+twoway (scatter anc_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line anc_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter anc_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line anc_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Antenatal care visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(20)180) ///
+	   xtitle(Month) legend(off) text(35 12 "Treated" 100 12 "Control", size(small)) 
+	  
+	   
+	   graph export "$user/$analysis/Graphs/anc_util.pdf", replace
+	   
+twoway (scatter fp_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line fp_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter fp_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line fp_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Family planning visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(400(100)1000) ///
+	   xtitle(Month) legend(off) text(530 12 "Treated" 840 12 "Control", size(small))
+	  
+	   
+	   graph export "$user/$analysis/Graphs/fp_util.pdf", replace
 
-twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) (line `var' month if eased_fixed == 1, lcolor(green)) (scatter `var' month if eased_late == 1, mcolor(maroon)) (line `var' month if eased_late == 1, lcolor(maroon)) (scatter `var' month if eased_fixed == 0 & eased_late == 0, mcolor(navy)) (line `var' month if eased_fixed == 0 & eased_late == 0, lcolor(navy)), title("`var'") ytitle("Average number of visits") xtitle(Month) legend(label (1 "") label (2 "Eased policies early") label (3 "") label (4 "Eased policies late") label (5 "") label (6 "Mainted policies (control)"))
+twoway (scatter pnc_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line pnc_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter pnc_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line pnc_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Postnatal care visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(10)60) ///
+	   xtitle(Month) legend(off) text(8 12 "Treated" 25 12 "Control", size(small))
+	   
+	   graph export "$user/$analysis/Graphs/pnc_util.pdf", replace
+	   
+twoway (scatter diarr_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line diarr_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter diarr_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line diarr_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Diarrhea visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(10)100) ///
+	   xtitle(Month) legend(off) text(25 12 "Treated" 44 12 "Control", size(small))
+	  
+	   
+	   graph export "$user/$analysis/Graphs/diarr_util.pdf", replace
+	   
+twoway (scatter pneum_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line pneum_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter pneum_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line pneum_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Pneumonia visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(5)40) ///
+	   xtitle(Month) legend(off) text(14 4 "Control" 20 4 "Treated", size(small))
+	  
+	   
+	   graph export "$user/$analysis/Graphs/pneum_util.pdf", replace
+
+twoway (scatter pent_qual month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line pent_qual month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter pent_qual month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line pent_qual month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Pentavalent vaccines", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(25)150) ///
+	   xtitle(Month) legend(off) text(40 12 "Treated" 105 12 "Control", size(small))
+	  
+	  
+	   graph export "$user/$analysis/Graphs/pent_qual.pdf", replace
+	   
+
+twoway (scatter opd_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line opd_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter opd_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line opd_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Outpatient visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(500)4000) ///
+	   xtitle(Month) legend(off) text(1100 12 "Treated" 2150 12 "Control", size(small))
+	  
+	  
+	   graph export "$user/$analysis/Graphs/opd_util.pdf", replace
+
+twoway (scatter diab_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line diab_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter diab_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line diab_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Diabetes visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(50)200) ///
+	   xtitle(Month) legend(off) text(45 12 "Treated" 110 12 "Control", size(small))
+	  
+	  
+	   graph export "$user/$analysis/Graphs/diab_util.pdf", replace	   
 
 
-graph export "$user/$analysis/Graphs/early_late_`var'.pdf", replace
+twoway (scatter hyper_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line hyper_util month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter hyper_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line hyper_util month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("Hypertension visits", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(50)200) ///
+	   xtitle(Month) legend(off) text(45 12 "Treated" 110 12 "Control", size(small))
+	  
+	  
+	   graph export "$user/$analysis/Graphs/hyper_util.pdf", replace	  
 
-}
+twoway (scatter hivtest_qual month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line hivtest_qual month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter hivtest_qual month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line hivtest_qual month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("HIV Tests", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(100)1000) ///
+	   xtitle(Month) legend(off) text(75 12 "Treated" 550 12 "Control", size(small))
+	  
+	  
+	   graph export "$user/$analysis/Graphs/hivtest_qual.pdf", replace	   
+	   
+twoway (scatter tbdetect_qual month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
+	   (line tbdetect_qual month if eased_fixed == 1, lcolor(green)) ///
+	   (scatter tbdetect_qual month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
+	   (line tbdetect_qual month if eased_fixed == 0, lcolor(orange)), ///
+	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   graphregion(color(white)) title("TB cases detected", size(small)) ///
+	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(4)20) ///
+	   xtitle(Month) legend(off) text(2 12 "Treated" 6 12 "Control", size(small))
+	  
+	  
+	   graph export "$user/$analysis/Graphs/tbdetect_qual.pdf", replace	   
 
-*Parrallel trends graphs - Treated/control: Fixed policy change based on treatment status in August - SUM
-clear
-u "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta", clear
-
-collapse (sum) anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
-hyper_util hivtest_qual tbdetect_qual, by(month eased_fixed)
-
-foreach var of global vars {
-
-twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) (line `var' month if eased_fixed == 1, lcolor(green)) (scatter `var' month if eased_fixed == 0, mcolor(navy)) (line `var' month if eased_fixed == 0, lcolor(navy)), title(`var') ytitle("Sum of visits") xtitle(Month) legend(label (1 "") label (2 "Eased policies (treated)") label (3 "") label (4 "Maintained policies (control)"))
-
-graph export "$user/$analysis/Graphs/sum_fixed_`var'.pdf", replace
-
-
-}
-
-
-*Parrallel trends graphs - Lifted early, late or never - SUM
-clear
-u "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta", clear
-
-collapse (sum) anc_util fp_util pnc_util diarr_util pneum_util pent_qual opd_util diab_util /// 
-hyper_util hivtest_qual tbdetect_qual, by(month eased_fixed eased_late)
-
-foreach var of global vars {
-
-twoway (scatter `var' month if eased_fixed == 1, mcolor(green)) (line `var' month if eased_fixed == 1, lcolor(green)) (scatter `var' month if eased_late == 1, mcolor(maroon)) (line `var' month if eased_late == 1, lcolor(maroon)) (scatter `var' month if eased_fixed == 0 & eased_late == 0, mcolor(navy)) (line `var' month if eased_fixed == 0 & eased_late == 0, lcolor(navy)), title("`var'") ytitle("Sum of number of visits") xtitle(Month) legend(label (1 "") label (2 "Eased policies early") label (3 "") label (4 "Eased policies late") label (5 "") label (6 "Mainted policies (control)"))
-
-
-graph export "$user/$analysis/Graphs/sum_early_late_`var'.pdf", replace
-
-}
-
-
-restore
-
-/* Old code 
-* Graphs with confidence intervals 
-			collapse (mean) y = anc_util (semean) se_y = anc_util, by(month eased_fixed)
-			gen yu = y + 1.96*se_y
-			gen yl = y - 1.96*se_y
- 
-			twoway (scatter y month if eased_fixed == 1, sort) ///
-			(rcap yu yl month if eased_fixed == 1) (line y month if eased_fixed==1) ///
-			(scatter y month if eased_fixed==0) ///
-			(rcap yu  yl month if eased_fixed==0) (line y month if eased_fixed==0), ///
-			title("ANC visits") xtitle("Month") ytitle(Average) legend(off) scheme(s2mono)
 			
