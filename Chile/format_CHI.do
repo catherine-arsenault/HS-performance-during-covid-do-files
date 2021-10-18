@@ -166,9 +166,43 @@ reshape long measles_qual pneum_qual bcg_qual pent_qual, i(region municipality) 
 		* Saves dataset for analyses 		
 		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace
 		
-		
-		
-		
+/****************************************************************
+		ADDING BREAST CANCER SCREENING DATA AT THE REGION LEVEL
+*****************************************************************/		
+import excel using "/$user/$data/Raw data/CL - Brest Cancer.xlsx", firstrow clear
+rename (_1-Y) ///
+(breast_util1_19	breast_util2_19	breast_util3_19	breast_util4_19 ///
+breast_util5_19	breast_util6_19	breast_util7_19	breast_util8_19	///
+breast_util9_19	breast_util10_19	breast_util11_19	breast_util12_19 ///
+breast_util1_20	breast_util2_20	breast_util3_20	breast_util4_20	breast_util5_20	///
+breast_util6_20 breast_util7_20   breast_util8_20   breast_util9_20 ///
+  breast_util10_20 breast_util11_20 breast_util12_20)
+  
+reshape long breast_util, i(region ) j(month) string
+* Month and year
+	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	///
+	month=="4_20" |	month=="5_20" | month=="6_20"  | month=="7_20" | ///
+	month=="8_20" |	month=="9_20" |	month=="10_20" | ///
+				   month=="11_20" |	month=="12_20"
+		replace year = 2019 if year==.
+		gen mo = 1 if month =="1_19" | month =="1_20"
+		replace mo = 2 if month =="2_19" | month =="2_20"
+		replace mo = 3 if month =="3_19" | month =="3_20"
+		replace mo = 4 if month =="4_19" | month =="4_20"
+		replace mo = 5 if month =="5_19" | month =="5_20"
+		replace mo = 6 if month =="6_19" | month =="6_20"
+		replace mo = 7 if month =="7_19" | month =="7_20"
+		replace mo = 8 if month =="8_19" | month =="8_20"
+		replace mo = 9 if month =="9_19" | month =="9_20"
+		replace mo = 10 if month =="10_19" | month =="10_20"
+		replace mo = 11 if month =="11_19" | month =="11_20"
+		replace mo = 12 if month =="12_19" | month =="12_20"
+		drop month	
+		rename mo month
+		append  using "$user/$data/Data for analysis/Chile_su_24months.dta"
+		order region municipality levelofattention facilityname id  year month 
+		* Saves dataset for analyses 		
+		save "$user/$data/Data for analysis/Chile_su_24months.dta", replace		
 		
 		
 		

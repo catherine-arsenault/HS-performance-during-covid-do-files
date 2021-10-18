@@ -32,7 +32,7 @@ local dl_modif
  
 save "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", replace 
 * Count of observations
-collapse (count) measles_qual-er_util, by (year month)		  
+collapse (count) breast_util-er_util, by (year month)		  
 export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(CHL, replace) firstrow(variable)   
 	
 ********************************************************************************

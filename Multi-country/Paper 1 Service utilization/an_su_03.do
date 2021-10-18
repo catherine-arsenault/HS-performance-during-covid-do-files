@@ -33,7 +33,7 @@
 foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
 	
-	putexcel set "$analysis/Results/Tables/Country profiles SEP29.xlsx", sheet("`c'")  modify
+	putexcel set "$analysis/Results/Tables/Country profiles OCT12.xlsx", sheet("`c'")  modify
 	putexcel A1= "`c'" B1="Nb of units" G1="Pandemic impact" O1="Potential resumption period"
 	putexcel A2= "Health service" B2="Average over the pre-Covid period" 
 	putexcel C2="Avg monthly change before the pandemic" C3="Coeff" D3="LCL" E3="UCL" F3="p-value"
