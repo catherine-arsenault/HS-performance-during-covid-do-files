@@ -1,7 +1,7 @@
 * Effect of easing Covid-19 containment policies on health service delivery in Nepal
 * January 13th 2021
 * Creation do file
-* Created by Catherine Arsenault and Neena Kappoor
+* Created by Neena Kappoor
 
 clear all
 set more off
