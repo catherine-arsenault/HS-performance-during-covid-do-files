@@ -37,10 +37,11 @@ twoway (scatter anc_util month if eased_fixed == 1, mcolor(green) msize(vsmall))
 	   (line anc_util month if eased_fixed == 1, lcolor(green)) ///
 	   (scatter anc_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
 	   (line anc_util month if eased_fixed == 0, lcolor(orange)), ///
-	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
+	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
+	   xline(13.8, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Antenatal care visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(20)180) ///
-	   xtitle(Month) legend(off) text(35 12 "Treated" 100 12 "Control", size(small)) 
+	   xtitle(Month) legend(off) text(35 5 "Lifted lockdown" 95 5  "Maintained lockdown", size(small)) 
 	  
 	   
 	   graph export "$user/$analysis/Graphs/anc_util.pdf", replace
@@ -49,10 +50,11 @@ twoway (scatter fp_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) 
 	   (line fp_util month if eased_fixed == 1, lcolor(green)) ///
 	   (scatter fp_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
 	   (line fp_util month if eased_fixed == 0, lcolor(orange)), ///
-	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
-	   graphregion(color(white)) title("Family planning visits", size(small)) ///
+	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
+	   xline(13.8, lpattern(dash) lcolor(ebg)) ///
+	   graphregion(color(white)) title("Contraceptive users", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(400(100)1000) ///
-	   xtitle(Month) legend(off) text(530 12 "Treated" 840 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(580 5 "Lifted lockdown" 850 5 "Maintained lockdown", size(small))
 	  
 	   
 	   graph export "$user/$analysis/Graphs/fp_util.pdf", replace
@@ -64,7 +66,7 @@ twoway (scatter pnc_util month if eased_fixed == 1, mcolor(green) msize(vsmall))
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("Postnatal care visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(10)60) ///
-	   xtitle(Month) legend(off) text(8 12 "Treated" 25 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(8 12 "Eased policies" 25 12  "Maintained policies", size(small))
 	   
 	   graph export "$user/$analysis/Graphs/pnc_util.pdf", replace
 	   
@@ -75,7 +77,7 @@ twoway (scatter diarr_util month if eased_fixed == 1, mcolor(green) msize(vsmall
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("Diarrhea visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(10)100) ///
-	   xtitle(Month) legend(off) text(25 12 "Treated" 44 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(25 12 "Eased policies" 44 12  "Maintained policies", size(small))
 	  
 	   
 	   graph export "$user/$analysis/Graphs/diarr_util.pdf", replace
@@ -87,7 +89,7 @@ twoway (scatter pneum_util month if eased_fixed == 1, mcolor(green) msize(vsmall
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("Pneumonia visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(5)40) ///
-	   xtitle(Month) legend(off) text(14 4 "Control" 20 4 "Treated", size(small))
+	   xtitle(Month) legend(off) text(14 4  "Maintained policies" 20 4 "Eased policies", size(small))
 	  
 	   
 	   graph export "$user/$analysis/Graphs/pneum_util.pdf", replace
@@ -99,7 +101,7 @@ twoway (scatter pent_qual month if eased_fixed == 1, mcolor(green) msize(vsmall)
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("Pentavalent vaccines", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(25)150) ///
-	   xtitle(Month) legend(off) text(40 12 "Treated" 105 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(40 12 "Eased policies" 105 12  "Maintained policies", size(small))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/pent_qual.pdf", replace
@@ -112,7 +114,7 @@ twoway (scatter opd_util month if eased_fixed == 1, mcolor(green) msize(vsmall))
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("Outpatient visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(500)4000) ///
-	   xtitle(Month) legend(off) text(1100 12 "Treated" 2150 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(1100 12 "Eased policies" 2150 12  "Maintained policies", size(small))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/opd_util.pdf", replace
@@ -124,7 +126,7 @@ twoway (scatter diab_util month if eased_fixed == 1, mcolor(green) msize(vsmall)
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("Diabetes visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(50)200) ///
-	   xtitle(Month) legend(off) text(45 12 "Treated" 110 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(45 12 "Eased policies" 110 12  "Maintained policies", size(small))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/diab_util.pdf", replace	   
@@ -137,7 +139,7 @@ twoway (scatter hyper_util month if eased_fixed == 1, mcolor(green) msize(vsmall
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("Hypertension visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(50)200) ///
-	   xtitle(Month) legend(off) text(45 12 "Treated" 110 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(45 12 "Eased policies" 110 12  "Maintained policies", size(small))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/hyper_util.pdf", replace	  
@@ -149,7 +151,7 @@ twoway (scatter hivtest_qual month if eased_fixed == 1, mcolor(green) msize(vsma
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("HIV Tests", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(100)1000) ///
-	   xtitle(Month) legend(off) text(75 12 "Treated" 550 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(75 12 "Eased policies" 550 12  "Maintained policies", size(small))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/hivtest_qual.pdf", replace	   
@@ -161,7 +163,7 @@ twoway (scatter tbdetect_qual month if eased_fixed == 1, mcolor(green) msize(vsm
 	   xline(15, lpattern(dash) lcolor(black)) xline(18, lpattern(dash) lcolor(black)) ///
 	   graphregion(color(white)) title("TB cases detected", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(4)20) ///
-	   xtitle(Month) legend(off) text(2 12 "Treated" 6 12 "Control", size(small))
+	   xtitle(Month) legend(off) text(2 12 "Eased policies" 6 12  "Maintained policies", size(small))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/tbdetect_qual.pdf", replace	   
