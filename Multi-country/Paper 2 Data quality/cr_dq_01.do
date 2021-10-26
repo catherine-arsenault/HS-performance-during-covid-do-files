@@ -6,8 +6,8 @@
 clear all
 set more off	
 ********************************************************************************
+* ETHIOPIA
 * Use dataset before cleaning
-* Ethiopia 
 u "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dta", clear
 
 * Sentinel indicators (These can be updated once they are decided)
@@ -117,8 +117,8 @@ keep month year opd_util anc_util totaldel pnc_util pent_qual completeness_*
 export excel using "$user/$analysis/Results/ResultsAUG30.xlsx", sheet(Eth_completeness) firstrow(variable) sheetreplace  
 
 ********************************************************************************
+* HAITI
 * Use dataset before cleaning
-* Haiti
 clear
 u "$user/HMIS Data for Health System Performance Covid (Haiti)/Data for analysis/Haiti_Jan19-March21_WIDE.dta", clear
 
@@ -175,7 +175,6 @@ preserve
 restore 
 
 * COMPLETENESS 
-
 keep orgunitlevel1-orgunitlevel3 ID Number opd_util* anc_util* del_util* pnc_util* vacc_qual* diab_util*
 reshape long opd_util anc_util del_util pnc_util vacc_qual diab_util, ///
              i(orgunitlevel1 orgunitlevel2 orgunitlevel3 ID Number) j(month) string		
@@ -216,14 +215,20 @@ keep month year opd_util anc_util del_util pnc_util vacc_qual diab_util complete
 export excel using "$user/$analysis/Results/ResultsAUG30.xlsx", sheet(Hat_completeness) firstrow(variable) sheetreplace  
 
 ********************************************************************************
+* KWAZULU NATAL, SOUTH AFRICA
 * Use dataset before cleaning
-* KZN
 clear
 u "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", clear
 
 * Sentinel indicators (These can be updated once they are decided)
 global sentinel opd_util anc1_util totaldel pnc_util pent_qual diab_util
-
+* Outpatient visits are missing in 2019 and then 0 in 2020
+* set all to missing as these facilities do not report that indicator (it's a hospital-level indicator only)
+egen totalopd=rowtotal(opd_util*)
+forval i=1/24 {
+	replace opd_util`i'=. if totalopd==0
+}
+drop totalopd
 * OUTLIERS 
 foreach x of global sentinel {
 	egen rowmean`x'= rowmean(`x'*)
@@ -255,7 +260,6 @@ preserve
 restore 
 
 * COMPLETENESS 
-
 keep Province dist subdist Facility opd_util* anc1_util* totaldel* pnc_util* pent_qual* diab_util*
 reshape long opd_util anc1_util totaldel pnc_util pent_qual diab_util, ///
              i(Province dist subdist Facility) j(month)	
@@ -264,13 +268,7 @@ gen year = 2019
 replace year= 2020 if month>=13	
 replace month=month-12 if month>=13
 
-*** NOT SURE WHAT's HAPPENING HERE - If you so sum instead the values are as expected 
-
-* collapse (sum) anc1_util-pent_qual , by (year month)
-
 collapse (count) anc1_util-pent_qual , by (year month)
-
-
 			  
 foreach x of global sentinel {
 	cap egen max`x'=max(`x')
