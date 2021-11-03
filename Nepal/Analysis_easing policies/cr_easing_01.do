@@ -128,8 +128,8 @@ replace covid_death_ = 0 if covid_death_ == .
 replace covid_case = 0 if covid_case == .
 
 * DROP PALIKAS THAT REMOVED POLICIES AND THEN REIMPOSED THEM
-drop if orgunitlevel3 == "501 RUKUM EAST"  | orgunitlevel3 == "407 TANAHU"
-
+* drop if orgunitlevel3 == "501 RUKUM EAST"  | orgunitlevel3 == "407 TANAHU"
+ 
 * Renaming family planning
 rename fp_sa_util fp_util
 
