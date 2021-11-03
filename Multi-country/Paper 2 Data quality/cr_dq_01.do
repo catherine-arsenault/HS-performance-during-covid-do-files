@@ -89,10 +89,16 @@ preserve
 	rename mo month
 	collapse (count) resus_qual_denom-totaldel (sum) flag_out* , by (year month )
 	foreach x of global all {
-		gen pct_out`x' = flag_out_`x' / `x'
+		gen `x'pct_out = flag_out_`x' / `x'
 	}
+	gen preCovid= year==2019 | year==2020 & month <4
 	
-	export excel using "$user/$analysis/Results/ResultsNOV2.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
+	collapse (mean) *pct_out, by(preCovid)
+	xpose, varname clear
+	rename (v1 v2) (postCovid preCovid) 
+	drop in 1
+	
+	export excel using "$user/$analysis/Results/ResultsNOV3.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
 restore 
 * Note: The few missing for pct_out is because there were 0 in the count for some diab and hyper indicators 
 

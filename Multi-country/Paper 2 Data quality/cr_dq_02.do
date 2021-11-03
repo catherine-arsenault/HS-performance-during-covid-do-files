@@ -8,7 +8,7 @@ set more off
 ********************************************************************************
 
 **** Totals table for ANC, Deliveries, BCG, Pent and Pneum vaccines ****
-************************************************************************
+********************************************************************************
 
 * I tried to write it as a loop, but don't think it will work for Haiti (missing variables), KZN or Lao (folder names)			
 
@@ -145,6 +145,7 @@ order country del* cs* mat_mort* newborn_mort*
 export excel using "$user/$analysis/Results/ResultsNOV2.xlsx", sheet(Total_mort) firstrow(variable) sheetreplace  
 
 
+rm 
 
 /* In case we remove the loop above 
 
