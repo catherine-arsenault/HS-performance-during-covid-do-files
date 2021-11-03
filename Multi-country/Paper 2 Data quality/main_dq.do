@@ -12,10 +12,12 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 
 
 ********************************************************************************
-* Creation do filesx
+* Creation do files
 * Counts outliers and completeness for sentinel indicators 
-
 do "$dofiles/cr_dq_01.do"
+
+* Internal consistency analysis - Totals tables 
+do "$dofiles/cr_dq_02.do"
 
 ********************************************************************************
 

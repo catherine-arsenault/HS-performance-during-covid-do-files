@@ -304,6 +304,10 @@ merge 1:1 org* using "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE.dt
 drop _merge 
 drop dup 
 
+*Save dataset for data qauality analysis 
+
+save "$user/$data/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_dq.dta", replace	
+
 ********************************************************************************	
 *Remove poorly reported indicators
 ********************************************************************************	
