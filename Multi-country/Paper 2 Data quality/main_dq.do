@@ -16,9 +16,8 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 * Counts outliers and completeness for sentinel indicators 
 do "$dofiles/cr_dq_01.do"
 
-* Totals 
-
-
+* Totals tables 
+do "$dofiles/cr_dq_02.do"
 
 ********************************************************************************
 

@@ -366,6 +366,9 @@ drop *_old
 merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan19-Dec19_WIDE.dta"
 drop _merge 
 
+*Save dataset for dq analysis 
+save "$user/$data/Data for analysis/Lao_Jan19-Dec20_WIDE_dq.dta" , replace 
+
 ********************************************************************************
 * Drop poorly reported indicators
 ********************************************************************************
