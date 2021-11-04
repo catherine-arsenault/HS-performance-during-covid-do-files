@@ -10,18 +10,24 @@ set more off
 **** Totals table for ANC, Deliveries, BCG, Pent and Pneum vaccines ****
 ********************************************************************************
 
-* I tried to write it as a loop, but don't think it will work for Haiti (missing variables), KZN or Lao (folder names)			
+*Ethiopia 
+u "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
+keep year anc_util del_util bcg_qual pent_qual pneum_qual
+collapse (sum) anc_util-pneum_qual, by (year)
+gen country = "Ethiopia"
+reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(year) 
+order country anc* del* bcg* pent* pneum*
+save "$user/$analysis/Results/totaltmpEthiopia.dta", replace
 
-global countries Ethiopia Nepal
-foreach x of global countries { 
-			 	u "$user/HMIS Data for Health System Performance Covid (`x')/Data for analysis/`x'_su_24months_for_analyses.dta", clear
-				keep year anc_util del_util bcg_qual pent_qual pneum_qual cs_util
-				collapse (sum) anc_util-pneum_qual, by (year)
-				gen country = "`x'"
-				reshape wide anc_util del_util bcg_qual pent_qual pneum_qual cs_util, 
-				save "$user/$analysis/Results/totaltmp`x'.dta", replace
-				}
-				
+* Nepal
+u "$user/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_su_24months_for_analyses.dta", clear
+keep year anc_util del_util bcg_qual pent_qual pneum_qual
+collapse (sum) anc_util-pneum_qual, by (year)
+gen country = "Nepal"
+reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(year) 
+order country anc* del* bcg* pent* pneum*
+save "$user/$analysis/Results/totaltmpNepal.dta", replace
+
 *Haiti 
 u "$user/HMIS Data for Health System Performance Covid (Haiti)/Data for analysis/Haiti_su_24months_for_analyses.dta", clear
 keep year anc_util del_util orgunitlevel1
@@ -55,7 +61,7 @@ append using "$user/$analysis/Results/totaltmpEthiopia.dta" "$user/$analysis/Res
 			 "$user/$analysis/Results/totaltmpKZN.dta" "$user/$analysis/Results/totaltmpLao.dta" /// 
 			 "$user/$analysis/Results/totaltmpNepal.dta"
 drop cs*
-export excel using "$user/$analysis/Results/ResultsNOV2.xlsx", sheet(Total_vol) firstrow(variable) sheetreplace  
+export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Total_vol) firstrow(variable) sheetreplace  
 
 **************** Totals table for mortality ****************
 ************************************************************
@@ -76,7 +82,7 @@ egen newborn_mort2020 = rowtotal(newborn_mort_num1_20 newborn_mort_num2_20 newbo
 collapse (sum) mat_mort2019 mat_mort2020 newborn_mort2019 newborn_mort2020, by(country)
 merge 1:1 country using "$user/$analysis/Results/totaltmpEthiopia.dta"
 drop _merge
-save "$user/$analysis/Results/totalmorttmpEthiopia.dta"
+save "$user/$analysis/Results/totalmorttmpEthiopia.dta", replace
 
 *Haiti
 u "$user/HMIS Data for Health System Performance Covid (Haiti)/Data for analysis/Haiti_Jan19-March21_WIDE.dta", clear
@@ -89,7 +95,7 @@ egen mat_mort2020 = rowtotal(mat_mort_num1_20 mat_mort_num2_20 mat_mort_num3_20 
 collapse (sum) mat_mort2019 mat_mort2020, by(country)
 merge 1:1 country using "$user/$analysis/Results/totaltmpHaiti.dta"
 drop _merge
-save "$user/$analysis/Results/totalmorttmpHaiti.dta"
+save "$user/$analysis/Results/totalmorttmpHaiti.dta", replace
 
 *KZN
 u "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", clear
@@ -106,34 +112,41 @@ egen newborn_mort2020 = rowtotal(newborn_mort_num13 newborn_mort_num14 newborn_m
 collapse (sum) mat_mort2019 mat_mort2020 newborn_mort2019 newborn_mort2020, by(country)
 merge 1:1 country using "$user/$analysis/Results/totaltmpKZN.dta"
 drop _merge
-save "$user/$analysis/Results/totalmorttmpKZN.dta"
+save "$user/$analysis/Results/totalmorttmpKZN.dta", replace
 
 *Lao
 u "$user/HMIS Data for Health System Performance Covid (Lao PDR)/Data for analysis/Lao_Jan19-Dec20_WIDE.dta", clear
-keep mat_mort* 
+keep mat_mort* neo_mort_num*
 gen country = "Lao"
 egen mat_mort2019 = rowtotal(mat_mort_num1_19 mat_mort_num2_19 mat_mort_num3_19 mat_mort_num4_19 mat_mort_num5_19 mat_mort_num6_19  /// 
              mat_mort_num7_19 mat_mort_num8_19 mat_mort_num9_19 mat_mort_num10_19 mat_mort_num11_19 mat_mort_num12_19)
 egen mat_mort2020 = rowtotal(mat_mort_num1_20 mat_mort_num2_20 mat_mort_num3_20 mat_mort_num4_20 mat_mort_num5_20 mat_mort_num6_20 /// 
              mat_mort_num7_20 mat_mort_num8_20 mat_mort_num9_20 mat_mort_num10_20 mat_mort_num11_20 mat_mort_num12_20)
-collapse (sum) mat_mort2019 mat_mort2020, by(country)
+egen newborn_mort2019 = rowtotal(neo_mort_num1_19 neo_mort_num2_19 neo_mort_num3_19 neo_mort_num4_19 neo_mort_num5_19 neo_mort_num6_19  /// 
+             neo_mort_num7_19 neo_mort_num8_19 neo_mort_num9_19 neo_mort_num10_19 neo_mort_num11_19 neo_mort_num12_19)
+egen newborn_mort2020 = rowtotal(neo_mort_num1_20 neo_mort_num2_20 neo_mort_num3_20 neo_mort_num4_20 neo_mort_num5_20 neo_mort_num6_20 /// 
+             neo_mort_num7_20 neo_mort_num8_20 neo_mort_num9_20 neo_mort_num10_20 neo_mort_num11_20 neo_mort_num12_20)
+collapse (sum) mat_mort2019 mat_mort2020 newborn_mort2019 newborn_mort2020, by(country)
 merge 1:1 country using "$user/$analysis/Results/totaltmpLao.dta"
 drop _merge
-save "$user/$analysis/Results/totalmorttmpLao.dta"
-
+save "$user/$analysis/Results/totalmorttmpLao.dta", replace
 
 * Nepal
 u "$user/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", clear
-keep mat_mort* 
+keep mat_mort* neo_mort_num*
 gen country = "Nepal"
 egen mat_mort2019 = rowtotal(mat_mort_num1_19 mat_mort_num2_19 mat_mort_num3_19 mat_mort_num4_19 mat_mort_num5_19 mat_mort_num6_19  /// 
              mat_mort_num7_19 mat_mort_num8_19 mat_mort_num9_19 mat_mort_num10_19 mat_mort_num11_19 mat_mort_num12_19)
 egen mat_mort2020 = rowtotal(mat_mort_num1_20 mat_mort_num2_20 mat_mort_num3_20 mat_mort_num4_20 mat_mort_num5_20 mat_mort_num6_20 /// 
              mat_mort_num7_20 mat_mort_num8_20 mat_mort_num9_20 mat_mort_num10_20 mat_mort_num11_20 mat_mort_num12_20)
-collapse (sum) mat_mort2019 mat_mort2020, by(country)
+egen newborn_mort2019 = rowtotal(neo_mort_num1_19 neo_mort_num2_19 neo_mort_num3_19 neo_mort_num4_19 neo_mort_num5_19 neo_mort_num6_19  /// 
+             neo_mort_num7_19 neo_mort_num8_19 neo_mort_num9_19 neo_mort_num10_19 neo_mort_num11_19 neo_mort_num12_19)
+egen newborn_mort2020 = rowtotal(neo_mort_num1_20 neo_mort_num2_20 neo_mort_num3_20 neo_mort_num4_20 neo_mort_num5_20 neo_mort_num6_20 /// 
+             neo_mort_num7_20 neo_mort_num8_20 neo_mort_num9_20 neo_mort_num10_20 neo_mort_num11_20 neo_mort_num12_20)
+collapse (sum) mat_mort2019 mat_mort2020 newborn_mort2019 newborn_mort2020, by(country)
 merge 1:1 country using "$user/$analysis/Results/totaltmpNepal.dta"
 drop _merge
-save "$user/$analysis/Results/totalmorttmpNepal.dta"
+save "$user/$analysis/Results/totalmorttmpNepal.dta", replace
 
 * Creating overall table of totals for mortality & volumes
 clear
@@ -142,25 +155,11 @@ append using "$user/$analysis/Results/totalmorttmpEthiopia.dta" "$user/$analysis
 			 "$user/$analysis/Results/totalmorttmpNepal.dta"
 keep country del* cs* mat_mort* newborn_mort*
 order country del* cs* mat_mort* newborn_mort*
-export excel using "$user/$analysis/Results/ResultsNOV2.xlsx", sheet(Total_mort) firstrow(variable) sheetreplace  
+export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Total_mort) firstrow(variable) sheetreplace  
 
-
-rm 
-
-/* In case we remove the loop above 
-
-*Ethiopia 
-u "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
-keep year anc_util del_util bcg_qual pent_qual pneum_qual
-collapse (sum) anc_util-pneum_qual, by (year)
-gen country = "Ethiopia"
-reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(year) 
-order country anc* del* bcg* pent* pneum*
-
-* Nepal
-u "$user/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_su_24months_for_analyses.dta", clear
-keep year anc_util del_util bcg_qual pent_qual pneum_qual
-collapse (sum) anc_util-pneum_qual, by (year)
-gen country = "Nepal"
-reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(year) 
-order country anc* del* bcg* pent* pneum*
+* Remove temp files 
+global country Ethiopia Haiti KZN Lao Nepal 
+foreach x of global country {
+		rm "$user/$analysis/Results/totalmorttmp`x'.dta"
+		rm "$user/$analysis/Results/totaltmp`x'.dta"
+	}
