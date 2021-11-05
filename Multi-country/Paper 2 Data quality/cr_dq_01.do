@@ -99,7 +99,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
 restore 
 
 * Note: The few missing for pct_out is because there were 0 in the count for some diab and hyper indicators 
@@ -118,7 +118,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Eth_completeness) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Eth_completeness) firstrow(variable) sheetreplace  
 restore 
 
 ********************************************************************************
@@ -187,7 +187,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Hat_outliers) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Hat_outliers) firstrow(variable) sheetreplace  
 restore 
 
 * COMPLETENESS TABLE 
@@ -204,7 +204,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid
-export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Hat_completeness) firstrow(variable) sheetreplace  
+export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Hat_completeness) firstrow(variable) sheetreplace  
 restore 
 
 ********************************************************************************
@@ -274,7 +274,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(KZN_outliers) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(KZN_outliers) firstrow(variable) sheetreplace  
 restore 
 
 * COMPLETENESS TABLE 
@@ -291,7 +291,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid		
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(KZN_completeness) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(KZN_completeness) firstrow(variable) sheetreplace  
 restore 
 
 ********************************************************************************
@@ -365,7 +365,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid		
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Lao_outliers) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Lao_outliers) firstrow(variable) sheetreplace  
 restore 
 
 * COMPLETENESS TABLE 
@@ -381,7 +381,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Lao_completeness) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Lao_completeness) firstrow(variable) sheetreplace  
 restore 
 
 ********************************************************************************
@@ -458,7 +458,7 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid	
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Nep_outliers) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Nep_outliers) firstrow(variable) sheetreplace  
 restore 
 
 * COMPLETENESS TABLE 
@@ -476,6 +476,6 @@ preserve
 	rename (v1 v2) (postCovid preCovid) 
 	drop in 1
 	order _varname preCovid postCovid	
-	export excel using "$user/$analysis/Results/ResultsNOV4.xlsx", sheet(Nep_completeness) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsNOV5.xlsx", sheet(Nep_completeness) firstrow(variable) sheetreplace  
 restore 
 
