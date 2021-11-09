@@ -85,6 +85,9 @@ egen bcg_qual5_20 =rowtotal (Indic27_BCG*May20 ndic27_BCG*May20 ) , m
 egen bcg_qual6_20 =rowtotal (Indic27_BCG*Jun20 ) , m
 egen bcg_qual7_20 =rowtotal (Indic27_BCG*Jul20 ) , m
 egen bcg_qual8_20 =rowtotal (Indic27_BCG*Ago20 Indic27_BCG*ago20 ) , m
+
+/* rename (Indic27_BCG_U_May20 Indic27_BCG_U_Jun20 Indic27_BCG_U_Jul20 Indic27_BCG_U_Ago20) ///
+( bcg_qual5_20  bcg_qual6_20  bcg_qual7_20  bcg_qual8_20) */
 drop Indic27_BCG* ndic27_BCG*
 
 * MCV #

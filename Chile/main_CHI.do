@@ -3,19 +3,20 @@
 * PI Catherine Arsenault
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Chile)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Chile"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Chile"
 
 ********************************************************************************
 * Creation do files
-* Imports raw data and renames variables for January 2019-December 2019
-do "$dofiles/cr_CHI.do"
+* Imports raw data and renames variables for January 2019-October 2020
+*do "$dofiles/cr_CHI01.do"
+
+* Imports raw data and renames variables for January 2019-December 2020
+do "$dofiles/cr_CHI02.do"
 
 ********************************************************************************
 * Cleaning do files
-* Cleans data (see cleaning protocol in shared folder)
+* Cleans facility level data
 do "$dofiles/clean_CHI.do"
 
 ********************************************************************************

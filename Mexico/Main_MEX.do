@@ -3,10 +3,9 @@
 * Analyst MK Kim
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Mexico)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Mexico"
+
 
 ********************************************************************************
 * Creation do files
@@ -56,6 +55,10 @@ do "$dofiles/cr_MEX_14.do"
 * Final update december 2020 data 
 * Add stillbirth and newborn mortality data
 do "$dofiles/cr_MEX_15.do"
+
+* Adding data for ART, editing measles vaccine, correction to cervical cancer (July 21, 2021)
+do "$dofiles/cr_MEX_16.do"
+
 
 ********************************************************************************
 * Format do files

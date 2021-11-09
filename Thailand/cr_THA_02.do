@@ -70,13 +70,14 @@ save  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", replace
 * Malaria cases
 import excel using "$user/$data/Raw data/Received_021621/Provincial - Malaria cases 2018 to 2021.xlsx", firstrow clear
 drop AC
-rename (B-AB) (mal_qual10_18	mal_qual11_18	mal_qual12_18 mal_qual1_19	///
-mal_qual2_19	mal_qual3_19	mal_qual4_19	mal_qual5_19	///
-mal_qual6_19	mal_qual7_19	mal_qual8_19	mal_qual9_19	///
-mal_qual10_19	mal_qual11_19	mal_qual12_19 mal_qual1_20	///
-mal_qual2_20	mal_qual3_20	mal_qual4_20	mal_qual5_20	///
-mal_qual6_20	mal_qual7_20	mal_qual8_20	mal_qual9_20	///
-mal_qual10_20	mal_qual11_20 mal_qual12_20)
+rename (B-AB) (malaria_util10_18	malaria_util11_18	malaria_util12_18  ///
+malaria_util1_19  malaria_util2_19	malaria_util3_19 ///
+malaria_util4_19	malaria_util5_19	malaria_util6_19	malaria_util7_19 ///
+malaria_util8_19	malaria_util9_19	malaria_util10_19	malaria_util11_19 ///
+malaria_util12_19 malaria_util1_20	malaria_util2_20	malaria_util3_20 ///
+malaria_util4_20	malaria_util5_20	malaria_util6_20	malaria_util7_20 ///
+malaria_util8_20	malaria_util9_20	malaria_util10_20	malaria_util11_20 ///
+malaria_util12_20)
 merge 1:1 Province using "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta"
 drop _merge
 save  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", replace
@@ -154,7 +155,12 @@ save  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", replace
 *Pneumonia cases
 import excel using "$user/$data/Raw data/Received_021621/Provincial - Pneumonia cases 2018 to 2021.xlsx", firstrow clear
 drop AC
-rename (B-AB) (pneum_qual10_18	pneum_qual11_18	pneum_qual12_18 pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19 pneum_qual1_20	pneum_qual2_20	pneum_qual3_20	pneum_qual4_20	pneum_qual5_20	pneum_qual6_20	pneum_qual7_20	pneum_qual8_20	pneum_qual9_20	pneum_qual10_20 pneum_qual11_20 pneum_qual12_20)
+rename (B-AB) (pneum_util10_18	pneum_util11_18	pneum_util12_18 pneum_util1_19 ///
+pneum_util2_19	pneum_util3_19	pneum_util4_19	pneum_util5_19	pneum_util6_19 ///
+pneum_util7_19	pneum_util8_19	pneum_util9_19	pneum_util10_19	pneum_util11_19 ///
+pneum_util12_19 pneum_util1_20	pneum_util2_20	pneum_util3_20	pneum_util4_20 ///
+pneum_util5_20	pneum_util6_20	pneum_util7_20	pneum_util8_20	pneum_util9_20 ///
+pneum_util10_20	pneum_util11_20	pneum_util12_20 )
 merge 1:1 Province using "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta"
 drop _merge
 save  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", replace

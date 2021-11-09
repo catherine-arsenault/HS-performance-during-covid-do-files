@@ -75,8 +75,10 @@ drop Indic26_penta*
 * BCG #
 egen bcg_qual5_20 =rowtotal (Indic27_BCG*May20 ndic27_BCG*May20 ) , m
 egen bcg_qual6_20 =rowtotal (Indic27_BCG*Jun20 ) , m
-drop Indic27_BCG* ndic27_BCG*
-
+/*
+rename (Indic27_BCG_U_May20 Indic27_BCG_U_Jun20) ( bcg_qual5_20 bcg_qual6_20)
+*/
+drop Indic27_BCG* ndic27_BCG* 
 * MCV #
 egen measles_qual5_20 =rowtotal ( Indic28*May20   ) , m
 egen measles_qual6_20 =rowtotal ( Indic28*Jun20   ) , m

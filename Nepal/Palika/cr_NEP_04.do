@@ -272,34 +272,129 @@ set more off
 	save "$user/$data/Data for analysis/Nepal_palika_Nov20-Dec20_WIDE.dta", replace	
 
 ********************************************************************************
-*END OF coding for Nov20-Dec20 data 
+* Merge with Jan19-Nov20 data, remove poorly reported indicators
 ********************************************************************************	
-
-*Merge with Jan19-Nov20 data 
 	merge 1:1 orgunitlevel1 orgunitlevel2 orgunitlevel3 organisationunitname ///
 	           using "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_WIDE.dta"
 	drop _merge
 	drop live_births* //no longer used 
-	
+	drop ipd_util* ipd_mort* // wrong data elements used
+*	drop sam_util* hivdiag_qual* // remove from analyses, poorly reported <- MOVED THIS TO END 
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 
+********************************************************************************
+* Corrections to ipd_util and ipd_mort  
+********************************************************************************		
+import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_inpatient.csv", clear
+* Replace facility identifiers so that new dataset match old dataset
+	rename ïorgunitlevel1 orgunitlevel1
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"	
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
+* IPD util
+	rename  (inpatientmorbiditycasesmagh2075-inpatientmorbiditycasespoush2077) ///
+	(ipd_util1_19 ipd_util2_19 ipd_util3_19 ipd_util4_19 ipd_util5_19 ///
+	ipd_util6_19 ipd_util7_19	ipd_util8_19 ipd_util9_19 ipd_util10_19	///
+	ipd_util11_19 ipd_util12_19 ipd_util1_20	ipd_util2_20	ipd_util3_20 ///
+	ipd_util4_20 ipd_util5_20 ipd_util6_20 ipd_util7_20 ipd_util8_20 ipd_util9_20 ///
+	ipd_util10_20	ipd_util11_20 ipd_util12_20)
+* IPD deaths
+	rename (inpatientmorbiditydeathsmagh2075-v53) (ipd_mort_num1_19 ///
+	ipd_mort_num2_19 ipd_mort_num3_19 ipd_mort_num4_19 ipd_mort_num5_19 ///
+	ipd_mort_num6_19 ipd_mort_num7_19 ipd_mort_num8_19 ipd_mort_num9_19 ///
+	ipd_mort_num10_19 ipd_mort_num11_19 ipd_mort_num12_19 ipd_mort_num1_20 ///
+	ipd_mort_num2_20 ipd_mort_num3_20 ipd_mort_num4_20 ipd_mort_num5_20 ///
+	ipd_mort_num6_20 ipd_mort_num7_20 ipd_mort_num8_20 ipd_mort_num9_20 ///
+	ipd_mort_num10_20 ipd_mort_num11_20 ipd_mort_num12_20)
+
+	egen total= rowtotal(ipd_util1_19-ipd_mort_num12_20), m
+	drop if total==. 
+	drop total
 	
+merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
+	
+********************************************************************************
+* New HIV indicator 
+********************************************************************************			
+import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_HIV_tests.csv", clear
+* Replace facility identifiers so that new dataset match old dataset
+	rename ïorgunitlevel1 orgunitlevel1
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"	
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
+	
+	replace orgunitlevel3="206 RAUTAHAT" if orgunitlevel3=="206 RAUTAHAT "
+* HIV testing
+	rename (virologyhivtestconductedmagh2075-v29) (hivtest_qual1_19 hivtest_qual2_19 ///
+	hivtest_qual3_19  hivtest_qual4_19 hivtest_qual5_19 hivtest_qual6_19 ///
+	hivtest_qual7_19 hivtest_qual8_19 hivtest_qual9_19 hivtest_qual10_19 ///
+	hivtest_qual11_19 hivtest_qual12_19 hivtest_qual1_20 hivtest_qual2_20 ///
+	hivtest_qual3_20  hivtest_qual4_20 hivtest_qual5_20 hivtest_qual6_20 ///
+	hivtest_qual7_20 hivtest_qual8_20 hivtest_qual9_20 hivtest_qual10_20 ///
+	hivtest_qual11_20 hivtest_qual12_20)
+	
+merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
+	
+********************************************************************************
+* New Hypertension and Diabetes indicators (missed on first extraction)
+********************************************************************************	
+import delimited "$user/$data/Raw data/Palika/Nepal_2019_2020_Hyper_Diab.csv", clear
+* Replace facility identifiers so that new dataset match old dataset
+	rename ïorgunitlevel1 orgunitlevel1
+	replace orgunitlevel3= orgunitlevel2 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel2 = orgunitlevel1 if orgunitlevel1=="1 Province 1"
+	replace orgunitlevel1 = "Nepal" if orgunitlevel1=="1 Province 1"				
+	replace orgunitlevel2 = "5 Province 5" if orgunitlevel2 == "5 Lumbini Province"	
+	replace organisationunitname = "60904 Dhorchaur Rural Municipality" if organisationunitname =="60904 Siddha Kumakh Rural Municipality"
+	replace organisationunitname = "10507 Diprung Rural Municipality" if organisationunitname =="10507 Diprung Chuichumma Rural Municipality"
+	replace organisationunitname = "20611 Boudhimai Municipality" if organisationunitname =="20611 Baudhimai Municipality"
+	
+	replace orgunitlevel3="206 RAUTAHAT" if orgunitlevel3=="206 RAUTAHAT "
+*Hypertension
+rename (opdmorbiditycardiovascularrespir-v29) ///
+    (hyper_util1_19 hyper_util2_19 ///
+	hyper_util3_19  hyper_util4_19 hyper_util5_19 hyper_util6_19 ///
+	hyper_util7_19 hyper_util8_19 hyper_util9_19 hyper_util10_19 ///
+	hyper_util11_19 hyper_util12_19 hyper_util1_20 hyper_util2_20 ///
+	hyper_util3_20  hyper_util4_20 hyper_util5_20 hyper_util6_20 ///
+	hyper_util7_20 hyper_util8_20 hyper_util9_20 hyper_util10_20 ///
+	hyper_util11_20 hyper_util12_20)
+	
+* Diabetes
+rename (outpatientmorbiditynutritionalme-v53) ///
+  (diab_util1_19 diab_util2_19 ///
+	diab_util3_19  diab_util4_19 diab_util5_19 diab_util6_19 ///
+	diab_util7_19 diab_util8_19 diab_util9_19 diab_util10_19 ///
+	diab_util11_19 diab_util12_19 diab_util1_20 diab_util2_20 ///
+	diab_util3_20  diab_util4_20 diab_util5_20 diab_util6_20 ///
+	diab_util7_20 diab_util8_20 diab_util9_20 diab_util10_20 ///
+	diab_util11_20 diab_util12_20)
+
+merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
+	drop _merge
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
 
 	
+	*Save dataset for data quality analysis 
+    save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_dq.dta", replace	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	drop sam_util* hivdiag_qual* // remove from analyses, poorly reported
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
+
+
 /*old codes - we have removed this indicator because we added a neonatal mortality indicator. 
 *Perinatal mortality = totaldel-livebirth 	
 	gen peri_mort_num1_20 = totaldel1_20 - live_births1_20

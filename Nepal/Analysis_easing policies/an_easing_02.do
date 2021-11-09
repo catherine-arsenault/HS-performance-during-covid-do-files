@@ -1,268 +1,109 @@
 * Effect of easing Covid-19 containment policies on health service delivery in Nepal
 * January 13th 2021
 * Creation do file
-* Created by Catherine Arsenault and Neena Kappoor
+* Created by Neena Kappoor
 
 clear all
 set more off
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Nov20_clean_easing.dta"
 
-* Simple comparison of means - two period comparison of just April to June compared to August to October 
-tabstat fp_sa_util anc_util del_util cs_util pnc_util if post_simp==0 , stat(N mean) col(stat)
-tabstat fp_sa_util anc_util del_util cs_util pnc_util if post_simp==1 & eased_ == 0 , stat(N mean) col(stat)
-tabstat fp_sa_util anc_util del_util cs_util pnc_util if post_simp==1 & eased_ == 1 , stat(N mean) col(stat)
+use "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta"
 
-* Mean comparison of palikas that fully maintained, fully eased or switched (just post-period, Aug & Sept)
-tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 1 , stat(N mean) col(stat)
-tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 2 , stat(N mean) col(stat)
-tabstat fp_sa_util anc_util del_util cs_util pnc_util if eased_cat == 3 , stat(N mean) col(stat)
 
+drop if year == 2019
+drop if month == 1 | month == 2
 
-*TIME VARYING POLICY CHANGE
+*Primary care variables selected: ANC, Contraceptives, PNC, *Diarrhea, Pneumonia, *Pentavalent vaccine, Measles vaccine, Outpatient, Diabetes, Hypertension, HIV testing, TB detection, 
 
-*DID estimates with variable policy changes with covid case and covid death 
-quietly reg fp_sa_util i.palikaid i.month eased_ covid_case covid_death_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+*** TABLE 1 ***
+* Simple comparison of means 
+tabstat fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0 , stat(N mean) col(stat)
+tabstat fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 , stat(N mean) col(stat)
+tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0, stat(N mean) col(stat)
+tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 , stat(N mean) col(stat)
 
-quietly reg anc_util i.palikaid i.month eased_ covid_case covid_death_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+** Do you have any suggestions for producing the Table 1? I tried summtab, but I still have to divide the N by number of months to get palikas per service type. I also don't think I need SD or %nonmissing. 
 
-quietly reg del_util i.palikaid i.month eased_ covid_case covid_death_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+summtab if post == 0, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(pre-period) replace title(Table1)
 
-quietly reg cs_util i.palikaid i.month eased_ covid_case covid_death_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+summtab if post == 1, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(post-period) replace title(Table1)
 
-quietly reg pnc_util i.palikaid i.month eased_ covid_case covid_death_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+*** Difference-in-differences analysis - time varying treatment status 
+* RMNCAH Services 
 
-*DID estimates with variable policy changes with just covid cases 
-quietly reg fp_sa_util i.palikaid i.month eased_ covid_case , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+eststo: xtreg fp_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pneum_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg measles_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg opd_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diab_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hyper_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hivtest_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg tbdetect_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
 
-quietly reg anc_util i.palikaid i.month eased_ covid_case , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+esttab using "$user/$analysis/DD tables/ddtable.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons)title("DD regression: Primary care services") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB cases detected") rename(eased "Lockdowns lifted" covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" )
 
-quietly reg del_util i.palikaid i.month eased_ covid_case , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+eststo clear
 
-quietly reg cs_util i.palikaid i.month eased_ covid_case , r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+* Parallel trends assessment
+preserve
+drop if month == 3
 
-quietly reg pnc_util i.palikaid i.month eased_ covid_case, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+eststo: xtreg fp_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg anc_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed  
+eststo: xtreg pnc_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg pneum_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg measles_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg opd_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed 
+eststo: xtreg  diab_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg hyper_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg hivtest_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg tbdetect_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
 
+esttab using "$user/$analysis/DD tables/ddtablept.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons 1.eased_fixed)title("DD regression: Parallel trends test") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ( "Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB tests") rename(eased "Lockdowns lifted"covid_case "Covid cases" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 5.month#1.eased_fixed "Month 5*Lifted" 6.month#1.eased_fixed "Month 6*Lifted" 8.month#1.eased_fixed "Month 8*Lifted")
 
-*DID estimates with variable policy changes (without covid case and covid death)
-quietly reg fp_sa_util i.palikaid i.month eased_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+eststo clear 
 
-quietly reg anc_util i.palikaid i.month eased_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
 
-quietly reg del_util i.palikaid i.month eased_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+restore 
 
-quietly reg cs_util i.palikaid i.month eased_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+*** Excluded Diarrhea visits and Pentavalent vaccines because of parallel trends test
+xtreg diarr_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+xtreg pent_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
 
-quietly reg pnc_util i.palikaid i.month eased_, r
-margins, at(eased_= (0 1)) post
-lincom (_b[2._at]-_b[1._at])
 
+/*
+* Pre/post instead of month fixed effects - RMNCAH
+eststo: xtreg anc_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg fp_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diarr_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pneum_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pent_qual eased covid_case post, i(palikaid) fe cluster(palikaid)
 
-* FIXED POLICY CHANGE 
-** There are very few palikas that maintained the whole post period (just August and September )
+esttab, ci r2 ar2 compress nobaselevels title("DD regression: RMNCH Services") mtitles ("ANC Visits" "Contraceptives" "PNC Visits" "Child diarrhea visits" "Child pneumonia visits" "Pentavalent vaccine") rename(eased Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9")
 
-*DID estimates with only eased or only maintained with covid case and death 
-quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+eststo clear
 
-quietly reg anc_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+* Pre/Post instead of month fixed effects - Other services 
+eststo: xtreg opd_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diab_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hyper_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hivtest_qual eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg tbdetect_qual eased covid_case post, i(palikaid) fe cluster(palikaid)
 
-quietly reg del_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
+esttab, ci r2 ar2 compress nobaselevels title("DD regression: Other primary care services") mtitles ("Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB tests") rename(eased Eased covid_case "Covid cases")
 
-quietly reg cs_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg pnc_util i.palikaid i.month did_eased_cat_2 covid_case covid_death_ , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-*DID estimates with only eased or only maintained with only covid case 
-quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 covid_case , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg anc_util i.palikaid i.month did_eased_cat_2 covid_case , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg del_util i.palikaid i.month did_eased_cat_2 covid_case , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg cs_util i.palikaid i.month did_eased_cat_2 covid_case , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg pnc_util i.palikaid i.month did_eased_cat_2 covid_case , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-*DID estimates with only eased or only maintained
-quietly reg fp_sa_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg anc_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg del_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg cs_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg pnc_util i.palikaid i.month did_eased_cat_2 , r
-margins, at(did_eased_cat_2 = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-
-*PLACEBO TEST 
-*Fixed policy change from above, pre-period is March and April, post is May and June
-*Everyone under national policy during this whole period 
-
-*DID estimates with only eased or only maintained - PLACEBO TEST 
-quietly reg fp_sa_util i.palikaid i.month did_eased_cat_plac , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg anc_util i.palikaid i.month did_eased_cat_plac , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg del_util i.palikaid i.month did_eased_cat_plac , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg cs_util i.palikaid i.month did_eased_cat_plac , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg pnc_util i.palikaid i.month did_eased_cat_plac , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-*DID estimates with only eased or only maintained - PLACEBO TEST with covid case
-quietly reg fp_sa_util i.palikaid i.month did_eased_cat_plac covid_case , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg anc_util i.palikaid i.month did_eased_cat_plac covid_case , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg del_util i.palikaid i.month did_eased_cat_plac covid_case , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg cs_util i.palikaid i.month did_eased_cat_plac covid_case , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-quietly reg pnc_util i.palikaid i.month did_eased_cat_plac covid_case , r
-margins, at(did_eased_cat_plac = (0 1)) post
-lincom (_b[2._at]-_b[1._at])
-
-*can't do with Covid deaths, I think because first Covid death is in May 
-
-
-
-/* Old code 
-* Probably won't use this 
-* DID estimates fixed policy change - 
-reg fp_sa_util post eased_8_20  did_eased_8_20 , r
-reg anc_util post eased_8_20  did_eased_8_20 , r
-reg del_util post eased_8_20  did_eased_8_20 , r
-reg cs_util post eased_8_20  did_eased_8_20 , r
-reg pnc_util post eased_8_20  did_eased_8_20 , r
-* could also do reg anc_util post##eased_8_20
-
-
-**** IF AUGUST WERE TREATMENT INDICATOR 
-
-* Placebo tests
-* Family planning - placebo test 
-reg fp_sa_util post_plac eased_8_20 did_eased_8_20_plac, r
-
-* Antenatal care visits - placebo test 
-reg anc_util post_plac eased_8_20 did_eased_8_20_plac, r
-
-* Facility deliveries - placebo test 
-reg del_util post_plac eased_8_20 did_eased_8_20_plac, r
-
-* C-sections - placebo test 
-reg cs_util post_plac eased_8_20 did_eased_8_20_plac, r
-
-* Postnatal care visits - placebo test 
-reg pnc_util post_plac eased_8_20 did_eased_8_20_plac, r 
-***failed, p < 0.05 
-
-
-* DID estimates 
-* Family planning 
-reg fp_sa_util post eased_8_20 did_eased_8_20, r
-
-* Antenatal care visits 
-reg anc_util post eased_8_20 did_eased_8_20, r
-
-* Facility deliveries 
-reg del_util post eased_8_20 did_eased_8_20, r
-
-* C-sections
-reg cs_util post eased_8_20 did_eased_8_20, r
-
-* Postnatal care visits
-reg pnc_util post eased_8_20 did_eased_8_20, r 
-
-
-*** MULTIPLE POST PERIODS 
-* Family planning 
-reg fp_sa_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
-
-* Antenatal care visits 
-reg anc_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
-
-* Facility deliveries 
-reg del_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
-
-* C-sections
-reg cs_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
-
-* Postnatal care visits
-reg pnc_util post eased_8_20 eased_9_20 eased_10_20 eased_11_20 did_eased_8_20 did_eased_9_20 did_eased_10_20 did_eased_11_20, r
-
+eststo clear

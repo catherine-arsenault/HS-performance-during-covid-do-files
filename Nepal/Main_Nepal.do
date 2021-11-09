@@ -3,10 +3,9 @@
 * Analyst MK Kim
 	
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
+
 
 **********************************************************************
 * Creation do files
@@ -37,7 +36,7 @@ do "$dofiles/Palika/clean_NEP.do"
 do "$dofiles/Palika/format_NEP.do"
 
 **********************************************************************
-* Analysis
+* Analyses for policy briefs
 
 * Calculates changes between Q2 2020 and Q2 2019 for policy brief
 do "$dofiles/Palika/an_NEP_01.do"

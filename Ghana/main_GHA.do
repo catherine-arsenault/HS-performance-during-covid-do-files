@@ -3,20 +3,18 @@
 * PI Catherine Arsenault
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Ghana)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Ghana"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Ghana"
 
 ********************************************************************************
 * Creation do files
 * Imports raw data and renames variables for January 2019 - August 2020
-do "$dofiles/cr_GHA.do"
+* do "$dofiles/cr_GHA_01.do"
 
-********************************************************************************
-* Cleaning do files
-* Cleans data - no need since it's province level data
-*do "$dofiles/clean_GHA.do"
+* Creation do files
+* Imports raw data and renames variables for January 2019 - Dec 2020
+* Overwrite previous data 
+do "$dofiles/cr_GHA_02.do"
 
 ********************************************************************************
 * Format do files
