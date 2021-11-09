@@ -32,15 +32,15 @@ rename Delegación Delegation
 ********************************************************************************
 * MERGE WITH PRIOR DATA 
 ********************************************************************************
-
+					 
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta"
 drop _merge
-save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", replace
 
 * Correcting measles vaccination data, Jul 16, 2021
 
 drop measles_qual*
-save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", replace
 
 import excel using "$user/$data/Raw/26.Indic26_31_Vacunas2019.xlsx", sheet("SRP_formatted") firstrow clear
 drop E
@@ -65,8 +65,8 @@ measles_qual6_20 measles_qual7_20 measles_qual8_20 measles_qual9_20 measles_qual
 measles_qual11_20 measles_qual12_20)
 
 merge 1:1 Delegation using "$user/$data/Data for analysis/tmp.dta"
-drop _merge 
-merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta"
+drop _merge           
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta"
 drop _merge
 
 * Correction to cervical cancer screening in Sonora
@@ -75,6 +75,6 @@ replace cerv_util4_20 = 1656 if Deleg=="Sonora"
 replace cerv_util5_20 = 268 if Deleg=="Sonora"
 replace cerv_util6_20 = 739 if Deleg=="Sonora"
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", replace
 
 rm "$user/$data/Data for analysis/tmp.dta"

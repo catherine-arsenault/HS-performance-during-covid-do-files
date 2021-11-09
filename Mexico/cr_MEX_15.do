@@ -30,7 +30,7 @@ rename (Enero - Diciembre) ///
 merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta"
 drop _merge
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Dec20final2_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", replace
 
 *Neonatal mortality - only add Dec2020 data 
 import excel "/$user/$data/Raw/Defunciones Neonalates_fetales 2020.xlsx", sheet("Neonatal death") firstrow clear
@@ -49,7 +49,7 @@ replace Deleg= "Veracruz Norte" if Deleg=="Veracruz Nte"
 drop Enero - Noviembre
 
 rename Diciembre newborn_mort_num12_20 
-merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20final2_WIDE.dta"
-drop _merge
+merge 1:1 Delegation using "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta"
+drop _merge 											 
 
-save "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", replace
+save "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", replace
