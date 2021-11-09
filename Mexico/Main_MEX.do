@@ -52,8 +52,12 @@ do "$dofiles/cr_MEX_13.do"
 * Update december 2020 data
 do "$dofiles/cr_MEX_14.do"
 
-* Adding data for ART, editing measles vaccine, correction to cervical cancer (July 21, 2021)
+* Final update december 2020 data 
+* Add stillbirth and newborn mortality data
 do "$dofiles/cr_MEX_15.do"
+
+* Adding data for ART, editing measles vaccine, correction to cervical cancer (July 21, 2021)
+do "$dofiles/cr_MEX_16.do"
 
 
 ********************************************************************************
