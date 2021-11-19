@@ -59,9 +59,10 @@ rename ( Indic24_dmctrl_sept20 Indic25_htactrl_sept20) (diab_qual_num9_20 hyper_
 egen pent_qual9_20 =rowtotal (Indic26_penta*sept20) , m
 drop Indic26_penta*
 
-* BCG 
+* BCG any dose
 egen bcg_qual9_20 =rowtotal(Indic27_BCG_U_sept20 Indic27_BCG_P_sept20 Indic27_BCG_S_sept20 Indic27_BCG_T_sept20 Indic27_BCG_R_sept20 Indic27_BCG_A_sept20) , m
-*rename Indic27_BCG_U_sept20  bcg_qual9_20 
+* BCG unique
+rename Indic27_BCG_U_sept20  bcgu_qual9_20 
 drop Indic27_BCG*
 
 * MCV 
