@@ -79,7 +79,8 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 		replace rmonth = month+12 if year ==2020
 		
 	foreach x in $NEPall {
-		egen preCOmean`x'= mean(`x') if rmonth<15	
+		egen preCOmean`x'= mean(`x') if rmonth<15	// relative volume compared to the average pre-Covid
+													// could also do relative volume compared to February 2020
 		carryforward preCOmean`x', replace
 		gen rel_`x'= `x'/ preCOmean`x'
 	}
