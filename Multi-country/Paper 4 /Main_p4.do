@@ -2,9 +2,12 @@
 * Associations between COVID-19 lockdowns and health service disruptions in 10 countries 
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global analysis "SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 4 Factors associated"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 4"
 
+global user "/Users/nek096/Dropbox (Harvard University)"
+global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 4 Factors Associated"
+
+global analysis "SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 4 Factors associated"
 ********************************************************************************
 * File paths data 
 global CHLdata "/HMIS Data for Health System Performance Covid (Chile)"
