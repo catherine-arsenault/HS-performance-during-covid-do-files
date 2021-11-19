@@ -149,3 +149,5 @@ lab val service service
 sort country rmonth service
 
 save "$user/$analysis/Multip4.dta", replace
+
+* regress relative ib(4).serv 
