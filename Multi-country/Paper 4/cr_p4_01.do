@@ -154,4 +154,4 @@ sort country rmonth service
 
 save "$user/$analysis/Data/Multip4.dta", replace
 
-* regress relative ib(4).serv 
+
