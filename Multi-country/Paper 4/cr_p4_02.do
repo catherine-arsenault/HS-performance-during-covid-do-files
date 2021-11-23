@@ -11,28 +11,22 @@ cd "$user/$analysis/Data"
 
 * Import latest stringency data from github 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/stringency_index.csv", varnames(1)
-
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
 		country_name == "Haiti" | country_name == "Laos" | country_name == "Mexico" | /// 
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
-
 *Drop country ID 
 drop v1
-
 * Renaming variables to label name 		
-
 foreach v of var jan2020-v690 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' stringency`lbl'
 }
-
 * Only keep data from April - December 2020 
 drop stringency_01Jan2020-stringency_31Mar2020 
 keep country_code-stringency_13Jan2021
-
 * Reshaping dataset to long 
 reshape long stringency_01 stringency_02 stringency_03 stringency_04 stringency_05 /// 
 			 stringency_06 stringency_07 stringency_08 stringency_09 stringency_10 ///
@@ -56,7 +50,7 @@ replace month = 1 if mo == "Jan2021"
 drop mo
 drop if stringency == . 
 
-*** For Nepali calendar 
+*For Nepali calendar 
 global twelve 01 02 03 04 05 06 07 08 09 10 11 12 
 global thirteen 01 02 03 04 05 06 07 08 09 10 11 12 13 
 global fourteen 01 02 03 04 05 06 07 08 09 10 11 12 13 14
@@ -891,18 +885,15 @@ foreach x of global policy {
 		rm "$user/$analysis/Data/`x'_all.dta"
 	}
 
-************* Merge stringency, policy and relative volume data *************
-*****************************************************************************
-
-clear all
-use "$user/$analysis/Multip4.dta"
+************* Merge stringency, policy and relative volume data ****************
+********************************************************************************
+use "$user/$analysis/Data/Multip4.dta", clear
 merge m:1 country month year using "$user/$analysis/Data/stringency_index.dta"
 drop _merge
 merge m:1 country month year using "$user/$analysis/Data/policy_data.dta"
-* Looks like Nepal still has month 3
-drop if month == 3
+drop if month == 3 // Nepal March data removed (due to different calendar month 3 was Mar 14-April 12)
 drop _merge country_name
 order country rmonth year month service relative_vol
 
-save "$user/$analysis/Multip4_v3.dta", replace
+save "$user/$analysis/Data/Multip4_combined.dta", replace
 
