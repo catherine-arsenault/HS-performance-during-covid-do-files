@@ -31,6 +31,39 @@ foreach v of var jan2020-v690 {
 drop stringency_01Jan2020-stringency_31Mar2020 
 keep country_code-stringency_31Dec2020
 
+* Reshaping dataset to long 
+reshape long stringency_01 stringency_02 stringency_03 stringency_04 stringency_05 /// 
+			 stringency_06 stringency_07 stringency_08 stringency_09 stringency_10 ///
+			 stringency_11 stringency_12 stringency_13 stringency_14 stringency_15 ///
+			 stringency_16 stringency_17 stringency_18 stringency_19 stringency_20 ///
+			 stringency_21 stringency_22 stringency_23 stringency_24 stringency_25 ///
+			 stringency_26 stringency_27 stringency_28 stringency_29 stringency_30 ///
+			 stringency_31, i(country_code country_name) j(mo) string
+reshape long stringency, i(country_code country_name mo) j(day) string
+drop if day == "_31" & stringency == . 
+drop day
+gen year = 2020	
+gen month = 4
+replace month = 5 if mo == "May2020"
+replace month = 6 if mo == "Jun2020"
+replace month = 7 if mo == "Jul2020"
+replace month = 8 if mo == "Aug2020"
+replace month = 9 if mo == "Sep2020"
+replace month = 10 if mo == "Oct2020"
+replace month = 11 if mo == "Nov2020"
+replace month = 12 if mo == "Dec2020"
+drop mo
+
+* Mean, median and max for stringency index 
+gen stringency_mean = stringency
+gen stringency_median = stringency 
+gen stringency_max = stringency 
+drop stringency 
+collapse (mean) stringency_mean (median) stringency_median (max) stringency_max, by(country_code country_name month year)
+
+rename country_code country 
+replace country = "KZN" if country == "ZAF"
+replace country = "NEP" if country == "NPL"
 save "$user/$analysis/Data/stringency_index_daily.dta", replace
 
 
@@ -505,12 +538,35 @@ foreach v of var info_camp_Apr2020-info_camp_Dec2020 {
 
 save "$user/$analysis/Data/info_camp_tmp.dta", replace
 
-*** Merging all datasets to one *** 
+******** Merging all policy datasets ********
 
-merge using "$user/$analysis/Data/school_close_tmp.dta" "$user/$analysis/Data/work_close_tmp.dta" "$user/$analysis/Data/public_event_tmp.dta" "$user/$analysis/Data/restrict_gather_tmp.dta" "$user/$analysis/Data/public_trnsprt_tmp.dta" "$user/$analysis/Data/stay_home_tmp.dta" "$user/$analysis/Data/move_restr_tmp.dta" "$user/$analysis/Data/int_trav_tmp.dta" "$user/$analysis/Data/info_camp_tmp.dta"
+* Merge with curfew and State of emergency (SOE) data (not collected by Oxford)
+clear all
+import excel "$user/$analysis/Data/curfew_soe.xlsx", firstrow
 
 * It says I'm using the old version of merge - is there a better way to do this? 
+merge using "$user/$analysis/Data/school_close_tmp.dta" "$user/$analysis/Data/work_close_tmp.dta" "$user/$analysis/Data/public_event_tmp.dta" "$user/$analysis/Data/restrict_gather_tmp.dta" "$user/$analysis/Data/public_trnsprt_tmp.dta" "$user/$analysis/Data/stay_home_tmp.dta" "$user/$analysis/Data/move_restr_tmp.dta" "$user/$analysis/Data/int_trav_tmp.dta" "$user/$analysis/Data/info_camp_tmp.dta"
+
 drop _merge*
+
+* Reshaping dataset to long 
+reshape long curfew soe info_camp school_close work_close public_event ///
+			 restrict_gather public_trnsprt stay_home move_restr int_trav, ///
+			 i(country_code country_name) j(mo) string
+gen year = 2020	
+gen month = 4
+replace month = 5 if mo == "_May2020"
+replace month = 6 if mo == "_Jun2020"
+replace month = 7 if mo == "_Jul2020"
+replace month = 8 if mo == "_Aug2020"
+replace month = 9 if mo == "_Sep2020"
+replace month = 10 if mo == "_Oct2020"
+replace month = 11 if mo == "_Nov2020"
+replace month = 12 if mo == "_Dec2020"
+drop mo
+rename country_code country 
+replace country = "KZN" if country == "ZAF"
+replace country = "NEP" if country == "NPL"
 
 save "$user/$analysis/Data/policy_data.dta", replace
 
@@ -520,3 +576,19 @@ global policy school_close work_close public_event restrict_gather public_trnspr
 foreach x of global policy {
 		rm "$user/$analysis/Data/`x'_tmp.dta"
 	}
+
+************* Merge stringency, policy and relative volume data *************
+*****************************************************************************
+
+clear all
+use "$user/$analysis/Multip4.dta"
+merge m:1 country month year using "$user/$analysis/Data/stringency_index_daily.dta"
+drop _merge
+merge m:1 country month year using "$user/$analysis/Data/policy_data.dta"
+* Looks like Nepal still has month 3
+drop if month == 3
+drop _merge country_name
+order country rmonth year month service relative_vol
+
+save "$user/$analysis/Multip4_v2.dta", replace
+
