@@ -67,5 +67,5 @@ global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_
 do "$dofiles/cr_p4_01.do"
 
 ********************************************************************************
-* Compiling policy data
+* Compiling and merging policy data
 do "$dofiles/cr_p4_02.do"
