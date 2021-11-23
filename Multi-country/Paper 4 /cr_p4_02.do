@@ -41,7 +41,6 @@ reshape long stringency_01 stringency_02 stringency_03 stringency_04 stringency_
 			 stringency_31, i(country_code country_name) j(mo) string
 reshape long stringency, i(country_code country_name mo) j(day) string
 drop if day == "_31" & stringency == . 
-drop day
 gen year = 2020	
 gen month = 4
 replace month = 5 if mo == "May2020"
@@ -53,6 +52,22 @@ replace month = 10 if mo == "Oct2020"
 replace month = 11 if mo == "Nov2020"
 replace month = 12 if mo == "Dec2020"
 drop mo
+
+*** For Nepali calendar 
+replace month == 4 if country_code = NPL & month == 5 & day == 1 | month == 5 & day == 2 | /// 
+					  month == 5 & day == 3 | month == 5 & day == 4 | ///
+					  month == 5 & day == 5 | month == 5 & day == 6 | ///
+					  month == 5 & day == 7 | month == 5 & day == 8 | /// 
+					  month == 5 & day == 9 | month == 5 & day == 10 | /// 
+					  month == 5 & day == 11 | month == 5 & day == 12 | ///
+					  month == 5 & day == 13 |
+replace month == 5 if month == 6 & day == 1 | month == 6 & day == 2 | /// 
+					  month == 6 & day == 3 | month == 6 & day == 4 | ///
+					  month == 6 & day == 5 | month == 6 & day == 6 | ///
+					  month == 6 & day == 7 | month == 6 & day == 8 | /// 
+					  month == 6 & day == 9 | month == 6 & day == 10 | /// 
+					  month == 6 & day == 11 | month == 6 & day == 12 | ///
+					  month == 6 & day == 13 |
 
 * Mean, median and max for stringency index 
 gen stringency_mean = stringency
@@ -72,7 +87,7 @@ save "$user/$analysis/Data/stringency_index_daily.dta", replace
 
 ******** School closures ********
 clear all 
-import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c1_flag.csv"
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c1_school_closing.csv"
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -93,14 +108,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop school_close_01Jan2020-school_close_31Mar2020 
-keep country_code-school_close_31Dec2020
+keep country_code-school_close_13Jan2021
 
 * Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
-foreach v of var school_close_01Apr2020-school_close_31Dec2020 {
+foreach v of var school_close_01Apr2020-school_close_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2/3 = 1)
 }
 
+save d:school_close, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen school_close_Apr2020 = rowtotal(school_close_01Apr2020-school_close_30Apr2020)
 egen school_close_May2020 = rowtotal(school_close_01May2020-school_close_31May2020)
@@ -112,13 +131,37 @@ egen school_close_Oct2020 = rowtotal(school_close_01Oct2020-school_close_31Oct20
 egen school_close_Nov2020 = rowtotal(school_close_01Nov2020-school_close_30Nov2020)
 egen school_close_Dec2020 = rowtotal(school_close_01Dec2020-school_close_31Dec2020)
 
-drop school_close_01Apr2020-school_close_31Dec2020
+drop school_close_01Apr2020-school_close_13Jan2021
 
 foreach v of var school_close_Apr2020-school_close_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
 
+save d:school_close_all, replace
+
+*** For Nepal *** 
+use d:school_close
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen school_close_Apr2020 = rowtotal(school_close_13Apr2020-school_close_13May2020)
+egen school_close_May2020 = rowtotal(school_close_14May2020-school_close_14Jun2020)
+egen school_close_Jun2020 = rowtotal(school_close_15Jun2020-school_close_15Jul2020)
+egen school_close_Jul2020 = rowtotal(school_close_16Jul2020-school_close_16Aug2020)
+egen school_close_Aug2020 = rowtotal(school_close_17Aug2020-school_close_16Sep2020)
+egen school_close_Sep2020 = rowtotal(school_close_17Sep2020-school_close_16Oct2020)
+egen school_close_Oct2020 = rowtotal(school_close_17Oct2020-school_close_15Nov2020)
+egen school_close_Nov2020 = rowtotal(school_close_16Nov2020-school_close_15Dec2020)
+egen school_close_Dec2020 = rowtotal(school_close_16Dec2020-school_close_13Jan2021)
+
+drop school_close_01Apr2020-school_close_13Jan2021
+
+foreach v of var school_close_Apr2020-school_close_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:school_close_all
 
 save "$user/$analysis/Data/school_close_tmp.dta", replace
 
@@ -146,14 +189,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop work_close_01Jan2020-work_close_31Mar2020 
-keep country_code-work_close_31Dec2020
+keep country_code-work_close_13Jan2021
 
 * Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
-foreach v of var work_close_01Apr2020-work_close_31Dec2020 {
+foreach v of var work_close_01Apr2020-work_close_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2/3 = 1)
 }
 
+save d:work_close, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen work_close_Apr2020 = rowtotal(work_close_01Apr2020-work_close_30Apr2020)
 egen work_close_May2020 = rowtotal(work_close_01May2020-work_close_31May2020)
@@ -165,12 +212,37 @@ egen work_close_Oct2020 = rowtotal(work_close_01Oct2020-work_close_31Oct2020)
 egen work_close_Nov2020 = rowtotal(work_close_01Nov2020-work_close_30Nov2020)
 egen work_close_Dec2020 = rowtotal(work_close_01Dec2020-work_close_31Dec2020)
 
-drop work_close_01Apr2020-work_close_31Dec2020
+drop work_close_01Apr2020-work_close_13Jan2021
 
 foreach v of var work_close_Apr2020-work_close_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:work_close_all, replace
+
+*** For Nepal *** 
+use d:work_close
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen work_close_Apr2020 = rowtotal(work_close_13Apr2020-work_close_13May2020)
+egen work_close_May2020 = rowtotal(work_close_14May2020-work_close_14Jun2020)
+egen work_close_Jun2020 = rowtotal(work_close_15Jun2020-work_close_15Jul2020)
+egen work_close_Jul2020 = rowtotal(work_close_16Jul2020-work_close_16Aug2020)
+egen work_close_Aug2020 = rowtotal(work_close_17Aug2020-work_close_16Sep2020)
+egen work_close_Sep2020 = rowtotal(work_close_17Sep2020-work_close_16Oct2020)
+egen work_close_Oct2020 = rowtotal(work_close_17Oct2020-work_close_15Nov2020)
+egen work_close_Nov2020 = rowtotal(work_close_16Nov2020-work_close_15Dec2020)
+egen work_close_Dec2020 = rowtotal(work_close_16Dec2020-work_close_13Jan2021)
+
+drop work_close_01Apr2020-work_close_13Jan2021
+
+foreach v of var work_close_Apr2020-work_close_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:work_close_all
 
 
 save "$user/$analysis/Data/work_close_tmp.dta", replace
@@ -199,14 +271,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop public_event_01Jan2020-public_event_31Mar2020 
-keep country_code-public_event_31Dec2020
+keep country_code-public_event_13Jan2021
 
 * Recoding values to a binary - "0" no measures and recommended canceling, "1" required canceling public events 
-foreach v of var public_event_01Apr2020-public_event_31Dec2020 {
+foreach v of var public_event_01Apr2020-public_event_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2 = 1)
 }
 
+save d:public_event, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen public_event_Apr2020 = rowtotal(public_event_01Apr2020-public_event_30Apr2020)
 egen public_event_May2020 = rowtotal(public_event_01May2020-public_event_31May2020)
@@ -218,12 +294,37 @@ egen public_event_Oct2020 = rowtotal(public_event_01Oct2020-public_event_31Oct20
 egen public_event_Nov2020 = rowtotal(public_event_01Nov2020-public_event_30Nov2020)
 egen public_event_Dec2020 = rowtotal(public_event_01Dec2020-public_event_31Dec2020)
 
-drop public_event_01Apr2020-public_event_31Dec2020
+drop public_event_01Apr2020-public_event_13Jan2021
 
 foreach v of var public_event_Apr2020-public_event_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:public_event_all, replace
+
+*** For Nepal *** 
+use d:public_event
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen public_event_Apr2020 = rowtotal(public_event_13Apr2020-public_event_13May2020)
+egen public_event_May2020 = rowtotal(public_event_14May2020-public_event_14Jun2020)
+egen public_event_Jun2020 = rowtotal(public_event_15Jun2020-public_event_15Jul2020)
+egen public_event_Jul2020 = rowtotal(public_event_16Jul2020-public_event_16Aug2020)
+egen public_event_Aug2020 = rowtotal(public_event_17Aug2020-public_event_16Sep2020)
+egen public_event_Sep2020 = rowtotal(public_event_17Sep2020-public_event_16Oct2020)
+egen public_event_Oct2020 = rowtotal(public_event_17Oct2020-public_event_15Nov2020)
+egen public_event_Nov2020 = rowtotal(public_event_16Nov2020-public_event_15Dec2020)
+egen public_event_Dec2020 = rowtotal(public_event_16Dec2020-public_event_13Jan2021)
+
+drop public_event_01Apr2020-public_event_13Jan2021
+
+foreach v of var public_event_Apr2020-public_event_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:public_event_all
 
 save "$user/$analysis/Data/public_event_tmp.dta", replace
 
@@ -250,14 +351,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop restrict_gather_01Jan2020-restrict_gather_31Mar2020 
-keep country_code-restrict_gather_31Dec2020
+keep country_code-restrict_gather_13Jan2021
 
 * Recoding values to a binary - "0" no measures, restricted to more than 1000 or restricted from 101-1000; "1" restricted 10-100 or <10
-foreach v of var restrict_gather_01Apr2020-restrict_gather_31Dec2020 {
+foreach v of var restrict_gather_01Apr2020-restrict_gather_13Jan2021 {
 	recode `v' (0/2 = 0) 
 	recode `v' (3/4 = 1)
 }
 
+save d:restrict_gather, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen restrict_gather_Apr2020 = rowtotal(restrict_gather_01Apr2020-restrict_gather_30Apr2020)
 egen restrict_gather_May2020 = rowtotal(restrict_gather_01May2020-restrict_gather_31May2020)
@@ -269,12 +374,37 @@ egen restrict_gather_Oct2020 = rowtotal(restrict_gather_01Oct2020-restrict_gathe
 egen restrict_gather_Nov2020 = rowtotal(restrict_gather_01Nov2020-restrict_gather_30Nov2020)
 egen restrict_gather_Dec2020 = rowtotal(restrict_gather_01Dec2020-restrict_gather_31Dec2020)
 
-drop restrict_gather_01Apr2020-restrict_gather_31Dec2020
+drop restrict_gather_01Apr2020-restrict_gather_13Jan2021
 
 foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:_all, replace
+
+*** For Nepal *** 
+use d:restrict_gather
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen restrict_gather_Apr2020 = rowtotal(restrict_gather_13Apr2020-restrict_gather_13May2020)
+egen restrict_gather_May2020 = rowtotal(restrict_gather_14May2020-restrict_gather_14Jun2020)
+egen restrict_gather_Jun2020 = rowtotal(restrict_gather_15Jun2020-restrict_gather_15Jul2020)
+egen restrict_gather_Jul2020 = rowtotal(restrict_gather_16Jul2020-restrict_gather_16Aug2020)
+egen restrict_gather_Aug2020 = rowtotal(restrict_gather_17Aug2020-restrict_gather_16Sep2020)
+egen restrict_gather_Sep2020 = rowtotal(restrict_gather_17Sep2020-restrict_gather_16Oct2020)
+egen restrict_gather_Oct2020 = rowtotal(restrict_gather_17Oct2020-restrict_gather_15Nov2020)
+egen restrict_gather_Nov2020 = rowtotal(restrict_gather_16Nov2020-restrict_gather_15Dec2020)
+egen restrict_gather_Dec2020 = rowtotal(restrict_gather_16Dec2020-restrict_gather_13Jan2021)
+
+drop restrict_gather_01Apr2020-restrict_gather_13Jan2021
+
+foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:school_close_all
 
 save "$user/$analysis/Data/restrict_gather_tmp.dta", replace
 
@@ -302,14 +432,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop public_trnsprt_01Jan2020-public_trnsprt_31Mar2020 
-keep country_code-public_trnsprt_31Dec2020
+keep country_code-public_trnsprt_13Jan2021
 
 * Recoding values to a binary - "0" no measures and recommend reducing volume, "1" required closing public transport 
-foreach v of var public_trnsprt_01Apr2020-public_trnsprt_31Dec2020 {
+foreach v of var public_trnsprt_01Apr2020-public_trnsprt_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2 = 1)
 }
 
+save d:public_trnsprt, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen public_trnsprt_Apr2020 = rowtotal(public_trnsprt_01Apr2020-public_trnsprt_30Apr2020)
 egen public_trnsprt_May2020 = rowtotal(public_trnsprt_01May2020-public_trnsprt_31May2020)
@@ -321,12 +455,37 @@ egen public_trnsprt_Oct2020 = rowtotal(public_trnsprt_01Oct2020-public_trnsprt_3
 egen public_trnsprt_Nov2020 = rowtotal(public_trnsprt_01Nov2020-public_trnsprt_30Nov2020)
 egen public_trnsprt_Dec2020 = rowtotal(public_trnsprt_01Dec2020-public_trnsprt_31Dec2020)
 
-drop public_trnsprt_01Apr2020-public_trnsprt_31Dec2020
+drop public_trnsprt_01Apr2020-public_trnsprt_13Jan2021
 
 foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:public_trnsprt_all, replace
+
+*** For Nepal *** 
+use d:public_trnsprt
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen public_trnsprt_Apr2020 = rowtotal(public_trnsprt_13Apr2020-public_trnsprt_13May2020)
+egen public_trnsprt_May2020 = rowtotal(public_trnsprt_14May2020-public_trnsprt_14Jun2020)
+egen public_trnsprt_Jun2020 = rowtotal(public_trnsprt_15Jun2020-public_trnsprt_15Jul2020)
+egen public_trnsprt_Jul2020 = rowtotal(public_trnsprt_16Jul2020-public_trnsprt_16Aug2020)
+egen public_trnsprt_Aug2020 = rowtotal(public_trnsprt_17Aug2020-public_trnsprt_16Sep2020)
+egen public_trnsprt_Sep2020 = rowtotal(public_trnsprt_17Sep2020-public_trnsprt_16Oct2020)
+egen public_trnsprt_Oct2020 = rowtotal(public_trnsprt_17Oct2020-public_trnsprt_15Nov2020)
+egen public_trnsprt_Nov2020 = rowtotal(public_trnsprt_16Nov2020-public_trnsprt_15Dec2020)
+egen public_trnsprt_Dec2020 = rowtotal(public_trnsprt_16Dec2020-public_trnsprt_13Jan2021)
+
+drop public_trnsprt_01Apr2020-public_trnsprt_13Jan2021
+
+foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:public_trnsprt_all
 
 save "$user/$analysis/Data/public_trnsprt_tmp.dta", replace
 
@@ -354,14 +513,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop stay_home_01Jan2020-stay_home_31Mar2020 
-keep country_code-stay_home_31Dec2020
+keep country_code-stay_home_13Jan2021
 
 * Recoding values to a binary - "0" no measures and recommend staying home, "1" required with some or no exceptions 
-foreach v of var stay_home_01Apr2020-stay_home_31Dec2020 {
+foreach v of var stay_home_01Apr2020-stay_home_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2/3 = 1)
 }
 
+save d:stay_home, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen stay_home_Apr2020 = rowtotal(stay_home_01Apr2020-stay_home_30Apr2020)
 egen stay_home_May2020 = rowtotal(stay_home_01May2020-stay_home_31May2020)
@@ -373,12 +536,37 @@ egen stay_home_Oct2020 = rowtotal(stay_home_01Oct2020-stay_home_31Oct2020)
 egen stay_home_Nov2020 = rowtotal(stay_home_01Nov2020-stay_home_30Nov2020)
 egen stay_home_Dec2020 = rowtotal(stay_home_01Dec2020-stay_home_31Dec2020)
 
-drop stay_home_01Apr2020-stay_home_31Dec2020
+drop stay_home_01Apr2020-stay_home_13Jan2021
 
 foreach v of var stay_home_Apr2020-stay_home_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:stay_home_all, replace
+
+*** For Nepal *** 
+use d:stay_home
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen stay_home_Apr2020 = rowtotal(stay_home_13Apr2020-stay_home_13May2020)
+egen stay_home_May2020 = rowtotal(stay_home_14May2020-stay_home_14Jun2020)
+egen stay_home_Jun2020 = rowtotal(stay_home_15Jun2020-stay_home_15Jul2020)
+egen stay_home_Jul2020 = rowtotal(stay_home_16Jul2020-stay_home_16Aug2020)
+egen stay_home_Aug2020 = rowtotal(stay_home_17Aug2020-stay_home_16Sep2020)
+egen stay_home_Sep2020 = rowtotal(stay_home_17Sep2020-stay_home_16Oct2020)
+egen stay_home_Oct2020 = rowtotal(stay_home_17Oct2020-stay_home_15Nov2020)
+egen stay_home_Nov2020 = rowtotal(stay_home_16Nov2020-stay_home_15Dec2020)
+egen stay_home_Dec2020 = rowtotal(stay_home_16Dec2020-stay_home_13Jan2021)
+
+drop stay_home_01Apr2020-stay_home_13Jan2021
+
+foreach v of var stay_home_Apr2020-stay_home_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:stay_home_all
 
 save "$user/$analysis/Data/stay_home_tmp.dta", replace
 
@@ -406,14 +594,19 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop move_restr_01Jan2020-move_restr_31Mar2020 
-keep country_code-move_restr_31Dec2020
+keep country_code-move_restr_13Jan2021
 
 * Recoding values to a binary - "0" no measures and recommend not to travel between regions/cities, "1" internal movement restrictions in place
-foreach v of var move_restr_01Apr2020-move_restr_31Dec2020 {
+foreach v of var move_restr_01Apr2020-move_restr_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2 = 1)
 }
 
+save d:move_restr, replace
+
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen move_restr_Apr2020 = rowtotal(move_restr_01Apr2020-move_restr_30Apr2020)
 egen move_restr_May2020 = rowtotal(move_restr_01May2020-move_restr_31May2020)
@@ -425,12 +618,37 @@ egen move_restr_Oct2020 = rowtotal(move_restr_01Oct2020-move_restr_31Oct2020)
 egen move_restr_Nov2020 = rowtotal(move_restr_01Nov2020-move_restr_30Nov2020)
 egen move_restr_Dec2020 = rowtotal(move_restr_01Dec2020-move_restr_31Dec2020)
 
-drop move_restr_01Apr2020-move_restr_31Dec2020
+drop move_restr_01Apr2020-move_restr_13Jan2021
 
 foreach v of var move_restr_Apr2020-move_restr_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:move_restr_all, replace
+
+*** For Nepal *** 
+use d:move_restr
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen move_restr_Apr2020 = rowtotal(move_restr_13Apr2020-move_restr_13May2020)
+egen move_restr_May2020 = rowtotal(move_restr_14May2020-move_restr_14Jun2020)
+egen move_restr_Jun2020 = rowtotal(move_restr_15Jun2020-move_restr_15Jul2020)
+egen move_restr_Jul2020 = rowtotal(move_restr_16Jul2020-move_restr_16Aug2020)
+egen move_restr_Aug2020 = rowtotal(move_restr_17Aug2020-move_restr_16Sep2020)
+egen move_restr_Sep2020 = rowtotal(move_restr_17Sep2020-move_restr_16Oct2020)
+egen move_restr_Oct2020 = rowtotal(move_restr_17Oct2020-move_restr_15Nov2020)
+egen move_restr_Nov2020 = rowtotal(move_restr_16Nov2020-move_restr_15Dec2020)
+egen move_restr_Dec2020 = rowtotal(move_restr_16Dec2020-move_restr_13Jan2021)
+
+drop move_restr_01Apr2020-move_restr_13Jan2021
+
+foreach v of var move_restr_Apr2020-move_restr_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:move_restr_all
 
 save "$user/$analysis/Data/move_restr_tmp.dta", replace
 
@@ -458,14 +676,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop int_trav_01Jan2020-int_trav_31Mar2020 
-keep country_code-int_trav_31Dec2020
+keep country_code-int_trav_13Jan2021
 
 * Recoding values to a binary - "0" no measures, screening, or quarantine , "1" ban arrivals from some regions or total border closure 
-foreach v of var int_trav_01Apr2020-int_trav_31Dec2020 {
+foreach v of var int_trav_01Apr2020-int_trav_13Jan2021 {
 	recode `v' (0/2 = 0) 
 	recode `v' (3/4= 1)
 }
 
+save d:int_trav, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen int_trav_Apr2020 = rowtotal(int_trav_01Apr2020-int_trav_30Apr2020)
 egen int_trav_May2020 = rowtotal(int_trav_01May2020-int_trav_31May2020)
@@ -477,12 +699,37 @@ egen int_trav_Oct2020 = rowtotal(int_trav_01Oct2020-int_trav_31Oct2020)
 egen int_trav_Nov2020 = rowtotal(int_trav_01Nov2020-int_trav_30Nov2020)
 egen int_trav_Dec2020 = rowtotal(int_trav_01Dec2020-int_trav_31Dec2020)
 
-drop int_trav_01Apr2020-int_trav_31Dec2020
+drop int_trav_01Apr2020-int_trav_13Jan2021
 
 foreach v of var int_trav_Apr2020-int_trav_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:int_trav_all, replace
+
+*** For Nepal *** 
+use d:int_trav
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen int_trav_Apr2020 = rowtotal(int_trav_13Apr2020-int_trav_13May2020)
+egen int_trav_May2020 = rowtotal(int_trav_14May2020-int_trav_14Jun2020)
+egen int_trav_Jun2020 = rowtotal(int_trav_15Jun2020-int_trav_15Jul2020)
+egen int_trav_Jul2020 = rowtotal(int_trav_16Jul2020-int_trav_16Aug2020)
+egen int_trav_Aug2020 = rowtotal(int_trav_17Aug2020-int_trav_16Sep2020)
+egen int_trav_Sep2020 = rowtotal(int_trav_17Sep2020-int_trav_16Oct2020)
+egen int_trav_Oct2020 = rowtotal(int_trav_17Oct2020-int_trav_15Nov2020)
+egen int_trav_Nov2020 = rowtotal(int_trav_16Nov2020-int_trav_15Dec2020)
+egen int_trav_Dec2020 = rowtotal(int_trav_16Dec2020-int_trav_13Jan2021)
+
+drop int_trav_01Apr2020-int_trav_13Jan2021
+
+foreach v of var int_trav_Apr2020-int_trav_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:int_trav_all
 
 save "$user/$analysis/Data/int_trav_tmp.dta", replace
 
@@ -510,14 +757,18 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop info_camp_01Jan2020-info_camp_31Mar2020 
-keep country_code-info_camp_31Dec2020
+keep country_code-info_camp_13Jan2021
 
 * Recoding values to a binary - "0" no measures or public officials urging caution, "1" coordinated campaign
-foreach v of var info_camp_01Apr2020-info_camp_31Dec2020 {
+foreach v of var info_camp_01Apr2020-info_camp_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2= 1)
 }
 
+save d:info_camp, replace
+
+*** For all countries except Nepal *** 
+drop if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen info_camp_Apr2020 = rowtotal(info_camp_01Apr2020-info_camp_30Apr2020)
 egen info_camp_May2020 = rowtotal(info_camp_01May2020-info_camp_31May2020)
@@ -529,12 +780,37 @@ egen info_camp_Oct2020 = rowtotal(info_camp_01Oct2020-info_camp_31Oct2020)
 egen info_camp_Nov2020 = rowtotal(info_camp_01Nov2020-info_camp_30Nov2020)
 egen info_camp_Dec2020 = rowtotal(info_camp_01Dec2020-info_camp_31Dec2020)
 
-drop info_camp_01Apr2020-info_camp_31Dec2020
+drop info_camp_01Apr2020-info_camp_13Jan2021
 
 foreach v of var info_camp_Apr2020-info_camp_Dec2020 {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
+
+save d:info_camp_all, replace
+
+*** For Nepal *** 
+use d:info_camp
+keep if country_code == "NPL"
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+egen info_camp_Apr2020 = rowtotal(info_camp_13Apr2020-info_camp_13May2020)
+egen info_camp_May2020 = rowtotal(info_camp_14May2020-info_camp_14Jun2020)
+egen info_camp_Jun2020 = rowtotal(info_camp_15Jun2020-info_camp_15Jul2020)
+egen info_camp_Jul2020 = rowtotal(info_camp_16Jul2020-info_camp_16Aug2020)
+egen info_camp_Aug2020 = rowtotal(info_camp_17Aug2020-info_camp_16Sep2020)
+egen info_camp_Sep2020 = rowtotal(info_camp_17Sep2020-info_camp_16Oct2020)
+egen info_camp_Oct2020 = rowtotal(info_camp_17Oct2020-info_camp_15Nov2020)
+egen info_camp_Nov2020 = rowtotal(info_camp_16Nov2020-info_camp_15Dec2020)
+egen info_camp_Dec2020 = rowtotal(info_camp_16Dec2020-info_camp_13Jan2021)
+
+drop info_camp_01Apr2020-info_camp_13Jan2021
+
+foreach v of var info_camp_Apr2020-info_camp_Dec2020 {
+	replace `v' = 0 if `v' < 10
+	replace `v' = 1 if `v' >= 10
+}
+
+append using d:info_camp_all
 
 save "$user/$analysis/Data/info_camp_tmp.dta", replace
 
