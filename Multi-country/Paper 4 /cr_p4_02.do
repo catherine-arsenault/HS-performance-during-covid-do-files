@@ -3,6 +3,7 @@
 
 clear all
 set more off 
+cd "$user/$analysis/Data"
 
 ************** Stringency Index Dataset **************
 ******************************************************
@@ -29,7 +30,7 @@ foreach v of var jan2020-v690 {
 
 * Only keep data from April - December 2020 
 drop stringency_01Jan2020-stringency_31Mar2020 
-keep country_code-stringency_31Dec2020
+keep country_code-stringency_13Jan2021
 
 * Reshaping dataset to long 
 reshape long stringency_01 stringency_02 stringency_03 stringency_04 stringency_05 /// 
@@ -40,9 +41,8 @@ reshape long stringency_01 stringency_02 stringency_03 stringency_04 stringency_
 			 stringency_26 stringency_27 stringency_28 stringency_29 stringency_30 ///
 			 stringency_31, i(country_code country_name) j(mo) string
 reshape long stringency, i(country_code country_name mo) j(day) string
-drop if day == "_31" & stringency == . 
-gen year = 2020	
-gen month = 4
+gen month = .
+replace month = 4 if mo == "Apr2020"
 replace month = 5 if mo == "May2020"
 replace month = 6 if mo == "Jun2020"
 replace month = 7 if mo == "Jul2020"
@@ -51,23 +51,58 @@ replace month = 9 if mo == "Sep2020"
 replace month = 10 if mo == "Oct2020"
 replace month = 11 if mo == "Nov2020"
 replace month = 12 if mo == "Dec2020"
+replace month = 1 if mo == "Jan2021"
 drop mo
+drop if stringency == . 
 
 *** For Nepali calendar 
-replace month == 4 if country_code = NPL & month == 5 & day == 1 | month == 5 & day == 2 | /// 
-					  month == 5 & day == 3 | month == 5 & day == 4 | ///
-					  month == 5 & day == 5 | month == 5 & day == 6 | ///
-					  month == 5 & day == 7 | month == 5 & day == 8 | /// 
-					  month == 5 & day == 9 | month == 5 & day == 10 | /// 
-					  month == 5 & day == 11 | month == 5 & day == 12 | ///
-					  month == 5 & day == 13 |
-replace month == 5 if month == 6 & day == 1 | month == 6 & day == 2 | /// 
-					  month == 6 & day == 3 | month == 6 & day == 4 | ///
-					  month == 6 & day == 5 | month == 6 & day == 6 | ///
-					  month == 6 & day == 7 | month == 6 & day == 8 | /// 
-					  month == 6 & day == 9 | month == 6 & day == 10 | /// 
-					  month == 6 & day == 11 | month == 6 & day == 12 | ///
-					  month == 6 & day == 13 |
+global twelve 01 02 03 04 05 06 07 08 09 10 11 12 
+global thirteen 01 02 03 04 05 06 07 08 09 10 11 12 13 
+global fourteen 01 02 03 04 05 06 07 08 09 10 11 12 13 14
+global fifteen 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+global sixteen 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 
+* April 
+foreach x of global twelve {
+	drop if country_code == "NPL" & month == 4 & day == "_`x'"
+}
+foreach x of global thirteen {
+	replace month = 4 if country_code == "NPL" & month == 5 & day == "_`x'"
+}
+* May
+foreach x of global fourteen {
+	replace month = 5 if country_code == "NPL" & month == 6 & day == "_`x'"
+}
+* June 
+foreach x of global fifteen {
+	replace month = 6 if country_code == "NPL" & month == 7 & day == "_`x'"
+}
+* July 
+foreach x of global sixteen {
+	replace month = 7 if country_code == "NPL" & month == 8 & day == "_`x'"
+}
+* August
+foreach x of global sixteen {
+	replace month = 8 if country_code == "NPL" & month == 9 & day == "_`x'"
+}
+* September
+foreach x of global sixteen {
+	replace month = 9 if country_code == "NPL" & month == 10 & day == "_`x'"
+}
+* October
+foreach x of global fifteen {
+	replace month = 10 if country_code == "NPL" & month == 11 & day == "_`x'"
+}
+* November 
+foreach x of global fifteen {
+	replace month = 11 if country_code == "NPL" & month == 12 & day == "_`x'"
+}
+* December 
+foreach x of global thirteen {
+	replace month = 12 if country_code == "NPL" & month == 1 & day == "_`x'"
+}
+
+drop if month == 1
+gen year = 2020	
 
 * Mean, median and max for stringency index 
 gen stringency_mean = stringency
@@ -79,8 +114,7 @@ collapse (mean) stringency_mean (median) stringency_median (max) stringency_max,
 rename country_code country 
 replace country = "KZN" if country == "ZAF"
 replace country = "NEP" if country == "NPL"
-save "$user/$analysis/Data/stringency_index_daily.dta", replace
-
+save "$user/$analysis/Data/stringency_index.dta", replace
 
 ******************** Policy Datasets ********************
 *********************************************************
@@ -116,7 +150,7 @@ foreach v of var school_close_01Apr2020-school_close_13Jan2021 {
 	recode `v' (2/3 = 1)
 }
 
-save d:school_close, replace
+save school_close, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -138,10 +172,10 @@ foreach v of var school_close_Apr2020-school_close_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:school_close_all, replace
+save school_close_all, replace
 
 *** For Nepal *** 
-use d:school_close
+use school_close
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen school_close_Apr2020 = rowtotal(school_close_13Apr2020-school_close_13May2020)
@@ -161,7 +195,7 @@ foreach v of var school_close_Apr2020-school_close_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:school_close_all
+append using school_close_all
 
 save "$user/$analysis/Data/school_close_tmp.dta", replace
 
@@ -197,7 +231,7 @@ foreach v of var work_close_01Apr2020-work_close_13Jan2021 {
 	recode `v' (2/3 = 1)
 }
 
-save d:work_close, replace
+save work_close, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -219,10 +253,10 @@ foreach v of var work_close_Apr2020-work_close_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:work_close_all, replace
+save work_close_all, replace
 
 *** For Nepal *** 
-use d:work_close
+use work_close
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen work_close_Apr2020 = rowtotal(work_close_13Apr2020-work_close_13May2020)
@@ -242,7 +276,7 @@ foreach v of var work_close_Apr2020-work_close_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:work_close_all
+append using work_close_all
 
 
 save "$user/$analysis/Data/work_close_tmp.dta", replace
@@ -279,7 +313,7 @@ foreach v of var public_event_01Apr2020-public_event_13Jan2021 {
 	recode `v' (2 = 1)
 }
 
-save d:public_event, replace
+save public_event, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -301,10 +335,10 @@ foreach v of var public_event_Apr2020-public_event_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:public_event_all, replace
+save public_event_all, replace
 
 *** For Nepal *** 
-use d:public_event
+use public_event
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen public_event_Apr2020 = rowtotal(public_event_13Apr2020-public_event_13May2020)
@@ -324,7 +358,7 @@ foreach v of var public_event_Apr2020-public_event_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:public_event_all
+append using public_event_all
 
 save "$user/$analysis/Data/public_event_tmp.dta", replace
 
@@ -359,7 +393,7 @@ foreach v of var restrict_gather_01Apr2020-restrict_gather_13Jan2021 {
 	recode `v' (3/4 = 1)
 }
 
-save d:restrict_gather, replace
+save restrict_gather, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -381,10 +415,10 @@ foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:_all, replace
+save restrict_gather_all, replace
 
 *** For Nepal *** 
-use d:restrict_gather
+use restrict_gather
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen restrict_gather_Apr2020 = rowtotal(restrict_gather_13Apr2020-restrict_gather_13May2020)
@@ -404,7 +438,7 @@ foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:school_close_all
+append using restrict_gather_all
 
 save "$user/$analysis/Data/restrict_gather_tmp.dta", replace
 
@@ -440,7 +474,7 @@ foreach v of var public_trnsprt_01Apr2020-public_trnsprt_13Jan2021 {
 	recode `v' (2 = 1)
 }
 
-save d:public_trnsprt, replace
+save public_trnsprt, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -462,10 +496,10 @@ foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:public_trnsprt_all, replace
+save public_trnsprt_all, replace
 
 *** For Nepal *** 
-use d:public_trnsprt
+use public_trnsprt
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen public_trnsprt_Apr2020 = rowtotal(public_trnsprt_13Apr2020-public_trnsprt_13May2020)
@@ -485,7 +519,7 @@ foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:public_trnsprt_all
+append using public_trnsprt_all
 
 save "$user/$analysis/Data/public_trnsprt_tmp.dta", replace
 
@@ -521,7 +555,7 @@ foreach v of var stay_home_01Apr2020-stay_home_13Jan2021 {
 	recode `v' (2/3 = 1)
 }
 
-save d:stay_home, replace
+save stay_home, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -543,10 +577,10 @@ foreach v of var stay_home_Apr2020-stay_home_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:stay_home_all, replace
+save stay_home_all, replace
 
 *** For Nepal *** 
-use d:stay_home
+use stay_home
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen stay_home_Apr2020 = rowtotal(stay_home_13Apr2020-stay_home_13May2020)
@@ -566,7 +600,7 @@ foreach v of var stay_home_Apr2020-stay_home_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:stay_home_all
+append using stay_home_all
 
 save "$user/$analysis/Data/stay_home_tmp.dta", replace
 
@@ -602,7 +636,7 @@ foreach v of var move_restr_01Apr2020-move_restr_13Jan2021 {
 	recode `v' (2 = 1)
 }
 
-save d:move_restr, replace
+save move_restr, replace
 
 
 *** For all countries except Nepal *** 
@@ -625,10 +659,10 @@ foreach v of var move_restr_Apr2020-move_restr_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:move_restr_all, replace
+save move_restr_all, replace
 
 *** For Nepal *** 
-use d:move_restr
+use move_restr
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen move_restr_Apr2020 = rowtotal(move_restr_13Apr2020-move_restr_13May2020)
@@ -648,7 +682,7 @@ foreach v of var move_restr_Apr2020-move_restr_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:move_restr_all
+append using move_restr_all
 
 save "$user/$analysis/Data/move_restr_tmp.dta", replace
 
@@ -684,7 +718,7 @@ foreach v of var int_trav_01Apr2020-int_trav_13Jan2021 {
 	recode `v' (3/4= 1)
 }
 
-save d:int_trav, replace
+save int_trav, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -706,10 +740,10 @@ foreach v of var int_trav_Apr2020-int_trav_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:int_trav_all, replace
+save int_trav_all, replace
 
 *** For Nepal *** 
-use d:int_trav
+use int_trav
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen int_trav_Apr2020 = rowtotal(int_trav_13Apr2020-int_trav_13May2020)
@@ -729,7 +763,7 @@ foreach v of var int_trav_Apr2020-int_trav_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:int_trav_all
+append using int_trav_all
 
 save "$user/$analysis/Data/int_trav_tmp.dta", replace
 
@@ -765,7 +799,7 @@ foreach v of var info_camp_01Apr2020-info_camp_13Jan2021 {
 	recode `v' (2= 1)
 }
 
-save d:info_camp, replace
+save info_camp, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -787,10 +821,10 @@ foreach v of var info_camp_Apr2020-info_camp_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-save d:info_camp_all, replace
+save info_camp_all, replace
 
 *** For Nepal *** 
-use d:info_camp
+use info_camp
 keep if country_code == "NPL"
 * From daily policy to monthly policy - if policy in place for 10 or more days of the month 
 egen info_camp_Apr2020 = rowtotal(info_camp_13Apr2020-info_camp_13May2020)
@@ -810,20 +844,23 @@ foreach v of var info_camp_Apr2020-info_camp_Dec2020 {
 	replace `v' = 1 if `v' >= 10
 }
 
-append using d:info_camp_all
+append using info_camp_all
 
 save "$user/$analysis/Data/info_camp_tmp.dta", replace
 
 ******** Merging all policy datasets ********
 
+global policy school_close work_close public_event restrict_gather public_trnsprt ///
+			  stay_home move_restr int_trav info_camp
+			  
 * Merge with curfew and State of emergency (SOE) data (not collected by Oxford)
 clear all
 import excel "$user/$analysis/Data/curfew_soe.xlsx", firstrow
 
-* It says I'm using the old version of merge - is there a better way to do this? 
-merge using "$user/$analysis/Data/school_close_tmp.dta" "$user/$analysis/Data/work_close_tmp.dta" "$user/$analysis/Data/public_event_tmp.dta" "$user/$analysis/Data/restrict_gather_tmp.dta" "$user/$analysis/Data/public_trnsprt_tmp.dta" "$user/$analysis/Data/stay_home_tmp.dta" "$user/$analysis/Data/move_restr_tmp.dta" "$user/$analysis/Data/int_trav_tmp.dta" "$user/$analysis/Data/info_camp_tmp.dta"
-
-drop _merge*
+foreach x of global policy {
+	merge 1:1 country_code country_name using "$user/$analysis/Data/`x'_tmp.dta"
+	drop _merge
+}
 
 * Reshaping dataset to long 
 reshape long curfew soe info_camp school_close work_close public_event ///
@@ -847,10 +884,10 @@ replace country = "NEP" if country == "NPL"
 save "$user/$analysis/Data/policy_data.dta", replace
 
 * Remove temp files 
-global policy school_close work_close public_event restrict_gather public_trnsprt ///
-			  stay_home move_restr int_trav info_camp
 foreach x of global policy {
 		rm "$user/$analysis/Data/`x'_tmp.dta"
+		rm "$user/$analysis/Data/`x'.dta"
+		rm "$user/$analysis/Data/`x'_all.dta"
 	}
 
 ************* Merge stringency, policy and relative volume data *************
@@ -858,7 +895,7 @@ foreach x of global policy {
 
 clear all
 use "$user/$analysis/Multip4.dta"
-merge m:1 country month year using "$user/$analysis/Data/stringency_index_daily.dta"
+merge m:1 country month year using "$user/$analysis/Data/stringency_index.dta"
 drop _merge
 merge m:1 country month year using "$user/$analysis/Data/policy_data.dta"
 * Looks like Nepal still has month 3
@@ -866,5 +903,5 @@ drop if month == 3
 drop _merge country_name
 order country rmonth year month service relative_vol
 
-save "$user/$analysis/Multip4_v2.dta", replace
+save "$user/$analysis/Multip4_v3.dta", replace
 
