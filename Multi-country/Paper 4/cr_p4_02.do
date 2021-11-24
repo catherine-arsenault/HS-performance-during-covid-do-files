@@ -895,5 +895,24 @@ drop if month == 3 // Nepal March data removed (due to different calendar month 
 drop _merge country_name
 order country rmonth year month service relative_vol
 
+lab var stringency_mean "Mean stringency index for the month"
+lab var stringency_median "Median stringency index for the month"
+lab var stringency_max "Max stringency index for the month"
+
+lab var curfew "Curfew in place"
+lab var soe "State of emergency in place"
+
+lab var school_close "School closures in place"
+lab var work_close "Workplace closures in place"
+lab var public_event "Canceling of public events"
+lab var restrict_gather "Restrictions on gathering size"
+lab var public_trnsprt "Public transport closures"
+lab var stay_home "Stay at home requirements"
+lab var move_restr "Restrictions on internal movement"
+lab var int_trav "Restrictions on international travel" 
+lab var info_camp "Public information campaign"
+
+encode country, gen(co)
+
 save "$user/$analysis/Data/Multip4_combined.dta", replace
 
