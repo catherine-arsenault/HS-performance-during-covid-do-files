@@ -322,6 +322,32 @@ merge 1:1 region using "$user/$data/Data for analysis/tmpR.dta"
 drop _merge
 save  "$user/$data/Data for analysis/tmpR.dta", replace		
 
+* Neonatal deaths
+import excel using  "/$user/$data/Raw data/Mort_Neonatal.xlsx", firstrow clear
+drop if region==""
+rename (_1-Y) (neo_mort_num1_19 neo_mort_num2_19 neo_mort_num3_19 neo_mort_num4_19 ///
+			neo_mort_num5_19 neo_mort_num6_19 neo_mort_num7_19 neo_mort_num8_19 ///
+			neo_mort_num9_19 neo_mort_num10_19 neo_mort_num11_19 neo_mort_num12_19 ///
+			neo_mort_num1_20 neo_mort_num2_20 neo_mort_num3_20 neo_mort_num4_20 ///
+			neo_mort_num5_20 neo_mort_num6_20 neo_mort_num7_20 neo_mort_num8_20 ///
+			neo_mort_num9_20 neo_mort_num10_20 neo_mort_num11_20 neo_mort_num12_20 )
+merge 1:1 region using  "$user/$data/Data for analysis/tmpR.dta"
+drop _merge 
+save  "$user/$data/Data for analysis/tmpR.dta", replace			
+	
+* Inpatient deaths
+import excel using  "/$user/$data/Raw data/Mort_Inpatient.xlsx", firstrow clear
+drop if region==""
+rename (_1-Y) (ipd_mort_num1_19 ipd_mort_num2_19 ipd_mort_num3_19 ipd_mort_num4_19 ///
+			ipd_mort_num5_19 ipd_mort_num6_19 ipd_mort_num7_19 ipd_mort_num8_19 ///
+			ipd_mort_num9_19 ipd_mort_num10_19 ipd_mort_num11_19 ipd_mort_num12_19 ///
+			ipd_mort_num1_20 ipd_mort_num2_20 ipd_mort_num3_20 ipd_mort_num4_20 ///
+			ipd_mort_num5_20 ipd_mort_num6_20 ipd_mort_num7_20 ipd_mort_num8_20 ///
+			ipd_mort_num9_20 ipd_mort_num10_20 ipd_mort_num11_20 ipd_mort_num12_20 )
+merge 1:1 region using  "$user/$data/Data for analysis/tmpR.dta"
+drop _merge 
+save  "$user/$data/Data for analysis/tmpR.dta", replace			
+	
 /*******************************************************************************
 *END
 *******************************************************************************
