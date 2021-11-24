@@ -91,7 +91,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 	keep country year month rmonth rel_*
 	save "$user/$NEPdata/Data for analysis/NEPp4.dta", replace
 	
-	save "$user/$analysis/Multip4.dta", replace
+	save "$user/$analysis/Data/Multip4.dta", replace
 
 ********************************************************************************
 	* Append, combine indicators by type and reshape
@@ -99,8 +99,8 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 * Append
 foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 	 u "$user/$`c'data/Data for analysis/`c'p4.dta", clear
-	append using "$user/$analysis/Multip4.dta"
-	save "$user/$analysis/Multip4.dta", replace
+	append using "$user/$analysis/Data/Multip4.dta"
+	save "$user/$analysis/Data/Multip4.dta", replace
 }
 rename rel_del_util rmn1
 rename rel_anc_util rmn2
@@ -151,6 +151,10 @@ lab def service 1"RMN" 2 "Summ" 3 "Child" 4 "ART" 5"Chronic"
 lab val service service 
 
 sort country rmonth service
+lab var rmonth "running month"
+lab var service "health service type"
+lab var relative "Monthly service volume compared to the average in the 15 months pre-Covid"
+
 
 save "$user/$analysis/Data/Multip4.dta", replace
 
