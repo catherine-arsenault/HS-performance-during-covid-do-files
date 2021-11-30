@@ -1,8 +1,8 @@
 # HS-performance-during-covid-do-files
 This repository contains STATA do files and R scripts used to recode, clean and analyse dhis2 and HMIS data for the project: 
-Health System Performance during Covid-19: mapping the indirect effects of a health crisis.
+Health System Resilience during Covid-19: Impact of COVID-19 on Health Service Delivery and Institutional Mortality: A Multi Country Consortium
 Harvard T.H. Chan School of Public Health, Department of Global Health and Population
-PIs Catherine Arsenault and Margaret E. Kruk
+PIs Catherine Arsenault, Sebastian Bauhoff and Margaret E. Kruk
 
 ## Types of do files
   ## Master do files
