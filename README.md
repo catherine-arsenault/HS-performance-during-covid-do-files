@@ -25,7 +25,8 @@ PIs Catherine Arsenault, Sebastian Bauhoff and Margaret E. Kruk
  
  # Data cleaning protocol 
    Last updated: November, 2021
-    Before uploading the data to the online dashboard and performing analyses, we will clean the data, assess completeness and restrict the sample to health facilities with consistent reporting over the period of interest. These methods have been implemented in STATA. The code used is available in the cleaning do files called clean_ETH, clean_HTI, clean_KZN, clean_NEP etc.
+   
+    Before performing analyses, we will clean the data, assess completeness and restrict the sample to health facilities with consistent reporting over the period of interest. These methods have been implemented in STATA. The code used is available in the cleaning do files called clean_ETH, clean_HTI, clean_KZN, clean_NEP etc.
 ## 1.	Missing values: 
     An important limitation of DHIS2 data relates to missing values. When there are no patients for a specific service or no deaths for a specific indicator, a missing value is often found instead of a 0. For volume of services (e.g. number of sick child visits), we cannot tell if a missing value means 0 patients or if that the facility did not report that month. Missingness is very frequent for mortality data (e.g. stillbirths or newborn deaths). We decided to impute 0s for mortality if the service that it relates to was provided that month. The following imputations were made:
     a.	Stillbirths: missingness replaced with 0 if there were deliveries conducted in the facility that month
