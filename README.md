@@ -3,6 +3,7 @@ This repository contains STATA do files and R scripts used to recode, clean and 
 Health System Resilience during Covid-19: Impact of COVID-19 on Health Service Delivery and Institutional Mortality: A Multi Country Consortium
 
 Harvard T.H. Chan School of Public Health, Department of Global Health and Population
+
 PIs Catherine Arsenault, Sebastian Bauhoff and Margaret E. Kruk
 
 ## Types of do files
