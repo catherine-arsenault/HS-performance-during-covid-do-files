@@ -115,8 +115,32 @@ save "$user/$analysis/Data/stringency_index.dta", replace
 *********************************************************
 
 ******** School closures ********
-clear all 
+clear all
+
+* Save school close flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c1_flag.csv"
+* Renaming variables 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_school_close`lbl'
+}
+save school_close_flag, replace
+
+* Import school close data
+clear 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c1_school_closing.csv"
+* Renaming variables to label name 		
+*** As the data gets updated there will be some unlabeled, but they get dropped later 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' school_close`lbl'
+}
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using school_close_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -127,23 +151,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' school_close`lbl'
+* Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
+foreach v of var school_close_01Apr2020-school_close_13Jan2021 {
+	recode `v' (0/1 = 0) 
+	recode `v' (2/3 = 1) 
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop school_close_01Jan2020-school_close_31Mar2020 
-keep country_code-school_close_13Jan2021
-
-* Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
-foreach v of var school_close_01Apr2020-school_close_13Jan2021 {
-	recode `v' (0/1 = 0) 
-	recode `v' (2/3 = 1)
-}
+keep country_code-school_close_13Jan2021 
 
 save school_close, replace
 
@@ -197,7 +214,29 @@ save "$user/$analysis/Data/school_close_tmp.dta", replace
 
 ******** Workplace closures ********
 clear all 
+
+* Save workplace close flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c2_flag.csv"
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_work_close`lbl'
+}
+save work_close_flag, replace
+
+*Import work close data 
+clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c2_workplace_closing.csv"
+* Renaming variables to label name 		
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' work_close`lbl'
+}
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using work_close_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -208,23 +247,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' work_close`lbl'
+* Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
+foreach v of var work_close_01Apr2020-work_close_13Jan2021 {
+	recode `v' (0/1 = 0) 
+	recode `v' (2/3 = 1)
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop work_close_01Jan2020-work_close_31Mar2020 
 keep country_code-work_close_13Jan2021
-
-* Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
-foreach v of var work_close_01Apr2020-work_close_13Jan2021 {
-	recode `v' (0/1 = 0) 
-	recode `v' (2/3 = 1)
-}
 
 save work_close, replace
 
@@ -279,7 +311,30 @@ save "$user/$analysis/Data/work_close_tmp.dta", replace
 
 ******** Public events canceled ********
 clear all 
+
+* Save public event flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c3_flag.csv"
+* Renaming variables 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_public_event`lbl'
+}
+save public_event_flag, replace
+
+*Import public event cancelation data 
+clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c3_cancel_public_events.csv"
+* Renaming variables to label name 		
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' public_event`lbl'
+}
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using public_event_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -290,23 +345,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' public_event`lbl'
+* Recoding values to a binary - "0" no measures and recommended canceling, "1" required canceling public events 
+foreach v of var public_event_01Apr2020-public_event_13Jan2021 {
+	recode `v' (0/1 = 0) 
+	recode `v' (2 = 1)
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop public_event_01Jan2020-public_event_31Mar2020 
 keep country_code-public_event_13Jan2021
-
-* Recoding values to a binary - "0" no measures and recommended canceling, "1" required canceling public events 
-foreach v of var public_event_01Apr2020-public_event_13Jan2021 {
-	recode `v' (0/1 = 0) 
-	recode `v' (2 = 1)
-}
 
 save public_event, replace
 
@@ -359,7 +407,29 @@ save "$user/$analysis/Data/public_event_tmp.dta", replace
 
 ******** Restrictions on gatherings ********
 clear all 
+* Save gathering flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c4_flag.csv"
+* Renaming variables 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_restrict_gather`lbl'
+}
+save restrict_gather_flag, replace
+
+* Import gathering restrictions data 
+clear 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c4_restrictions_on_gatherings.csv"
+* Renaming variables to label name 		
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' restrict_gather`lbl'
+}
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using restrict_gather_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -370,23 +440,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' restrict_gather`lbl'
+* Recoding values to a binary - "0" no measures, restricted to more than 1000 or restricted from 101-1000; "1" restricted 10-100 or <10
+foreach v of var restrict_gather_01Apr2020-restrict_gather_13Jan2021 {
+	recode `v' (0/2 = 0) 
+	recode `v' (3/4 = 1)
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop restrict_gather_01Jan2020-restrict_gather_31Mar2020 
 keep country_code-restrict_gather_13Jan2021
-
-* Recoding values to a binary - "0" no measures, restricted to more than 1000 or restricted from 101-1000; "1" restricted 10-100 or <10
-foreach v of var restrict_gather_01Apr2020-restrict_gather_13Jan2021 {
-	recode `v' (0/2 = 0) 
-	recode `v' (3/4 = 1)
-}
 
 save restrict_gather, replace
 
@@ -438,9 +501,32 @@ append using restrict_gather_all
 save "$user/$analysis/Data/restrict_gather_tmp.dta", replace
 
 ******** Public transport closures ********
-
 clear all 
+
+* Save flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c5_flag.csv"
+* Renaming variables 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_public_trnsprt`lbl'
+}
+save public_trnsprt_flag, replace
+
+* Import Public transport data
+clear 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c5_close_public_transport.csv"
+* Renaming variables to label name 		
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' public_trnsprt`lbl'
+}
+
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using public_trnsprt_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -451,23 +537,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' public_trnsprt`lbl'
+* Recoding values to a binary - "0" no measures and recommend reducing volume, "1" required closing public transport 
+foreach v of var public_trnsprt_01Apr2020-public_trnsprt_13Jan2021 {
+	recode `v' (0/1 = 0) 
+	recode `v' (2 = 1)
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop public_trnsprt_01Jan2020-public_trnsprt_31Mar2020 
 keep country_code-public_trnsprt_13Jan2021
-
-* Recoding values to a binary - "0" no measures and recommend reducing volume, "1" required closing public transport 
-foreach v of var public_trnsprt_01Apr2020-public_trnsprt_13Jan2021 {
-	recode `v' (0/1 = 0) 
-	recode `v' (2 = 1)
-}
 
 save public_trnsprt, replace
 
@@ -519,9 +598,30 @@ append using public_trnsprt_all
 save "$user/$analysis/Data/public_trnsprt_tmp.dta", replace
 
 ******** Stay at home requirements ********
-
 clear all 
+* Save stay-home flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c6_flag.csv"
+* Renaming variables 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_stay_home`lbl'
+}
+save stay_home_flag, replace
+
+* Import stay home data
+clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c6_stay_at_home_requirements.csv"
+* Renaming variables to label name 		
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' stay_home`lbl'
+}
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using stay_home_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -532,23 +632,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' stay_home`lbl'
+* Recoding values to a binary - "0" no measures and recommend staying home, "1" required with some or no exceptions 
+foreach v of var stay_home_01Apr2020-stay_home_13Jan2021 {
+	recode `v' (0/1 = 0) 
+	recode `v' (2/3 = 1)
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop stay_home_01Jan2020-stay_home_31Mar2020 
 keep country_code-stay_home_13Jan2021
-
-* Recoding values to a binary - "0" no measures and recommend staying home, "1" required with some or no exceptions 
-foreach v of var stay_home_01Apr2020-stay_home_13Jan2021 {
-	recode `v' (0/1 = 0) 
-	recode `v' (2/3 = 1)
-}
 
 save stay_home, replace
 
@@ -600,9 +693,31 @@ append using stay_home_all
 save "$user/$analysis/Data/stay_home_tmp.dta", replace
 
 ******** Restrictions on internal movement ********
+clear all
 
-clear all 
+* Save internal movement flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c7_flag.csv"
+* Renaming variables 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_move_restr`lbl'
+}
+save move_restr_flag, replace
+
+* Import internal movement restrictions data  data
+clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c7_movementrestrictions.csv"
+* Renaming variables to label name 		
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' move_restr`lbl'
+}
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using move_restr_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -613,23 +728,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' move_restr`lbl'
+* Recoding values to a binary - "0" no measures and recommend not to travel between regions/cities, "1" internal movement restrictions in place
+foreach v of var move_restr_01Apr2020-move_restr_13Jan2021 {
+	recode `v' (0/1 = 0) 
+	recode `v' (2 = 1)
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop move_restr_01Jan2020-move_restr_31Mar2020 
 keep country_code-move_restr_13Jan2021
-
-* Recoding values to a binary - "0" no measures and recommend not to travel between regions/cities, "1" internal movement restrictions in place
-foreach v of var move_restr_01Apr2020-move_restr_13Jan2021 {
-	recode `v' (0/1 = 0) 
-	recode `v' (2 = 1)
-}
 
 save move_restr, replace
 
@@ -681,7 +789,9 @@ append using move_restr_all
 
 save "$user/$analysis/Data/move_restr_tmp.dta", replace
 
-******** Restrictions on internal movement ********
+******** Restrictions on international travel ********
+
+** No flag data for international travel 
 
 clear all 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c8_internationaltravel.csv"
@@ -763,9 +873,30 @@ append using int_trav_all
 save "$user/$analysis/Data/int_trav_tmp.dta", replace
 
 ******** Public Information campaigns ********
-
 clear all 
+* Save public info flag data 
+import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/h1_flag.csv"
+* Renaming variables 
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' flag_info_camp`lbl'
+}
+save info_camp_flag, replace
+
+*Import public info campaign data 
+clear 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/h1_public_information_campaigns.csv"
+* Renaming variables to label name 		
+foreach v of var jan2020-v690 {
+    local lbl : var label `v'
+    local lbl = strtoname("`lbl'")
+    rename `v' info_camp`lbl'
+}
+
+* Merge flag data 
+merge 1:1 v1 country_code country_name using info_camp_flag
+drop _merge 
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -776,23 +907,16 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 *Drop country ID 
 drop v1
 
-* Renaming variables to label name 		
-
-foreach v of var jan2020-v690 {
-    local lbl : var label `v'
-    local lbl = strtoname("`lbl'")
-    rename `v' info_camp`lbl'
+* Recoding values to a binary - "0" no measures or public officials urging caution, "1" coordinated campaign
+foreach v of var info_camp_01Apr2020-info_camp_13Jan2021 {
+	recode `v' (0/1 = 0) 
+	recode `v' (2= 1)
+	recode `v' (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop info_camp_01Jan2020-info_camp_31Mar2020 
 keep country_code-info_camp_13Jan2021
-
-* Recoding values to a binary - "0" no measures or public officials urging caution, "1" coordinated campaign
-foreach v of var info_camp_01Apr2020-info_camp_13Jan2021 {
-	recode `v' (0/1 = 0) 
-	recode `v' (2= 1)
-}
 
 save info_camp, replace
 
@@ -885,6 +1009,16 @@ foreach x of global policy {
 		rm "$user/$analysis/Data/`x'_all.dta"
 	}
 
+* No flag data for international travel 
+rm "$user/$analysis/Data/school_close_flag.dta"
+rm "$user/$analysis/Data/work_close_flag.dta"
+rm "$user/$analysis/Data/public_event_flag.dta"
+rm "$user/$analysis/Data/restrict_gather_flag.dta"
+rm "$user/$analysis/Data/public_trnsprt_flag.dta"
+rm "$user/$analysis/Data/stay_home_flag.dta"
+rm "$user/$analysis/Data/move_restr_flag.dta"
+rm "$user/$analysis/Data/info_camp_flag.dta"
+
 ************* Merge stringency, policy and relative volume data ****************
 ********************************************************************************
 use "$user/$analysis/Data/Multip4.dta", clear
@@ -914,5 +1048,5 @@ lab var info_camp "Public information campaign"
 
 encode country, gen(co)
 
-save "$user/$analysis/Data/Multip4_combined.dta", replace
+save "$user/$analysis/Data/Multip4_combined_v2.dta", replace
 
