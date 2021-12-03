@@ -23,6 +23,9 @@ do "$dofiles/Palika/cr_NEP_03.do"
 * overwrites Nov2020 data from cr_NEP_03.do file 
 do "$dofiles/Palika/cr_NEP_04.do"
 
+* 2021 data
+do "$dofiles/Palika/cr_NEP_05.do"
+
 **********************************************************************
 * Data cleaning
 
