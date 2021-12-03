@@ -24,7 +24,6 @@ do "$dofiles/Palika/cr_NEP_04.do"
 
 **********************************************************************
 * Data cleaning
-
 * Cleans the data (see cleaning protocol in shared folder)
 do "$dofiles/Palika/clean_NEP.do"
 
@@ -33,9 +32,10 @@ do "$dofiles/Palika/clean_NEP.do"
 do "$dofiles/Palika/format_NEP.do"
 
 **********************************************************************
-* Update: 2021 data 
+* Update: Adding first 6 months of 2021 
 do "$dofiles/Palika/cr_NEP_05.do"
 do "$dofiles/Palika/clean_NEP_2021.do"
+do "$dofiles/Palika/format_NEP_2021.do"
 **********************************************************************
 * Analyses for policy briefs
 
