@@ -54,7 +54,7 @@ global MEXall fp_util anc_util del_util cs_util diarr_util pneum_util malnu_util
 	   er_util ipd_util cerv_qual breast_util	
 		   
 global NEPall fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
-	   bcg_qual pent_qual measles_qual opv3_qual pneum_qual opd_util er_util ///
+	   bcg_qual pent_qual measles_qual  pneum_qual opd_util er_util ///
 	   ipd_util  diab_util hyper_util tbdetect_qual hivtest_qual 
    
 global KORall anc_util del_util cs_util diarr_util pneum_util diab_util hyper_util ///
