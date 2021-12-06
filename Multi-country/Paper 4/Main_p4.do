@@ -1,16 +1,16 @@
-* Health system performance during Covid-19 
-* Effect of Covid on health service utilization in 10 countries
-* Created by Catherine Arsenault
-
-global user "/Users/acatherine/Dropbox (Harvard University)"
-global analysis "/Users/acatherine/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
-global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 1 Service utilization"
-
-global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
-global analysis "/Users/annagage/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
+* Health system resilience during Covid-19 
+* Associations between COVID-19 lockdowns and health service disruptions in 10 countries 
 
 ********************************************************************************
-* File paths data 
+* Globals
+global user "/Users/acatherine/Dropbox (Harvard University)"
+global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 4"
+
+*global user "/Users/nek096/Dropbox (Harvard University)"
+*global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 4 Factors Associated"
+
+global analysis "SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 4 Factors associated"
+
 global CHLdata "/HMIS Data for Health System Performance Covid (Chile)"
 global ETHdata "/HMIS Data for Health System Performance Covid (Ethiopia)"
 global GHAdata "/HMIS Data for Health System Performance Covid (Ghana)"
@@ -62,28 +62,10 @@ global KORall anc_util del_util cs_util diarr_util pneum_util diab_util hyper_ut
 
 global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_util  		
   
-******************************************************************************** 
-* Creates datasets for analyses
-do "$dofiles/cr_su_01.do"
+********************************************************************************
+* Compiling outcome data
+do "$dofiles/cr_p4_01.do"
 
 ********************************************************************************
-* Regression analyses, forest plots and heatmap
-do "$dofiles/an_su_01.do"
-
-********************************************************************************
-* Estimated missed visits
-do "$dofiles/an_su_02.do"
-
-********************************************************************************
-* Full regression results for appendix
-do "$dofiles/an_su_03.do"
-
-********************************************************************************
-* Country-specific graphs
-run "$dofiles/graphs_Chile.do"
-run "$dofiles/graphs_Ethiopia.do"
-
-
-
-
-
+* Compiling and merging policy data
+do "$dofiles/cr_p4_02.do"

@@ -52,9 +52,11 @@ do "$dofiles/cr_MEX_13.do"
 * Update december 2020 data
 do "$dofiles/cr_MEX_14.do"
 
-* Adding data for ART, editing measles vaccine, correction to cervical cancer (July 21, 2021)
+* Adds stillbirth and newborn mortality data
 do "$dofiles/cr_MEX_15.do"
 
+* Adding data for ART, editing measles vaccine, correction to cervical cancer (July 21, 2021)
+do "$dofiles/cr_MEX_16.do"
 
 ********************************************************************************
 * Format do files
@@ -63,7 +65,7 @@ do "$dofiles/cr_MEX_15.do"
 and creates the final csv file for the dashboard. */ 
 do "$dofiles/format_MEX.do"
 
-********************************************************************************
+/********************************************************************************
 * Analyses do files
 
 * Analysis: calculates changes between March-August 2020 and March-August 2019 

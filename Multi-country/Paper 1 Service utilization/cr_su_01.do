@@ -1,12 +1,7 @@
-/* 
-  Health system performance during Covid-19. Created by Catherine Arsenault
-  Paper title: Effect of Covid-19 on health service utilization in 10 countries
-  This do file creates final datasets for the service utilisation paper, 
-  standardizes variable names and creates an  appendix to assess completeness 
-  (in countries with facility-level data).
-  */
+* Health system performance during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
 
-* global droplist holds the list of variables that are not in the analysis
+* global droplist holds the list of variables not included in the analysis
 global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_num ///
 				ipd_mort_num sb_mort_denom livebirths_denom sti_util kmc_qual ///
                 totalipd_mort_num  tbnum_qual tbdenom_qual ///
@@ -32,7 +27,7 @@ local dl_modif
  
 save "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", replace 
 * Count of observations
-collapse (count) breast_util-er_util, by (year month)		  
+collapse (count) pneum_util-er_util, by (year month)		  
 export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(CHL, replace) firstrow(variable)   
 	
 ********************************************************************************

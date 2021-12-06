@@ -47,7 +47,7 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			(lfit ipd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
 				(lfit ipd_util rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			 xline(20, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title(" Nepal inpatient admissions (2019-2020)", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
@@ -69,7 +69,7 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			(lfit del_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
 				(lfit del_util rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			 xline(20, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title("Nepal facility based deliveries (2019-2020)", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
@@ -91,7 +91,7 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			(lfit measles_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
 				(lfit measles_qual rmonth if rmonth>=21 & rmonth<=24 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			 xline(20, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title(" Nepal MMR vaccine (2019-2020)", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1600, labsize(vsmall))

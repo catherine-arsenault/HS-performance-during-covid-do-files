@@ -237,7 +237,7 @@ import excel using "/$user/$data/Raw data/Hexavalente.xlsx",  firstrow clear
 rename (_Enero-Z) ///
 (pent_qual1_19	pent_qual2_19	pent_qual3_19	pent_qual4_19	pent_qual5_19	pent_qual6_19	pent_qual7_19	pent_qual8_19	pent_qual9_19	pent_qual10_19	pent_qual11_19	pent_qual12_19 ///
 pent_qual1_20	pent_qual2_20	pent_qual3_20	pent_qual4_20	pent_qual5_20	pent_qual6_20 pent_qual7_20   pent_qual8_20   pent_qual9_20   pent_qual10_20 pent_qual11_20 pent_qual12_20)
-save "$user/$data/Data for analysis/tmp.dta", replace
+save "$user/$data/Data for analysis/tmpC.dta", replace
 	
 * BCG 
 import excel using "/$user/$data/Raw data/BCG.xlsx",  firstrow clear
@@ -245,38 +245,119 @@ rename (_Enero-Z) ///
 (bcg_qual1_19	bcg_qual2_19	bcg_qual3_19	bcg_qual4_19	bcg_qual5_19	bcg_qual6_19	bcg_qual7_19	bcg_qual8_19	bcg_qual9_19	bcg_qual10_19	bcg_qual11_19	bcg_qual12_19 ///
 bcg_qual1_20	bcg_qual2_20	bcg_qual3_20	bcg_qual4_20	bcg_qual5_20	bcg_qual6_20 bcg_qual7_20    bcg_qual8_20    bcg_qual9_20    bcg_qual10_20 bcg_qual11_20 bcg_qual12_20)
 
-merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmp.dta"
+merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmpC.dta"
 drop _merge 
-save "$user/$data/Data for analysis/tmp.dta", replace
+save "$user/$data/Data for analysis/tmpC.dta", replace
 
 *PCV
 import excel using "/$user/$data/Raw data/Neumococica.xlsx",  firstrow clear
 rename (_Enero-Z) /// 
 (pneum_qual1_19	pneum_qual2_19	pneum_qual3_19	pneum_qual4_19	pneum_qual5_19	pneum_qual6_19	pneum_qual7_19	pneum_qual8_19	pneum_qual9_19	pneum_qual10_19	pneum_qual11_19	pneum_qual12_19 ///
 pneum_qual1_20	pneum_qual2_20	pneum_qual3_20	pneum_qual4_20	pneum_qual5_20	pneum_qual6_20 pneum_qual7_20  pneum_qual8_20  pneum_qual9_20  pneum_qual10_20 pneum_qual11_20 pneum_qual12_20)
-merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmp.dta"
+merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmpC.dta"
 drop _merge 
-save "$user/$data/Data for analysis/tmp.dta", replace
+save "$user/$data/Data for analysis/tmpC.dta", replace
 
 *MMR
 import excel using "/$user/$data/Raw data/Tresvirica.xlsx",  firstrow clear
 rename (_Enero-Z) /// 
 (measles_qual1_19	measles_qual2_19	measles_qual3_19	measles_qual4_19	measles_qual5_19	measles_qual6_19	measles_qual7_19	measles_qual8_19	measles_qual9_19	measles_qual10_19	measles_qual11_19	measles_qual12_19 measles_qual1_20	measles_qual2_20	measles_qual3_20	measles_qual4_20	measles_qual5_20 ///
 	measles_qual6_20	measles_qual7_20 measles_qual8_20 measles_qual9_20 measles_qual10_20 measles_qual11_20 measles_qual12_20)
-merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmp.dta"
+merge 1:1 Comuna REGION using  "$user/$data/Data for analysis/tmpC.dta"
 drop _merge 
-save "$user/$data/Data for analysis/tmp.dta", replace
+save "$user/$data/Data for analysis/tmpC.dta", replace
 
+/****************************************************************
+ ADDING DATA AT THE REGIONAL LEVEL
+*****************************************************************/		
+* Breast cancer screening
+import excel using "/$user/$data/Raw data/CL - Brest Cancer.xlsx", firstrow clear
+rename (_1-Y) ///
+(breast_util1_19	breast_util2_19	breast_util3_19	breast_util4_19 ///
+breast_util5_19	breast_util6_19	breast_util7_19	breast_util8_19	///
+breast_util9_19	breast_util10_19	breast_util11_19	breast_util12_19 ///
+breast_util1_20	breast_util2_20	breast_util3_20	breast_util4_20	breast_util5_20	///
+breast_util6_20 breast_util7_20   breast_util8_20   breast_util9_20 ///
+  breast_util10_20 breast_util11_20 breast_util12_20)
+save "$user/$data/Data for analysis/tmpR.dta", replace		
+
+* Child pneumonia
+import excel using "/$user/$data/Raw data/Hosp_J09_J18_5a.xlsx", firstrow clear
+foreach var of varlist _all {
+	rename (`var') (p`var')
+}
+rename pregion region
+drop if region==""
+save "$user/$data/Data for analysis/tmp.dta", replace
+import excel using "/$user/$data/Raw data/Hosp_J12_J18_5a.xlsx", firstrow clear
+merge 1:1 region using "$user/$data/Data for analysis/tmp.dta"
+drop _merge _1-_12 p_1-p_12
+drop if region=="TOTAL" | region=="99" | region=="Extra"
+egen pneum_util1_19 = rowtotal(N pN), m
+egen pneum_util2_19 = rowtotal(O pO), m
+egen pneum_util3_19 = rowtotal(P pP), m
+egen pneum_util4_19 = rowtotal(Q pQ), m
+egen pneum_util5_19 = rowtotal( R pR), m
+egen pneum_util6_19 = rowtotal( S pS), m
+egen pneum_util7_19 = rowtotal( T  pT), m
+egen pneum_util8_19 = rowtotal( U pU), m
+egen pneum_util9_19 = rowtotal( V pV), m
+egen pneum_util10_19 = rowtotal( W pW), m
+egen pneum_util11_19 = rowtotal( X pX), m
+egen pneum_util12_19 = rowtotal( Y pY), m
+egen pneum_util1_20 = rowtotal( Z pZ), m
+egen pneum_util2_20 = rowtotal(AA  pAA), m
+egen pneum_util3_20 = rowtotal( AB pAB), m
+egen pneum_util4_20 = rowtotal( AC pAC), m
+egen pneum_util5_20 = rowtotal( AD pAD), m
+egen pneum_util6_20 = rowtotal( AE pAE), m
+egen pneum_util7_20 = rowtotal( AF pAF), m
+egen pneum_util8_20 = rowtotal( AG pAG), m
+egen pneum_util9_20 = rowtotal( AH pAH), m
+egen pneum_util10_20 = rowtotal( AI pAI), m
+egen pneum_util11_20 = rowtotal( AJ pAJ), m
+egen pneum_util12_20 = rowtotal( AK pAK), m
+keep region pneum* 
+merge 1:1 region using "$user/$data/Data for analysis/tmpR.dta"	
+drop _merge
+save  "$user/$data/Data for analysis/tmpR.dta", replace		
+
+* Neonatal deaths
+import excel using  "/$user/$data/Raw data/Mort_Neonatal.xlsx", firstrow clear
+drop if region==""
+rename (_1-Y) (neo_mort_num1_19 neo_mort_num2_19 neo_mort_num3_19 neo_mort_num4_19 ///
+			neo_mort_num5_19 neo_mort_num6_19 neo_mort_num7_19 neo_mort_num8_19 ///
+			neo_mort_num9_19 neo_mort_num10_19 neo_mort_num11_19 neo_mort_num12_19 ///
+			neo_mort_num1_20 neo_mort_num2_20 neo_mort_num3_20 neo_mort_num4_20 ///
+			neo_mort_num5_20 neo_mort_num6_20 neo_mort_num7_20 neo_mort_num8_20 ///
+			neo_mort_num9_20 neo_mort_num10_20 neo_mort_num11_20 neo_mort_num12_20 )
+merge 1:1 region using  "$user/$data/Data for analysis/tmpR.dta"
+drop _merge 
+save  "$user/$data/Data for analysis/tmpR.dta", replace			
+	
+* Inpatient deaths
+import excel using  "/$user/$data/Raw data/Mort_Inpatient.xlsx", firstrow clear
+drop if region==""
+rename (_1-Y) (ipd_mort_num1_19 ipd_mort_num2_19 ipd_mort_num3_19 ipd_mort_num4_19 ///
+			ipd_mort_num5_19 ipd_mort_num6_19 ipd_mort_num7_19 ipd_mort_num8_19 ///
+			ipd_mort_num9_19 ipd_mort_num10_19 ipd_mort_num11_19 ipd_mort_num12_19 ///
+			ipd_mort_num1_20 ipd_mort_num2_20 ipd_mort_num3_20 ipd_mort_num4_20 ///
+			ipd_mort_num5_20 ipd_mort_num6_20 ipd_mort_num7_20 ipd_mort_num8_20 ///
+			ipd_mort_num9_20 ipd_mort_num10_20 ipd_mort_num11_20 ipd_mort_num12_20 )
+merge 1:1 region using  "$user/$data/Data for analysis/tmpR.dta"
+drop _merge 
+save  "$user/$data/Data for analysis/tmpR.dta", replace			
+	
 /*******************************************************************************
 *END
 *******************************************************************************
 
 
 *drop missing observation 
-egen total =rowtotal(hyper_util1_19 - road_util12_20)
+eegentotal =rowtotal(hyper_util1_19 - road_util12_20)
 drop if total==0 
 drop total 
-gen str facname = facilityname
+egenstr facname = facilityname
 duplicates tag region facname, gen(tag)
 
 replace facname = "Centro de Salud Familiar Cardenal Silva Henríquez_Peñalolén" ///

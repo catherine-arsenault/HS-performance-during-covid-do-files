@@ -4,7 +4,7 @@
 * Updated Jan 8, 2020 
 * Mexico - IMSS, formatting dataset for the dashboard
 
-use "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", clear
+use "$user/$data/Data for analysis/IMSS_Jan19-Dec20final_WIDE.dta", clear
 
 *******************************************************************************
 * RESHAPE TO LONG FORM
@@ -17,7 +17,7 @@ use "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", clear
 			art_util  er_util  ipd_util  dental_util diab_util   hyper_util  mental_util ///
 			opv3_qual  pneum_qual  rota_qual  fp_util  anc_util  opd_util  cerv_util  ///
 			breast_util  diab_qual_num  hyper_qual_num   pent_qual ///
-			bcg_qual  measles_qual newborn_mort_num  sb_mort_num mat_mort_num  er_mort_num ///
+			bcg_qual bcgu_qual measles_qual newborn_mort_num  sb_mort_num mat_mort_num  er_mort_num ///
 			ipd_mort_num death_covid  hospit_covid death_negative hospit_negative ///
 			death_pending hospit_pending totaldel  , i(Deleg) j(month) string
 
@@ -33,6 +33,7 @@ use "$user/$data/Data for analysis/IMSS_Jan19-Dec20complete_WIDE.dta", clear
 	lab var malnu_util "Number of consultations for sick child care - malnutrition"
 * Vaccines
 	lab var bcg_qual "Nb children vaccinated with bcg vaccine"
+	lab var bcgu_qual "Nb children vaccinated with a unique dose of BCG"
 	lab var pent_qual "Nb children vaccinated with 3rd dose pentavalent"
 	lab var measles_qual "Nb children vaccinated with measles vaccine"
 	lab var opv3_qual "Nb children vaccinated with 3rd dose oral polio vaccine"
@@ -106,7 +107,7 @@ sti_util del_util cs_util diarr_util pneum_util malnu_util art_util er_util ///
 dental_util ipd_util diab_util hyper_util mental_util cerv_util breast_util ///
 diab_qual_num hyper_qual_num opv3_qual pneum_qual rota_qual newborn_mort_num ///
 sb_mort_num mat_mort_num er_mort_num fp_util anc_util totaldel opd_util ///
-pent_qual bcg_qual measles_qual ipd_mort_num death_covid hospit_covid ///
+pent_qual bcg_qual bcgu_qual measles_qual ipd_mort_num death_covid hospit_covid ///
 death_negative hospit_negative death_pending hospit_pending {
 	by year month, sort: egen `v'tot= total(`v'), m
 	replace `v'= `v'tot if Delegation=="National"
