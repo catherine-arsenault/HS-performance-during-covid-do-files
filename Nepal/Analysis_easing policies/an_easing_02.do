@@ -21,14 +21,11 @@ tabstat fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyp
 tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0, stat(N mean) col(stat)
 tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 , stat(N mean) col(stat)
 
-** Do you have any suggestions for producing the Table 1? I tried summtab, but I still have to divide the N by number of months to get palikas per service type. I also don't think I need SD or %nonmissing. 
-
 summtab if post == 0, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(pre-period) replace title(Table1)
 
 summtab if post == 1, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(post-period) replace title(Table1)
 
 *** Difference-in-differences analysis - time varying treatment status 
-* RMNCAH Services 
 
 eststo: xtreg fp_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
 eststo: xtreg anc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
@@ -44,6 +41,27 @@ eststo: xtreg tbdetect_qual eased covid_case i.month, i(palikaid) fe cluster(pal
 esttab using "$user/$analysis/DD tables/ddtable.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons)title("DD regression: Primary care services") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB cases detected") rename(eased "Lockdowns lifted" covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" )
 
 eststo clear
+
+*** Difference-in-differences analysis - time varying treatment status - dropping month 3 as a sensitivity analysis 
+
+preserve 
+drop if month == 3
+eststo: xtreg fp_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pneum_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg measles_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg opd_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diab_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hyper_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hivtest_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg tbdetect_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+
+esttab using "$user/$analysis/DD tables/ddtablesa.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons)title("DD regression: Primary care services") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB cases detected") rename(eased "Lockdowns lifted" covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" )
+
+eststo clear
+restore 
+
 
 * Parallel trends assessment
 preserve
@@ -70,7 +88,7 @@ test 5.month#1.eased_fixed 6.month#1.eased_fixed
 eststo: xtreg tbdetect_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
 test 5.month#1.eased_fixed 6.month#1.eased_fixed
 
-esttab using "$user/$analysis/DD tables/ddtablept.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons 1.eased_fixed)title("DD regression: Parallel trends test") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ( "Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB tests") rename(eased "Lockdowns lifted"covid_case "Covid cases" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 5.month#1.eased_fixed "Month 5*Lifted" 6.month#1.eased_fixed "Month 6*Lifted" 8.month#1.eased_fixed "Month 8*Lifted")
+esttab using "$user/$analysis/DD tables/ddtablept.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons 1.eased_fixed)title("DD regression: Parallel trends test") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ( "Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB tests") rename(eased "Lockdowns lifted"covid_case "Covid cases" 5.month "May" 6.month "June" 8.month "August" 5.month#1.eased_fixed "May*Lifted" 6.month#1.eased_fixed "June*Lifted" 8.month#1.eased_fixed "August*Lifted")
 
 eststo clear 
 
