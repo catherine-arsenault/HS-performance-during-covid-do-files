@@ -1,3 +1,6 @@
+* Health system resilience during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
+* Trends in 2021
 
 * 8 NEPAL (palika (municipality))
 use "$user/$NEPdata/Data for analysis/Nepal_su_30months.dta", clear
