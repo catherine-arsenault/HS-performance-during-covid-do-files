@@ -1,4 +1,4 @@
-* Health system performance during Covid-19 
+* Health system resilience during Covid-19 
 * Effect of Covid on health service utilization in 10 countries
 
 * global droplist holds the list of variables not included in the analysis
@@ -14,7 +14,6 @@ global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_n
 
 ********************************************************************************
 * 1 CHILE (facility)
-
 u "$user/$CHLdata/Data for analysis/Chile_su_24months.dta", clear 
 local dl_modif
     foreach x of global droplist {
@@ -26,10 +25,20 @@ local dl_modif
  cap drop `dl_modif'
  
 save "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", replace 
-* Count of observations
-collapse (count) pneum_util-er_util, by (year month)		  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(CHL, replace) firstrow(variable)   
-	
+preserve
+	* Count of observations per month
+	collapse (count) pneum_util-er_util, by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(CHL, replace) firstrow(variable)   
+restore
+	* Number ever reporting 
+	egen unique_id = concat(region municipality levelofattention facilityname id)
+	foreach var in ipd_util cs_util del_util hyper_util diab_util mental_util ///
+			anc_util road_util surg_util pnc_util fp_util er_util {
+				by unique_id, sort: egen total`var'=total(`var'), missing 
+			}
+			
+	collapse (count) totalipd_util-totaler_util, by(year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(CHLtotal, replace) firstrow(variable)   
 ********************************************************************************
 * 2 ETHIOPIA (facility/woreda)
 
@@ -45,12 +54,20 @@ local dl_modif
  cap drop `dl_modif'
  drop if region=="Tigray" // Tigray stopped reporting in October 2020 due to violence	
  rename sam_util malnu_util
- drop tbdetect_qual // only available quarterly
+ drop orgunitlevel1 tbdetect_qual // only available quarterly
 save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", replace 
 
-* Count of observations
-collapse (count) fp_util-art_util , by (year month)
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(ETH, replace) firstrow(variable)   
+preserve
+	* Counts units per month
+	collapse (count) fp_util-art_util , by (year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(ETH, replace) firstrow(variable)   
+restore
+	* Counts units ever reporting
+foreach var of global ETHall { 
+	by unique_id, sort: egen total`var'= total(`var' ), m
+}
+	collapse (count) totalfp_util-totalroad_util, by (year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(ETHtotal, replace) firstrow(variable)
 
 ********************************************************************************
 * 3 GHANA (region)
@@ -68,7 +85,7 @@ local dl_modif
 save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", replace 	 
 * Count of observations
 collapse (count) fp_util-totaldel, by (year month)
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(GHA, replace) firstrow(variable)   
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(GHA, replace) firstrow(variable) 
 ********************************************************************************
 * 4 HAITI (facility)
 use "$user/$HTIdata/Data for analysis/Haiti_su_24months.dta", clear
@@ -82,11 +99,19 @@ local dl_modif
  }
  cap drop `dl_modif'
 	drop cerv_qual // too few visits
-save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace 
-* Count of observations
-collapse (count) fp_util-vacc_qual, by (year month)		  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(HTI, replace) firstrow(variable)  
-
+save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace
+preserve  
+	* Count of observations
+	collapse (count) fp_util-vacc_qual, by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(HTI, replace) firstrow(variable)  
+restore
+egen unique_id=concat(orgunitlevel1 orgunitlevel2 orgunitlevel3 Number ID)
+* Counts units ever reporting
+foreach var of global HTIall { 
+	by unique_id, sort: egen total`var'= total(`var' ), m
+}
+	collapse (count) totalopd_util-totalhyper_util, by (year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(HTItotal, replace) firstrow(variable)
 ********************************************************************************
 * 5 KZN, SA (facility)
 use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear 
@@ -102,10 +127,18 @@ local dl_modif
  rename (kmcn_qual sam_util anc1_util)  (kmc_qual malnu_util anc_util)
  drop malnu_util // too few visits
 save "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
-* Count of observations
-collapse (count) anc_util-trauma_util, by (year month)		  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(KZN, replace) firstrow(variable)  
-
+preserve 
+	* Count of observations
+	collapse (count) anc_util-trauma_util, by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(KZN, replace) firstrow(variable) 
+restore
+* Counts units ever reporting
+egen unique_id= concat(Province dist subdist Facility)
+foreach var of global KZNall { 
+	by unique_id, sort: egen total`var'= total(`var' ), m
+}
+	collapse (count) totalanc_util-totaltrauma_util, by (year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(KZNtotal, replace) firstrow(variable)
 ********************************************************************************
 * 6 LAO (facility)
 use "$user/$LAOdata/Data for analysis/Lao_su_24months.dta", clear
@@ -119,10 +152,18 @@ local dl_modif
  cap drop `dl_modif'
  rename fp_sa_util fp_util 
 save "$user/$LAOdata/Data for analysis/Lao_su_24months_for_analyses.dta", replace
-* Count observations
-collapse (count) fp_util-road_util , by (year month)			  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(LAO, replace) firstrow(variable)  
-
+preserve
+	* Count observations
+	collapse (count) fp_util-road_util , by (year month)			  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(LAO, replace) firstrow(variable)  
+restore
+* Counts units ever reporting
+egen unique_id= concat(orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname)
+foreach var of global LAOall { 
+	by unique_id, sort: egen total`var'= total(`var' ), m
+}
+	collapse (count) totalopd_util-totalroad_util, by (year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(LAOtotal, replace) firstrow(variable)
 ********************************************************************************
 * 7 MEXICO (region)
 use  "$user/$MEXdata/Data for analysis/Mexico_su_24months.dta", clear 
@@ -139,7 +180,7 @@ local dl_modif
 save "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", replace
 * Count observations
 collapse (count) measles_qual-bcg_qual , by (year month)			  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(MEX, replace) firstrow(variable)  
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(MEX, replace) firstrow(variable)  
 
 ********************************************************************************
 * 8 NEPAL (palika (municipality))
@@ -154,9 +195,17 @@ local dl_modif
 cap drop `dl_modif'
 rename fp_sa_util fp_util 
 save "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta", replace
-* Count of observations
-collapse (count) fp_util-pneum_qual , by (year month)		  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(NEP, replace) firstrow(variable)  
+preserve 
+	* Count of observations
+	collapse (count) fp_util-pneum_qual , by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(NEP, replace) firstrow(variable)  
+restore
+* Counts units ever reporting
+foreach var of global NEPall { 
+	by unique_id, sort: egen total`var'= total(`var' ), m
+}
+	collapse (count) totalfp_util-totalhivtest_qual, by (year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(NEPtotal, replace) firstrow(variable)
 ********************************************************************************
 * 9 SOUTH KOREA (region)
 u  "$user/$KORdata/Data for analysis/Korea_su_24months.dta", clear
@@ -172,7 +221,7 @@ drop totaldel
 save "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", replace
 * Count of observations
 collapse (count) anc_util-del_util, by (year month)		  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(KOR, replace) firstrow(variable)  
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(KOR, replace) firstrow(variable)  
 ********************************************************************************
 * 10 THAILAND (region)
 u "$user/$THAdata/Data for analysis/Thailand_su_24months.dta", clear 
@@ -189,7 +238,7 @@ drop anc_util
 save "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", replace 
 * Count of observations
 collapse (count) road_util-diarr_util, by (year month)		  
-export excel using "$analysis/Results/Tables/CountsAUG31.xlsx", sheet(THA, replace) firstrow(variable)  
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(THA, replace) firstrow(variable)  
 
 ********************************************************************************
 * Collapse facility level datasets & create country codes
@@ -285,7 +334,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		replace resumption = rmonth>=22 & rmonth<=24 if inlist(country, "CHL", "ETH", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
 		replace resumption = rmonth>=21 & rmonth<=24 if inlist(country,  "NEP") 
 		
-		* Slope change excludes Dec 2020
+		* Slope change excludes "resumption period"
 		gen timeafter= . 
 		replace timeafter = rmonth-14 if inlist(country,  "NEP")
 		replace timeafter= rmonth-15 if inlist(country, "CHL", "ETH", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
