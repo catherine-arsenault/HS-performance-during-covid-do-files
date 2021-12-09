@@ -23,22 +23,18 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
- 
 save "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", replace 
 preserve
 	* Count of observations per month
 	collapse (count) pneum_util-er_util, by (year month)		  
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(CHL, replace) firstrow(variable)   
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(CHL, replace) firstrow(variable)  
 restore
-	* Number ever reporting 
-	egen unique_id = concat(region municipality levelofattention facilityname id)
-	foreach var in ipd_util cs_util del_util hyper_util diab_util mental_util ///
-			anc_util road_util surg_util pnc_util fp_util er_util {
-				by unique_id, sort: egen total`var'=total(`var'), missing 
-			}
-			
-	collapse (count) totalipd_util-totaler_util, by(year month)
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(CHLtotal, replace) firstrow(variable)   
+		* Counts units ever reporting
+	drop if facilityname=="" // drops region and community data
+	collapse (sum) ipd_util-er_util, by(region facilityname )
+	egen nb_reporting=rowtotal(ipd_util-er_util), m
+	drop if nb_reporting==. 
+	count 
 ********************************************************************************
 * 2 ETHIOPIA (facility/woreda)
 
@@ -60,15 +56,14 @@ save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", r
 preserve
 	* Counts units per month
 	collapse (count) fp_util-art_util , by (year month)
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(ETH, replace) firstrow(variable)   
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(ETH, replace) firstrow(variable)  
 restore
-	* Counts units ever reporting
-foreach var of global ETHall { 
-	by unique_id, sort: egen total`var'= total(`var' ), m
-}
-	collapse (count) totalfp_util-totalroad_util, by (year month)
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(ETHtotal, replace) firstrow(variable)
 
+	* Counts units ever reporting
+	collapse (sum) fp_util-art_util, by(region regtype zone organisationunitname orgunitlevel4 unique_id )
+	egen nb_reporting=rowtotal(fp_util-art_util), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 3 GHANA (region)
 u  "$user/$GHAdata/Data for analysis/Ghana_su_24months.dta", clear 
@@ -106,12 +101,12 @@ preserve
 	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(HTI, replace) firstrow(variable)  
 restore
 egen unique_id=concat(orgunitlevel1 orgunitlevel2 orgunitlevel3 Number ID)
+
 * Counts units ever reporting
-foreach var of global HTIall { 
-	by unique_id, sort: egen total`var'= total(`var' ), m
-}
-	collapse (count) totalopd_util-totalhyper_util, by (year month)
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(HTItotal, replace) firstrow(variable)
+	collapse (sum) fp_util-vacc_qual, by(orgunitlevel1 orgunitlevel2 orgunitlevel3 Number ID )
+	egen nb_reporting=rowtotal(fp_util-vacc_qual), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 5 KZN, SA (facility)
 use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear 
@@ -133,12 +128,10 @@ preserve
 	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(KZN, replace) firstrow(variable) 
 restore
 * Counts units ever reporting
-egen unique_id= concat(Province dist subdist Facility)
-foreach var of global KZNall { 
-	by unique_id, sort: egen total`var'= total(`var' ), m
-}
-	collapse (count) totalanc_util-totaltrauma_util, by (year month)
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(KZNtotal, replace) firstrow(variable)
+	collapse (sum) anc_util-trauma_util, by(Province dist subdist Facility)
+	egen nb_reporting=rowtotal(anc_util-trauma_util), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 6 LAO (facility)
 use "$user/$LAOdata/Data for analysis/Lao_su_24months.dta", clear
@@ -158,12 +151,10 @@ preserve
 	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(LAO, replace) firstrow(variable)  
 restore
 * Counts units ever reporting
-egen unique_id= concat(orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname)
-foreach var of global LAOall { 
-	by unique_id, sort: egen total`var'= total(`var' ), m
-}
-	collapse (count) totalopd_util-totalroad_util, by (year month)
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(LAOtotal, replace) firstrow(variable)
+	collapse (sum) fp_util-road_util, by(orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname)
+	egen nb_reporting=rowtotal(fp_util-road_util), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 7 MEXICO (region)
 use  "$user/$MEXdata/Data for analysis/Mexico_su_24months.dta", clear 
@@ -181,7 +172,6 @@ save "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", rep
 * Count observations
 collapse (count) measles_qual-bcg_qual , by (year month)			  
 export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(MEX, replace) firstrow(variable)  
-
 ********************************************************************************
 * 8 NEPAL (palika (municipality))
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months.dta", clear
@@ -201,11 +191,10 @@ preserve
 	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(NEP, replace) firstrow(variable)  
 restore
 * Counts units ever reporting
-foreach var of global NEPall { 
-	by unique_id, sort: egen total`var'= total(`var' ), m
-}
-	collapse (count) totalfp_util-totalhivtest_qual, by (year month)
-	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(NEPtotal, replace) firstrow(variable)
+	collapse (sum) fp_util-pneum_qual, by(orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname)
+	egen nb_reporting=rowtotal(fp_util-pneum_qual), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 9 SOUTH KOREA (region)
 u  "$user/$KORdata/Data for analysis/Korea_su_24months.dta", clear
@@ -239,7 +228,6 @@ save "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", r
 * Count of observations
 collapse (count) road_util-diarr_util, by (year month)		  
 export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(THA, replace) firstrow(variable)  
-
 ********************************************************************************
 * Collapse facility level datasets & create country codes
 
@@ -248,17 +236,20 @@ use "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta",  clea
 	collapse (sum) $CHLall, by (region year month)
 	encode region, gen(reg)
 	gen country="CHL"
+	gen capital=1 if reg==13 // Santiago
 save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
 *2
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
 	collapse (sum) $ETHall, by (region year month)
 	encode region, gen(reg)
 	gen country="ETH"
+	gen capital=1 if reg==1 // Addis Ababa
 save "$user/$ETHdata/Data for analysis/ETHtmp.dta", replace
 * 3
 use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
 	encode region, gen(reg)	
 	gen country="GHA"
+	gen capital=1 if reg==7 // Greater Accra
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 * 4
 use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clear
@@ -266,6 +257,7 @@ use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clea
 	collapse (sum) $HTIall, by (departement year month)
 	encode departement, gen(reg)
 	gen country="HTI"
+	gen capital=1 if reg==8 // department Ouest Port Au Prince
 save "$user/$HTIdata/Data for analysis/HTItmp.dta", replace
 * 5
 use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
@@ -273,6 +265,7 @@ use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
 	drop rmonth
 	rename dist reg
 	gen country="KZN"
+	gen capital=1 if reg==9 // eThekwini Metropolitan Municipality (contains Durban, largest city in KZN)
 save "$user/$KZNdata/Data for analysis/KZNtmp.dta", replace
 * 6
 use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
@@ -280,11 +273,13 @@ use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
 	collapse (sum) $LAOall, by (Province year month)
 	encode Province, gen(reg)
 	gen country="LAO"
+	gen capital=1 if reg==1
 save "$user/$LAOdata/Data for analysis/LAOtmp.dta", replace
 * 7
 u "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", clear
 	encode Deleg, gen(reg)	
 	gen country="MEX"
+	gen capital=1 if reg==9 | reg==10 // DF Norte + DF Sur
 save "$user/$MEXdata/Data for analysis/MEXtmp.dta", replace
 * 8
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
@@ -292,17 +287,20 @@ use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clea
 	collapse (sum) $NEPall, by (Dist year month)
 	encode Dist, gen(reg)
 	gen country="NEP"
+	gen capital=1 if reg==28 // Kathmandu
 save "$user/$NEPdata/Data for analysis/NEPtmp.dta", replace
 * 9 
 u "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", clear 
 	encode region, gen(reg)
 	cap drop country
 	gen country="KOR"
+	gen capital=1 if reg==16 // Seoul
 save "$user/$KORdata/Data for analysis/KORtmp.dta", replace
 * 10 
 u "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear
 	encode Province, gen(reg)	
 	gen country="THA"
+	gen capital=1 if reg==4 // Bangkok
 save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 
 ********************************************************************************

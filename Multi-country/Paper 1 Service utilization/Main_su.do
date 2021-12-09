@@ -79,6 +79,10 @@ do "$dofiles/an_su_02.do"
 do "$dofiles/an_su_03.do"
 
 ********************************************************************************
+* Sub-analysis: %change in largest metropolitan region
+do "$dofiles/an_su_04.do"
+
+********************************************************************************
 * Country-specific graphs
 run "$dofiles/graphs_Chile.do"
 run "$dofiles/graphs_Ethiopia.do"
