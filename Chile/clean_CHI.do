@@ -31,58 +31,91 @@ egen all_visits = rowtotal(hyper_util1_19 - er_util12_20), m
 drop if all_visits==0 // 6 observations dropped
 drop all_visits 
 ********************************************************************
-global volumes  diab_util hyper_util  road_util surg_util pnc_util fp_util er_util mental_util anc_util
+global volumes diab_util hyper_util road_util surg_util pnc_util fp_util er_util mental_util anc_util
 
 /****************************************************************
-TOTAL NUMBER OF FACILITIES REPORTING ANY DATA: exported to excel
+ASSESSES DATASET BEFORE CLEANING: SUM OF HEALTH CARE VISITS
 ****************************************************************/
-
+putexcel set "$user/$data/Codebook for Chile.xlsx", sheet(Raw data, replace)  modify
 foreach var of global volumes {
-egen `var'_report = rownonmiss(`var'*)
+	* Sum/volume of services or deaths per facility over 24 months
+	egen `var'_sum = rowtotal(`var'1_19 `var'2_19 `var'3_19 `var'4_19 `var'5_19 ///
+	 `var'6_19 `var'7_19 `var'8_19 `var'9_19 `var'10_19 `var'11_19 `var'12_19 ///
+	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
+	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
+	* Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum)
 }
-recode *_report (0=0) (1/24=1) //24mts : Jan19-Dec20
-
-putexcel set "$user/$data/Codebook for Chile.xlsx", sheet(Tot fac reporting 24mos, replace)  modify
 putexcel A2 = "Variable"
-putexcel B2 = "Reported any data"	
+putexcel B2 = "Total health care visits in the raw data"
 local i= 2
-foreach var of global volumes {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'_report
-	putexcel B`i' = `r(sum)'
+	foreach var of global volumes {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel B`i' = `r(mean)'
+	}
+drop  *_sum 
+u "$user/$data/Data for analysis/tmpH.dta", clear 
+global Hvol ipd_util del_util cs_util 
+foreach var of global Hvol {
+	* Sum/volume of services or deaths per facility over 24 months
+	egen `var'_sum = rowtotal(`var'1_19 `var'2_19 `var'3_19 `var'4_19 `var'5_19 ///
+	 `var'6_19 `var'7_19 `var'8_19 `var'9_19 `var'10_19 `var'11_19 `var'12_19 ///
+	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
+	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
+	* Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum)
 }
-drop *report
-
-preserve
-	local volumes  hyper_util diab_util road_util surg_util pnc_util fp_util er_util mental_util anc_util
-			   
-	reshape long `volumes', i(org*) j(month, string)
-	recode `volumes' (.=0) (1/999999999=1)
-	collapse (sum) `volumes', by(month)
-	putexcel set "$user/$data/Codebook for Chile.xlsx", sheet(MinMax fac reporting 24mos, replace)  modify
-
-	putexcel A1 = "Min and Max number of facilities reporting any month"
-	putexcel A2 = "Variable"
-	putexcel B2 = "Min month report data"	
-	putexcel C2 = "Max month report data"
-	local i= 2
-foreach var of global volumes {	
-	local i = `i'+1
-	putexcel A`i' = "`var'"
-	qui sum `var'
-	putexcel B`i' = `r(min)'
-	putexcel C`i' = `r(max)'
+local i= 12
+	foreach var of global Hvol {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel B`i' = `r(mean)'
+	}
+drop  *_sum 	
+u "$user/$data/Data for analysis/tmpC.dta", clear 
+global Cvol measles_qual pneum_qual bcg_qual pent_qual 
+foreach var of global Cvol {
+	* Sum/volume of services or deaths per facility over 24 months
+	egen `var'_sum = rowtotal(`var'1_19 `var'2_19 `var'3_19 `var'4_19 `var'5_19 ///
+	 `var'6_19 `var'7_19 `var'8_19 `var'9_19 `var'10_19 `var'11_19 `var'12_19 ///
+	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
+	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
+	* Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum)
 }
-restore
-
+local i= 16
+	foreach var of global Cvol {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel B`i' = `r(mean)'
+	}
+u "$user/$data/Data for analysis/tmpR.dta"	, clear 
+ global Rvol pneum_util breast_util 
+foreach var of global Rvol {
+	* Sum/volume of services or deaths per facility over 24 months
+	egen `var'_sum = rowtotal(`var'1_19 `var'2_19 `var'3_19 `var'4_19 `var'5_19 ///
+	 `var'6_19 `var'7_19 `var'8_19 `var'9_19 `var'10_19 `var'11_19 `var'12_19 ///
+	 `var'1_20 `var'2_20 `var'3_20 `var'4_20 `var'5_20 `var'6_20 `var'7_20 ///
+	 `var'8_20 `var'9_20 `var'10_20 `var'11_20 `var'12_20 ), m
+	* Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum)
+}
+local i= 21
+	foreach var of global Rvol {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel B`i' = `r(mean)'
+	}
 ****************************************************************
 *EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
 ****************************************************************
 *export excel using "$user/$data/Data cleaning/Chile_Jan19-Dec20_fordatacleaning2.xlsx", firstrow(variable) replace
-
 * No missing data in Chile. No need to run complete case analysis code.
-
 
 /****************************************************************
          IDENTIFY POSITIVE OUTLIERS AND SET THEM TO MISSING 
@@ -108,7 +141,6 @@ foreach x of global volumes {
 }
 
 save "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", replace 
-
 rm "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE.dta" 
 /****************************************************************
 EXPORT RECODED DATA FOR MANUAL CHECK IN EXCEL

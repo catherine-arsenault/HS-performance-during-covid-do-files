@@ -2,8 +2,9 @@
 * Created on June 14 2021
 * Chile, Jan19 - Dec 2020 data
 * Recode variables
-
-**********************************************************************************
+********************************************************************************
+* FACILITY-LEVEL DATA
+********************************************************************************
 *ER visits - 584 obs 
 import delimited "/$user/$data/Raw data/061421/CL - ER visits.csv", clear delim(";")
 replace region ="Región De Los Ríos" if region=="Región De los Ríos" 

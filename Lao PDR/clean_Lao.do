@@ -133,6 +133,16 @@ foreach var of global all {
 	qui sum `var'_total_mean
 	putexcel H`i' = `r(mean)'
 }
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Raw data)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Total health care visits in the raw data"
+local i= 2
+	foreach var of global volumes {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel B`i' = `r(mean)'
+	}
 drop *_report *_sum *_mean
 
 /*******************************************************************
