@@ -142,4 +142,25 @@
 			
 			graph export "$analysis/Results/Graphs/MEX_anc_util.pdf", replace
 
+* Measles
+			u  "$user/$MEXdata/Data for analysis/MEXtmp.dta", clear 
+			qui xtreg measles_qual rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_measles_qual
+			qui xtreg measles_qual rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_measles_qual 
+			
+			collapse measles_qual linear_measles_qual season_measles_qual, by(rmonth)
 
+			twoway (scatter measles_qual rmonth, msize(vsmall)  sort) ///
+			(line linear_measles_qual rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_measles_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit measles_qual rmonth if rmonth<16, lcolor(green)) ///
+			(lfit measles_qual rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit measles_qual rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xline(21, lpattern(dash) lcolor(gs10)) xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title("Mexico (IMSS) measlesavalent vaccinations (2019-2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)500, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/MEX_measles_qual.pdf", replace
+			
