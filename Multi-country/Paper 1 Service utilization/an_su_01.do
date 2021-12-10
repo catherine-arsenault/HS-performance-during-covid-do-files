@@ -3,11 +3,11 @@
 * Created by Catherine Arsenault, June 2021
 * Program by Sebastian Bauhoff
 
+/********************************************************************************
+	Program for G-2 adjustment (call after xtreg)
 ********************************************************************************
-	* Program for G-2 adjustment (call after xtreg)
-********************************************************************************
-	* Add adjusted p-value and 95% CI to -xtreg, cluster()- estimation output
-	* Use t(G-2) distribution instead of Stata's t(G-1) where G = number of clusters as per Donald and Lang (2007)			
+	Add adjusted p-value and 95% CI to -xtreg, cluster()- estimation output
+	Use t(G-2) distribution instead of Stata's t(G-1) where G = number of clusters as per Donald and Lang (2007)*/			
 		cap program drop adjpvalues
 		program adjpvalues, rclass
 					
@@ -26,10 +26,10 @@
 		mat colnames adjci_u = `: colnames e(b)'
 
 		end		
-********************************************************************************
-	* Regression analysis: Level change during the first 6 months of the 
-	* pandemic and resumption in the last quarter of 2020
-********************************************************************************		
+/*******************************************************************************
+	Regression analysis: Level change during the first 6 months of the 
+	pandemic and resumption in the last quarter of 2020
+********************************************************************************/		
 foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
@@ -90,9 +90,9 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	}
 
 }
-********************************************************************************
-	* Relative % change for forest plots
-********************************************************************************		
+/*******************************************************************************
+	* Relative % change for forest plots in figure 2
+********************************************************************************/		
 foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
@@ -132,13 +132,13 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		scalar drop _all
 	}
 }
-********************************************************************************
-	* Resumption by quarter 4 2020 for the heatmap
-********************************************************************************		
+/*******************************************************************************
+	Resumption by quarter 4 2020 for the heatmap figure 3
+*******************************************************************************/		
 foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
-	putexcel set "$analysis/Results/Tables/Relative % resumption DEC6.xlsx", sheet("`c'")  modify
+	putexcel set "$analysis/Results/Tables/Relative % resumption DEC8.xlsx", sheet("`c'")  modify
 	putexcel A1 = "service" B1="Avg_preCovid" C1= "pct_remain" D1="LCL_pct_remain" E1="UCL_pct_remain" 
 	local i = 1
 	xtset reg rmonth 
@@ -171,50 +171,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 	}
 }	
 
-********************************************************************************
-	* Revisions: December 2021
-	* Predicted vs actual utilization at Dec, 2020
-********************************************************************************		
-foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
-
-	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
-	putexcel set "$analysis/Results/Tables/Relative level at Dec 2020.xlsx", sheet("`c'")  modify
-	putexcel A1 = "service"  C1= "pct_remain" D1="LCL_pct_remain" E1="UCL_pct_remain" 
-	local i = 1
-	xtset reg rmonth 
-	foreach var of global `c'all {
-		local i = `i'+1
-		
-		xtreg ipd_util i.postCovid rmonth timeafter i.season i.resumption , i(reg) fe cluster(reg) 
-		margins, at(rmonth = 24 season=4 postCovid==0 timeafter==0) over(resumption) post 
-		nlcom (ratio: (_b[1.resumption]/_b[0bn.resumption])) , post
-	
-		mat m1= r(table) 
-		mat b1 = m1[1, 1...]'
-		scalar beta2 = b1[8,1]
-		
-		putexcel A`i' = "`var'"
-		su `var' if postCovid==0 // average over the pre-Covid period
-		scalar avg = r(mean) 
-		putexcel B`i' = `r(mean)'
-		scalar pct_remain= (beta2/avg)*100
-		putexcel C`i'=pct_remain
-		* Call program to adjust for G-2 degrees of freedom
-		adjpvalues, p(adjp) cil(adjci_l) ciu(adjci_u)  
-		
-		mat cil = adjci_l[1, 1...]'
-		scalar lcl2= cil[8,1]
-		scalar lcl_pct_remain=(lcl2/avg)*100
-		putexcel D`i'=lcl_pct_remain
-		
-		mat ciu= adjci_u[1, 1...]'
-		scalar ucl2 = ciu[8,1]
-		scalar ucl_pct_remain=(ucl2/avg)*100
-		putexcel E`i'=ucl_pct_remain
-		putexcel F`i'="`c'"	
-		scalar drop _all 
-	}
-}		   	   
+		   	   
 /********************************************************************************	
 	* Forest plots
 	* Re-done in R
