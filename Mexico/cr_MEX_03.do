@@ -72,12 +72,12 @@ egen pent_qual5_20 =rowtotal (Indic26_penta*may20) , m
 egen pent_qual6_20 =rowtotal (Indic26_penta*jun20) , m
 drop Indic26_penta*
 
-* BCG #
+* BCG any dose
 egen bcg_qual5_20 =rowtotal (Indic27_BCG*May20 ndic27_BCG*May20 ) , m
 egen bcg_qual6_20 =rowtotal (Indic27_BCG*Jun20 ) , m
-/*
-rename (Indic27_BCG_U_May20 Indic27_BCG_U_Jun20) ( bcg_qual5_20 bcg_qual6_20)
-*/
+
+* BCG unique dose
+rename (Indic27_BCG_U_May20 Indic27_BCG_U_Jun20) ( bcgu_qual5_20 bcgu_qual6_20)
 drop Indic27_BCG* ndic27_BCG* 
 * MCV #
 egen measles_qual5_20 =rowtotal ( Indic28*May20   ) , m

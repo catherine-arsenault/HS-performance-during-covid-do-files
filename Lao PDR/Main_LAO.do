@@ -7,9 +7,6 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Lao PDR)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Lao PDR"
 
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/Lao PDR"
-
 ********************************************************************************
 * Creation do files
 * Imports Jan 2019 - Oct 2020 raw data, renames variables 

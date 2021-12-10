@@ -1,186 +1,133 @@
 * Effect of easing Covid-19 containment policies on health service delivery in Nepal
 * January 13th 2021
 * Creation do file
-* Created by Catherine Arsenault and Neena Kappoor
+* Created by Neena Kappoor
 
 clear all
 set more off
 
-use "$user/$data/Data for analysis/Nepal_palika_March20-Oct20_LONG_NK_1.dta"
+use "$user/$data/Data for analysis/Nepal_palika_Mar20-Sep20_LONG.dta"
 
 
-* eased_: whether the municpality eased or not in that month 
-* post: pre period is month 6, post period is month 8 
-* eased_cat: three-category, fully eased, fully maintained and switched in months 8 and 9 
+drop if year == 2019
+drop if month == 1 | month == 2
 
-*** TABLE 4 ***
-* Simple comparison of means - two period comparison of just April to June compared to August to October 
-tabstat fp_util anc_util del_util cs_util pnc_util if month == 3 | 4 | 5 | 6, stat(N mean) col(stat)
-tabstat fp_util anc_util del_util cs_util pnc_util if month == 8 | 9 & eased_ == 0, stat(N mean) col(stat)
-tabstat fp_util anc_util del_util cs_util pnc_util if month == 8 | 9 & eased_ == 1 , stat(N mean) col(stat)
+*Primary care variables selected: ANC, Contraceptives, PNC, *Diarrhea, Pneumonia, *Pentavalent vaccine, Measles vaccine, Outpatient, Diabetes, Hypertension, HIV testing, TB detection, 
+
+*** TABLE 1 ***
+* Simple comparison of means 
+tabstat fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0 , stat(N mean) col(stat)
+tabstat fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 , stat(N mean) col(stat)
+tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0, stat(N mean) col(stat)
+tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 , stat(N mean) col(stat)
+
+summtab if post == 0, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(pre-period) replace title(Table1)
+
+summtab if post == 1, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(post-period) replace title(Table1)
+
+*** Difference-in-differences analysis - time varying treatment status 
+
+eststo: xtreg fp_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pneum_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg measles_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+
+eststo: xtreg opd_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diab_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hyper_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hivtest_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg tbdetect_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+
+esttab using "$user/$analysis/DD tables/ddtable.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons)title("DD regression: Primary care services") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB cases detected") rename(eased "Lockdowns lifted" covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" )
+
+eststo clear
+
+*** Difference-in-differences analysis - time varying treatment status - dropping month 3 as a sensitivity analysis 
+
+preserve 
+drop if month == 3
+eststo: xtreg fp_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg anc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pneum_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg measles_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+
+eststo: xtreg opd_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diab_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hyper_util eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hivtest_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
+eststo: xtreg tbdetect_qual eased covid_case i.month, i(palikaid) fe cluster(palikaid)
 
 
-*** MODEL 1 **** 
-*** Simple DD with two time periods - pre period is month 6, post period is month 8 *** 
-eststo: xtreg fp_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util post eased_ covid_case, i(palikaid) fe cluster(palikaid)
-esttab, rename(post Post)
-esttab, ci r2 ar2 compress title("Table 5: Simple DD regression, eased in August, controlling for Covid-19 cases") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(post Post eased_ Eased "covid_case" "Covid case")
+esttab using "$user/$analysis/DD tables/ddtablesa.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons)title("DD regression: Primary care services") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ("Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB cases detected") rename(eased "Lockdowns lifted" covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" )
 
-* eased_ is the DD coeffcients 
+eststo clear
+restore 
+
+
+
+* Parallel trends assessment
+preserve
+drop if month == 3
+
+eststo: xtreg fp_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg anc_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed  
+eststo: xtreg pnc_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg pneum_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg measles_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg opd_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed 
+eststo: xtreg  diab_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg hyper_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg hivtest_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+eststo: xtreg tbdetect_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+
+
+esttab using "$user/$analysis/DD tables/ddtablept.rtf", replace ci r2 ar2 compress nobaselevels drop(_cons 1.eased_fixed)title("DD regression: Parallel trends test") cells (b(star fmt(3)) ci(par fmt(2))) mtitles ( "Contraceptive users" "ANC Visits" "PNC Visits" "Child pneumonia visits" "Measles vaccine" "Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB tests") rename(eased "Lockdowns lifted"covid_case "Covid cases" 5.month "May" 6.month "June" 8.month "August" 5.month#1.eased_fixed "May*Lifted" 6.month#1.eased_fixed "June*Lifted" 8.month#1.eased_fixed "August*Lifted")
+
 
 eststo clear 
 
-*** MODEL 2***
-*** Multiple pre-periods and August as the post-period ***
-preserve 
-* Only keep 3 months before and 1 month after, omitting July
-keep if inlist(month, 4, 5, 6, 8)
 
-* Create a variable = 1 for those areas that eased by August
-* It's = 1 also for the pre-period: it's a defining and fixed characteristic of the places that at some time eased restrictions.
-	gen tmp = 1 if eased_==1
-	recode tmp (.=0)
-	bysort palikaid:egen evereased = max(tmp)
+restore 
+
+*** Excluded Diarrhea visits and Pentavalent vaccines because of parallel trends test
+xtreg diarr_util month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
+xtreg pent_qual month##eased_fixed covid_case, i(palikaid) fe cluster(palikaid)
+test 5.month#1.eased_fixed 6.month#1.eased_fixed
 
 
-eststo: xtreg fp_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
+/*
+* Pre/post instead of month fixed effects - RMNCAH
+eststo: xtreg anc_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg fp_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pnc_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diarr_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pneum_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg pent_qual eased covid_case post, i(palikaid) fe cluster(palikaid)
 
-test 5.month#1.evereased  6.month#1.evereased
-
-eststo: xtreg anc_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
-
-test 5.month#1.evereased  6.month#1.evereased
-
-eststo: xtreg pnc_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
-
-test 5.month#1.evereased  6.month#1.evereased
-
-eststo: xtreg del_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
-
-test 5.month#1.evereased  6.month#1.evereased
-
-eststo: xtreg cs_util covid_case month##evereased, i(palikaid) fe cluster(palikaid)
-
-test 5.month#1.evereased  6.month#1.evereased
-
-esttab, ci r2 ar2 compress nobaselevels drop(1.evereased) title("Table 6: DD regression analysis with 4 time periods, fixed treatment status") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(covid_case "Covid cases" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 5.month#1.evereased "Eased*Mo 5" 6.month#1.evereased "Eased*Mo 6" 8.month#1.evereased "Eased*Mo 8")
-
-* 8.month#evereased is DD coefficient 
-
-eststo clear 
-
-restore
-
-*** MODEL 3 ***
-* Difference-in-differences regression with multiple pre and post periods, time-varying treatment 
-
-preserve  
-
-keep if inlist(month, 3, 4, 5, 6, 8, 9)
-
-eststo: xtreg fp_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress nobaselevels title("Table 8: DD regression with multiple pre and post periods, time-varying treatment status, Months 3 through 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9")
+esttab, ci r2 ar2 compress nobaselevels title("DD regression: RMNCH Services") mtitles ("ANC Visits" "Contraceptives" "PNC Visits" "Child diarrhea visits" "Child pneumonia visits" "Pentavalent vaccine") rename(eased Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9")
 
 eststo clear
-restore
 
-preserve
-keep if inlist(month, 3, 4, 5, 6, 8)
+* Pre/Post instead of month fixed effects - Other services 
+eststo: xtreg opd_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg diab_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hyper_util eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg hivtest_qual eased covid_case post, i(palikaid) fe cluster(palikaid)
+eststo: xtreg tbdetect_qual eased covid_case post, i(palikaid) fe cluster(palikaid)
 
-eststo: xtreg fp_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress nobaselevels title("Table 9: DD regression with multiple pre and post periods, time-varying treatment status, Months 3 through 8") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(eased_ Eased covid_case "Covid cases" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8") 
+esttab, ci r2 ar2 compress nobaselevels title("DD regression: Other primary care services") mtitles ("Outpatient visits" "Diabetes visits" "Hypertension visits" "HIV tests" "TB tests") rename(eased Eased covid_case "Covid cases")
 
 eststo clear
-restore
-
-* eased_ is the DD coefficient 
-
-
-*** MODEL 4 *** NOT SURE 
-*** Multiple pre-periods and August and September as post period, looking at if the effect differs based on easing in months 8 and 9, or easing in just month 9 ***
-
-preserve 
-
-keep if inlist(month, 3, 4, 5, 6, 8, 9)
-
-gen early = eased_cat == 2
-
-gen maintained_all = eased_cat == 1
-
-gen late = eased_cat == 3
-
-
-eststo: xtreg fp_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util eased_##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress nobaselevels drop(1.eased_#4.month 1.eased_#5.month 1.eased_#6.month 1.eased_#9.month 1.late#4.month 1.late#5.month 1.late#6.month 1.late#9.month) title("Table 10: Difference-in differences regression looking at easing in month 8 versus month 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(1.eased_ "Eased" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" 1.eased_#8.month "EasedxMo 8" 1.late "Late" 1.late#8.month "LatexMo 8" covid_case "Covid cases")
-
-* 1.switch#8.month and 1.eased_#8.month are DD coefficents 
-
-eststo clear
-restore
-
-*** OR ***
-
-preserve 
-
-keep if inlist(month, 3, 4, 5, 6, 8, 9)
-
-gen early = eased_cat == 2
-
-gen maintained_all = eased_cat == 1
-
-gen late = eased_cat == 3
-
-
-eststo: xtreg fp_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg anc_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg pnc_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg del_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-eststo: xtreg cs_util early##month late##month covid_case i.month, i(palikaid) fe cluster(palikaid)
-
-esttab, ci r2 ar2 compress nobaselevels drop(1.early#4.month 1.early#5.month 1.early#6.month 1.early#9.month 1.late#4.month 1.late#5.month 1.late#6.month 1.late#9.month) title("Table 10: Difference-in differences regression looking at easing in month 8 versus month 9") mtitles ("Contraceptives" "ANC Visits" "PNC Visits" "Deliveries" "C-sections") rename(1.early "Early" 4.month "Month 4" 5.month "Month 5" 6.month "Month 6" 8.month "Month 8" 9.month "Month 9" 1.early#8.month "EarlyxMo 8" 1.late "Late" 1.late#8.month "LatexMo 8" covid_case "Covid cases")
-
-eststo clear
-restore
-
-
-
-/*  
-
-*TIME VARYING POLICY CHANGE
-* Cluster SEs at the palika level because of serial correlation: you have multiple months of observation for each palika
-
-*DID estimates with variable policy changes without covid case
-xtreg fp_sa_util eased_ i.month, i(palikaid) fe cluster(palikaid)
-xtreg anc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
-xtreg pnc_util eased_ i.month, i(palikaid) fe cluster(palikaid)
-xtreg del_util eased_ i.month, i(palikaid) fe cluster(palikaid)
-xtreg cs_util eased_ i.month, i(palikaid) fe cluster(palikaid)
-
-*Sensitivity analyses (will add here)
-preserve
-keep if inlist(orgunitlevel2, "5 Province 5", "6 Karnali Province", "7 Sudurpashchim Province")
-xtreg fp_sa_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-xtreg anc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-xtreg pnc_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-xtreg del_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-xtreg cs_util eased_ covid_case i.month, i(palikaid) fe cluster(palikaid)
-restore

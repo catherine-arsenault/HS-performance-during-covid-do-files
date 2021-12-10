@@ -279,7 +279,7 @@ set more off
 	drop _merge
 	drop live_births* //no longer used 
 	drop ipd_util* ipd_mort* // wrong data elements used
-	drop sam_util* hivdiag_qual* // remove from analyses, poorly reported
+*	drop sam_util* hivdiag_qual* // remove from analyses, poorly reported <- MOVED THIS TO END 
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace
 
 ********************************************************************************
@@ -384,6 +384,14 @@ rename (outpatientmorbiditynutritionalme-v53) ///
 
 merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
 	drop _merge
+	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
+
+	
+	*Save dataset for data quality analysis 
+    save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_dq.dta", replace	
+	
+	
+	drop sam_util* hivdiag_qual* // remove from analyses, poorly reported
 	save "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta", replace	
 
 

@@ -1,12 +1,7 @@
-/* 
-  Health system performance during Covid-19. Created by Catherine Arsenault
-  Paper title: Effect of Covid-19 on health service utilization in 10 countries
-  This do file creates final datasets for the service utilisation paper, 
-  standardizes variable names and creates an  appendix to assess completeness 
-  (in countries with facility-level data).
-  */
+* Health system resilience during Covid-19 
+* Effect of Covid on health service utilization in 10 countries
 
-* global droplist holds the list of variables that are not in the analysis
+* global droplist holds the list of variables not included in the analysis
 global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_num ///
 				ipd_mort_num sb_mort_denom livebirths_denom sti_util kmc_qual ///
                 totalipd_mort_num  tbnum_qual tbdenom_qual ///
@@ -19,7 +14,6 @@ global droplist sb_mort_num newborn_mort_num neo_mort_num mat_mort_num er_mort_n
 
 ********************************************************************************
 * 1 CHILE (facility)
-
 u "$user/$CHLdata/Data for analysis/Chile_su_24months.dta", clear 
 local dl_modif
     foreach x of global droplist {
@@ -29,17 +23,18 @@ local dl_modif
        }
  }
  cap drop `dl_modif'
- 
 save "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta", replace 
-* Completeness appendix
-collapse (count) mental_util-er_util, by (year month)		  
-foreach x of global CHLall {
-	cap egen max`x'=max(`x')
-	cap gen completeness_`x'= `x'/max`x'
-	cap drop max`x'
-}		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(CHL, replace) firstrow(variable)   
-	
+preserve
+	* Count of observations per month
+	collapse (count) pneum_util-er_util, by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(CHL, replace) firstrow(variable)  
+restore
+		* Counts units ever reporting
+	drop if facilityname=="" // drops region and community data
+	collapse (sum) ipd_util-er_util, by(region facilityname )
+	egen nb_reporting=rowtotal(ipd_util-er_util), m
+	drop if nb_reporting==. 
+	count 
 ********************************************************************************
 * 2 ETHIOPIA (facility/woreda)
 
@@ -55,18 +50,20 @@ local dl_modif
  cap drop `dl_modif'
  drop if region=="Tigray" // Tigray stopped reporting in October 2020 due to violence	
  rename sam_util malnu_util
+ drop orgunitlevel1 tbdetect_qual // only available quarterly
 save "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", replace 
 
-* Completeness appendix
-collapse (count) fp_util-tbdetect_qual , by (year month)
-			  
-foreach x of global ETHall {
-	cap egen max`x'=max(`x')
-	cap gen completeness_`x'= `x'/max`x'
-	cap drop max`x'
-}		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(ETH, replace) firstrow(variable)  
+preserve
+	* Counts units per month
+	collapse (count) fp_util-art_util , by (year month)
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(ETH, replace) firstrow(variable)  
+restore
 
+	* Counts units ever reporting
+	collapse (sum) fp_util-art_util, by(region regtype zone organisationunitname orgunitlevel4 unique_id )
+	egen nb_reporting=rowtotal(fp_util-art_util), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 3 GHANA (region)
 u  "$user/$GHAdata/Data for analysis/Ghana_su_24months.dta", clear 
@@ -81,7 +78,9 @@ local dl_modif
  cap drop `dl_modif'
  drop  malnu_util //  too few visits for malnutrition
 save "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", replace 	 
-	 
+* Count of observations
+collapse (count) fp_util-totaldel, by (year month)
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(GHA, replace) firstrow(variable) 
 ********************************************************************************
 * 4 HAITI (facility)
 use "$user/$HTIdata/Data for analysis/Haiti_su_24months.dta", clear
@@ -95,17 +94,19 @@ local dl_modif
  }
  cap drop `dl_modif'
 	drop cerv_qual // too few visits
-save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace 
-* Completeness appendix
-collapse (count) fp_util-vacc_qual, by (year month)		  
-foreach x of global HTIall {
-	cap egen max`x'=max(`x')
-	cap gen completeness_`x'= `x'/max`x'
-	cap drop max`x'
-}		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(HTI, replace) firstrow(variable)   
-	
+save "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta", replace
+preserve  
+	* Count of observations
+	collapse (count) fp_util-vacc_qual, by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(HTI, replace) firstrow(variable)  
+restore
+egen unique_id=concat(orgunitlevel1 orgunitlevel2 orgunitlevel3 Number ID)
 
+* Counts units ever reporting
+	collapse (sum) fp_util-vacc_qual, by(orgunitlevel1 orgunitlevel2 orgunitlevel3 Number ID )
+	egen nb_reporting=rowtotal(fp_util-vacc_qual), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 5 KZN, SA (facility)
 use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear 
@@ -121,15 +122,16 @@ local dl_modif
  rename (kmcn_qual sam_util anc1_util)  (kmc_qual malnu_util anc_util)
  drop malnu_util // too few visits
 save "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta", replace 
-* Completeness appendix
-collapse (count) anc_util-rota_qual, by (year month)		  
-foreach x of global KZNall {
-	cap egen max`x'=max(`x')
-	cap gen completeness_`x'= `x'/max`x'
-	cap drop max`x'
-}		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(KZN, replace) firstrow(variable)   
-
+preserve 
+	* Count of observations
+	collapse (count) anc_util-trauma_util, by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(KZN, replace) firstrow(variable) 
+restore
+* Counts units ever reporting
+	collapse (sum) anc_util-trauma_util, by(Province dist subdist Facility)
+	egen nb_reporting=rowtotal(anc_util-trauma_util), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 6 LAO (facility)
 use "$user/$LAOdata/Data for analysis/Lao_su_24months.dta", clear
@@ -143,15 +145,16 @@ local dl_modif
  cap drop `dl_modif'
  rename fp_sa_util fp_util 
 save "$user/$LAOdata/Data for analysis/Lao_su_24months_for_analyses.dta", replace
-* Completeness appendix
-collapse (count) fp_util-road_util , by (year month)			  
-foreach x of global LAOall {
-	cap egen max`x'=max(`x')
-	cap gen completeness_`x'= `x'/max`x'
-	cap drop max`x'
-}		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(LAO, replace) firstrow(variable)   
-
+preserve
+	* Count observations
+	collapse (count) fp_util-road_util , by (year month)			  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(LAO, replace) firstrow(variable)  
+restore
+* Counts units ever reporting
+	collapse (sum) fp_util-road_util, by(orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname)
+	egen nb_reporting=rowtotal(fp_util-road_util), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 7 MEXICO (region)
 use  "$user/$MEXdata/Data for analysis/Mexico_su_24months.dta", clear 
@@ -164,7 +167,11 @@ local dl_modif
  }
  cap drop `dl_modif'
  rename cerv_util cerv_qual
+ order  Delegation year month population2019 population2020
 save "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", replace
+* Count observations
+collapse (count) measles_qual-bcg_qual , by (year month)			  
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(MEX, replace) firstrow(variable)  
 ********************************************************************************
 * 8 NEPAL (palika (municipality))
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months.dta", clear
@@ -178,15 +185,16 @@ local dl_modif
 cap drop `dl_modif'
 rename fp_sa_util fp_util 
 save "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta", replace
-* Completeness appendix
-collapse (count) fp_util-pneum_qual , by (year month)		  
-foreach x of global NEPall {
-	cap egen max`x'=max(`x')
-	cap gen completeness_`x'= `x'/max`x'
-	cap drop max`x'
-}		
-export excel using "$analysis/Appendices/Data completeness.xlsx", sheet(NEP, replace) firstrow(variable)   
-
+preserve 
+	* Count of observations
+	collapse (count) fp_util-pneum_qual , by (year month)		  
+	export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(NEP, replace) firstrow(variable)  
+restore
+* Counts units ever reporting
+	collapse (sum) fp_util-pneum_qual, by(orgunitlevel1 orgunitlevel2 orgunitlevel3 orgunitlevel4 organisationunitname)
+	egen nb_reporting=rowtotal(fp_util-pneum_qual), m
+	drop if nb_reporting==.
+	count 
 ********************************************************************************
 * 9 SOUTH KOREA (region)
 u  "$user/$KORdata/Data for analysis/Korea_su_24months.dta", clear
@@ -198,8 +206,11 @@ local dl_modif
        }
  }
 cap drop `dl_modif'
-
+drop totaldel
 save "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", replace
+* Count of observations
+collapse (count) anc_util-del_util, by (year month)		  
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(KOR, replace) firstrow(variable)  
 ********************************************************************************
 * 10 THAILAND (region)
 u "$user/$THAdata/Data for analysis/Thailand_su_24months.dta", clear 
@@ -212,9 +223,11 @@ local dl_modif
  }
 rename totaldel del_util
 cap drop `dl_modif'
-
+drop anc_util
 save "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", replace 
-
+* Count of observations
+collapse (count) road_util-diarr_util, by (year month)		  
+export excel using "$analysis/Results/Tables/CountsDEC7.xlsx", sheet(THA, replace) firstrow(variable)  
 ********************************************************************************
 * Collapse facility level datasets & create country codes
 
@@ -223,17 +236,20 @@ use "$user/$CHLdata/Data for analysis/Chile_su_24months_for_analyses.dta",  clea
 	collapse (sum) $CHLall, by (region year month)
 	encode region, gen(reg)
 	gen country="CHL"
+	gen capital=1 if reg==13 // Santiago
 save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
 *2
 use "$user/$ETHdata/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
 	collapse (sum) $ETHall, by (region year month)
 	encode region, gen(reg)
 	gen country="ETH"
+	gen capital=1 if reg==1 // Addis Ababa
 save "$user/$ETHdata/Data for analysis/ETHtmp.dta", replace
 * 3
 use "$user/$GHAdata/Data for analysis/Ghana_su_24months_for_analyses.dta", clear
 	encode region, gen(reg)	
 	gen country="GHA"
+	gen capital=1 if reg==7 // Greater Accra
 save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 * 4
 use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clear
@@ -241,6 +257,7 @@ use "$user/$HTIdata/Data for analysis/Haiti_su_24months_for_analyses.dta",  clea
 	collapse (sum) $HTIall, by (departement year month)
 	encode departement, gen(reg)
 	gen country="HTI"
+	gen capital=1 if reg==8 // department Ouest Port Au Prince
 save "$user/$HTIdata/Data for analysis/HTItmp.dta", replace
 * 5
 use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
@@ -248,6 +265,7 @@ use "$user/$KZNdata/Data for analysis/KZN_su_24months_for_analyses.dta",  clear
 	drop rmonth
 	rename dist reg
 	gen country="KZN"
+	gen capital=1 if reg==9 // eThekwini Metropolitan Municipality (contains Durban, largest city in KZN)
 save "$user/$KZNdata/Data for analysis/KZNtmp.dta", replace
 * 6
 use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
@@ -255,11 +273,13 @@ use "$user/$LAOdata/Data for analysis/LAO_su_24months_for_analyses.dta",  clear
 	collapse (sum) $LAOall, by (Province year month)
 	encode Province, gen(reg)
 	gen country="LAO"
+	gen capital=1 if reg==1
 save "$user/$LAOdata/Data for analysis/LAOtmp.dta", replace
 * 7
 u "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta", clear
 	encode Deleg, gen(reg)	
 	gen country="MEX"
+	gen capital=1 if reg==9 | reg==10 // DF Norte + DF Sur
 save "$user/$MEXdata/Data for analysis/MEXtmp.dta", replace
 * 8
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clear
@@ -267,17 +287,20 @@ use "$user/$NEPdata/Data for analysis/Nepal_su_24months_for_analyses.dta",  clea
 	collapse (sum) $NEPall, by (Dist year month)
 	encode Dist, gen(reg)
 	gen country="NEP"
+	gen capital=1 if reg==28 // Kathmandu
 save "$user/$NEPdata/Data for analysis/NEPtmp.dta", replace
 * 9 
 u "$user/$KORdata/Data for analysis/Korea_su_24months_for_analyses.dta", clear 
 	encode region, gen(reg)
 	cap drop country
 	gen country="KOR"
+	gen capital=1 if reg==16 // Seoul
 save "$user/$KORdata/Data for analysis/KORtmp.dta", replace
 * 10 
 u "$user/$THAdata/Data for analysis/Thailand_su_24months_for_analyses.dta", clear
 	encode Province, gen(reg)	
 	gen country="THA"
+	gen capital=1 if reg==4 // Bangkok
 save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
 
 ********************************************************************************
@@ -302,17 +325,17 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
 		* "Temporary" Covid period 
 		gen postCovid=. 
-		replace postCovid = rmonth>=16 & rmonth<=21 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
-		replace postCovid = rmonth>=15 & rmonth<=20 if inlist(country, "ETH", "NEP") 
+		replace postCovid = rmonth>=16 & rmonth<=21 if inlist(country, "CHL", "ETH", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
+		replace postCovid = rmonth>=15 & rmonth<=20 if inlist(country,  "NEP") 
 		* Resumption period 
 		gen resumption=. 
-		replace resumption = rmonth>=22 & rmonth<=24 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
-		replace resumption = rmonth>=21 & rmonth<=24 if inlist(country, "ETH", "NEP") 
+		replace resumption = rmonth>=22 & rmonth<=24 if inlist(country, "CHL", "ETH", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA")
+		replace resumption = rmonth>=21 & rmonth<=24 if inlist(country,  "NEP") 
 		
-		* Slope change excludes Dec 2020
+		* Slope change excludes "resumption period"
 		gen timeafter= . 
-		replace timeafter = rmonth-14 if inlist(country, "ETH", "NEP")
-		replace timeafter= rmonth-15 if inlist(country, "CHL", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
+		replace timeafter = rmonth-14 if inlist(country,  "NEP")
+		replace timeafter= rmonth-15 if inlist(country, "CHL", "ETH", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace timeafter=0 if timeafter<0
 		replace timeafter=0 if resumption==1
 

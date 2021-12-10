@@ -24,7 +24,9 @@ global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 ********************************************************************************
 * Variables available in each country
 
-global CHLall fp_util anc_util pnc_util er_util surg_util road_util mental_util 
+global CHLall del_util cs_util ipd_util road_util surg_util pnc_util fp_util ///
+	   er_util mental_util anc_util hyper_util diab_util measles_qual pent_qual ///
+	   bcg_qual pneum_qual breast_util pneum_util
 
 global ETHall fp_util anc_util del_util cs_util pnc_util  diarr_util pneum_util ///
 	   malnu_util vacc_qual bcg_qual pent_qual measles_qual opv3_qual pneum_qual ///
@@ -52,7 +54,7 @@ global MEXall fp_util anc_util del_util cs_util diarr_util pneum_util malnu_util
 	   er_util ipd_util cerv_qual breast_util	
 		   
 global NEPall fp_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
-	   bcg_qual pent_qual measles_qual opv3_qual pneum_qual opd_util er_util ///
+	   bcg_qual pent_qual measles_qual  pneum_qual opd_util er_util ///
 	   ipd_util  diab_util hyper_util tbdetect_qual hivtest_qual 
    
 global KORall anc_util del_util cs_util diarr_util pneum_util diab_util hyper_util ///
@@ -75,6 +77,14 @@ do "$dofiles/an_su_02.do"
 ********************************************************************************
 * Full regression results for appendix
 do "$dofiles/an_su_03.do"
+
+********************************************************************************
+* Sub-analysis: %change in largest metropolitan region
+do "$dofiles/an_su_04.do"
+
+******************************************************************************** 
+* Sub-analysis: trends in 2020
+do "$dofiles/cr_su_02.do"
 
 ********************************************************************************
 * Country-specific graphs

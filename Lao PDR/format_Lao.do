@@ -68,7 +68,6 @@ foreach var of global all {
 	* Average volume per facility 
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
-
 putexcel set "$user/$data/Analyses/Codebook for Lao PDR Internal.xlsx", sheet(After cleaning)  modify
 putexcel F2 = "Variable"
 putexcel G2 = "Sum of services or deaths"	
@@ -82,6 +81,16 @@ foreach var of global all {
 	qui sum `var'_total_mean
 	putexcel H`i' = `r(mean)'
 }
+putexcel set "$user/$data/Codebook for Lao PDR.xlsx", sheet(Final data)  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Total health care visits in the raw data"
+local i= 2
+	foreach var of global volumes {	
+		local i = `i'+1
+		putexcel A`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel B`i' = `r(mean)'
+	}
 drop *_report *_sum *_mean
 
 

@@ -6,10 +6,6 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "HMIS Data for Health System Performance Covid (South Africa)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/KZN, South Africa"
 
-
-global user "/Users/minkyungkim/Dropbox (Harvard University)"
-global dofiles "/Users/minkyungkim/Documents/GitHub/HS-performance-during-covid-do-files/KZN, South Africa"
-
 global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
 
 * Imports raw data, renames and constructs variables
@@ -17,7 +13,6 @@ do "$dofiles/cr_KZN_01.do"
 
 * Cleans the data (see cleaning protocol in shared folder)
 do "$dofiles/clean_KZN.do"
-
 
 * Formats data for dashboard
 do "$dofiles/format_KZN.do"
