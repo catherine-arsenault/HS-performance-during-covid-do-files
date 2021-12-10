@@ -82,6 +82,10 @@ do "$dofiles/an_su_03.do"
 * Sub-analysis: %change in largest metropolitan region
 do "$dofiles/an_su_04.do"
 
+******************************************************************************** 
+* Sub-analysis: trends in 2020
+do "$dofiles/cr_su_02.do"
+
 ********************************************************************************
 * Country-specific graphs
 run "$dofiles/graphs_Chile.do"

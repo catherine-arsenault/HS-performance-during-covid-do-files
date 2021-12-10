@@ -5,13 +5,6 @@
 * 8 NEPAL (palika (municipality))
 use "$user/$NEPdata/Data for analysis/Nepal_su_30months.dta", clear
 rename fp_sa_util fp_util 
-save "$user/$NEPdata/Data for analysis/Nepal_su_30months_for_analyses.dta", replace
-* Count of observations
-collapse (count) fp_util-pneum_qual , by (year month)		  
-export excel using "$analysis/Results/Tables/CountsDEC3.xlsx", sheet(NEP, replace) firstrow(variable)  
-
-
-use "$user/$NEPdata/Data for analysis/Nepal_su_30months_for_analyses.dta",  clear
 	rename (orgunitlevel2 orgunitlevel3) (Province District)
 	collapse (sum) $NEPall, by (Dist year month)
 	encode Dist, gen(reg)
@@ -29,6 +22,11 @@ foreach c in NEP  {
 		replace rmonth = month+12 if year ==2020
 		replace rmonth = month+24 if year ==2021
 		sort reg rmonth
+		
+		lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
+			13"J20" 14"F20" 15"M20" 16"A20" 17"M20" 18"J20" 19"J20" 20"A20" ///
+			21"S20" 22"O20" 23"N20" 24"D20" 25"J21" 26"F21" 27"M21" 28"A21" 29"M21" 30"J21"
+		lab val rmonth rmonth 
 		
 		gen season = .
 		recode season (.=1) if ( month>=3 & month<=5  )
@@ -54,6 +52,7 @@ foreach c in NEP  {
 		replace timeafter= rmonth-15 if inlist(country, "CHL", "ETH", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace timeafter=0 if timeafter<0
 		replace timeafter=0 if resumption==1
+		
 
 	save "$user/$`c'data/Data for analysis/`c'tmp2.dta", replace	
 

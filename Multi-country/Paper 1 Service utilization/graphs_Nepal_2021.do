@@ -18,8 +18,8 @@
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title(" Nepal outpatient visits (2019-2021)", size(small)) ///
-			xlabel(1(1)30) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
+			graphregion(color(white)) title("Nepal outpatient visits (January 2019 - June 2021)", size(small)) ///
+			xlabel(1(1)30) xlabel(, labels valuelabels labsize(tiny)) ylabel(0(5000)30000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/2021/NEP_opd_util.pdf", replace
 			
@@ -41,8 +41,8 @@
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  /// 
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title(" Nepal inpatient admissions (2019-2020)", size(small)) ///
-			xlabel(1(1)30) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
+			graphregion(color(white)) title(" Nepal inpatient admissions (January 2019 - June 2021)", size(small)) ///
+			xlabel(1(1)30) xlabel(, labels valuelabels labsize(tiny)) ylabel(0(200)1000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/2021/NEP_ipd_util.pdf", replace
 * Deliveries			
@@ -63,51 +63,52 @@
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("Nepal facility based deliveries (2019-2021)", size(small)) ///
-			xlabel(1(1)30) xlabel(, labsize(vsmall)) ylabel(0(200)1000, labsize(vsmall))
+			graphregion(color(white)) title("Nepal facility based deliveries (January 2019 - June 2021)", size(small)) ///
+			xlabel(1(1)30) xlabel(, labels valuelabels labsize(tiny))  ylabel(0(200)1000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/2021/NEP_del_util.pdf", replace			
-* MMR vax			
+* Penta		
 			u "$user/$NEPdata/Data for analysis/NEPtmp2.dta", clear
-			qui xtreg measles_qual rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
-				predict linear_measles_qual
-			qui xtreg measles_qual rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
-				predict season_measles_qual 
+			qui xtreg pent_qual rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_pent_qual
+			qui xtreg pent_qual rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_pent_qual 
 			
-			collapse measles_qual linear_measles_qual season_measles_qual, by(rmonth)
+			collapse pent_qual linear_pent_qual season_pent_qual, by(rmonth)
 
-			twoway (scatter measles_qual rmonth, msize(vsmall)  sort) ///
-			(line linear_measles_qual rmonth, lpattern(dash) lcolor(green)) ///
-			(line season_measles_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
-			(lfit measles_qual rmonth if rmonth<15, lcolor(green)) ///
-			(lfit measles_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
-				(lfit measles_qual rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
+			twoway (scatter pent_qual rmonth, msize(vsmall)  sort) ///
+			(line linear_pent_qual rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_pent_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit pent_qual rmonth if rmonth<15, lcolor(green)) ///
+			(lfit pent_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+				(lfit pent_qual rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title(" Nepal MMR vaccine (2019-2021)", size(small)) ///
-			xlabel(1(1)30) xlabel(, labsize(vsmall)) ylabel(0(200)1600, labsize(vsmall))
+			graphregion(color(white)) title("Nepal pentavalent vaccinations (January 2019 - June 2021)", size(small)) ///
+			xlabel(1(1)30) xlabel(, labels valuelabels labsize(tiny))  ylabel(0(200)1000, labsize(vsmall))
 			
-			graph export "$analysis/Results/Graphs/2021/NEP_measles_qual.pdf", replace
-* hiv			
-			u "$user/$NEPdata/Data for analysis/NEPtmp2.dta", clear
-			qui xtreg hivtest_qual rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
-				predict linear_hivtest_qual
-			qui xtreg hivtest_qual rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
-				predict season_hivtest_qual 
-			
-			collapse hivtest_qual linear_hivtest_qual season_hivtest_qual, by(rmonth)
+			graph export "$analysis/Results/Graphs/2021/NEP_pent_qual.pdf", replace			
 
-			twoway (scatter hivtest_qual rmonth, msize(vsmall)  sort) ///
-			(line linear_hivtest_qual rmonth, lpattern(dash) lcolor(green)) ///
-			(line season_hivtest_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
-			(lfit hivtest_qual rmonth if rmonth<15, lcolor(green)) ///
-			(lfit hivtest_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
-				(lfit hivtest_qual rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
-			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
+* Diabetes visits		
+			u "$user/$NEPdata/Data for analysis/NEPtmp2.dta", clear
+			qui xtreg diab_util rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_diab_util
+			qui xtreg diab_util rmonth i.season if rmonth<15 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_diab_util 
+			
+			collapse diab_util linear_diab_util season_diab_util, by(rmonth)
+
+			twoway (scatter diab_util rmonth, msize(vsmall)  sort) ///
+			(line linear_diab_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_diab_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit diab_util rmonth if rmonth<15, lcolor(green)) ///
+			(lfit diab_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
+				(lfit diab_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title(" Nepal HIV tests (2019-2021)", size(small)) ///
-			xlabel(1(1)30) xlabel(, labsize(vsmall)) ylabel(0(250)2000, labsize(vsmall))
+			graphregion(color(white)) title("Nepal diabetes visits (January 2019 - June 2021)", size(small)) ///
+			xlabel(1(1)30) xlabel(, labels valuelabels labsize(tiny))  ylabel(0(100)800, labsize(vsmall))
 			
-			graph export "$analysis/Results/Graphs/2021/NEP_hivtest_qual.pdf", replace
+			graph export "$analysis/Results/Graphs/2021/NEP_diab_util.pdf", replace	
