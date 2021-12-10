@@ -6,6 +6,10 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
 
+global user "/Users/nek096/Dropbox (Harvard University)"
+global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
+
+
 **********************************************************************
 * Creation do files
 
