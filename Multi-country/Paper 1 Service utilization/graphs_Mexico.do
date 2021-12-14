@@ -92,7 +92,7 @@
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			xline(21, lpattern(dash) lcolor(gs10)) xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title("Mexico (IMSS) pentavalent vaccinations (2019-2020)", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(500)3000, labsize(vsmall))
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(500)3000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/MEX_pent_qual.pdf", replace
 			
@@ -115,7 +115,7 @@
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title("Mexico (IMSS) diabetes visits (2019-2020)", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(5000)50000, labsize(vsmall))
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)50000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/MEX_diab_util.pdf", replace
 
@@ -163,4 +163,30 @@
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(100)500, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/MEX_measles_qual.pdf", replace
+* Inpatient
+			u  "$user/$MEXdata/Data for analysis/MEXtmp.dta", clear 			
 			
+			lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
+			13"J20" 14"F20" 15"M20" 16"A20" 17"M20" 18"J20" 19"J20" 20"A20" ///
+			21"S20" 22"O20" 23"N20" 24"D20" 25"J21" 26"F21" 27"M21" 28"A21" 29"M21" 30"J21"
+			lab val rmonth rmonth 
+			
+			qui xtreg ipd_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_ipd_util
+			qui xtreg ipd_util rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_ipd_util 
+			
+			collapse ipd_util linear_ipd_util season_ipd_util, by(rmonth)
+
+			twoway (scatter ipd_util rmonth, msize(vsmall)  sort) ///
+			(line linear_ipd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_ipd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit ipd_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit ipd_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit ipd_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			xline(21, lpattern(dash) lcolor(gs10)) xtitle("", size(small)) legend(off) ///
+			graphregion(color(white)) title("Mexico inpatient admissions (January 2019- December 2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labels valuelabels labsize(tiny)) ylabel(0(2000)6000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/MEX_ipd_util.pdf", replace

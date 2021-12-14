@@ -1,11 +1,6 @@
 * HS performance during Covid
 * Dec 3, 2021
 
-/****************************************************************
-ASSESSES DATASET BEFORE AFTER (NUMBER OF UNITS REPORTING, AND
-SUM AND AVERAGE SERVICES PER UNIT)
-****************************************************************/
-use "$user/$data/Data for analysis/Nepal_palika_2021_WIDE_CCA.dta", clear
 
 /******************************************************************************
 		CREATES FINAL DATASET FOR ANALYSES

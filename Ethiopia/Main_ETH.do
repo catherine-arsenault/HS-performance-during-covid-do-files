@@ -32,16 +32,13 @@ global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-d
 * Imports raw data and renames variables for January 2019 - Dec 2020 
 * Overwrites previous do files 
 do "$dofiles/cr_ETH_06.do"
-
 *TB quarterly data
 do "$dofiles/cr_ETH_TB_01.do"
 
 ********************************************************************************
 * Cleaning do files
-
 * Cleans data (see cleaning protocol in shared folder)
 do "$dofiles/clean_ETH.do"
-
 * Cleans TB data
 do "$dofiles/clean_ETH_TB.do"
 
@@ -52,6 +49,11 @@ do "$dofiles/clean_ETH_TB.do"
 do "$dofiles/format_ETH.do"
 
 ********************************************************************************
+* Update: Adding first 6 months of 2021 
+do "$dofiles/cr_ETH_07.do"
+do "$dofiles/clean_ETH_2021.do"
+do "$dofiles/format_ETH_2021.do"
+/********************************************************************************
 * Analyses do files
 
 * Analyses (2020 vs 2019 comparisons) (comparing Q1 and Q2 in 2020)

@@ -246,8 +246,7 @@ set more off
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace	
-	
-*********************************************************************************************
+
 *******************************************************************************************	
 * Inpatient admissions 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Jan20-Dec20/Lao_2020_Jan to Dec_facility_12 Inpatient visits.csv", clear
@@ -260,7 +259,6 @@ set more off
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 	
-*********************************************************************************************
 *********************************************************************************************
 * Road traffic injuries 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Jan20-Dec20/Lao_2020_Jan to Dec_facility_14 Road traffic injury.csv", clear
@@ -282,9 +280,7 @@ set more off
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
-	
 
-*********************************************************************************************
 ********************************************************************************************
 * MORTALITY 	
 * Neonatal deaths 2020 
@@ -297,8 +293,6 @@ set more off
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 	
-
-*********************************************************************************************
 *********************************************************************************************
 * Stillbirths 2020
 	import delimited "$user/$data/Raw data/2020/facility/Jan20-Dec20/Lao_2020_Jan to Dec_facility_32 Stillbirth rate.csv", clear	
@@ -309,8 +303,7 @@ set more off
 	merge 1:1  org* using "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta"
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
-	
-*********************************************************************************************
+
 *********************************************************************************************
 * Maternal deaths 2020 
 	import delimited "$user/$data/Raw data/2020/facility/Jan20-Dec20/Lao_2020_Jan to Dec_facility_33 Maternal mortality.csv", clear
@@ -322,7 +315,6 @@ set more off
 	drop _merge
 	save "$user/$data/Data for analysis/Lao_Jan20-Dec20_WIDE.dta", replace
 	
-*********************************************************************************************
 *********************************************************************************************
 *Total delivery 2020
 	egen totaldel1_20 = rowtotal(del_util1_20 cs_util1_20), m

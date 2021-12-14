@@ -7,9 +7,6 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (South Korea)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/South Korea"
 
-global user "/Users/nek096/Dropbox (Harvard University)"
-global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/South Korea"
-
 ********************************************************************************
 * Creation do files
 * Imports raw data and renames variables for January 2019 - August 2020
@@ -30,3 +27,7 @@ do "$dofiles/format_KOR.do"
 * Analyses do files
 * Analyses (2020 vs 2019 comparisons)
 * do "$dofiles/an_CHI_01.do"
+
+********************************************************************************
+* 2021 data
+do "$dofiles/cr_KOR_04.do"
