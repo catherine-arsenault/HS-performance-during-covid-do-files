@@ -6,6 +6,10 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "/HMIS Data for Health System Performance Covid (Nepal)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
 
+global user "/Users/nek096/Dropbox (Harvard University)"
+global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/Nepal"
+
+
 **********************************************************************
 * Creation do files
 
@@ -36,9 +40,9 @@ do "$dofiles/Palika/format_NEP.do"
 do "$dofiles/Palika/cr_NEP_05.do"
 do "$dofiles/Palika/clean_NEP_2021.do"
 do "$dofiles/Palika/format_NEP_2021.do"
-**********************************************************************
-* Analyses for policy briefs
 
+/**********************************************************************
+* Analyses for policy briefs
 * Calculates changes between Q2 2020 and Q2 2019 for policy brief
 do "$dofiles/Palika/an_NEP_01.do"
 

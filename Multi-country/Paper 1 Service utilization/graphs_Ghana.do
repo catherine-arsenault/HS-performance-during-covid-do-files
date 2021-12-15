@@ -2,14 +2,60 @@
 ********************************************************************************
 * GHANA GRAPHS
 ********************************************************************************
-u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear 
-lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" ///
-			13"J" 14"F" 15"M" 16"A" 17"M" 18"J" 19"J" 20"A" ///
-			21"S" 22"O" 23"N" 24"D"
+* Deliveries
+		u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
+			13"J20" 14"F20" 15"M20" 16"A20" 17"M20" 18"J20" 19"J20" 20"A20" ///
+			21"S20" 22"O20" 23"N20" 24"D20" 25"J21" 26"F21" 27"M21" 28"A21" 29"M21" 30"J21"
 			lab val rmonth rmonth 
-save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
-* anc		
-		
+			qui xtreg del_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_del_util
+			qui xtreg del_util rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_del_util 
+			
+			collapse del_util linear_del_util season_del_util, by(rmonth)
+
+			twoway (scatter del_util rmonth, msize(vsmall)  sort) ///
+			(line linear_del_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_del_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit del_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit del_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit del_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) 	graphregion(color(white)) ///
+			graphregion(color(white)) title("Ghana facility based deliveries (January 2019-December 2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labels valuelabels labsize(tiny)) ylabel(0(1000)5000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_del_util.pdf", replace
+* Inpatient
+		u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
+			13"J20" 14"F20" 15"M20" 16"A20" 17"M20" 18"J20" 19"J20" 20"A20" ///
+			21"S20" 22"O20" 23"N20" 24"D20" 25"J21" 26"F21" 27"M21" 28"A21" 29"M21" 30"J21"
+			lab val rmonth rmonth 
+			qui xtreg ipd_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
+				predict linear_ipd_util
+			qui xtreg ipd_util rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
+				predict season_ipd_util 
+			
+			collapse ipd_util linear_ipd_util season_ipd_util, by(rmonth)
+
+			twoway (scatter ipd_util rmonth, msize(vsmall)  sort) ///
+			(line linear_ipd_util rmonth, lpattern(dash) lcolor(green)) ///
+			(line season_ipd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
+			(lfit ipd_util rmonth if rmonth<16, lcolor(green)) ///
+			(lfit ipd_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
+			(lfit ipd_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue)) , ///
+			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+			 xline(21, lpattern(dash) lcolor(gs10)) ///
+			xtitle("", size(small)) legend(off) 	graphregion(color(white)) ///
+			graphregion(color(white)) title("Ghana inpatient admissions (January 2019-December 2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labels valuelabels labsize(tiny)) ylabel(0(3000)12000, labsize(vsmall))
+			
+			graph export "$analysis/Results/Graphs/GHA_ipd_util.pdf", replace
+* ANC	
+		u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear 		
 			graphregion(color(white)) title("Ghana ANC Visits", size(small)) ///
 			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
 			
@@ -37,7 +83,11 @@ save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 			
 			graph export "$analysis/Results/Graphs/GHA_opd_util.pdf", replace
 * Penta		
-		u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear 
+			u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
+			lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
+			13"J20" 14"F20" 15"M20" 16"A20" 17"M20" 18"J20" 19"J20" 20"A20" ///
+			21"S20" 22"O20" 23"N20" 24"D20" 25"J21" 26"F21" 27"M21" 28"A21" 29"M21" 30"J21"
+			lab val rmonth rmonth 
 			qui xtreg pent_qual rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
 				predict linear_pent_qual
 			qui xtreg pent_qual rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
@@ -54,8 +104,8 @@ save  "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("Ghana pentavalent vaccinations (2019-2020)", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(1000)7000, labsize(vsmall))
+			graphregion(color(white)) title("Ghana pentavalent vaccinations (January 2019-December 2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labels valuelabels labsize(tiny)) ylabel(0(1000)7000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_pent_qual.pdf", replace
 			
@@ -105,14 +155,6 @@ u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			
 			graph export "$analysis/Results/Graphs/GHA_pnc_util.pdf", replace		
 			
-
-* DELIVERIES
-u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
-			
-			graphregion(color(white)) title("Ghana Deliveries", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(1000)5000, labsize(vsmall))
-			
-			graph export "$analysis/Results/Graphs/GHA_del_util.pdf", replace
 * FP		
 u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			
@@ -123,6 +165,10 @@ u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			
 * Diabetes	
 u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear 
+			lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
+			13"J20" 14"F20" 15"M20" 16"A20" 17"M20" 18"J20" 19"J20" 20"A20" ///
+			21"S20" 22"O20" 23"N20" 24"D20" 25"J21" 26"F21" 27"M21" 28"A21" 29"M21" 30"J21"
+			lab val rmonth rmonth 
 			qui xtreg diab_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
 				predict linear_diab_util
 			qui xtreg diab_util rmonth i.season if rmonth<16 , i(reg) fe cluster(reg) // w. seasonal adj
@@ -139,8 +185,8 @@ u  "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("Ghana Diabetes Visits", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(200)1200, labsize(vsmall))
+			graphregion(color(white)) title("Ghana diabetes visits (January 2019-December 2020)", size(small)) ///
+			xlabel(1(1)24) xlabel(, labels valuelabels labsize(tiny)) ylabel(0(200)1200, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/GHA_diab_util.pdf", replace
 
@@ -181,6 +227,10 @@ u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			
 			graph export "$analysis/Results/Graphs/LAO_pent_qual.pdf", replace			
 rm "$user/$GHAdata/Data for analysis/GHAtmp.dta"
+
+
+
+
 
 /********************************************************************************
 * Level change during the pandemic

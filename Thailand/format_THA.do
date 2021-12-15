@@ -3,12 +3,9 @@
 * Thailand, January 2019 -   data at Province level 
 
 use  "$user/$data/Data for analysis/Thailand_Oct18-Dec20_WIDE.dta", clear
-
-
 *******************************************************************************
 * RESHAPE TO LONG FORM
 ********************************************************************************
-
 set obs 78
 replace Province="National" if Province==""
 
@@ -123,10 +120,6 @@ export delimited using "$user/$data/Thailand_Oct18-Dec20_monthly_dashboard.csv",
 
 rm "$user/$data/Data for analysis/temp20.dta"
 rm "$user/$data/Data for analysis/temp19.dta"
-
-
-
-
 
 
 

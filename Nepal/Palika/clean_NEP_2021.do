@@ -9,7 +9,7 @@ set more off
 u  "$user/$data/Data for analysis/Nepal_palika_2021_WIDE.dta", clear
 order org* tbdetect_qual* hivtest_qual* diab_util* hyper_util* bcg_qual1* ///
 pent_qual* pneum_qual*
-
+* Merge to 2019-2020 data 
 merge 1:1 org* using "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE.dta"
 drop _merge sb_mort_num* mat_mort_num* ipd_mort_num* neo_mort_num* fp_perm_util* ///
 fp_la_util* totaldel* opv3_qual* 

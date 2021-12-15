@@ -25,5 +25,11 @@ do "$dofiles/clean_LAO.do"
 do "$dofiles/format_LAO.do"
 
 ********************************************************************************
+* Update: Adding first 6 months of 2021 
+do "$dofiles/cr_LAO_03.do"
+do "$dofiles/clean_LAO_2021.do"
+do "$dofiles/format_LAO_2021.do"
+
+/*******************************************************************************
 * Analysis: calculates changes in Q2 (April-June 2019vs2020) Q3 (July-Sep 2019 vs 2020) 
 do "$dofiles/an_LAO.do"
