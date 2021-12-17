@@ -24,7 +24,7 @@
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
 			graphregion(color(white)) title("Mexico (IMSS) outpatient visits (2019-2020)", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(50000)300000, labsize(vsmall))
+			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(50000)300000, labsize(vsmall))
 			
 			graph export "$analysis/Results/Graphs/MEX_opd_util.pdf", replace
 * ART
