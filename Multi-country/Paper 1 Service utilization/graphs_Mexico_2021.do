@@ -17,11 +17,12 @@
 			collapse pent_qual linear_pent_qual season_pent_qual, by(rmonth)
 
 			twoway (scatter pent_qual rmonth, msize(vsmall)  sort) ///
+			(scatter pent_qual rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_pent_qual rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_pent_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit pent_qual rmonth if rmonth<16, lcolor(green)) ///
 			(lfit pent_qual rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
-			(lfit pent_qual rmonth if rmonth>=22 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit pent_qual rmonth if rmonth>=22 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
@@ -41,11 +42,12 @@
 			collapse diab_util linear_diab_util season_diab_util, by(rmonth)
 
 			twoway (scatter diab_util rmonth, msize(vsmall)  sort) ///
+			(scatter diab_util rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_diab_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_diab_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit diab_util rmonth if rmonth<16, lcolor(green)) ///
 			(lfit diab_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
-			(lfit diab_util rmonth if rmonth>=22 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit diab_util rmonth if rmonth>=22 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
@@ -64,11 +66,12 @@
 			collapse totaldel linear_totaldel season_totaldel, by(rmonth)
 
 			twoway (scatter totaldel rmonth, msize(vsmall)  sort) ///
+			(scatter totaldel rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_totaldel rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_totaldel rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit totaldel rmonth if rmonth<16, lcolor(green)) ///
 			(lfit totaldel rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
-			(lfit totaldel rmonth if rmonth>=22 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit totaldel rmonth if rmonth>=22 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
@@ -77,7 +80,7 @@
 		
 			graph export "$analysis/Results/Graphs/2021/MEX_del_util.pdf", replace
 			
-* IPD
+/* IPD
 	u  "$user/$MEXdata/Data for analysis/MEXtmp2.dta", clear 
 			qui xtreg ipd_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
 				predict linear_ipd_util
@@ -91,7 +94,9 @@
 			(line season_ipd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit ipd_util rmonth if rmonth<16, lcolor(green)) ///
 			(lfit ipd_util rmonth if rmonth>=16 & rmonth<=21, lcolor(red)) ///
-			(lfit ipd_util rmonth if rmonth>=22 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit ipd_util rmonth if rmonth>=22 & rmonth<=24 , lcolor(blue))  ///
+			(lfit ipd_util rmonth if rmonth>=25 & rmonth<=30 , lcolor(orange))  ///
+			(lfit ipd_util rmonth if rmonth>=22 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
