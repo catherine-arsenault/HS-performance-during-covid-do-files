@@ -69,10 +69,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/opd_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/opd_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(Outpatient Visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Outpatient visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 					 
@@ -130,10 +131,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/ipd_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/ipd_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(Inpatient Visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Inpatient visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -190,10 +192,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/er_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/er_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(ER Visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(ER Visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -250,10 +253,133 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/fp_sa_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/fp_sa_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(SA Contraceptive users) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Short acting Contracetive users) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
+	
+	eststo clear 
+
+********************************************************************************					 
+* LA Contraceptive users 
+
+* Province 1 
+	eststo: itsa fp_la_util i.season covid_case,  single treatid(1) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("LA Contraceptive users, Province 1") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_la_util_1.pdf", replace
+
+* Province 2 
+	eststo: itsa fp_la_util i.season covid_case,  single treatid(2) trperiod(15) lag(1) replace /// 
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("LA Contraceptive users, Province 2") ytitle("") xtitle("Month"))
+					 
+	graph export "$user/$analysis/Graphs/fp_la_util_2.pdf", replace
+	
+* Province 3 
+	eststo: itsa fp_la_util i.season covid_case,  single treatid(3) trperiod(15) lag(1) replace /// 
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("LA Contraceptive users, Province 3") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_la_util_3.pdf", replace
+	
+* Province 4 
+	eststo: itsa fp_la_util i.season covid_case,  single treatid(4) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(20000)100000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("LA Contraceptive users, Province 4") ytitle("") xtitle("Month"))	
+					 
+	graph export "$user/$analysis/Graphs/fp_la_util_4.pdf", replace
+	
+* Province 5
+	eststo: itsa fp_la_util i.season covid_case,  single treatid(5) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("LA Contraceptive users, Province 5") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_la_util_5.pdf", replace
+	
+* Province 6 
+	eststo: itsa fp_la_util i.season covid_case,  single treatid(6) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(20000)100000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("LA Contraceptive users, Province 6") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_la_util_6.pdf", replace
+	
+* Province 7
+	eststo: itsa fp_la_util i.season covid_case,  single treatid(7) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("LA Contraceptive users, Province 7") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_la_util_7.pdf", replace
+	
+	esttab using "$user/$analysis/Regression output/fp_la_util.rtf", replace /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Long acting Contraceptive users) /// 
+	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
+	
+	eststo clear 
+
+********************************************************************************					 
+* Permanent Contraceptive users 
+
+* Province 1 
+	eststo: itsa fp_perm_util i.season covid_case,  single treatid(1) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("Permanent Contraceptive users, Province 1") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_perm_util_1.pdf", replace
+
+* Province 2 
+	eststo: itsa fp_perm_util i.season covid_case,  single treatid(2) trperiod(15) lag(1) replace /// 
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("Permanent Contraceptive users, Province 2") ytitle("") xtitle("Month"))
+					 
+	graph export "$user/$analysis/Graphs/fp_perm_util_2.pdf", replace
+	
+* Province 3 
+	eststo: itsa fp_perm_util i.season covid_case,  single treatid(3) trperiod(15) lag(1) replace /// 
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("Permanent Contraceptive users, Province 3") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_perm_util_3.pdf", replace
+	
+* Province 4 
+	eststo: itsa fp_perm_util i.season covid_case,  single treatid(4) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(20000)100000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("Permanent Contraceptive users, Province 4") ytitle("") xtitle("Month"))	
+					 
+	graph export "$user/$analysis/Graphs/fp_perm_util_4.pdf", replace
+	
+* Province 5
+	eststo: itsa fp_perm_util i.season covid_case,  single treatid(5) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("Permanent Contraceptive users, Province 5") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_perm_util_5.pdf", replace
+	
+* Province 6 
+	eststo: itsa fp_perm_util i.season covid_case,  single treatid(6) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(20000)100000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("Permanent Contraceptive users, Province 6") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_perm_util_6.pdf", replace
+	
+* Province 7
+	eststo: itsa fp_perm_util i.season covid_case,  single treatid(7) trperiod(15) lag(1) replace ///
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
+		    legend(off) title("Permanet Contraceptive users, Province 7") ytitle("") xtitle("Month"))
+	
+	graph export "$user/$analysis/Graphs/fp_perm_util_7.pdf", replace
+	
+	esttab using "$user/$analysis/Regression output/fp_perm_util.rtf", replace /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Permanent Contraceptive users) /// 
+	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -310,10 +436,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/del_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/del_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(Facility deliveries) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Facility Deliveries) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -370,12 +497,13 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/cs_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/cs_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(C-sections) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(C-sections) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
-	eststo clear 
+	eststo clear  
 
 ********************************************************************************					 
 * ANC Visits
@@ -430,10 +558,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/anc_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/anc_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(ANC Visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Antenatal care visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -491,10 +620,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/pnc_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/pnc_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(PNC Visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(PNC Visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -551,10 +681,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/diarr_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/diarr_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(Diarrhea Visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Diarrhea visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -611,10 +742,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/pneum_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/pneum_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(Pneumonia Visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Pneumonia visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 	
@@ -671,10 +803,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/bcg_qual_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/bcg_qual.rtf", replace /// 
-	ci compress nobaselevels drop() title(BCG Vaccinations) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(BCG Vaccinations) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -732,10 +865,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/pent_qual_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/pent_qual.rtf", replace /// 
-	ci compress nobaselevels drop() title(Pentavalent Vaccinations) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Pentavalent vaccinations) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -793,10 +927,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/measles_qual_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/measles_qual.rtf", replace /// 
-	ci compress nobaselevels drop() title(Measles Vaccinations) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Measles vaccinations) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -806,57 +941,58 @@ tsset prov rmonth
 * Province 1 
 	eststo: itsa pneum_qual i.season covid_case,  single treatid(1) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(3000)15000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Pneum vaccinations, Province 1") ytitle("") xtitle("Month"))
+		    legend(off) title("Pneumococcal vaccinations, Province 1") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/pneum_qual_1.pdf", replace
 
 * Province 2 
 	eststo: itsa pneum_qual i.season covid_case,  single treatid(2) trperiod(15) lag(1) replace /// 
 			figure(xlabel(1(1)24) ylabel(0(5000)20000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Pneum vaccinations, Province 2") ytitle("") xtitle("Month"))
+		    legend(off) title("Pneumococcal vaccinations, Province 2") ytitle("") xtitle("Month"))
 					 
 	graph export "$user/$analysis/Graphs/pneum_qual_2.pdf", replace
 	
 * Province 3 
 	eststo: itsa pneum_qual i.season covid_case,  single treatid(3) trperiod(15) lag(1) replace /// 
 			figure(xlabel(1(1)24) ylabel(0(3000)15000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Pneum vaccinations, Province 3") ytitle("") xtitle("Month"))
+		    legend(off) title("Pneumococcal vaccinations, Province 3") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/pneum_qual_3.pdf", replace
 	
 * Province 4 
 	eststo: itsa pneum_qual i.season covid_case,  single treatid(4) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(2000)10000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Pneum vaccinations, Province 4") ytitle("") xtitle("Month"))	
+		    legend(off) title("Pneumococcal vaccinations, Province 4") ytitle("") xtitle("Month"))	
 					 
 	graph export "$user/$analysis/Graphs/pneum_qual_4.pdf", replace
 	
 * Province 5
 	eststo: itsa pneum_qual i.season covid_case,  single treatid(5) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(5000)20000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Pneum vaccinations, Province 5") ytitle("") xtitle("Month"))
+		    legend(off) title("Pneumococcal vaccinations, Province 5") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/pneum_qual_5.pdf", replace
 	
 * Province 6 
 	eststo: itsa pneum_qual i.season covid_case,  single treatid(6) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(1000)6000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Pneum vaccinations, Province 6") ytitle("") xtitle("Month"))
+		    legend(off) title("Pneumococcal vaccinations, Province 6") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/pneum_qual_6.pdf", replace
 	
 * Province 7
 	eststo: itsa pneum_qual i.season covid_case,  single treatid(7) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(2000)10000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Pneum vaccinations, Province 7") ytitle("") xtitle("Month"))
+		    legend(off) title("Pneumococcal vaccinations, Province 7") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/pneum_qual_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/pneum_qual.rtf", replace /// 
-	ci compress nobaselevels drop() title(Pneum Vaccinations) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Pneumococcal Vaccinations) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear 
 
@@ -913,10 +1049,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/hivtest_qual_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/hivtest_qual.rtf", replace /// 
-	ci compress nobaselevels drop() title(HIV tests conducted) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(HIV tests conducted) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear
 	
@@ -973,10 +1110,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/diab_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/diab_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(Diabetes visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Diabetes visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear
 
@@ -1033,10 +1171,11 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/hyper_util_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/hyper_util.rtf", replace /// 
-	ci compress nobaselevels drop() title(Hypertension visits) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(Hypertension visits) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear
 
@@ -1093,9 +1232,10 @@ tsset prov rmonth
 	graph export "$user/$analysis/Graphs/tbdetect_qual_7.pdf", replace
 	
 	esttab using "$user/$analysis/Regression output/tbdetect_qual.rtf", replace /// 
-	ci compress nobaselevels drop() title(TB cases detected) /// 
-	cells (b(star fmt(1)) ci(par fmt(0))) /// 
+	wide b(2) ci(2) noobs nobaselevels compress ///
+	drop() title(TB cases detected) /// 
 	mtitles ("Province 1" "Province 2" "Province 3" "Province 4" "Province 5" "Province 6" "Province 7") /// 
-	rename()
+	rename(_t "Pre-period slope" _x15 "Level change" _x_t15 "Post-period slope change" 2.season "Season 2" /// 
+	3.season "Season 3" 4.season "Season 4" covid_case "Covid cases")
 	
 	eststo clear
