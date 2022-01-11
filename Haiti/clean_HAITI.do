@@ -24,7 +24,7 @@ clear all
 set more off	
 
 u "$user/$data/Data for analysis/Haiti_Jan19-March21_WIDE.dta", clear
-
+						
 global volumes dental_util fp_util anc_util opd_util diab_util hyper_util ///
 			   del_util pnc_util cerv_qual vacc_qual
 global mortality sb_mort_num mat_mort_num
@@ -34,7 +34,7 @@ global all $volumes $mortality
 drop *_21
 
 * 1212 facilities. Dropping all facilities that don't report any indicators all 18 months
-egen all_visits = rowtotal(mat_mort_num1_20 - vacc_qual12_20), m
+egen all_visits = rowtotal(mat_mort_num1_19 - vacc_qual12_20), m
 drop if  all_visits==.
 drop all_visits 
 * Drops 373 facilities, retains 839
@@ -133,7 +133,7 @@ forval i = 1/12 {
 	replace sb_mort_num`i'_19 = 0     if sb_mort_num`i'_19== . & del_util`i'_19!=.
 }
 forval i= 1/12 { 
-	replace mat_mort_num`i'_19 = 0     if mat_mort_num`i'_19== . & del_util`i'_19!=.	
+	replace mat_mort_num`i'_20 = 0     if mat_mort_num`i'_20== . & del_util`i'_20!=.	
 	replace sb_mort_num`i'_20 = 0     if sb_mort_num`i'_20== . & del_util`i'_20!=.
 }
 
