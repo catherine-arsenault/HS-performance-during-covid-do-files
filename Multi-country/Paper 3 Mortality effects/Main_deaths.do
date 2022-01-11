@@ -18,6 +18,14 @@ global MEXdata "/HMIS Data for Health System Performance Covid (Mexico)"
 global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
 global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 
-* Variables available in each country 
-global ETHall 
-global GHAall
+* Mortality indicators available in each country 
+global CHLall ipd_mort_num neo_mort_num 
+global ETHall neo_mort_num sb_mort_num mat_mort_num er_mort_num ipd_mort_num
+global GHAall ipd_mort_num neo_mort_num sb_mort_num mat_mort_num 
+global HTIall sb_mort_num mat_mort_num 
+global KZNall neo_mort_num sb_mort_num mat_mort_num ipd_mort_num trauma_mort_num
+global LAOall neo_mort_num sb_mort_num mat_mort_num
+global MEXall sb_mort_num neo_mort_num mat_mort_num er_mort_num ipd_mort_num 
+global NEPall sb_mort_num mat_mort_num ipd_mort_num neo_mort_num
+global KORall newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num 
+global THAall road_mort_num
