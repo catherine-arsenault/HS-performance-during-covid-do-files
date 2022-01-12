@@ -36,6 +36,7 @@ global volumes diab_util hyper_util road_util surg_util pnc_util fp_util er_util
 /****************************************************************
 ASSESSES DATASET BEFORE CLEANING: SUM OF HEALTH CARE VISITS
 ****************************************************************/
+preserve
 putexcel set "$user/$data/Codebook for Chile.xlsx", sheet(Raw data, replace)  modify
 foreach var of global volumes {
 	* Sum/volume of services or deaths per facility over 24 months
@@ -111,6 +112,8 @@ local i= 21
 		qui sum `var'_total_sum
 		putexcel B`i' = `r(mean)'
 	}
+	
+restore
 ****************************************************************
 *EXPORT DATA BEFORE RECODING FOR VISUAL INSPECTION
 ****************************************************************
