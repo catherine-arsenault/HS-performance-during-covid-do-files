@@ -17,7 +17,6 @@ global KZNdata "/HMIS Data for Health System Performance Covid (South Africa)"
 global LAOdata "/HMIS Data for Health System Performance Covid (Lao PDR)"
 global MEXdata "/HMIS Data for Health System Performance Covid (Mexico)"
 global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
-global THAdata "/HMIS Data for Health System Performance Covid (Thailand)"
 
 ******************************************************************************** 
 * Creates datasets for analyses
@@ -42,4 +41,4 @@ global LAOall neo_mort_num sb_mort_num mat_mort_num
 global MEXall neo_mort_num  mat_mort_num er_mort_num ipd_mort_num 
 global NEPall sb_mort_num neo_mort_num mat_mort_num ipd_mort_num 
 global KORall newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num 
-global THAall road_mort_num
+
