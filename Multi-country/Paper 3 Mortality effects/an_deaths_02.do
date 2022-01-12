@@ -5,8 +5,9 @@
 ********************************************************************************
 	* Regression analysis
 ********************************************************************************		
+	u "$user/$CHLdata/Data for analysis/CHLtmp_deaths.dta", clear
 	xtset reg rmonth 
-	xtpoisson ipd_mort postCovid rmonth timeafter i.season, i(reg) fe exposure(ipd_util) vce(robust) irr
+	xtpoisson neo_mort postCovid rmonth timeafter i.season, i(reg) fe exposure(totaldel) vce(robust) irr
 	
 	
 u "$user/$GHAdata/Data for analysis/GHAtmp_deaths.dta", clear
