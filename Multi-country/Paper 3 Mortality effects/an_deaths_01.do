@@ -475,7 +475,7 @@ twoway (scatter ipd_mort_numrate rmonth, msize(vsmall)  sort) ///
 		ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 		xtitle("", size(small)) legend(off) graphregion(color(white)) ///
 		title("Nepal inpatient deaths per 1,000 admissions (2019-2020)", size(small))  ///
-		xlabel(1(1)24) xlabel(,  labsize(vsmall)) ylabel(0(2)12, labsize(vsmall)) ///
+		xlabel(1(1)24) xlabel(,  labsize(vsmall)) ylabel(0(2)16, labsize(vsmall)) ///
 		xlabel(, labels valuelabels labsize(tiny))
 		
 		graph export "$analysis/Results/Graphs/NEP_ipd.pdf", replace
