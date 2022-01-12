@@ -1,39 +1,20 @@
 * HS resilience during COVID-19 study
 * Effect of the pandemic on institutional deaths 
 * Regression analyses
-
+	
 ********************************************************************************
-	* Program for G-2 adjustment (call after xtreg)
-********************************************************************************
-	* Add adjusted p-value and 95% CI to -xtreg, cluster()- estimation output
-	* Use t(G-2) distribution instead of Stata's t(G-1) where G = number of clusters as per Donald and Lang (2007)			
-		cap program drop adjpvalues
-		program adjpvalues, rclass
-					
-		version 11
-						
-		syntax , p( string ) cil( string ) ciu( string )
-					
-		* Use t-distribution with G-2 d.f. where G = e(N_clust) from xtreg
-		mata: st_matrix("adjp", 2*ttail( st_numscalar( "e(N_clust)")-2 , abs(  st_matrix("e(b)") :/ sqrt( diagonal( st_matrix("e(V)") )')   )) )				
-		mata: st_matrix("adjci_l", st_matrix("e(b)") - invttail( st_numscalar( "e(N_clust)")-2, 0.025 ) *sqrt( diagonal( st_matrix("e(V)") )') )
-		mata: st_matrix("adjci_u", st_matrix("e(b)") + invttail( st_numscalar( "e(N_clust)")-2, 0.025 ) *sqrt( diagonal( st_matrix("e(V)") )') )
-					
-		* Need same varnames as e(b)
-		mat colnames adjp    = `: colnames e(b)'
-		mat colnames adjci_l = `: colnames e(b)'
-		mat colnames adjci_u = `: colnames e(b)'
-
-		end		
-********************************************************************************
-	* Regression analysis: Level change during the pandemic
+	* Regression analysis
 ********************************************************************************		
-u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 	xtset reg rmonth 
-	xtnbreg sb_ postCovid rmonth timeafter i.season, i(reg) fe exposure(totaldel) irr //
-	xtnbreg neo_ postCovid rmonth timeafter i.season, i(reg) fe exposure(totaldel) irr
-	xtnbreg mat_ postCovid rmonth timeafter i.season, i(reg) fe exposure(totaldel) irr
-	xtnbreg ipd_mort postCovid rmonth timeafter i.season, i(reg) fe exposure(ipd_util) irr //
+	xtpoisson ipd_mort postCovid rmonth timeafter i.season, i(reg) fe exposure(ipd_util) vce(robust) irr
+	
+	
+u "$user/$GHAdata/Data for analysis/GHAtmp_deaths.dta", clear
+	xtset reg rmonth 
+	xtnbreg sb_ postCovid rmonth timeafter i.season, i(reg) fe  exposure(totaldel) irr //
+	xtnbreg neo_ postCovid rmonth timeafter i.season, i(reg) fe cluster(reg) exposure(totaldel) irr
+	xtnbreg mat_ postCovid rmonth timeafter i.season, i(reg) fe cluster(reg) exposure(totaldel) irr
+	xtnbreg ipd_mort postCovid rmonth timeafter i.season, i(reg) cluster(reg) fe exposure(ipd_util) irr //
 	
  u "$user/$ETHdata/Data for analysis/ETHtmp.dta", clear
  	xtset reg rmonth 
@@ -145,6 +126,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 		putexcel L`i'=pct_chg2
 		
 		scalar drop _all
+		 mat drop _all
 	}
 
 }
