@@ -1,7 +1,6 @@
 * Master do file: Health system performance during Covid-19 - Kwazulu Natal
 * Catherine Arsenault and Anna Gage
 
-
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global data "HMIS Data for Health System Performance Covid (South Africa)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/KZN, South Africa"
