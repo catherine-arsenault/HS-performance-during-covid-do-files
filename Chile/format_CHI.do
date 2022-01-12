@@ -8,7 +8,7 @@
 ASSESSES DATASET AFTER CLEANING: SUM OF HEALTH CARE VISITS
 ****************************************************************/
 u "$user/$data/Data for analysis/Chile_Jan19-Dec20_WIDE_CCA_AN.dta", clear
-
+preserve
 putexcel set "$user/$data/Codebook for Chile.xlsx", sheet(Final data, replace)  modify
 foreach var of global volumes {
 	* Sum/volume of services or deaths per facility over 24 months
@@ -84,6 +84,7 @@ local i= 21
 		qui sum `var'_total_sum
 		putexcel B`i' = `r(mean)'
 	}
+restore
 /****************************************************************
 FORMATS FACILITY-LEVEL DATA FOR DASHBOARD
 ****************************************************************/
@@ -191,7 +192,7 @@ reshape long  road_util surg_util pnc_util fp_util ///
 * Adding hospital-level data (no missingness)
 
 u "$user/$data/Data for analysis/tmpH.dta", clear 
-reshape long ipd_util del_util cs_util , i(region facilityname) j(month) string
+reshape long ipd_util del_util cs_util totaldel , i(region facilityname) j(month) string
 * Month and year
 	gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	///
 	month=="4_20" |	month=="5_20" | month=="6_20"  | month=="7_20" | ///
