@@ -12,10 +12,10 @@ rename ïregions region
 * Rename variables 
 * RMNCH 
 rename (numberofnewandcurrentusersofcont totalstis ancattendance ///
-		numberofbirthsattendedbyskilledh caesareansectiondeliveries) ///
-		(fp_util sti_util anc_util del_util cs_util)
+		numberofbirthsattendedbyskilledh caesareansectiondeliveries numberofmothersalldeliveries) ///
+		(fp_util sti_util anc_util del_util cs_util totaldel)
 egen pnc_util = rowtotal(stpnconday1or2 stpnconday37), m 
-egen totaldel = rowtotal(cs_util del_util), m 
+
 * Other services 
 rename (diarrhoeadiseasesunder5years pneumoniacasesunder5years ///
 		malnutritioncasesunder5years totalopdattendance totaladmissions ///
