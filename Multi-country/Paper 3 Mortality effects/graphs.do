@@ -93,7 +93,7 @@ export excel using "$analysis/Results/barcharts.xlsx", sheet(MEX, replace) first
 u "$user/$NEPdata/Data for analysis/NEPtmp_deaths.dta", clear  
 preserve 
 collapse (sum) sb_mort_num-ipd_util  (first) country , by(postCovid)
-export excel using "$analysis/Results/sums.xlsx", sheet(LAO, replace) firstrow(var)
+export excel using "$analysis/Results/sums.xlsx", sheet(NEP, replace) firstrow(var)
 restore
 collapse (sum) sb_mort_num neo_mort_num  ipd_util mat_mort_num  ///
 	totaldel ipd_mort_num (first) country , by(reg postCovid)
