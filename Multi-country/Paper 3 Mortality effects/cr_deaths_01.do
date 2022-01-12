@@ -5,12 +5,11 @@
 ********************************************************************************
 * 1 CHILE (facility)
 u "$user/$CHLdata/Data for analysis/Chile_su_24months.dta", clear 
-	keep region-month *mort* ipd_util del_util 
-	rename del_util totaldel
+	keep region-month *mort* ipd_util totaldel
 	collapse (sum) ipd_mort_num-totaldel , by(region year month)
 	encode region, gen(reg)
 	gen country="CHL"
-save "$user/$CHLdata/Data for analysis/CHLtmp.dta", replace
+save "$user/$CHLdata/Data for analysis/CHLtmp_deaths.dta", replace
 ********************************************************************************
 * 2 ETHIOPIA (facility/woreda)
 u "$user/$ETHdata/Data for analysis/Ethiopia_su_24months.dta", replace 
@@ -20,7 +19,7 @@ u "$user/$ETHdata/Data for analysis/Ethiopia_su_24months.dta", replace
 	drop if region=="Tigray" // Tigray stopped reporting in October 2020 due to war	
 	encode region, gen(reg)
 	gen country="ETH"
-save "$user/$ETHdata/Data for analysis/ETHtmp.dta", replace
+save "$user/$ETHdata/Data for analysis/ETHtmp_deaths.dta", replace
 ********************************************************************************
 * 3 GHANA (region)
 u  "$user/$GHAdata/Data for analysis/Ghana_su_24months.dta", clear 
@@ -28,7 +27,7 @@ u  "$user/$GHAdata/Data for analysis/Ghana_su_24months.dta", clear
 	rename (newborn_mort_num) (neo_mort_num)
 	encode region, gen(reg)
 	gen country="GHA"
-save "$user/$GHAdata/Data for analysis/GHAtmp.dta", replace
+save "$user/$GHAdata/Data for analysis/GHAtmp_deaths.dta", replace
 ********************************************************************************
 * 4 HAITI (facility)
 use "$user/$HTIdata/Data for analysis/Haiti_su_24months.dta", clear
@@ -37,7 +36,7 @@ use "$user/$HTIdata/Data for analysis/Haiti_su_24months.dta", clear
 	collapse (sum) sb_mort_num mat_mort_num totaldel, by (orgunitlevel2 year month)
 	encode orgunitlevel2, gen(reg)
 	gen country="HTI"
-save "$user/$HTIdata/Data for analysis/HTItmp.dta", replace
+save "$user/$HTIdata/Data for analysis/HTItmp_deaths.dta", replace
 ********************************************************************************
 * 5 KZN, SA (facility)
 use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear 
@@ -47,7 +46,7 @@ use "$user/$KZNdata/Data for analysis/KZN_su_24months.dta", clear
 	collapse (sum) totaldel-trauma_mort_num, by(dist year month)
 	rename dist reg
 	gen country="KZN"
-save "$user/$KZNdata/Data for analysis/KZNtmp.dta", replace
+save "$user/$KZNdata/Data for analysis/KZNtmp_deaths.dta", replace
 ********************************************************************************
 * 6 LAO (facility)
 use "$user/$LAOdata/Data for analysis/Lao_su_24months.dta", clear
@@ -56,26 +55,27 @@ use "$user/$LAOdata/Data for analysis/Lao_su_24months.dta", clear
 	by(orgunitlevel2 year month)
 	encode orgunitlevel2 , gen(reg)
 	gen country="LAO"
-save "$user/$LAOdata/Data for analysis/LAOtmp.dta", replace
+save "$user/$LAOdata/Data for analysis/LAOtmp_deaths.dta", replace
 ********************************************************************************
 * 7 MEXICO (region)
 use  "$user/$MEXdata/Data for analysis/Mexico_su_24months.dta", clear 
-keep Delegation year month sb_mort_num newborn_mort_num mat_mort_num er_mort_num ///
+keep Delegation year month newborn_mort_num mat_mort_num er_mort_num ///
 	 ipd_mort_num er_util ipd_util totaldel del_util hospit* death* 
 	 rename newborn_mort_num neo_mort_num
 	 encode Delegation, gen(reg)
 	 gen country="MEX"
-save "$user/$MEXdata/Data for analysis/MEXtmp.dta", replace	 
+save "$user/$MEXdata/Data for analysis/MEXtmp_deaths.dta", replace	 
 ********************************************************************************
 * 8 NEPAL (palika (municipality))
 use "$user/$NEPdata/Data for analysis/Nepal_su_24months.dta", clear
 	keep org* year month sb_mort_num mat_mort_num ipd_mort_num neo_mort_num ///
-	totaldel ipd_util
+	del_util ipd_util
+	rename del_util totaldel
 	collapse (sum) sb_mort_num mat_mort_num ipd_mort_num neo_mort_num totaldel ///
 	ipd_util , by (orgunitlevel3 year month)
 	encode orgunitlevel3, gen(reg)
 	gen country="NEP"
-save "$user/$NEPdata/Data for analysis/NEPtmp.dta", replace
+save "$user/$NEPdata/Data for analysis/NEPtmp_deaths.dta", replace
 ********************************************************************************
 * 9 SOUTH KOREA (region)
 u  "$user/$KORdata/Data for analysis/Korea_su_24months.dta", clear
@@ -84,25 +84,29 @@ u  "$user/$KORdata/Data for analysis/Korea_su_24months.dta", clear
 	rename newborn_mort_num neo_mort_num
 	encode region, gen(reg)
 	gen country="KOR"
-save "$user/$KORdata/Data for analysis/KORtmp.dta", replace
+save "$user/$KORdata/Data for analysis/KORtmp_deaths.dta", replace
 ********************************************************************************
 * 10 THAILAND (region)
 u "$user/$THAdata/Data for analysis/Thailand_su_24months.dta", clear 
 	keep Provinces year month road_mort_num road_util
 	encode Province, gen(reg)	
 	gen country="THA"
-save "$user/$THAdata/Data for analysis/THAtmp.dta", replace
+save "$user/$THAdata/Data for analysis/THAtmp_deaths.dta", replace
 
 ********************************************************************************
 	* Creates variables for analyses
 ********************************************************************************
 foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 
-	u "$user/$`c'data/Data for analysis/`c'tmp.dta", clear
+	u "$user/$`c'data/Data for analysis/`c'tmp_deaths.dta", clear
 
 		gen rmonth= month if year==2019
 		replace rmonth = month+12 if year ==2020
 		sort reg rmonth
+		lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
+		13"J20" 14"F20" 15"M20" 16"A20" 17"M20" 18"J20" 19"J20" 20"A20" ///
+		21"S20" 22"O20" 23"N20" 24"D20" 25"J21" 26"F21" 27"M21" 28"A21" 29"M21" 30"J21"
+		lab val rmonth rmonth 
 		
 		gen season = .
 		recode season (.=1) if ( month>=3 & month<=5  )
@@ -126,6 +130,8 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP KOR THA {
 				"CHL", "ETH", "GHA", "HTI", "KZN", "LAO", "MEX", "KOR", "THA") 
 		replace timeafter=0 if timeafter<0
 
-	save "$user/$`c'data/Data for analysis/`c'tmp.dta", replace	
+	save "$user/$`c'data/Data for analysis/`c'tmp_deaths.dta", replace	
 
 }
+
+
