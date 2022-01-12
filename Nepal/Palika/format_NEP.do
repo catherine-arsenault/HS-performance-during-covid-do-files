@@ -201,7 +201,7 @@ replace mo = 9 if month =="9_19" | month =="9_20"
 replace mo = 10 if month =="10_19" | month =="10_20"
 replace mo = 11 if month =="11_19" | month =="11_20"
 replace mo = 12 if month =="12_19" | month =="12_20"
-drop month	
+drop month	totaldel
 rename mo month
 sort org* year month
 order org*  year month 
