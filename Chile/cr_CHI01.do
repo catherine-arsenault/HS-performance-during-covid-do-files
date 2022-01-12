@@ -1,7 +1,6 @@
 * HS performance during Covid
 * Created on Feb 1st 2021
 * Chile, Jan19 - Oct 2020 data
-
 * Recode variables
 
 **********************************************************************************
