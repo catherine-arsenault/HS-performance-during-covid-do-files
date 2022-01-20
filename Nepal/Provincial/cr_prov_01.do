@@ -118,13 +118,3 @@ pneum_qual covid_case, by(province prov year month rmonth season timeafter)
 save "$user/$NEPdata/Data for analysis/Nepal_provincial_analysis.dta", replace
 restore 
 
-preserve 
-* Collapse to eco-zone 
-collapse (first) Npalika (sum) fp_perm_util fp_sa_util fp_la_util anc_util ///
-del_util cs_util pnc_util diarr_util pneum_util  opd_util ipd_util er_util ///
-tbdetect_qual hivtest_qual hyper_util diab_util pent_qual bcg_qual measles_qual ///
-pneum_qual covid_case, by(eco_zone year month rmonth season timeafter)
-
-save "$user/$NEPdata/Data for analysis/Nepal_ecozone_analysis.dta", replace
-restore 
-
