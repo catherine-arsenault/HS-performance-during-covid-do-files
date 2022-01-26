@@ -8,6 +8,9 @@ u "$user/$CHLdata/Data for analysis/Chile_su_24months.dta", clear
 	keep region-month *mort* ipd_util totaldel
 	collapse (sum) ipd_mort_num-totaldel , by(region year month)
 	*encode region, gen(reg)
+	rename ipd_util discharge
+	gen ipd_util = discharge + ipd_mort_num
+	drop discharge
 	gen country="CHL"
 save "$user/$CHLdata/Data for analysis/CHLtmp_deaths.dta", replace
 ********************************************************************************
@@ -134,6 +137,8 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP  {
 
 		order country reg year month rmonth 
 		sort country reg year month
+		encode region, gen(reg)
+		encode country, gen(co)
 	save "$analysis/Data/multicountry_deaths.dta",  replace	
 
 
