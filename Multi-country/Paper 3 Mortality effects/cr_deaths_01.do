@@ -68,7 +68,7 @@ save "$user/$LAOdata/Data for analysis/LAOtmp_deaths.dta", replace
 * 7 MEXICO (region)
 use  "$user/$MEXdata/Data for analysis/Mexico_su_24months.dta", clear 
 keep Delegation year month newborn_mort_num mat_mort_num  ///
-	 ipd_mort_num  ipd_util totaldel del_util 
+	 ipd_mort_num  ipd_util totaldel  
 	 rename newborn_mort_num neo_mort_num
 	 *encode Delegation, gen(reg)
 	 rename Delegation region
@@ -104,6 +104,12 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP  {
 	append using "$user/$`c'data/Data for analysis/`c'tmp_deaths.dta"
 	save "$analysis/Data/multicountry_deaths.dta",  replace
 }
+lab var totaldel "Total institutional deliveries"
+lab var ipd_util "Total inpatient admissions"
+lab var neo_mort_num "Nb of newborn deaths"
+lab var sb_mort_num "Nb of stillbirths"
+lab var mat_mort_num "Nb of maternal deaths"
+lab var ipd_mort_num "Nb of inpatient admissions"
 
 		gen rmonth= month if year==2019
 		replace rmonth = month+12 if year ==2020
@@ -139,6 +145,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX NEP  {
 		sort country reg year month
 		encode region, gen(reg)
 		encode country, gen(co)
+		
 	save "$analysis/Data/multicountry_deaths.dta",  replace	
 
 
