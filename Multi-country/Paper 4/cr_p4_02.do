@@ -120,7 +120,7 @@ clear all
 * Save school close flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c1_flag.csv"
 * Renaming variables 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_school_close`lbl'
@@ -131,16 +131,15 @@ save school_close_flag, replace
 clear 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c1_school_closing.csv"
 * Renaming variables to label name 		
-*** As the data gets updated there will be some unlabeled, but they get dropped later 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' school_close`lbl'
 }
 
-* Merge flag data 
+* Merge with flag data and trim data 
 merge 1:1 v1 country_code country_name using school_close_flag
-drop _merge 
+keep country_code country_name school* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -148,25 +147,27 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
 
 * Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
 foreach v of var school_close_01Apr2020-school_close_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2/3 = 1) 
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var school_close_01Apr2020-school_close_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop school_close_01Jan2020-school_close_31Mar2020 
-keep country_code-school_close_13Jan2021 
-
+drop flag*
 save school_close, replace
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
-* From daily policy to monthly policy - if policy in place for 10 or more days of the month 
+* From daily policy to monthly policy - if policy in place for 10 or more days of the month (do this for both national and not)
 egen school_close_Apr2020 = rowtotal(school_close_01Apr2020-school_close_30Apr2020)
 egen school_close_May2020 = rowtotal(school_close_01May2020-school_close_31May2020)
 egen school_close_Jun2020 = rowtotal(school_close_01Jun2020-school_close_30Jun2020)
@@ -176,10 +177,20 @@ egen school_close_Sep2020 = rowtotal(school_close_01Sep2020-school_close_30Sep20
 egen school_close_Oct2020 = rowtotal(school_close_01Oct2020-school_close_31Oct2020)
 egen school_close_Nov2020 = rowtotal(school_close_01Nov2020-school_close_30Nov2020)
 egen school_close_Dec2020 = rowtotal(school_close_01Dec2020-school_close_31Dec2020)
+* National
+egen school_close_Apr2020_ntnl = rowtotal(school_close_01Apr2020_ntnl-school_close_30Apr2020_ntnl)
+egen school_close_May2020_ntnl = rowtotal(school_close_01May2020_ntnl-school_close_31May2020_ntnl)
+egen school_close_Jun2020_ntnl = rowtotal(school_close_01Jun2020_ntnl-school_close_30Jun2020_ntnl)
+egen school_close_Jul2020_ntnl = rowtotal(school_close_01Jul2020_ntnl-school_close_31Jul2020_ntnl)
+egen school_close_Aug2020_ntnl = rowtotal(school_close_01Aug2020_ntnl-school_close_31Aug2020_ntnl)
+egen school_close_Sep2020_ntnl = rowtotal(school_close_01Sep2020_ntnl-school_close_30Sep2020_ntnl)
+egen school_close_Oct2020_ntnl = rowtotal(school_close_01Oct2020_ntnl-school_close_31Oct2020_ntnl)
+egen school_close_Nov2020_ntnl = rowtotal(school_close_01Nov2020_ntnl-school_close_30Nov2020_ntnl)
+egen school_close_Dec2020_ntnl = rowtotal(school_close_01Dec2020_ntnl-school_close_31Dec2020_ntnl)
 
-drop school_close_01Apr2020-school_close_13Jan2021
+drop school_close_01Apr2020-school_close_13Jan2021_ntnl
 
-foreach v of var school_close_Apr2020-school_close_Dec2020 {
+foreach v of var school_close_Apr2020-school_close_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -199,10 +210,19 @@ egen school_close_Sep2020 = rowtotal(school_close_17Sep2020-school_close_16Oct20
 egen school_close_Oct2020 = rowtotal(school_close_17Oct2020-school_close_15Nov2020)
 egen school_close_Nov2020 = rowtotal(school_close_16Nov2020-school_close_15Dec2020)
 egen school_close_Dec2020 = rowtotal(school_close_16Dec2020-school_close_13Jan2021)
+* National
+egen school_close_Apr2020_ntnl = rowtotal(school_close_13Apr2020_ntnl-school_close_13May2020_ntnl)
+egen school_close_May2020_ntnl = rowtotal(school_close_14May2020_ntnl-school_close_14Jun2020_ntnl)
+egen school_close_Jun2020_ntnl = rowtotal(school_close_15Jun2020_ntnl-school_close_15Jul2020_ntnl)
+egen school_close_Jul2020_ntnl = rowtotal(school_close_16Jul2020_ntnl-school_close_16Aug2020_ntnl)
+egen school_close_Aug2020_ntnl = rowtotal(school_close_17Aug2020_ntnl-school_close_16Sep2020_ntnl)
+egen school_close_Sep2020_ntnl = rowtotal(school_close_17Sep2020_ntnl-school_close_16Oct2020_ntnl)
+egen school_close_Oct2020_ntnl = rowtotal(school_close_17Oct2020_ntnl-school_close_15Nov2020_ntnl)
+egen school_close_Nov2020_ntnl = rowtotal(school_close_16Nov2020_ntnl-school_close_15Dec2020_ntnl)
+egen school_close_Dec2020_ntnl = rowtotal(school_close_16Dec2020_ntnl-school_close_13Jan2021_ntnl)
+drop school_close_01Apr2020-school_close_13Jan2021_ntnl
 
-drop school_close_01Apr2020-school_close_13Jan2021
-
-foreach v of var school_close_Apr2020-school_close_Dec2020 {
+foreach v of var school_close_Apr2020-school_close_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -217,7 +237,7 @@ clear all
 
 * Save workplace close flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c2_flag.csv"
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_work_close`lbl'
@@ -228,7 +248,7 @@ save work_close_flag, replace
 clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c2_workplace_closing.csv"
 * Renaming variables to label name 		
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' work_close`lbl'
@@ -236,7 +256,7 @@ foreach v of var jan2020-v690 {
 
 * Merge flag data 
 merge 1:1 v1 country_code country_name using work_close_flag
-drop _merge 
+keep country_code country_name work* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -244,20 +264,21 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
-
 * Recoding values to a binary - "0" no measures and recommended closing, "1" required only at some levels and requiring at all levels 
 foreach v of var work_close_01Apr2020-work_close_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2/3 = 1)
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var work_close_01Apr2020-work_close_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop work_close_01Jan2020-work_close_31Mar2020 
-keep country_code-work_close_13Jan2021
-
+drop flag*
 save work_close, replace
 
 *** For all countries except Nepal *** 
@@ -272,10 +293,20 @@ egen work_close_Sep2020 = rowtotal(work_close_01Sep2020-work_close_30Sep2020)
 egen work_close_Oct2020 = rowtotal(work_close_01Oct2020-work_close_31Oct2020)
 egen work_close_Nov2020 = rowtotal(work_close_01Nov2020-work_close_30Nov2020)
 egen work_close_Dec2020 = rowtotal(work_close_01Dec2020-work_close_31Dec2020)
+* National 
+egen work_close_Apr2020_ntnl = rowtotal(work_close_01Apr2020_ntnl-work_close_30Apr2020_ntnl)
+egen work_close_May2020_ntnl = rowtotal(work_close_01May2020_ntnl-work_close_31May2020_ntnl)
+egen work_close_Jun2020_ntnl = rowtotal(work_close_01Jun2020_ntnl-work_close_30Jun2020_ntnl)
+egen work_close_Jul2020_ntnl = rowtotal(work_close_01Jul2020_ntnl-work_close_31Jul2020_ntnl)
+egen work_close_Aug2020_ntnl = rowtotal(work_close_01Aug2020_ntnl-work_close_31Aug2020_ntnl)
+egen work_close_Sep2020_ntnl = rowtotal(work_close_01Sep2020_ntnl-work_close_30Sep2020_ntnl)
+egen work_close_Oct2020_ntnl = rowtotal(work_close_01Oct2020_ntnl-work_close_31Oct2020_ntnl)
+egen work_close_Nov2020_ntnl = rowtotal(work_close_01Nov2020_ntnl-work_close_30Nov2020_ntnl)
+egen work_close_Dec2020_ntnl = rowtotal(work_close_01Dec2020_ntnl-work_close_31Dec2020_ntnl)
 
-drop work_close_01Apr2020-work_close_13Jan2021
+drop work_close_01Apr2020-work_close_13Jan2021_ntnl
 
-foreach v of var work_close_Apr2020-work_close_Dec2020 {
+foreach v of var work_close_Apr2020-work_close_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -295,16 +326,25 @@ egen work_close_Sep2020 = rowtotal(work_close_17Sep2020-work_close_16Oct2020)
 egen work_close_Oct2020 = rowtotal(work_close_17Oct2020-work_close_15Nov2020)
 egen work_close_Nov2020 = rowtotal(work_close_16Nov2020-work_close_15Dec2020)
 egen work_close_Dec2020 = rowtotal(work_close_16Dec2020-work_close_13Jan2021)
+* National 
+egen work_close_Apr2020_ntnl = rowtotal(work_close_13Apr2020_ntnl-work_close_13May2020_ntnl)
+egen work_close_May2020_ntnl = rowtotal(work_close_14May2020_ntnl-work_close_14Jun2020_ntnl)
+egen work_close_Jun2020_ntnl = rowtotal(work_close_15Jun2020_ntnl-work_close_15Jul2020_ntnl)
+egen work_close_Jul2020_ntnl = rowtotal(work_close_16Jul2020_ntnl-work_close_16Aug2020_ntnl)
+egen work_close_Aug2020_ntnl = rowtotal(work_close_17Aug2020_ntnl-work_close_16Sep2020_ntnl)
+egen work_close_Sep2020_ntnl = rowtotal(work_close_17Sep2020_ntnl-work_close_16Oct2020_ntnl)
+egen work_close_Oct2020_ntnl = rowtotal(work_close_17Oct2020_ntnl-work_close_15Nov2020_ntnl)
+egen work_close_Nov2020_ntnl = rowtotal(work_close_16Nov2020_ntnl-work_close_15Dec2020_ntnl)
+egen work_close_Dec2020_ntnl = rowtotal(work_close_16Dec2020_ntnl-work_close_13Jan2021_ntnl)
 
-drop work_close_01Apr2020-work_close_13Jan2021
+drop work_close_01Apr2020-work_close_13Jan2021_ntnl
 
-foreach v of var work_close_Apr2020-work_close_Dec2020 {
+foreach v of var work_close_Apr2020-work_close_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
 
 append using work_close_all
-
 
 save "$user/$analysis/Data/work_close_tmp.dta", replace
 
@@ -315,7 +355,7 @@ clear all
 * Save public event flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c3_flag.csv"
 * Renaming variables 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_public_event`lbl'
@@ -326,7 +366,7 @@ save public_event_flag, replace
 clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c3_cancel_public_events.csv"
 * Renaming variables to label name 		
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' public_event`lbl'
@@ -334,7 +374,7 @@ foreach v of var jan2020-v690 {
 
 * Merge flag data 
 merge 1:1 v1 country_code country_name using public_event_flag
-drop _merge 
+keep country_code country_name public* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -342,20 +382,21 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
-
 * Recoding values to a binary - "0" no measures and recommended canceling, "1" required canceling public events 
 foreach v of var public_event_01Apr2020-public_event_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2 = 1)
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var public_event_01Apr2020-public_event_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
-drop public_event_01Jan2020-public_event_31Mar2020 
-keep country_code-public_event_13Jan2021
-
+drop public_event_01Jan2020-public_event_31Mar2020
+drop flag* 
 save public_event, replace
 
 *** For all countries except Nepal *** 
@@ -370,10 +411,20 @@ egen public_event_Sep2020 = rowtotal(public_event_01Sep2020-public_event_30Sep20
 egen public_event_Oct2020 = rowtotal(public_event_01Oct2020-public_event_31Oct2020)
 egen public_event_Nov2020 = rowtotal(public_event_01Nov2020-public_event_30Nov2020)
 egen public_event_Dec2020 = rowtotal(public_event_01Dec2020-public_event_31Dec2020)
+* National
+egen public_event_Apr2020_ntnl = rowtotal(public_event_01Apr2020_ntnl-public_event_30Apr2020_ntnl)
+egen public_event_May2020_ntnl = rowtotal(public_event_01May2020_ntnl-public_event_31May2020_ntnl)
+egen public_event_Jun2020_ntnl = rowtotal(public_event_01Jun2020_ntnl-public_event_30Jun2020_ntnl)
+egen public_event_Jul2020_ntnl = rowtotal(public_event_01Jul2020_ntnl-public_event_31Jul2020_ntnl)
+egen public_event_Aug2020_ntnl = rowtotal(public_event_01Aug2020_ntnl-public_event_31Aug2020_ntnl)
+egen public_event_Sep2020_ntnl = rowtotal(public_event_01Sep2020_ntnl-public_event_30Sep2020_ntnl)
+egen public_event_Oct2020_ntnl = rowtotal(public_event_01Oct2020_ntnl-public_event_31Oct2020_ntnl)
+egen public_event_Nov2020_ntnl = rowtotal(public_event_01Nov2020_ntnl-public_event_30Nov2020_ntnl)
+egen public_event_Dec2020_ntnl = rowtotal(public_event_01Dec2020_ntnl-public_event_31Dec2020_ntnl)
 
-drop public_event_01Apr2020-public_event_13Jan2021
+drop public_event_01Apr2020-public_event_13Jan2021_ntnl
 
-foreach v of var public_event_Apr2020-public_event_Dec2020 {
+foreach v of var public_event_Apr2020-public_event_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -393,10 +444,20 @@ egen public_event_Sep2020 = rowtotal(public_event_17Sep2020-public_event_16Oct20
 egen public_event_Oct2020 = rowtotal(public_event_17Oct2020-public_event_15Nov2020)
 egen public_event_Nov2020 = rowtotal(public_event_16Nov2020-public_event_15Dec2020)
 egen public_event_Dec2020 = rowtotal(public_event_16Dec2020-public_event_13Jan2021)
+* National 
+egen public_event_Apr2020_ntnl = rowtotal(public_event_13Apr2020_ntnl-public_event_13May2020_ntnl)
+egen public_event_May2020_ntnl = rowtotal(public_event_14May2020_ntnl-public_event_14Jun2020_ntnl)
+egen public_event_Jun2020_ntnl = rowtotal(public_event_15Jun2020_ntnl-public_event_15Jul2020_ntnl)
+egen public_event_Jul2020_ntnl = rowtotal(public_event_16Jul2020_ntnl-public_event_16Aug2020_ntnl)
+egen public_event_Aug2020_ntnl = rowtotal(public_event_17Aug2020_ntnl-public_event_16Sep2020_ntnl)
+egen public_event_Sep2020_ntnl = rowtotal(public_event_17Sep2020_ntnl-public_event_16Oct2020_ntnl)
+egen public_event_Oct2020_ntnl = rowtotal(public_event_17Oct2020_ntnl-public_event_15Nov2020_ntnl)
+egen public_event_Nov2020_ntnl = rowtotal(public_event_16Nov2020_ntnl-public_event_15Dec2020_ntnl)
+egen public_event_Dec2020_ntnl = rowtotal(public_event_16Dec2020_ntnl-public_event_13Jan2021_ntnl)
 
-drop public_event_01Apr2020-public_event_13Jan2021
+drop public_event_01Apr2020-public_event_13Jan2021_ntnl
 
-foreach v of var public_event_Apr2020-public_event_Dec2020 {
+foreach v of var public_event_Apr2020-public_event_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -410,7 +471,7 @@ clear all
 * Save gathering flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c4_flag.csv"
 * Renaming variables 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_restrict_gather`lbl'
@@ -421,7 +482,7 @@ save restrict_gather_flag, replace
 clear 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c4_restrictions_on_gatherings.csv"
 * Renaming variables to label name 		
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' restrict_gather`lbl'
@@ -429,7 +490,7 @@ foreach v of var jan2020-v690 {
 
 * Merge flag data 
 merge 1:1 v1 country_code country_name using restrict_gather_flag
-drop _merge 
+keep country_code country_name restrict* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -437,20 +498,21 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
-
 * Recoding values to a binary - "0" no measures, restricted to more than 1000 or restricted from 101-1000; "1" restricted 10-100 or <10
 foreach v of var restrict_gather_01Apr2020-restrict_gather_13Jan2021 {
 	recode `v' (0/2 = 0) 
 	recode `v' (3/4 = 1)
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var restrict_gather_01Apr2020-restrict_gather_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop restrict_gather_01Jan2020-restrict_gather_31Mar2020 
-keep country_code-restrict_gather_13Jan2021
-
+drop flag*
 save restrict_gather, replace
 
 *** For all countries except Nepal *** 
@@ -465,10 +527,20 @@ egen restrict_gather_Sep2020 = rowtotal(restrict_gather_01Sep2020-restrict_gathe
 egen restrict_gather_Oct2020 = rowtotal(restrict_gather_01Oct2020-restrict_gather_31Oct2020)
 egen restrict_gather_Nov2020 = rowtotal(restrict_gather_01Nov2020-restrict_gather_30Nov2020)
 egen restrict_gather_Dec2020 = rowtotal(restrict_gather_01Dec2020-restrict_gather_31Dec2020)
+* National
+egen restrict_gather_Apr2020_ntnl = rowtotal(restrict_gather_01Apr2020_ntnl-restrict_gather_30Apr2020_ntnl)
+egen restrict_gather_May2020_ntnl = rowtotal(restrict_gather_01May2020_ntnl-restrict_gather_31May2020_ntnl)
+egen restrict_gather_Jun2020_ntnl = rowtotal(restrict_gather_01Jun2020_ntnl-restrict_gather_30Jun2020_ntnl)
+egen restrict_gather_Jul2020_ntnl = rowtotal(restrict_gather_01Jul2020_ntnl-restrict_gather_31Jul2020_ntnl)
+egen restrict_gather_Aug2020_ntnl = rowtotal(restrict_gather_01Aug2020_ntnl-restrict_gather_31Aug2020_ntnl)
+egen restrict_gather_Sep2020_ntnl = rowtotal(restrict_gather_01Sep2020_ntnl-restrict_gather_30Sep2020_ntnl)
+egen restrict_gather_Oct2020_ntnl = rowtotal(restrict_gather_01Oct2020_ntnl-restrict_gather_31Oct2020_ntnl)
+egen restrict_gather_Nov2020_ntnl = rowtotal(restrict_gather_01Nov2020_ntnl-restrict_gather_30Nov2020_ntnl)
+egen restrict_gather_Dec2020_ntnl = rowtotal(restrict_gather_01Dec2020_ntnl-restrict_gather_31Dec2020_ntnl)
 
-drop restrict_gather_01Apr2020-restrict_gather_13Jan2021
+drop restrict_gather_01Apr2020-restrict_gather_13Jan2021_ntnl
 
-foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020 {
+foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -488,10 +560,20 @@ egen restrict_gather_Sep2020 = rowtotal(restrict_gather_17Sep2020-restrict_gathe
 egen restrict_gather_Oct2020 = rowtotal(restrict_gather_17Oct2020-restrict_gather_15Nov2020)
 egen restrict_gather_Nov2020 = rowtotal(restrict_gather_16Nov2020-restrict_gather_15Dec2020)
 egen restrict_gather_Dec2020 = rowtotal(restrict_gather_16Dec2020-restrict_gather_13Jan2021)
+*National 
+egen restrict_gather_Apr2020_ntnl = rowtotal(restrict_gather_13Apr2020_ntnl-restrict_gather_13May2020_ntnl)
+egen restrict_gather_May2020_ntnl = rowtotal(restrict_gather_14May2020_ntnl-restrict_gather_14Jun2020_ntnl)
+egen restrict_gather_Jun2020_ntnl = rowtotal(restrict_gather_15Jun2020_ntnl-restrict_gather_15Jul2020_ntnl)
+egen restrict_gather_Jul2020_ntnl = rowtotal(restrict_gather_16Jul2020_ntnl-restrict_gather_16Aug2020_ntnl)
+egen restrict_gather_Aug2020_ntnl = rowtotal(restrict_gather_17Aug2020_ntnl-restrict_gather_16Sep2020_ntnl)
+egen restrict_gather_Sep2020_ntnl = rowtotal(restrict_gather_17Sep2020_ntnl-restrict_gather_16Oct2020_ntnl)
+egen restrict_gather_Oct2020_ntnl = rowtotal(restrict_gather_17Oct2020_ntnl-restrict_gather_15Nov2020_ntnl)
+egen restrict_gather_Nov2020_ntnl = rowtotal(restrict_gather_16Nov2020_ntnl-restrict_gather_15Dec2020_ntnl)
+egen restrict_gather_Dec2020_ntnl = rowtotal(restrict_gather_16Dec2020_ntnl-restrict_gather_13Jan2021_ntnl)
 
-drop restrict_gather_01Apr2020-restrict_gather_13Jan2021
+drop restrict_gather_01Apr2020-restrict_gather_13Jan2021_ntnl
 
-foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020 {
+foreach v of var restrict_gather_Apr2020-restrict_gather_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -506,7 +588,7 @@ clear all
 * Save flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c5_flag.csv"
 * Renaming variables 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_public_trnsprt`lbl'
@@ -517,7 +599,7 @@ save public_trnsprt_flag, replace
 clear 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c5_close_public_transport.csv"
 * Renaming variables to label name 		
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' public_trnsprt`lbl'
@@ -526,7 +608,7 @@ foreach v of var jan2020-v690 {
 
 * Merge flag data 
 merge 1:1 v1 country_code country_name using public_trnsprt_flag
-drop _merge 
+keep country_code country_name public* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -534,20 +616,22 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
 
 * Recoding values to a binary - "0" no measures and recommend reducing volume, "1" required closing public transport 
 foreach v of var public_trnsprt_01Apr2020-public_trnsprt_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2 = 1)
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var public_trnsprt_01Apr2020-public_trnsprt_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop public_trnsprt_01Jan2020-public_trnsprt_31Mar2020 
-keep country_code-public_trnsprt_13Jan2021
-
+drop flag*
 save public_trnsprt, replace
 
 *** For all countries except Nepal *** 
@@ -562,10 +646,20 @@ egen public_trnsprt_Sep2020 = rowtotal(public_trnsprt_01Sep2020-public_trnsprt_3
 egen public_trnsprt_Oct2020 = rowtotal(public_trnsprt_01Oct2020-public_trnsprt_31Oct2020)
 egen public_trnsprt_Nov2020 = rowtotal(public_trnsprt_01Nov2020-public_trnsprt_30Nov2020)
 egen public_trnsprt_Dec2020 = rowtotal(public_trnsprt_01Dec2020-public_trnsprt_31Dec2020)
+*National
+egen public_trnsprt_Apr2020_ntnl = rowtotal(public_trnsprt_01Apr2020_ntnl-public_trnsprt_30Apr2020_ntnl)
+egen public_trnsprt_May2020_ntnl = rowtotal(public_trnsprt_01May2020_ntnl-public_trnsprt_31May2020_ntnl)
+egen public_trnsprt_Jun2020_ntnl = rowtotal(public_trnsprt_01Jun2020_ntnl-public_trnsprt_30Jun2020_ntnl)
+egen public_trnsprt_Jul2020_ntnl = rowtotal(public_trnsprt_01Jul2020_ntnl-public_trnsprt_31Jul2020_ntnl)
+egen public_trnsprt_Aug2020_ntnl = rowtotal(public_trnsprt_01Aug2020_ntnl-public_trnsprt_31Aug2020_ntnl)
+egen public_trnsprt_Sep2020_ntnl = rowtotal(public_trnsprt_01Sep2020_ntnl-public_trnsprt_30Sep2020_ntnl)
+egen public_trnsprt_Oct2020_ntnl = rowtotal(public_trnsprt_01Oct2020_ntnl-public_trnsprt_31Oct2020_ntnl)
+egen public_trnsprt_Nov2020_ntnl = rowtotal(public_trnsprt_01Nov2020_ntnl-public_trnsprt_30Nov2020_ntnl)
+egen public_trnsprt_Dec2020_ntnl = rowtotal(public_trnsprt_01Dec2020_ntnl-public_trnsprt_31Dec2020_ntnl)
 
-drop public_trnsprt_01Apr2020-public_trnsprt_13Jan2021
+drop public_trnsprt_01Apr2020-public_trnsprt_13Jan2021_ntnl
 
-foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020 {
+foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -585,10 +679,20 @@ egen public_trnsprt_Sep2020 = rowtotal(public_trnsprt_17Sep2020-public_trnsprt_1
 egen public_trnsprt_Oct2020 = rowtotal(public_trnsprt_17Oct2020-public_trnsprt_15Nov2020)
 egen public_trnsprt_Nov2020 = rowtotal(public_trnsprt_16Nov2020-public_trnsprt_15Dec2020)
 egen public_trnsprt_Dec2020 = rowtotal(public_trnsprt_16Dec2020-public_trnsprt_13Jan2021)
+*National 
+egen public_trnsprt_Apr2020_ntnl = rowtotal(public_trnsprt_13Apr2020_ntnl-public_trnsprt_13May2020_ntnl)
+egen public_trnsprt_May2020_ntnl = rowtotal(public_trnsprt_14May2020_ntnl-public_trnsprt_14Jun2020_ntnl)
+egen public_trnsprt_Jun2020_ntnl = rowtotal(public_trnsprt_15Jun2020_ntnl-public_trnsprt_15Jul2020_ntnl)
+egen public_trnsprt_Jul2020_ntnl = rowtotal(public_trnsprt_16Jul2020_ntnl-public_trnsprt_16Aug2020_ntnl)
+egen public_trnsprt_Aug2020_ntnl = rowtotal(public_trnsprt_17Aug2020_ntnl-public_trnsprt_16Sep2020_ntnl)
+egen public_trnsprt_Sep2020_ntnl = rowtotal(public_trnsprt_17Sep2020_ntnl-public_trnsprt_16Oct2020_ntnl)
+egen public_trnsprt_Oct2020_ntnl = rowtotal(public_trnsprt_17Oct2020_ntnl-public_trnsprt_15Nov2020_ntnl)
+egen public_trnsprt_Nov2020_ntnl = rowtotal(public_trnsprt_16Nov2020_ntnl-public_trnsprt_15Dec2020_ntnl)
+egen public_trnsprt_Dec2020_ntnl = rowtotal(public_trnsprt_16Dec2020_ntnl-public_trnsprt_13Jan2021_ntnl)
 
-drop public_trnsprt_01Apr2020-public_trnsprt_13Jan2021
+drop public_trnsprt_01Apr2020-public_trnsprt_13Jan2021_ntnl
 
-foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020 {
+foreach v of var public_trnsprt_Apr2020-public_trnsprt_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -602,7 +706,7 @@ clear all
 * Save stay-home flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c6_flag.csv"
 * Renaming variables 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_stay_home`lbl'
@@ -613,7 +717,7 @@ save stay_home_flag, replace
 clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c6_stay_at_home_requirements.csv"
 * Renaming variables to label name 		
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' stay_home`lbl'
@@ -621,7 +725,7 @@ foreach v of var jan2020-v690 {
 
 * Merge flag data 
 merge 1:1 v1 country_code country_name using stay_home_flag
-drop _merge 
+keep country_code country_name stay* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -629,20 +733,21 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
-
 * Recoding values to a binary - "0" no measures and recommend staying home, "1" required with some or no exceptions 
 foreach v of var stay_home_01Apr2020-stay_home_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2/3 = 1)
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var stay_home_01Apr2020-stay_home_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop stay_home_01Jan2020-stay_home_31Mar2020 
-keep country_code-stay_home_13Jan2021
-
+drop flag*
 save stay_home, replace
 
 *** For all countries except Nepal *** 
@@ -657,10 +762,20 @@ egen stay_home_Sep2020 = rowtotal(stay_home_01Sep2020-stay_home_30Sep2020)
 egen stay_home_Oct2020 = rowtotal(stay_home_01Oct2020-stay_home_31Oct2020)
 egen stay_home_Nov2020 = rowtotal(stay_home_01Nov2020-stay_home_30Nov2020)
 egen stay_home_Dec2020 = rowtotal(stay_home_01Dec2020-stay_home_31Dec2020)
+* National
+egen stay_home_Apr2020_ntnl = rowtotal(stay_home_01Apr2020_ntnl-stay_home_30Apr2020_ntnl)
+egen stay_home_May2020_ntnl = rowtotal(stay_home_01May2020_ntnl-stay_home_31May2020_ntnl)
+egen stay_home_Jun2020_ntnl = rowtotal(stay_home_01Jun2020_ntnl-stay_home_30Jun2020_ntnl)
+egen stay_home_Jul2020_ntnl = rowtotal(stay_home_01Jul2020_ntnl-stay_home_31Jul2020_ntnl)
+egen stay_home_Aug2020_ntnl = rowtotal(stay_home_01Aug2020_ntnl-stay_home_31Aug2020_ntnl)
+egen stay_home_Sep2020_ntnl = rowtotal(stay_home_01Sep2020_ntnl-stay_home_30Sep2020_ntnl)
+egen stay_home_Oct2020_ntnl = rowtotal(stay_home_01Oct2020_ntnl-stay_home_31Oct2020_ntnl)
+egen stay_home_Nov2020_ntnl = rowtotal(stay_home_01Nov2020_ntnl-stay_home_30Nov2020_ntnl)
+egen stay_home_Dec2020_ntnl = rowtotal(stay_home_01Dec2020_ntnl-stay_home_31Dec2020_ntnl)
 
-drop stay_home_01Apr2020-stay_home_13Jan2021
+drop stay_home_01Apr2020-stay_home_13Jan2021_ntnl
 
-foreach v of var stay_home_Apr2020-stay_home_Dec2020 {
+foreach v of var stay_home_Apr2020-stay_home_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -680,10 +795,20 @@ egen stay_home_Sep2020 = rowtotal(stay_home_17Sep2020-stay_home_16Oct2020)
 egen stay_home_Oct2020 = rowtotal(stay_home_17Oct2020-stay_home_15Nov2020)
 egen stay_home_Nov2020 = rowtotal(stay_home_16Nov2020-stay_home_15Dec2020)
 egen stay_home_Dec2020 = rowtotal(stay_home_16Dec2020-stay_home_13Jan2021)
+* National
+egen stay_home_Apr2020_ntnl = rowtotal(stay_home_13Apr2020_ntnl-stay_home_13May2020_ntnl)
+egen stay_home_May2020_ntnl = rowtotal(stay_home_14May2020_ntnl-stay_home_14Jun2020_ntnl)
+egen stay_home_Jun2020_ntnl = rowtotal(stay_home_15Jun2020_ntnl-stay_home_15Jul2020_ntnl)
+egen stay_home_Jul2020_ntnl = rowtotal(stay_home_16Jul2020_ntnl-stay_home_16Aug2020_ntnl)
+egen stay_home_Aug2020_ntnl = rowtotal(stay_home_17Aug2020_ntnl-stay_home_16Sep2020_ntnl)
+egen stay_home_Sep2020_ntnl = rowtotal(stay_home_17Sep2020_ntnl-stay_home_16Oct2020_ntnl)
+egen stay_home_Oct2020_ntnl = rowtotal(stay_home_17Oct2020_ntnl-stay_home_15Nov2020_ntnl)
+egen stay_home_Nov2020_ntnl = rowtotal(stay_home_16Nov2020_ntnl-stay_home_15Dec2020_ntnl)
+egen stay_home_Dec2020_ntnl = rowtotal(stay_home_16Dec2020_ntnl-stay_home_13Jan2021_ntnl)
 
-drop stay_home_01Apr2020-stay_home_13Jan2021
+drop stay_home_01Apr2020-stay_home_13Jan2021_ntnl
 
-foreach v of var stay_home_Apr2020-stay_home_Dec2020 {
+foreach v of var stay_home_Apr2020-stay_home_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -698,7 +823,7 @@ clear all
 * Save internal movement flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c7_flag.csv"
 * Renaming variables 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_move_restr`lbl'
@@ -709,7 +834,7 @@ save move_restr_flag, replace
 clear
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/c7_movementrestrictions.csv"
 * Renaming variables to label name 		
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' move_restr`lbl'
@@ -717,7 +842,7 @@ foreach v of var jan2020-v690 {
 
 * Merge flag data 
 merge 1:1 v1 country_code country_name using move_restr_flag
-drop _merge 
+keep country_code country_name move* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -725,22 +850,22 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
-
 * Recoding values to a binary - "0" no measures and recommend not to travel between regions/cities, "1" internal movement restrictions in place
 foreach v of var move_restr_01Apr2020-move_restr_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2 = 1)
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var move_restr_01Apr2020-move_restr_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop move_restr_01Jan2020-move_restr_31Mar2020 
-keep country_code-move_restr_13Jan2021
-
+drop flag*
 save move_restr, replace
-
 
 *** For all countries except Nepal *** 
 drop if country_code == "NPL"
@@ -754,10 +879,20 @@ egen move_restr_Sep2020 = rowtotal(move_restr_01Sep2020-move_restr_30Sep2020)
 egen move_restr_Oct2020 = rowtotal(move_restr_01Oct2020-move_restr_31Oct2020)
 egen move_restr_Nov2020 = rowtotal(move_restr_01Nov2020-move_restr_30Nov2020)
 egen move_restr_Dec2020 = rowtotal(move_restr_01Dec2020-move_restr_31Dec2020)
+* National
+egen move_restr_Apr2020_ntnl = rowtotal(move_restr_01Apr2020_ntnl-move_restr_30Apr2020_ntnl)
+egen move_restr_May2020_ntnl = rowtotal(move_restr_01May2020_ntnl-move_restr_31May2020_ntnl)
+egen move_restr_Jun2020_ntnl = rowtotal(move_restr_01Jun2020_ntnl-move_restr_30Jun2020_ntnl)
+egen move_restr_Jul2020_ntnl = rowtotal(move_restr_01Jul2020_ntnl-move_restr_31Jul2020_ntnl)
+egen move_restr_Aug2020_ntnl = rowtotal(move_restr_01Aug2020_ntnl-move_restr_31Aug2020_ntnl)
+egen move_restr_Sep2020_ntnl = rowtotal(move_restr_01Sep2020_ntnl-move_restr_30Sep2020_ntnl)
+egen move_restr_Oct2020_ntnl = rowtotal(move_restr_01Oct2020_ntnl-move_restr_31Oct2020_ntnl)
+egen move_restr_Nov2020_ntnl = rowtotal(move_restr_01Nov2020_ntnl-move_restr_30Nov2020_ntnl)
+egen move_restr_Dec2020_ntnl = rowtotal(move_restr_01Dec2020_ntnl-move_restr_31Dec2020_ntnl)
 
-drop move_restr_01Apr2020-move_restr_13Jan2021
+drop move_restr_01Apr2020-move_restr_13Jan2021_ntnl
 
-foreach v of var move_restr_Apr2020-move_restr_Dec2020 {
+foreach v of var move_restr_Apr2020-move_restr_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -777,10 +912,20 @@ egen move_restr_Sep2020 = rowtotal(move_restr_17Sep2020-move_restr_16Oct2020)
 egen move_restr_Oct2020 = rowtotal(move_restr_17Oct2020-move_restr_15Nov2020)
 egen move_restr_Nov2020 = rowtotal(move_restr_16Nov2020-move_restr_15Dec2020)
 egen move_restr_Dec2020 = rowtotal(move_restr_16Dec2020-move_restr_13Jan2021)
+* National
+egen move_restr_Apr2020_ntnl = rowtotal(move_restr_01Apr2020_ntnl-move_restr_30Apr2020_ntnl)
+egen move_restr_May2020_ntnl = rowtotal(move_restr_01May2020_ntnl-move_restr_31May2020_ntnl)
+egen move_restr_Jun2020_ntnl = rowtotal(move_restr_01Jun2020_ntnl-move_restr_30Jun2020_ntnl)
+egen move_restr_Jul2020_ntnl = rowtotal(move_restr_01Jul2020_ntnl-move_restr_31Jul2020_ntnl)
+egen move_restr_Aug2020_ntnl = rowtotal(move_restr_01Aug2020_ntnl-move_restr_31Aug2020_ntnl)
+egen move_restr_Sep2020_ntnl = rowtotal(move_restr_01Sep2020_ntnl-move_restr_30Sep2020_ntnl)
+egen move_restr_Oct2020_ntnl = rowtotal(move_restr_01Oct2020_ntnl-move_restr_31Oct2020_ntnl)
+egen move_restr_Nov2020_ntnl = rowtotal(move_restr_01Nov2020_ntnl-move_restr_30Nov2020_ntnl)
+egen move_restr_Dec2020_ntnl = rowtotal(move_restr_01Dec2020_ntnl-move_restr_31Dec2020_ntnl)
 
-drop move_restr_01Apr2020-move_restr_13Jan2021
+drop move_restr_01Apr2020-move_restr_13Jan2021_ntnl
 
-foreach v of var move_restr_Apr2020-move_restr_Dec2020 {
+foreach v of var move_restr_Apr2020-move_restr_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -802,12 +947,9 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
-
 * Renaming variables to label name 		
 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' int_trav`lbl'
@@ -877,7 +1019,7 @@ clear all
 * Save public info flag data 
 import delimited  "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/h1_flag.csv"
 * Renaming variables 
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' flag_info_camp`lbl'
@@ -888,7 +1030,7 @@ save info_camp_flag, replace
 clear 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/h1_public_information_campaigns.csv"
 * Renaming variables to label name 		
-foreach v of var jan2020-v690 {
+foreach v of var jan2020-v382 {
     local lbl : var label `v'
     local lbl = strtoname("`lbl'")
     rename `v' info_camp`lbl'
@@ -896,7 +1038,7 @@ foreach v of var jan2020-v690 {
 
 * Merge flag data 
 merge 1:1 v1 country_code country_name using info_camp_flag
-drop _merge 
+keep country_code country_name info* flag*
 
 * Keep countries that are in our study 
 keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "Ghana" | /// 
@@ -904,20 +1046,21 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-*Drop country ID 
-drop v1
-
 * Recoding values to a binary - "0" no measures or public officials urging caution, "1" coordinated campaign
 foreach v of var info_camp_01Apr2020-info_camp_13Jan2021 {
 	recode `v' (0/1 = 0) 
 	recode `v' (2= 1)
-	recode `v' (1 = 0) if flag_`v' == 0
+}
+
+* Create duplicate variables to incorporate flag data - national policy or not 
+foreach v of var info_camp_01Apr2020-info_camp_13Jan2021 {
+	gen `v'_ntnl = `v'
+	recode `v'_ntnl (1 = 0) if flag_`v' == 0
 }
 
 * Only keep data from April - December 2020 
 drop info_camp_01Jan2020-info_camp_31Mar2020 
-keep country_code-info_camp_13Jan2021
-
+drop flag*
 save info_camp, replace
 
 *** For all countries except Nepal *** 
@@ -932,10 +1075,20 @@ egen info_camp_Sep2020 = rowtotal(info_camp_01Sep2020-info_camp_30Sep2020)
 egen info_camp_Oct2020 = rowtotal(info_camp_01Oct2020-info_camp_31Oct2020)
 egen info_camp_Nov2020 = rowtotal(info_camp_01Nov2020-info_camp_30Nov2020)
 egen info_camp_Dec2020 = rowtotal(info_camp_01Dec2020-info_camp_31Dec2020)
+* National
+egen info_camp_Apr2020_ntnl = rowtotal(info_camp_01Apr2020_ntnl-info_camp_30Apr2020_ntnl)
+egen info_camp_May2020_ntnl = rowtotal(info_camp_01May2020_ntnl-info_camp_31May2020_ntnl)
+egen info_camp_Jun2020_ntnl = rowtotal(info_camp_01Jun2020_ntnl-info_camp_30Jun2020_ntnl)
+egen info_camp_Jul2020_ntnl = rowtotal(info_camp_01Jul2020_ntnl-info_camp_31Jul2020_ntnl)
+egen info_camp_Aug2020_ntnl = rowtotal(info_camp_01Aug2020_ntnl-info_camp_31Aug2020_ntnl)
+egen info_camp_Sep2020_ntnl = rowtotal(info_camp_01Sep2020_ntnl-info_camp_30Sep2020_ntnl)
+egen info_camp_Oct2020_ntnl = rowtotal(info_camp_01Oct2020_ntnl-info_camp_31Oct2020_ntnl)
+egen info_camp_Nov2020_ntnl = rowtotal(info_camp_01Nov2020_ntnl-info_camp_30Nov2020_ntnl)
+egen info_camp_Dec2020_ntnl = rowtotal(info_camp_01Dec2020_ntnl-info_camp_31Dec2020_ntnl)
 
-drop info_camp_01Apr2020-info_camp_13Jan2021
+drop info_camp_01Apr2020-info_camp_13Jan2021_ntnl
 
-foreach v of var info_camp_Apr2020-info_camp_Dec2020 {
+foreach v of var info_camp_Apr2020-info_camp_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -955,10 +1108,20 @@ egen info_camp_Sep2020 = rowtotal(info_camp_17Sep2020-info_camp_16Oct2020)
 egen info_camp_Oct2020 = rowtotal(info_camp_17Oct2020-info_camp_15Nov2020)
 egen info_camp_Nov2020 = rowtotal(info_camp_16Nov2020-info_camp_15Dec2020)
 egen info_camp_Dec2020 = rowtotal(info_camp_16Dec2020-info_camp_13Jan2021)
+* National 
+egen info_camp_Apr2020_ntnl = rowtotal(info_camp_13Apr2020_ntnl-info_camp_13May2020_ntnl)
+egen info_camp_May2020_ntnl = rowtotal(info_camp_14May2020_ntnl-info_camp_14Jun2020_ntnl)
+egen info_camp_Jun2020_ntnl = rowtotal(info_camp_15Jun2020_ntnl-info_camp_15Jul2020_ntnl)
+egen info_camp_Jul2020_ntnl = rowtotal(info_camp_16Jul2020_ntnl-info_camp_16Aug2020_ntnl)
+egen info_camp_Aug2020_ntnl = rowtotal(info_camp_17Aug2020_ntnl-info_camp_16Sep2020_ntnl)
+egen info_camp_Sep2020_ntnl = rowtotal(info_camp_17Sep2020_ntnl-info_camp_16Oct2020_ntnl)
+egen info_camp_Oct2020_ntnl = rowtotal(info_camp_17Oct2020_ntnl-info_camp_15Nov2020_ntnl)
+egen info_camp_Nov2020_ntnl = rowtotal(info_camp_16Nov2020_ntnl-info_camp_15Dec2020_ntnl)
+egen info_camp_Dec2020_ntnl = rowtotal(info_camp_16Dec2020_ntnl-info_camp_13Jan2021_ntnl)
 
-drop info_camp_01Apr2020-info_camp_13Jan2021
+drop info_camp_01Apr2020-info_camp_13Jan2021_ntnl
 
-foreach v of var info_camp_Apr2020-info_camp_Dec2020 {
+foreach v of var info_camp_Apr2020-info_camp_Dec2020_ntnl {
 	replace `v' = 0 if `v' < 10
 	replace `v' = 1 if `v' >= 10
 }
@@ -981,9 +1144,14 @@ foreach x of global policy {
 	drop _merge
 }
 
+*Renaming for reshape 
+rename *_ntnl ntnl_*
+
 * Reshaping dataset to long 
 reshape long curfew soe info_camp school_close work_close public_event ///
-			 restrict_gather public_trnsprt stay_home move_restr int_trav, ///
+			 restrict_gather public_trnsprt stay_home move_restr int_trav /// 
+			 ntnl_info_camp ntnl_school_close ntnl_work_close ntnl_public_event ///
+			 ntnl_restrict_gather ntnl_public_trnsprt ntnl_stay_home ntnl_move_restr, ///
 			 i(country_code country_name) j(mo) string
 gen year = 2020	
 gen month = 4
@@ -1036,15 +1204,24 @@ lab var stringency_max "Max stringency index for the month"
 lab var curfew "Curfew in place"
 lab var soe "State of emergency in place"
 
-lab var school_close "School closures in place"
-lab var work_close "Workplace closures in place"
-lab var public_event "Canceling of public events"
-lab var restrict_gather "Restrictions on gathering size"
-lab var public_trnsprt "Public transport closures"
-lab var stay_home "Stay at home requirements"
-lab var move_restr "Restrictions on internal movement"
-lab var int_trav "Restrictions on international travel" 
-lab var info_camp "Public information campaign"
+lab var school_close "School closures in place (any level)"
+lab var work_close "Workplace closures in place (any level)"
+lab var public_event "Canceling of public events (any level)"
+lab var restrict_gather "Restrictions on gathering size (any level)"
+lab var public_trnsprt "Public transport closures (any level)"
+lab var stay_home "Stay at home requirements (any level)"
+lab var move_restr "Restrictions on internal movement (any level)"
+lab var int_trav "Restrictions on international travel (any level)" 
+lab var info_camp "Public information campaign (any level)"
+
+lab var ntnl_school_close "School closures in place (national level)"
+lab var ntnl_work_close "Workplace closures in place (national level)"
+lab var ntnl_public_event "Canceling of public events(national level)"
+lab var ntnl_restrict_gather "Restrictions on gathering size (national level)"
+lab var ntnl_public_trnsprt "Public transport closures (national level)"
+lab var ntnl_stay_home "Stay at home requirements (national level)"
+lab var ntnl_move_restr "Restrictions on internal movement (national level)"
+lab var ntnl_info_camp "Public information campaign (national level)"
 
 encode country, gen(co)
 
