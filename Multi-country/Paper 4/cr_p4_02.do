@@ -1228,5 +1228,5 @@ lab var ntnl_info_camp "Public information campaign (national level)"
 
 encode country, gen(co)
 
-save "$user/$analysis/Data/Multip4_combined_v2.dta", replace
+save "$user/$analysis/Data/Multip4_national_targeted.dta", replace
 
