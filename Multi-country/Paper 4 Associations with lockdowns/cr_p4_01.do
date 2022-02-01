@@ -67,7 +67,8 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 		replace rmonth = month+12 if year ==2020
 		
 	foreach x in $`c'all {
-		egen preCOmean`x'= mean(`x') if rmonth<16 	
+		egen preCOmean`x'= mean(`x') if rmonth<16 	// relative volume compared to the average pre-Covid
+													// could also do relative volume compared to February 2020
 		carryforward preCOmean`x', replace
 		gen rel_`x'= `x'/ preCOmean`x'
 	}
@@ -76,6 +77,7 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 	
 	save "$user/$`c'data/Data for analysis/`c'p4.dta", replace
 }
+
 * Nepal separately, different calendar
 	u "$user/$NEPdata/Data for analysis/NEPp4.dta", clear
 		gen rmonth= month if year==2019
@@ -99,9 +101,12 @@ foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 * Append
 foreach c in CHL ETH GHA HTI KZN LAO MEX  KOR THA {
 	 u "$user/$`c'data/Data for analysis/`c'p4.dta", clear
-	append using "$user/$analysis/Data/Multip4.dta"
-	save "$user/$analysis/Data/Multip4.dta", replace
+	 append using "$user/$analysis/Data/Multip4.dta"
+	 save "$user/$analysis/Data/Multip4.dta", replace
 }
+
+sort country rmonth
+
 rename rel_del_util rmn1
 rename rel_anc_util rmn2
 rename rel_cs_util rmn3
@@ -138,18 +143,57 @@ rename rel_tbscreen_qual chronic6
 rename rel_tbdetect_qual chronic7
 rename rel_tbtreat_qual  chronic8
 rename rel_hivtest_qual chronic9
+ 
 
-sort country rmonth 
-
-reshape long rmn summ child art chronic, i(rmonth country ) j( service_type )
+reshape long rmn summ child art chronic, i(rmonth country) j( service_type )
 
 rename (rmn summ child art chronic) (relative_vol1 relative_vol2 relative_vol3 relative_vol4 relative_vol5 )
-reshape long relative_vol, i(country rmonth service_type) j( service )
-drop service_type
-drop if relative_vol ==.
-lab def service 1"RMN" 2 "Summ" 3 "Child" 4 "ART" 5"Chronic"
-lab val service service 
 
+reshape long relative_vol, i(country rmonth service_type) j( service )
+
+drop if relative_vol ==.
+lab def service 1"RMN" 2 "Summative" 3 "Child" 4 "ART" 5"Chronic"
+lab val service service 
+sort service service_type rmonth
+
+gen service_name= "Deliveries" if service==1 & service_type==1
+replace service_name= "ANC visits" if service==1 & service_type==2
+replace service_name= "C-sections" if service==1 & service_type==3
+replace service_name= "Contraceptive visits" if service==1 & service_type==4
+replace service_name= "PNC visits" if service==1 & service_type==5
+
+replace service_name= "Outpatient visits" if service==2 & service_type==1
+replace service_name= "Inpatient admissions" if service==2 & service_type==2
+replace service_name= "Road traffic injuries" if service==2 & service_type==3
+replace service_name= "ER visits" if service==2 & service_type==4
+replace service_name= "Trauma admissions" if service==2 & service_type==5
+replace service_name= "Surgeries" if service==2 & service_type==6
+
+replace service_name= "Malaria visits" if service==3 & service_type==1
+replace service_name= "Diarrhea visits" if service==3 & service_type==2
+replace service_name= "Pneumonia visits" if service==3 & service_type==3
+replace service_name= "Malnutrition visits" if service==3 & service_type==4
+replace service_name= "BCG vaccinations" if service==3 & service_type==5
+replace service_name= "Pentavalent vaccinations" if service==3 & service_type==6
+replace service_name= "Measles vaccinations" if service==3 & service_type==7
+replace service_name= "OPV3 vaccinations" if service==3 & service_type==8
+replace service_name= "Pneumococcal vaccinations" if service==3 & service_type==9
+replace service_name= "Rotavirus vaccinations" if service==3 & service_type==10
+replace service_name= "Fully vaxxed under 1" if service==3 & service_type==11
+
+replace service_name="Nb of people on ART" if service==4 & service_type==1
+
+replace service_name="Hypertension visits" if service==5 & service_type==1
+replace service_name="Diabetes visits" if service==5 & service_type==2
+replace service_name="Mental health visits" if service==5 & service_type==3
+replace service_name="Cervical cancer screening" if service==5 & service_type==4
+replace service_name="Breast cancer screening" if service==5 & service_type==5
+replace service_name="TB screening" if service==5 & service_type==6
+replace service_name="TB case detection" if service==5 & service_type==7
+replace service_name="TB treatment" if service==5 & service_type==8
+replace service_name="HIV tests" if service==5 & service_type==9
+
+drop service_type
 sort country rmonth service
 lab var rmonth "running month"
 lab var service "health service type"
