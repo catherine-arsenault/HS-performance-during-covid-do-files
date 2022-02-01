@@ -5,9 +5,10 @@
 clear all
 set more off 
 cd "$user/$analysis/Data"
+* Codebook from OXFORD policy dataset: https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md
 
-************** Stringency Index Dataset **************
-******************************************************
+*************************** Stringency index ***********************************
+********************************************************************************
 
 * Import latest stringency data from github 
 import delimited "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/timeseries/stringency_index.csv", varnames(1)
@@ -111,8 +112,8 @@ replace country = "KZN" if country == "ZAF"
 replace country = "NEP" if country == "NPL"
 save "$user/$analysis/Data/stringency_index.dta", replace
 
-******************** Policy Datasets ********************
-*********************************************************
+*************************** Policy Datasets ************************************
+********************************************************************************
 
 ******** School closures ********
 clear all
@@ -230,7 +231,6 @@ foreach v of var school_close_Apr2020-school_close_Dec2020_ntnl {
 append using school_close_all
 
 save "$user/$analysis/Data/school_close_tmp.dta", replace
-
 
 ******** Workplace closures ********
 clear all 
@@ -498,10 +498,13 @@ keep if country_name == "Chile" | country_name == "Ethiopia" | country_name == "
 		country_name == "Nepal" | country_name == "South Africa" | country_name == "South Korea" | ///
 		country_name == "Thailand"
 
-* Recoding values to a binary - "0" no measures, restricted to more than 1000 or restricted from 101-1000; "1" restricted 10-100 or <10
+* Recoding values to a binary variable
+*  "0" is no measures or only restrictions on v large gatherings (limit> 1000) 
+*  "1" restrictions on even small gatherings incl 10 people or less to 1000
+
 foreach v of var restrict_gather_01Apr2020-restrict_gather_13Jan2021 {
-	recode `v' (0/2 = 0) 
-	recode `v' (3/4 = 1)
+	recode `v' (0/1 = 0) 
+	recode `v' (2/4 = 1) 
 }
 
 * Create duplicate variables to incorporate flag data - national policy or not 
@@ -961,8 +964,8 @@ keep country_code-int_trav_13Jan2021
 
 * Recoding values to a binary - "0" no measures, screening, or quarantine , "1" ban arrivals from some regions or total border closure 
 foreach v of var int_trav_01Apr2020-int_trav_13Jan2021 {
-	recode `v' (0/2 = 0) 
-	recode `v' (3/4= 1)
+	recode `v' (0/1 = 0) 
+	recode `v' (2/4= 1)
 }
 
 save int_trav, replace
