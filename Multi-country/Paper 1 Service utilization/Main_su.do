@@ -6,8 +6,8 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global analysis "/Users/acatherine/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 1 Service utilization"
 
-global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
-global analysis "/Users/annagage/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
+*global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+*global analysis "/Users/annagage/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 1 Service utilization"
 
 ********************************************************************************
 * File paths data 
@@ -67,6 +67,18 @@ global THAall del_util hyper_util diab_util opd_util ipd_util road_util	malaria_
 do "$dofiles/cr_su_01.do"
 
 ********************************************************************************
+* Figure 1: trend graphs 
+run "$dofiles/graphs_Chile.do"
+run "$dofiles/graphs_Ethiopia.do"
+run "$dofiles/graphs_Ghana.do"
+run "$dofiles/graphs_Haiti.do"
+run "$dofiles/graphs_Lao.do"
+run "$dofiles/graphs_Mexico.do"
+run "$dofiles/graphs_Nepal.do"
+run "$dofiles/graphs_Thailand.do"
+run "$dofiles/graphs_SKorea.do"
+run "$dofiles/graphs_ZAF.do"
+********************************************************************************
 * Regression analyses, forest plots and heatmap
 do "$dofiles/an_su_01.do"
 
@@ -86,10 +98,6 @@ do "$dofiles/an_su_04.do"
 * Sub-analysis: trends in 2021
 do "$dofiles/cr_su_02.do"
 
-********************************************************************************
-* Country-specific graphs
-run "$dofiles/graphs_Chile.do"
-run "$dofiles/graphs_Ethiopia.do"
 
 
 
