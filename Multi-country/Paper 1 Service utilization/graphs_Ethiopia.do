@@ -2,12 +2,8 @@
 ********************************************************************************
 * Ethiopia GRAPHS
 ********************************************************************************	
-	u "$user/$ETHdata/Data for analysis/ETHtmp.dta"
-	lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" ///
-			13"J" 14"F" 15"M" 16"A" 17"M" 18"J" 19"J" 20"A" ///
-			21"S" 22"O" 23"N" 24"D"
-			lab val rmonth rmonth 
-	save "$user/$ETHdata/Data for analysis/ETHtmp.dta",	replace	
+	graph set window fontface "Arial"
+
 * OPD
 			u "$user/$ETHdata/Data for analysis/ETHtmp.dta", clear
 			qui xtreg opd_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
@@ -26,10 +22,10 @@
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("Ethiopia outpatient visits (2019-2020)", size(small))  ///
-			xlabel(1(1)24) xlabel(,  labsize(vsmall)) ylabel(0(250000)1000000, labsize(vsmall))
+			graphregion(color(white)) title("Ethiopia outpatient visits (2019-2020)", size(msmall) color(black))  ///
+			xlabel(1(1)24) xlabel(,  labsize(msmall)) ylabel(0(250000)1000000, labsize(msmall))
 			
-			graph export "$analysis/Results/Graphs/Ethiopia_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Fig1/Ethiopia_opd_util.pdf", replace
 /*Penta
 			u "$user/$ETHdata/Data for analysis/ETHtmp.dta", clear
 			qui xtreg pent_qual rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction

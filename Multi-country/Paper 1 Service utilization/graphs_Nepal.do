@@ -2,13 +2,8 @@
 ********************************************************************************
 * NEPAL GRAPHS
 ********************************************************************************	
-u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
-	
-lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" ///
-			13"J" 14"F" 15"M" 16"A" 17"M" 18"J" 19"J" 20"A" ///
-			21"S" 22"O" 23"N" 24"D"
-			lab val rmonth rmonth 
-* OPD			
+	graph set window fontface "Arial"
+* Outpatient		
 			u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
 			qui xtreg opd_util rmonth if rmonth<15  , i(reg) fe cluster(reg) // linear prediction
 				predict linear_opd_util
@@ -26,10 +21,10 @@ lab def rmonth 1"J" 2"F" 3"M" 4"A" 5"M" 6"J" 7"J" 8"A" 9"S" 10"O" 11"N" 12"D" //
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title(" Nepal outpatient visits (2019-2020)", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)30000, labsize(vsmall))
+			graphregion(color(white)) title(" Nepal outpatient visits (2019-2020)", size(msmall) color(black)) ///
+			xlabel(1(1)24) xlabel(, labsize(msmall)) ylabel(0(6000)30000, labsize(msmall))
 			
-			graph export "$analysis/Results/Graphs/NEP_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Fig1/NEP_opd_util.pdf", replace
 
 * IPD			
 			u "$user/$NEPdata/Data for analysis/NEPtmp.dta", clear
