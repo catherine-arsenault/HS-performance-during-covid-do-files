@@ -5,6 +5,7 @@
 ********************************************************************************
 * KZN GRAPHS
 ********************************************************************************
+graph set window fontface "Arial"
 * OPD
 			u  "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear 
 			qui xtreg opd_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
@@ -23,10 +24,10 @@
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("KwaZulu-Natal outpatient visits (2019-2020)", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall)) ylabel(0(5000)45000, labsize(vsmall))
+			graphregion(color(white)) title("South Africa outpatient visits (2019-2020)", size(msmall) color(black)) ///
+			xlabel(1(1)24) xlabel(, labsize(msmall)) ylabel(0(10000)50000, labsize(msmall))
 		
-			graph export "$analysis/Results/Graphs/KZN_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Fig1/KZN_opd_util.pdf", replace
 
 * Pentavalent
 			u  "$user/$KZNdata/Data for analysis/KZNtmp.dta", clear 
