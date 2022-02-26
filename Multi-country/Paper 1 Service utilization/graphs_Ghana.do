@@ -24,7 +24,7 @@ graph set window fontface "Arial"
 			graphregion(color(white)) title("Ghana outpatient visits (2019-2020)", size(msmall) color(black)) ///
 			xlabel(1(1)24) xlabel(, labsize(msmall)) ylabel(0(50000)250000, labsize(msmall))
 			
-			graph export "$analysis/Results/Fig1/Graphs/GHA_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Fig1/GHA_opd_util.pdf", replace
 * Deliveries
 		u "$user/$GHAdata/Data for analysis/GHAtmp.dta", clear
 			lab def rmonth 1"J19" 2"F19" 3"M19" 4"A19" 5"M19" 6"J19" 7"J19" 8"A19" 9"S19" 10"O19" 11"N19" 12"D19" ///
