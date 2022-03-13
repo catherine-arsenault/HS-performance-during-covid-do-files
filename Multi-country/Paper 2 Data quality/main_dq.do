@@ -10,6 +10,9 @@ global analysis "SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid 
 global user "/Users/acatherine/Dropbox (Harvard University)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 2 Data quality"
 
+global user "/Users/annagage/Dropbox (Harvard University)/Work/Short term projects/Covid Resilience data"
+global analysis "/Users/annagage/Dropbox (Harvard University)/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 2 Quality dhis2"
+
 
 ********************************************************************************
 * Creation do files
