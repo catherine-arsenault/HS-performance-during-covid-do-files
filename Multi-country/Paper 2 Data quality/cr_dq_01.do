@@ -36,17 +36,43 @@ replace region ="Somali"  if region== "Somali Regional Health Bureau"
 replace region ="Tigray" if region== "Tigray Regional Health Bureau"
 order region zone organisationunitname 
 
+*Treating mortality as it was in first paper: if the service is provided, replace to missing. If it is not provided, keep missing.
+egen total_del = rowtotal(totaldel*)
+foreach var in mat_mort_num newborn_mort_num {
+egen total`var' = rowtotal(`var'*)
+forval i=1/12 {
+	replace `var'`i'_19=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_19=. if total_del==0 & total`var'==0
+	replace `var'`i'_20=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_20=. if total_del==0 & total`var'==0	
+}
+}
+foreach k in ipd er {
+egen total_`k' = rowtotal(`k'_util*)
+egen total_`k'mort = rowtotal(`k'_mort_num*)
+forval i=1/12 {
+replace `k'_mort_num`i'_19 = 0 if total_`k'>0 & total_`k'<. & total_`k'mort==0
+replace `k'_mort_num`i'_19 = . if total_`k'==0 & total_`k'mort==0
+replace `k'_mort_num`i'_20 = 0 if total_`k'>0 & total_`k'<. & total_`k'mort==0
+replace `k'_mort_num`i'_20 = . if total_`k'==0 & total_`k'mort==0
+}
+}
+
 * For outlier assessment 
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
-	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) 
+	gen neg_out`x' = rowmean`x'-(3.5*(rowsd`x')) // + threshold
 	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
 				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
-		gen flag_out_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_out_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		gen flag_pout_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		gen flag_nout_`x'`v'= 1 if `x'`v'<neg_out`x' & `x'`v'<. 
+		replace flag_pout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace flag_nout_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+
 	}
-	drop rowmean`x' rowsd`x' pos_out`x' 
+	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x'
 }
 
 * Reshaping from wide to long 
@@ -56,17 +82,30 @@ reshape long fp_util anc_util totaldel cs_util pnc_util  diarr_util ///
 			hivsupp_qual_num diab_util hyper_util diab_detec hyper_detec /// 
 			cerv_qual kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
 			sb_mort_num newborn_mort_num mat_mort_num ipd_mort_num er_mort_num icu_mort_num ///
-			flag_out_fp_util flag_out_anc_util ///
-			flag_out_totaldel flag_out_cs_util flag_out_pnc_util /// 
-			flag_out_diarr_util flag_out_pneum_util flag_out_sam_util flag_out_vacc_qual /// 
-			flag_out_bcg_qual flag_out_pent_qual flag_out_measles_qual flag_out_opv3_qual /// 
-			flag_out_pneum_qual flag_out_rota_qual flag_out_art_util flag_out_opd_util /// 
-			flag_out_er_util flag_out_ipd_util  flag_out_road_util /// 
-			flag_out_hivsupp_qual_num flag_out_diab_util flag_out_hyper_util /// 
-			flag_out_diab_detec flag_out_hyper_detec flag_out_cerv_qual flag_out_kmc_qual_num ///
-			flag_out_kmc_qual_denom flag_out_resus_qual_num flag_out_resus_qual_denom ///
-			flag_out_sb_mort_num flag_out_newborn_mort_num flag_out_mat_mort_num ///
-			flag_out_ipd_mort_num flag_out_er_mort_num flag_out_icu_mort_num, /// 
+
+			flag_pout_fp_util flag_pout_anc_util ///
+			flag_pout_totaldel flag_pout_cs_util flag_pout_pnc_util /// 
+			flag_pout_diarr_util flag_pout_pneum_util flag_pout_sam_util flag_pout_vacc_qual /// 
+			flag_pout_bcg_qual flag_pout_pent_qual flag_pout_measles_qual flag_pout_opv3_qual /// 
+			flag_pout_pneum_qual flag_pout_rota_qual flag_pout_art_util flag_pout_opd_util /// 
+			flag_pout_er_util flag_pout_ipd_util  flag_pout_road_util /// 
+			flag_pout_hivsupp_qual_num flag_pout_diab_util flag_pout_hyper_util /// 
+			flag_pout_diab_detec flag_pout_hyper_detec flag_pout_cerv_qual flag_pout_kmc_qual_num ///
+			flag_pout_kmc_qual_denom flag_pout_resus_qual_num flag_pout_resus_qual_denom ///
+			flag_pout_sb_mort_num flag_pout_newborn_mort_num flag_pout_mat_mort_num ///
+			flag_pout_ipd_mort_num flag_pout_er_mort_num flag_pout_icu_mort_num /// 		
+			flag_nout_fp_util flag_nout_anc_util ///
+			flag_nout_totaldel flag_nout_cs_util flag_nout_pnc_util /// 
+			flag_nout_diarr_util flag_nout_pneum_util flag_nout_sam_util flag_nout_vacc_qual /// 
+			flag_nout_bcg_qual flag_nout_pent_qual flag_nout_measles_qual flag_nout_opv3_qual /// 
+			flag_nout_pneum_qual flag_nout_rota_qual flag_nout_art_util flag_nout_opd_util /// 
+			flag_nout_er_util flag_nout_ipd_util  flag_nout_road_util /// 
+			flag_nout_hivsupp_qual_num flag_nout_diab_util flag_nout_hyper_util /// 
+			flag_nout_diab_detec flag_nout_hyper_detec flag_nout_cerv_qual flag_nout_kmc_qual_num ///
+			flag_nout_kmc_qual_denom flag_nout_resus_qual_num flag_nout_resus_qual_denom ///
+			flag_nout_sb_mort_num flag_nout_newborn_mort_num flag_nout_mat_mort_num ///
+			flag_nout_ipd_mort_num flag_nout_er_mort_num flag_nout_icu_mort_num, /// 			
+
 			i(region zone org*) j(month) string	   
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -94,17 +133,19 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIERS TABLE 
 preserve
-	collapse (count) sb_mort_num-totaldel (sum) flag_out* , by (year month)
+
+	collapse (count) sb_mort_num-totaldel (sum) flag_pout* flag_nout* , by (year month preCovid)
 	foreach x of global all {
-		gen pct_out`x' = flag_out_`x' / `x'
+		gen pct_pout`x' = flag_pout_`x' / `x'
+		gen pct_nout`x' = flag_nout_`x' / `x'
 		rename `x' c_`x'
 	}
-	collapse (mean) c_* pct_out*
-	gen i = 1
-	reshape long c_ pct_out, i(i) j(service) string
-	drop i
-	rename (c_ pct_out) (Count Outlier) 
-	export excel using "$analysis/Results/ResultsMar10.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
+	collapse (mean) c_* pct_pout* pct_nout*, by(preCovid)
+	reshape long c_ pct_pout pct_nout, i(preCovid) j(service) string
+	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
+	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
+	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * Note: The few missing for pct_out is because there were 0 in the count for some diab and hyper indicators 
@@ -140,25 +181,46 @@ global all opd_util fp_util anc_util cerv_qual del_util pnc_util vacc_qual diab_
            hyper_util mat_mort_num sb_mort_num
 keep orgunitlevel1-orgunitlevel3 ID Number opd_util* fp_util* anc_util* cerv_qual* del_util* /// 
 	 pnc_util* vacc_qual* diab_util* hyper_util* mat_mort_num* sb_mort_num*
-			
+
+	
+*Facilities also report mortality inconsistently. Treating mortality as it was in first paper
+egen total_del = rowtotal(del_util*)
+foreach var in mat_mort_num sb_mort_num {
+egen total`var' = rowtotal(`var'*)
+forval i=1/12 {
+	replace `var'`i'_19=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_19=. if total_del==0 & total`var'==0
+	replace `var'`i'_20=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_20=. if total_del==0 & total`var'==0	
+}
+}
+	
+
 * For Outlier assessment 
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	gen neg_out`x' = rowmean`x'-(3.5*(rowsd`x'))
 	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
 				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
-		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		gen flag_poutlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		gen flag_noutlier_`x'`v'= 1 if `x'`v'<neg_out`x' & `x'`v'<. 
+		replace flag_poutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		replace flag_noutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 	
 	}
 	drop rowmean`x' rowsd`x' pos_out`x' 
 }
 
 
 reshape long opd_util fp_util anc_util cerv_qual del_util pnc_util vacc_qual diab_util ///
-				 hyper_util mat_mort_num sb_mort_num flag_outlier_opd_util flag_outlier_fp_util flag_outlier_anc_util  /// 
-				 flag_outlier_cerv_qual flag_outlier_del_util flag_outlier_pnc_util /// 
-				 flag_outlier_vacc_qual flag_outlier_diab_util flag_outlier_hyper_util flag_outlier_mat_mort_num flag_outlier_sb_mort_num, ///
+
+				 hyper_util mat_mort_num sb_mort_num flag_poutlier_opd_util flag_poutlier_fp_util flag_poutlier_anc_util  /// 
+				 flag_poutlier_cerv_qual flag_poutlier_del_util flag_poutlier_pnc_util /// 
+				 flag_poutlier_vacc_qual flag_poutlier_diab_util flag_poutlier_hyper_util flag_poutlier_mat_mort_num flag_poutlier_sb_mort_num ///
+				 flag_noutlier_cerv_qual flag_noutlier_del_util flag_noutlier_pnc_util flag_noutlier_opd_util flag_noutlier_fp_util flag_noutlier_anc_util /// 
+				 flag_noutlier_vacc_qual flag_noutlier_diab_util flag_noutlier_hyper_util flag_noutlier_mat_mort_num flag_noutlier_sb_mort_num, ///				 
+
 				 i(orgunitlevel1 orgunitlevel2 orgunitlevel3 ID Number) j(month) string	
 * Month and year
 drop if month == "1_21" | month == "2_21" | month == "3_21"
@@ -187,17 +249,19 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIERS TABLE 
 preserve
-	collapse (count) mat_mort_num-vacc_qual (sum) flag_outlier* , by (year month)
+
+	collapse (count) mat_mort_num-vacc_qual (sum) flag_poutlier* flag_noutlier*, by (year month preCovid)
 	foreach x of global all {
-		gen pct_out`x' = flag_outlier_`x' / `x'
+		gen pct_pout`x' = flag_poutlier_`x' / `x'
+		gen pct_nout`x' = flag_noutlier_`x' / `x'		
 		rename `x' c_`x'
 	}
-	collapse (mean) c_* pct_out*
-	gen i = 1
-	reshape long c_ pct_out, i(i) j(service) string
-	drop i
-	rename (c_ pct_out) (Count Outlier) 
-	export excel using "$analysis/Results/ResultsMar10.xlsx", sheet(Hat_outliers) firstrow(variable) sheetreplace  
+	collapse (mean) c_* pct_pout* pct_nout*, by(preCovid)
+	reshape long c_ pct_pout pct_nout, i(preCovid) j(service) string
+	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
+	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
+	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Hat_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 
@@ -268,13 +332,16 @@ forval i=1/24 {
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
-	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x'))
+	gen neg_out`x' = rowmean`x'-(3.5*(rowsd`x')) // + threshold
 	foreach v in 1 2 3 4 5 6 7 8 9 10 11 12 ///
 				 13 14 15 16 17 18 19 20 21 22 23 24 { 
-		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		gen flag_poutlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		gen flag_noutlier_`x'`v'= 1 if `x'`v'<neg_out`x' & `x'`v'<. 
+		replace flag_poutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 		
+		replace flag_noutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
 	}
-	drop rowmean`x' rowsd`x' pos_out`x' 
+	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x'
 }
 
 * Reshaping from wide to long 
@@ -283,16 +350,28 @@ reshape long anc1_util totaldel cs_util pnc_util diarr_util pneum_util  ///
              tbdetect_qual tbtreat_qual vacc_qual bcg_qual pent_qual measles_qual ///
              pneum_qual rota_qual  trauma_util icu_util kmcn_qual sam_util /// 
 			 newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num ///
-			 flag_outlier_anc1_util flag_outlier_totaldel flag_outlier_cs_util ///
-			 flag_outlier_pnc_util flag_outlier_diarr_util flag_outlier_pneum_util ///
-			 flag_outlier_art_util flag_outlier_opd_util flag_outlier_ipd_util flag_outlier_road_util /// 
-			 flag_outlier_diab_util flag_outlier_cerv_qual flag_outlier_tbscreen_qual ///
-             flag_outlier_tbdetect_qual flag_outlier_tbtreat_qual flag_outlier_vacc_qual /// 
-			 flag_outlier_bcg_qual flag_outlier_pent_qual flag_outlier_measles_qual ///
-             flag_outlier_pneum_qual flag_outlier_rota_qual  flag_outlier_trauma_util ///
-			 flag_outlier_icu_util flag_outlier_kmcn_qual flag_outlier_sam_util ///
-			 flag_outlier_newborn_mort_num flag_outlier_sb_mort_num flag_outlier_mat_mort_num ///
-			 flag_outlier_ipd_mort_num flag_outlier_icu_mort_num flag_outlier_trauma_mort_num, /// 
+
+			 flag_poutlier_anc1_util flag_poutlier_totaldel flag_poutlier_cs_util ///
+			 flag_poutlier_pnc_util flag_poutlier_diarr_util flag_poutlier_pneum_util ///
+			 flag_poutlier_art_util flag_poutlier_opd_util flag_poutlier_ipd_util flag_poutlier_road_util /// 
+			 flag_poutlier_diab_util flag_poutlier_cerv_qual flag_poutlier_tbscreen_qual ///
+             flag_poutlier_tbdetect_qual flag_poutlier_tbtreat_qual flag_poutlier_vacc_qual /// 
+			 flag_poutlier_bcg_qual flag_poutlier_pent_qual flag_poutlier_measles_qual ///
+             flag_poutlier_pneum_qual flag_poutlier_rota_qual  flag_poutlier_trauma_util ///
+			 flag_poutlier_icu_util flag_poutlier_kmcn_qual flag_poutlier_sam_util ///
+			 flag_poutlier_newborn_mort_num flag_poutlier_sb_mort_num flag_poutlier_mat_mort_num ///
+			 flag_poutlier_ipd_mort_num flag_poutlier_icu_mort_num flag_poutlier_trauma_mort_num /// 		 
+			 flag_noutlier_anc1_util flag_noutlier_totaldel flag_noutlier_cs_util ///
+			 flag_noutlier_pnc_util flag_noutlier_diarr_util flag_noutlier_pneum_util ///
+			 flag_noutlier_art_util flag_noutlier_opd_util flag_noutlier_ipd_util flag_noutlier_road_util /// 
+			 flag_noutlier_diab_util flag_noutlier_cerv_qual flag_noutlier_tbscreen_qual ///
+             flag_noutlier_tbdetect_qual flag_noutlier_tbtreat_qual flag_noutlier_vacc_qual /// 
+			 flag_noutlier_bcg_qual flag_noutlier_pent_qual flag_noutlier_measles_qual ///
+             flag_noutlier_pneum_qual flag_noutlier_rota_qual  flag_noutlier_trauma_util ///
+			 flag_noutlier_icu_util flag_noutlier_kmcn_qual flag_noutlier_sam_util ///
+			 flag_noutlier_newborn_mort_num flag_noutlier_sb_mort_num flag_noutlier_mat_mort_num ///
+			 flag_noutlier_ipd_mort_num flag_noutlier_icu_mort_num flag_noutlier_trauma_mort_num, /// 			 
+
 			 i(Province dist subdist Facility) j(month)	
 *Month and year
 gen year = 2019
@@ -302,17 +381,19 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIER TABLE 
 preserve
-	collapse (count) anc1_util-trauma_util (sum) flag_outlier* , by (year month)
+
+	collapse (count) anc1_util-trauma_util (sum) flag_poutlier* flag_noutlier*  , by (year month preCovid)
 	foreach x of global all {
-		gen pct_out`x' = flag_outlier_`x' / `x'
+		gen pct_pout`x' = flag_poutlier_`x' / `x'
+		gen pct_nout`x' = flag_noutlier_`x' / `x'		
 		rename `x' c_`x'
 	}
-	collapse (mean) c_* pct_out*
-	gen i = 1
-	reshape long c_ pct_out, i(i) j(service) string
-	drop i
-	rename (c_ pct_out) (Count Outlier) 
-	export excel using "$analysis/Results/ResultsMar10.xlsx", sheet(KZN_outliers) firstrow(variable) sheetreplace  
+	collapse (mean) c_* pct_pout* pct_nout*, by(preCovid)
+	reshape long c_ pct_pout pct_nout, i(preCovid) j(service) string
+	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
+	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
+	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(KZN_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 
@@ -353,17 +434,50 @@ keep org* fp_sa_util* anc_util* del_util* cs_util* pnc_util* diarr_util* pneum_u
                 ipd_util*  diab_util* hyper_util* tbdetect_qual* hivtest_qual* sam_util* hivdiag_qual* ///
 				ipd_mort_num* neo_mort_num* sb_mort_num* mat_mort_num*
 			
+
+*Treating mortality as it was in first paper: if the service is provided, replace to missing. If it is not provided, keep missing.
+egen total_del = rowtotal(del_util*)
+foreach var in mat_mort_num neo_mort_num sb_mort_num {
+egen total`var' = rowtotal(`var'*)
+forval i=1/12 {
+	replace `var'`i'_19=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_19=. if total_del==0 & total`var'==0
+	replace `var'`i'_20=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_20=. if total_del==0 & total`var'==0	
+}
+}
+egen total_ipd = rowtotal(ipd_util*)
+egen total_ipdmort = rowtotal(ipd_mort_num*)
+forval i=1/12 {
+replace ipd_mort_num`i'_19 = 0 if total_ipd>0 & total_ipd<. & total_ipdmort==0
+replace ipd_mort_num`i'_19 = . if total_ipd==0 & total_ipdmort==0
+replace ipd_mort_num`i'_20 = 0 if total_ipd>0 & total_ipd<. & total_ipdmort==0
+replace ipd_mort_num`i'_20 = . if total_ipd==0 & total_ipdmort==0
+}
+*Facilities that don't do csections inconsistently report 0 or ., switch all to . if none reported
+egen totalcs = rowtotal(cs_util*)
+forval i=1/12 {
+	replace cs_util`i'_19=. if totalcs==0
+	replace cs_util`i'_20=. if totalcs==0	
+}
+drop totalcs
+		
+
+			
 * For Outlier assessment 
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	gen neg_out`x' = rowmean`x'-(3.5*(rowsd`x'))	
 	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
 				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
-		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		gen flag_poutlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		gen flag_noutlier_`x'`v'= 1 if `x'`v'<neg_out`x' & `x'`v'<. 
+		replace flag_poutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 		
+		replace flag_noutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
 	}
-	drop rowmean`x' rowsd`x' pos_out`x' 
+	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x'
 }
 
 * Reshape from wide to long 
@@ -371,14 +485,24 @@ reshape long fp_sa_util anc_util del_util cs_util pnc_util diarr_util pneum_util
                 bcg_qual pent_qual measles_qual opv3_qual pneum_qual opd_util er_util ///
                 ipd_util  diab_util hyper_util tbdetect_qual hivtest_qual sam_util hivdiag_qual ///
 				ipd_mort_num neo_mort_num sb_mort_num mat_mort_num ///
-				flag_outlier_fp_sa_util flag_outlier_anc_util flag_outlier_del_util /// 
-				flag_outlier_cs_util flag_outlier_pnc_util flag_outlier_diarr_util ///
-				flag_outlier_pneum_util flag_outlier_bcg_qual flag_outlier_pent_qual /// 
-				flag_outlier_measles_qual flag_outlier_opv3_qual flag_outlier_pneum_qual /// 
-				flag_outlier_opd_util flag_outlier_er_util flag_outlier_ipd_util /// 
-				flag_outlier_diab_util flag_outlier_hyper_util flag_outlier_tbdetect_qual /// 
-				flag_outlier_hivtest_qual flag_outlier_sam_util flag_outlier_hivdiag_qual ///
-				flag_outlier_ipd_mort_num flag_outlier_neo_mort_num flag_outlier_sb_mort_num flag_outlier_mat_mort_num, ///
+
+				flag_poutlier_fp_sa_util flag_poutlier_anc_util flag_poutlier_del_util /// 
+				flag_poutlier_cs_util flag_poutlier_pnc_util flag_poutlier_diarr_util ///
+				flag_poutlier_pneum_util flag_poutlier_bcg_qual flag_poutlier_pent_qual /// 
+				flag_poutlier_measles_qual flag_poutlier_opv3_qual flag_poutlier_pneum_qual /// 
+				flag_poutlier_opd_util flag_poutlier_er_util flag_poutlier_ipd_util /// 
+				flag_poutlier_diab_util flag_poutlier_hyper_util flag_poutlier_tbdetect_qual /// 
+				flag_poutlier_hivtest_qual flag_poutlier_sam_util flag_poutlier_hivdiag_qual ///
+				flag_poutlier_ipd_mort_num flag_poutlier_neo_mort_num flag_poutlier_sb_mort_num flag_poutlier_mat_mort_num ///			
+				flag_noutlier_fp_sa_util flag_noutlier_anc_util flag_noutlier_del_util /// 
+				flag_noutlier_cs_util flag_noutlier_pnc_util flag_noutlier_diarr_util ///
+				flag_noutlier_pneum_util flag_noutlier_bcg_qual flag_noutlier_pent_qual /// 
+				flag_noutlier_measles_qual flag_noutlier_opv3_qual flag_noutlier_pneum_qual /// 
+				flag_noutlier_opd_util flag_noutlier_er_util flag_noutlier_ipd_util /// 
+				flag_noutlier_diab_util flag_noutlier_hyper_util flag_noutlier_tbdetect_qual /// 
+				flag_noutlier_hivtest_qual flag_noutlier_sam_util flag_noutlier_hivdiag_qual ///
+				flag_noutlier_ipd_mort_num flag_noutlier_neo_mort_num flag_noutlier_sb_mort_num flag_noutlier_mat_mort_num, ///
+
 				i(orgunitlevel1-organisationunitname) j(month) string
 *Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -406,17 +530,19 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIER TABLE 
 preserve 
-	collapse (count) hyper_util-fp_sa_util (sum) flag_outlier* , by (year month)
+
+	collapse (count) hyper_util-fp_sa_util (sum) flag_poutlier* flag_noutlier* , by (year month preCovid)
 	foreach x of global all {
-		gen pct_out`x' = flag_outlier_`x' / `x'
+		gen pct_pout`x' = flag_poutlier_`x' / `x'
+		gen pct_nout`x' = flag_noutlier_`x' / `x'
 		rename `x' c_`x'
 	}
-	collapse (mean) c_* pct_out*
-	gen i = 1
-	reshape long c_ pct_out, i(i) j(service) string
-	drop i
-	rename (c_ pct_out) (Count Outlier) 
-	export excel using "$analysis/Results/ResultsMar10.xlsx", sheet(Nep_outliers) firstrow(variable) sheetreplace  
+	collapse (mean) c_* pct_pout* pct_nout*, by(preCovid)
+	reshape long c_ pct_pout pct_nout, i(preCovid) j(service) string
+	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
+	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
+	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Nep_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 
@@ -454,29 +580,53 @@ keep org* opd_util* ipd_util* fp_sa_util* anc_util* del_util* cs_util* pnc_util*
                 bcg_qual* pent_qual* opv3_qual* pneum_qual* diab_util* hyper_util* /// 
 				road_util* measles_qual* mat_mort_num* sb_mort_num* neo_mort_num*
 
+*Treating mortality as it was in first paper: if the service is provided, replace to missing. If it is not provided, keep missing.
+egen total_del = rowtotal(del_util*)
+foreach var in mat_mort_num neo_mort_num sb_mort_num {
+egen total`var' = rowtotal(`var'*)
+forval i=1/12 {
+	replace `var'`i'_19=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_19=. if total_del==0 & total`var'==0
+	replace `var'`i'_20=0 if total_del>0 & total_del<. & total`var'==0
+	replace `var'`i'_20=. if total_del==0 & total`var'==0	
+}
+}				
+
+
 * For Outlier assessment 
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
 	egen rowsd`x'= rowsd(`x'*)
 	gen pos_out`x' = rowmean`x'+(3.5*(rowsd`x')) // + threshold
+	gen neg_out`x' = rowmean`x'-(3.5*(rowsd`x'))	
 	foreach v in 1_19 2_19 3_19 4_19 5_19 6_19 7_19 8_19 9_19 10_19 11_19 12_19 ///
 				 1_20 2_20 3_20 4_20 5_20 6_20 7_20 8_20 9_20 10_20 11_20 12_20 { 
-		gen flag_outlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
-		replace flag_outlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
+		gen flag_poutlier_`x'`v'= 1 if `x'`v'>pos_out`x' & `x'`v'<. 
+		gen flag_noutlier_`x'`v'= 1 if `x'`v'<neg_out`x' & `x'`v'<. 
+		replace flag_poutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 		
+		replace flag_noutlier_`x'`v'= . if rowmean`x'<= 1 // replaces flag to missing if the series mean is 1 or less 
 	}
-	drop rowmean`x' rowsd`x' pos_out`x' 
+	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x'
 }
 
 * Reshaping from wide to long 
 reshape long opd_util ipd_util fp_sa_util anc_util del_util cs_util pnc_util ///
                  bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util /// 
 				 road_util  measles_qual mat_mort_num sb_mort_num neo_mort_num /// 
-				 flag_outlier_opd_util flag_outlier_ipd_util flag_outlier_fp_sa_util ///
-				 flag_outlier_anc_util flag_outlier_pnc_util flag_outlier_del_util /// 
-				 flag_outlier_cs_util flag_outlier_bcg_qual flag_outlier_measles_qual ///
-				 flag_outlier_pent_qual flag_outlier_opv3_qual flag_outlier_pneum_qual /// 
-				 flag_outlier_diab_util flag_outlier_hyper_util flag_outlier_road_util ///
-				 flag_outlier_mat_mort_num flag_outlier_sb_mort_num flag_outlier_neo_mort_num, ///
+
+				 flag_poutlier_opd_util flag_poutlier_ipd_util flag_poutlier_fp_sa_util ///
+				 flag_poutlier_anc_util flag_poutlier_pnc_util flag_poutlier_del_util /// 
+				 flag_poutlier_cs_util flag_poutlier_bcg_qual flag_poutlier_measles_qual ///
+				 flag_poutlier_pent_qual flag_poutlier_opv3_qual flag_poutlier_pneum_qual /// 
+				 flag_poutlier_diab_util flag_poutlier_hyper_util flag_poutlier_road_util ///
+				 flag_poutlier_mat_mort_num flag_poutlier_sb_mort_num flag_poutlier_neo_mort_num ///
+				 flag_noutlier_opd_util flag_noutlier_ipd_util flag_noutlier_fp_sa_util ///
+				 flag_noutlier_anc_util flag_noutlier_pnc_util flag_noutlier_del_util /// 
+				 flag_noutlier_cs_util flag_noutlier_bcg_qual flag_noutlier_measles_qual ///
+				 flag_noutlier_pent_qual flag_noutlier_opv3_qual flag_noutlier_pneum_qual /// 
+				 flag_noutlier_diab_util flag_noutlier_hyper_util flag_noutlier_road_util ///
+				 flag_noutlier_mat_mort_num flag_noutlier_sb_mort_num flag_noutlier_neo_mort_num, ///				 
+
 				 i(orgunitlevel2-organisationunitname) j(month) string
 *Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -504,17 +654,19 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIER TABLE 
 preserve 
-	collapse (count) mat_mort_num-fp_sa_util (sum) flag_outlier* , by (year month)
+
+	collapse (count) mat_mort_num-fp_sa_util (sum) flag_poutlier* flag_noutlier* , by (year month  preCovid)
 	foreach x of global all {
-		gen pct_out`x' = flag_outlier_`x' / `x'
+		gen pct_pout`x' = flag_poutlier_`x' / `x'
+		gen pct_nout`x' = flag_noutlier_`x' / `x'
 		rename `x' c_`x'
 	}
-	collapse (mean) c_* pct_out*
-	gen i = 1
-	reshape long c_ pct_out, i(i) j(service) string
-	drop i
-	rename (c_ pct_out) (Count Outlier) 
-	export excel using "$analysis/Results/ResultsMar10.xlsx", sheet(Lao_outliers) firstrow(variable) sheetreplace  
+	collapse (mean) c_* pct_pout* pct_nout*, by(preCovid)
+	reshape long c_ pct_pout pct_nout, i(preCovid) j(service) string
+	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
+	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
+	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Lao_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 

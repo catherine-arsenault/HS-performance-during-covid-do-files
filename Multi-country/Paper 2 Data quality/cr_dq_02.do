@@ -12,60 +12,40 @@ set more off
 
 *Ethiopia 
 u "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
-keep month year anc_util del_util bcg_qual pent_qual pneum_qual
-gen preCovid= year==2019 | year==2020 & month <4
-collapse (sum) anc_util-pneum_qual, by (preCovid)
+keep month year bcg_qual pent_qual pneum_qual opv3_qual rota_qual
+collapse (sum) bcg_qual pent_qual pneum_qual opv3_qual rota_qual
 gen country = "Ethiopia"
-reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(preCovid) 
-order country anc*1 anc*0 del*1 del*0 bcg*1 bcg*0 pent*1 pent*0 pneum*1 pneum*0
-save "$user/$analysis/Results/inttmpEthiopia.dta", replace
+save "$analysis/Results/inttmpEthiopia.dta", replace
 
 * Nepal
 u "$user/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_su_24months_for_analyses.dta", clear
-keep month year anc_util del_util bcg_qual pent_qual pneum_qual
-gen preCovid= year==2019 | year==2020 & month <4
-collapse (sum) anc_util-pneum_qual, by (preCovid)
+keep month year bcg_qual pent_qual pneum_qual opv3_qual
+collapse (sum) bcg_qual pent_qual pneum_qual opv3_qual
 gen country = "Nepal"
-reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(preCovid) 
-order country anc*1 anc*0 del*1 del*0 bcg*1 bcg*0 pent*1 pent*0 pneum*1 pneum*0
-save "$user/$analysis/Results/inttmpNepal.dta", replace
+save "$analysis/Results/inttmpNepal.dta", replace
 
-*Haiti 
-u "$user/HMIS Data for Health System Performance Covid (Haiti)/Data for analysis/Haiti_su_24months_for_analyses.dta", clear
-keep month year anc_util del_util vacc_qual orgunitlevel1
-gen preCovid= year==2019 | year==2020 & month <4
-collapse (sum) anc_util del_util vacc_qual, by (preCovid orgunitlevel1)
-rename orgunitlevel1 country
-reshape wide anc_util del_util vacc_qual, i(country) j(preCovid) 
-order country anc*1 anc*0 del*1 del*0 vacc*1 vacc*0
-save "$user/$analysis/Results/inttmpHaiti.dta", replace
 
 * KZN 
 u "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_su_24months_for_analyses.dta", clear
-keep month year anc_util del_util bcg_qual pent_qual pneum_qual
-gen preCovid= year==2019 | year==2020 & month <4
-collapse (sum) anc_util-pneum_qual, by (preCovid)
+keep month year bcg_qual pent_qual pneum_qual rota_qual
+collapse (sum) bcg_qual pent_qual pneum_qual rota_qual
 gen country = "KZN"
-reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(preCovid) 
-order country anc*1 anc*0 del*1 del*0 bcg*1 bcg*0 pent*1 pent*0 pneum*1 pneum*0
-save "$user/$analysis/Results/inttmpKZN.dta", replace
+save "$analysis/Results/inttmpKZN.dta", replace
 
 *Lao
 u "$user/HMIS Data for Health System Performance Covid (Lao PDR)/Data for analysis/Lao_su_24months_for_analyses.dta", clear 
-keep month year anc_util del_util bcg_qual pent_qual pneum_qual 
-gen preCovid= year==2019 | year==2020 & month <4
-collapse (sum) anc_util-pneum_qual, by (preCovid)
+keep month year bcg_qual pent_qual pneum_qual opv3_qual
+collapse (sum) bcg_qual pent_qual pneum_qual opv3_qual
 gen country = "Lao"
-reshape wide anc_util del_util bcg_qual pent_qual pneum_qual, i(country) j(preCovid) 
-order country anc*1 anc*0 del*1 del*0 bcg*1 bcg*0 pent*1 pent*0 pneum*1 pneum*0
-save "$user/$analysis/Results/inttmpLao.dta", replace
+save "$analysis/Results/inttmpLao.dta", replace
 
 * Creating overall table of totals for volumes  
 clear
-append using "$user/$analysis/Results/inttmpEthiopia.dta" "$user/$analysis/Results/inttmpHaiti.dta" /// 
-			 "$user/$analysis/Results/inttmpKZN.dta" "$user/$analysis/Results/inttmpLao.dta" /// 
-			 "$user/$analysis/Results/inttmpNepal.dta"
-export excel using "$user/$analysis/Results/Results_internal_external.xlsx", sheet(Internal_consistency) firstrow(variable) sheetreplace  
+append using "$analysis/Results/inttmpEthiopia.dta" /// 
+			 "$analysis/Results/inttmpKZN.dta" "$analysis/Results/inttmpLao.dta" /// 
+			 "$analysis/Results/inttmpNepal.dta"
+order country, first			 
+export excel using "$analysis/Results/Results_internal_external.xlsx", sheet(Internal_consistency) firstrow(variable) sheetreplace  
 
 
 ********************************************************************************
@@ -80,7 +60,7 @@ collapse (sum) del_util cs_util, by (year)
 gen country = "Ethiopia"
 reshape wide del_util cs_util, i(country) j(year) 
 order country del* cs*
-save "$user/$analysis/Results/exttmpEthiopia.dta", replace
+save "$analysis/Results/exttmpEthiopia.dta", replace
 
 * Nepal
 u "$user/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_su_24months_for_analyses.dta", clear
@@ -89,16 +69,7 @@ collapse (sum) del_util cs_util, by (year)
 gen country = "Nepal"
 reshape wide del_util cs_util, i(country) j(year) 
 order country del* cs*
-save "$user/$analysis/Results/exttmpNepal.dta", replace
-
-*Haiti 
-u "$user/HMIS Data for Health System Performance Covid (Haiti)/Data for analysis/Haiti_su_24months_for_analyses.dta", clear
-keep month year del_util orgunitlevel1
-collapse (sum) del_util, by (year orgunitlevel1)
-rename orgunitlevel1 country
-reshape wide del_util, i(country) j(year) 
-order country del*
-save "$user/$analysis/Results/exttmpHaiti.dta", replace
+save "$analysis/Results/exttmpNepal.dta", replace
 
 * KZN 
 u "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_su_24months_for_analyses.dta", clear
@@ -107,7 +78,7 @@ collapse (sum) del_util cs_util, by (year)
 gen country = "KZN"
 reshape wide del_util cs_util, i(country) j(year) 
 order country del* cs*
-save "$user/$analysis/Results/exttmpKZN.dta", replace
+save "$analysis/Results/exttmpKZN.dta", replace
 
 *Lao
 u "$user/HMIS Data for Health System Performance Covid (Lao PDR)/Data for analysis/Lao_su_24months_for_analyses.dta", clear 
@@ -116,21 +87,22 @@ collapse (sum) del_util cs_util, by (year)
 gen country = "Lao"
 reshape wide del_util cs_util, i(country) j(year) 
 order country del* cs*
-save "$user/$analysis/Results/exttmpLao.dta", replace
+save "$analysis/Results/exttmpLao.dta", replace
 
 * Creating overall table of totals for volumes  
 clear
-append using "$user/$analysis/Results/exttmpEthiopia.dta" "$user/$analysis/Results/exttmpHaiti.dta" /// 
-			 "$user/$analysis/Results/exttmpKZN.dta" "$user/$analysis/Results/exttmpLao.dta" /// 
-			 "$user/$analysis/Results/exttmpNepal.dta"
-export excel using "$user/$analysis/Results/Results_internal_external.xlsx", sheet(External_consistency) firstrow(variable) sheetreplace  
+append using "$analysis/Results/exttmpEthiopia.dta" /// 
+			 "$analysis/Results/exttmpKZN.dta" "$analysis/Results/exttmpLao.dta" /// 
+			 "$analysis/Results/exttmpNepal.dta"
+drop *2020		 
+export excel using "$analysis/Results/Results_internal_external.xlsx", sheet(External_consistency) firstrow(variable) sheetreplace  
 
 
 * Remove temp files 
-global country Ethiopia Haiti KZN Lao Nepal 
+global country Ethiopia KZN Lao Nepal 
 foreach x of global country {
-		rm "$user/$analysis/Results/inttmp`x'.dta"
-		rm "$user/$analysis/Results/exttmp`x'.dta"
+		rm "$analysis/Results/inttmp`x'.dta"
+		rm "$analysis/Results/exttmp`x'.dta"
 	}
 
 
