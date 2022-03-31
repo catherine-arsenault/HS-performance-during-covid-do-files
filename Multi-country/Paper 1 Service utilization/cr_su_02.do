@@ -8,9 +8,8 @@ collapse (sum) del_util-pent_qual , by (region year month)
 	encode region, gen(reg)
 	gen country="ETH"
 save "$user/$ETHdata/Data for analysis/ETHtmp2.dta", replace
-
 * KOREA
-use "$user/$data/Data for analysis/Korea_su_29months.dta", clear 
+use "$user/$KORdata/Data for analysis/Korea_su_29months.dta", clear 
 	encode region, gen(reg)
 	gen country="KOR"
 save "$user/$KORdata/Data for analysis/KORtmp2.dta", replace
@@ -20,16 +19,27 @@ collapse (sum) del_util-ipd_util , by (orgunitlevel2 year month)
 	encode orgunitlevel2, gen(reg)
 	gen country="LAO"
 save "$user/$LAOdata/Data for analysis/LAOtmp2.dta", replace
-
 * MEXICO 
+import excel using "$user/$MEXdata/Raw/2021/20211216_11.Indic11_Consultas MF Esp Dental y Urg 2019-2020_ene-oct21 pr....xlsx", sheet(opd) firstrow clear // OPD 2021
+save  "$user/$MEXdata/Raw/2021/tmp.dta", replace
+import excel using "$user/$MEXdata/Raw/2021/20211217_.Indic12_Ingresos_Egresos hospitalarios 2019-2020_ene-oct2021pr....xlsx", sheet(ipd) firstrow clear // IPD 2021
+merge 1:1 Delegation using "$user/$MEXdata/Raw/2021/tmp.dta"
+drop _merge 
+reshape long opd_util ipd_util, i(Delegation) j(month) string
+gen year =2021
+destring month, replace
+save "$user/$MEXdata/Raw/2021/tmp.dta", replace
 import excel using "$user/$MEXdata/Raw/2021/edited for analyses_Concentrado de indicadoresIMSS_04112021.xlsx", firstrow clear
-gen del_util=totaldel-cs_util
+gen del_util=totaldel-cs_util // other vars 2021
+drop if Deleg=="National" | month>6
+merge 1:1 Deleg year month using "$user/$MEXdata/Raw/2021/tmp.dta"
+drop _merge 
 append using "$user/$MEXdata/Data for analysis/Mexico_su_24months_for_analyses.dta"
 	encode Deleg, gen(reg)	
 	gen country="MEX"
 	drop if Deleg=="National"
 save "$user/$MEXdata/Data for analysis/MEXtmp2.dta", replace
-
+rm "$user/$MEXdata/Raw/2021/tmp.dta"
 * NEPAL 
 use "$user/$NEPdata/Data for analysis/Nepal_su_30months.dta", clear
 rename fp_sa_util fp_util 

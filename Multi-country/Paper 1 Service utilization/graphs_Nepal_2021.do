@@ -10,11 +10,12 @@
 			collapse opd_util linear_opd_util season_opd_util, by(rmonth)
 
 			twoway (scatter opd_util rmonth, msize(vsmall)  sort) ///
+			(scatter opd_util rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_opd_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_opd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit opd_util rmonth if rmonth<15, lcolor(green)) ///
 			(lfit opd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
-			(lfit opd_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit opd_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(14, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///
@@ -33,11 +34,12 @@
 			collapse ipd_util linear_ipd_util season_ipd_util, by(rmonth)
 
 			twoway (scatter ipd_util rmonth, msize(vsmall)  sort) ///
+			(scatter ipd_util rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_ipd_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_ipd_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit ipd_util rmonth if rmonth<15, lcolor(green)) ///
 			(lfit ipd_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
-				(lfit ipd_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit ipd_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  /// 
 			xtitle("", size(small)) legend(off) ///
@@ -55,11 +57,12 @@
 			collapse del_util linear_del_util season_del_util, by(rmonth)
 
 			twoway (scatter del_util rmonth, msize(vsmall)  sort) ///
+			(scatter del_util rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_del_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_del_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit del_util rmonth if rmonth<15, lcolor(green)) ///
 			(lfit del_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
-				(lfit del_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit del_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///
@@ -77,11 +80,12 @@
 			collapse pent_qual linear_pent_qual season_pent_qual, by(rmonth)
 
 			twoway (scatter pent_qual rmonth, msize(vsmall)  sort) ///
+			(scatter pent_qual rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_pent_qual rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_pent_qual rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit pent_qual rmonth if rmonth<15, lcolor(green)) ///
 			(lfit pent_qual rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
-				(lfit pent_qual rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit pent_qual rmonth if rmonth>=21 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///
@@ -100,11 +104,12 @@
 			collapse diab_util linear_diab_util season_diab_util, by(rmonth)
 
 			twoway (scatter diab_util rmonth, msize(vsmall)  sort) ///
+			(scatter diab_util rmonth if rmonth>24, msize(vsmall) mcolor(orange) sort) ///
 			(line linear_diab_util rmonth, lpattern(dash) lcolor(green)) ///
 			(line season_diab_util rmonth , lpattern(vshortdash) lcolor(grey)) ///
 			(lfit diab_util rmonth if rmonth<15, lcolor(green)) ///
 			(lfit diab_util rmonth if rmonth>=15 & rmonth<=20, lcolor(red)) ///
-				(lfit diab_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(blue)) , ///
+			(lfit diab_util rmonth if rmonth>=21 & rmonth<=30 , lcolor(orange) lpattern(vshortdash)), ///
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(20, lpattern(dash) lcolor(gs10))  ///
 			xtitle("", size(small)) legend(off) ///

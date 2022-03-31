@@ -17,7 +17,8 @@ ASSESSES DATASET BEFORE AFTER (NUMBER OF UNITS REPORTING, AND
 SUM AND AVERAGE SERVICES PER UNIT)
 
 ****************************************************************/
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_CCA_DB.dta", clear
+foreach m in 12 15 18 24 {	
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_CCA_DB`m'.dta", clear
 
 * Number of palika reporting any data, for each indicator
 foreach var of global all {
@@ -25,7 +26,7 @@ foreach var of global all {
 }
 	recode *_report (0=0) (1/24=1) // 0 never any value, 1 some values
 
-putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(After cleaning)  modify
+putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(T `m')  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Number reporting any data"	
 local i= 2
@@ -47,7 +48,7 @@ preserve
 	reshape long `all', i(org*) j(month, string)
 	recode `all' (.=0) (0/999999999=1)
 	collapse (sum) `all', by(month)
-	putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(After cleaning) modify  
+	putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(T `m') modify  
 	putexcel C2 = "Variable"
 	putexcel D2 = "Min units reporting any month"	
 	putexcel E2 = "Max units reporting any month"	
@@ -78,7 +79,7 @@ foreach var of global all {
 	gen `var'_total_mean = `var'_total_sum /`var'_total_report
 }
 
-putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(After cleaning)  modify
+putexcel set "$user/$data/Analyses/Nepal Codebook Internal.xlsx", sheet(T `m')  modify
 putexcel F2 = "Variable"
 putexcel G2 = "Sum of services or deaths"	
 putexcel H2 = "Average per unit/facility"
@@ -91,7 +92,7 @@ local i= 2
 		qui sum `var'_total_mean
 		putexcel H`i' = `r(mean)'
 	}
-putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(Final data)  modify
+putexcel set "$user/$data/Nepal Codebook.xlsx", sheet(Final data `m')  modify
 putexcel A2 = "Variable"
 putexcel B2 = "Total health care visits in the raw data"
 local i= 2
@@ -104,7 +105,7 @@ local i= 2
 drop *_report *_sum *_mean
 /******************************************************************************
 		COLLAPSE TO PROVINCE TOTALS AND RESHAPE FOR DASHBOARD
-*******************************************************************************/
+*******************************************************************************
 	rename orgunitlevel2 province
 	order province  org* 
 	collapse (sum) fp_perm_util1_19-neo_mort_num10_20 , by(province)
@@ -171,11 +172,11 @@ drop _merge
 
 rm "$user/$data/temp.dta"
 export delimited using "$user/$data/Nepal_palika_Jan19-Dec20_fordashboard.csv", replace
-
+*/
 /******************************************************************************
 		CREATES FINAL DATASET FOR ANALYSES
 *******************************************************************************/
-use "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_CCA_DB.dta", clear
+use "$user/$data/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_CCA_DB`m'.dta", clear
 gen unique_id = _n
 
 reshape long fp_perm_util fp_sa_util fp_la_util anc_util del_util cs_util ///
@@ -201,14 +202,14 @@ replace mo = 9 if month =="9_19" | month =="9_20"
 replace mo = 10 if month =="10_19" | month =="10_20"
 replace mo = 11 if month =="11_19" | month =="11_20"
 replace mo = 12 if month =="12_19" | month =="12_20"
-drop month	totaldel
+drop month	
 rename mo month
 sort org* year month
 order org*  year month 
 
-save "$user/$data/Data for analysis/Nepal_su_24months.dta", replace
+save "$user/$data/Data for analysis/Nepal_su_24months`m'.dta", replace
 
-
+}
 
 /* 
 

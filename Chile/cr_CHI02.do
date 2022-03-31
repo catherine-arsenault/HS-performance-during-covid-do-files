@@ -193,6 +193,33 @@ rename (N-AK) ///
 
 merge 1:1 GLOSA_ESTABLECIMIENTO_SALUD using "$user/$data/Data for analysis/tmpH.dta"
 drop _merge 
+
+* Total deliveries
+	egen totaldel1_19 =  rowtotal(del_util1_19 cs_util1_19), m
+	egen totaldel2_19 =	rowtotal(del_util2_19 cs_util2_19), m
+	egen totaldel3_19 =	rowtotal(del_util3_19 cs_util3_19), m
+	egen totaldel4_19 =	rowtotal(del_util4_19 cs_util4_19), m
+	egen totaldel5_19=	rowtotal(del_util5_19 cs_util5_19), m
+	egen totaldel6_19=	rowtotal(del_util6_19 cs_util6_19), m
+	egen totaldel7_19=	rowtotal(del_util7_19 cs_util7_19), m
+	egen totaldel8_19=	rowtotal(del_util8_19 cs_util8_19), m
+	egen totaldel9_19=	rowtotal(del_util9_19 cs_util9_19), m 
+	egen totaldel10_19=	rowtotal(del_util10_19 cs_util10_19), m
+	egen totaldel11_19=	rowtotal(del_util11_19  cs_util11_19), m
+	egen totaldel12_19=	rowtotal(del_util12_19  cs_util12_19), m
+	egen totaldel1_20 =  rowtotal(del_util1_20  cs_util1_20), m
+	egen totaldel2_20 =	rowtotal(del_util2_20 cs_util2_20), m
+	egen totaldel3_20 =	rowtotal(del_util3_20 cs_util3_20), m
+	egen totaldel4_20 =	rowtotal(del_util4_20 cs_util4_20), m
+	egen totaldel5_20=	rowtotal(del_util5_20 cs_util5_20), m
+	egen totaldel6_20=	rowtotal(del_util6_20 cs_util6_20), m
+	egen totaldel7_20=	rowtotal(del_util7_20 cs_util7_20), m
+	egen totaldel8_20=	rowtotal(del_util8_20 cs_util8_20), m
+	egen totaldel9_20=	rowtotal(del_util9_20 cs_util9_20), m
+	egen totaldel10_20=	rowtotal(del_util10_20 cs_util10_20), m
+	egen totaldel11_20=	rowtotal(del_util11_20 cs_util11_20), m
+	egen totaldel12_20=	rowtotal(del_util12_20 cs_util12_20), m
+	
 save "$user/$data/Data for analysis/tmpH.dta", replace
 
 ******************************************************************************

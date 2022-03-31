@@ -5,6 +5,7 @@
 ********************************************************************************
 * Mexico GRAPHS
 ********************************************************************************
+graph set window fontface "Arial"
 * Outpatient
 			u  "$user/$MEXdata/Data for analysis/MEXtmp.dta", clear 
 			qui xtreg opd_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction
@@ -23,10 +24,10 @@
 			ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 			 xline(21, lpattern(dash) lcolor(gs10)) ///
 			xtitle("", size(small)) legend(off) ///
-			graphregion(color(white)) title("Mexico (IMSS) outpatient visits (2019-2020)", size(small)) ///
-			xlabel(1(1)24) xlabel(, labsize(vsmall))ylabel(0(50000)300000, labsize(vsmall))
+			graphregion(color(white)) title("Mexico outpatient visits (2019-2020)", size(msmall) color(black)) ///
+			xlabel(1(1)24) xlabel(, labsize(msmall)) ylabel(0(60000)300000, labsize(msmall))
 			
-			graph export "$analysis/Results/Graphs/MEX_opd_util.pdf", replace
+			graph export "$analysis/Results/Graphs/Fig1/MEX_opd_util.pdf", replace
 * ART
 			u  "$user/$MEXdata/Data for analysis/MEXtmp.dta", clear 
 			qui xtreg art_util rmonth if rmonth<16  , i(reg) fe cluster(reg) // linear prediction

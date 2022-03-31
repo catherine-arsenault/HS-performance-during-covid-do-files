@@ -82,6 +82,7 @@ reshape long fp_util anc_util totaldel cs_util pnc_util  diarr_util ///
 			hivsupp_qual_num diab_util hyper_util diab_detec hyper_detec /// 
 			cerv_qual kmc_qual_num kmc_qual_denom resus_qual_num resus_qual_denom /// 
 			sb_mort_num newborn_mort_num mat_mort_num ipd_mort_num er_mort_num icu_mort_num ///
+
 			flag_pout_fp_util flag_pout_anc_util ///
 			flag_pout_totaldel flag_pout_cs_util flag_pout_pnc_util /// 
 			flag_pout_diarr_util flag_pout_pneum_util flag_pout_sam_util flag_pout_vacc_qual /// 
@@ -104,6 +105,7 @@ reshape long fp_util anc_util totaldel cs_util pnc_util  diarr_util ///
 			flag_nout_kmc_qual_denom flag_nout_resus_qual_num flag_nout_resus_qual_denom ///
 			flag_nout_sb_mort_num flag_nout_newborn_mort_num flag_nout_mat_mort_num ///
 			flag_nout_ipd_mort_num flag_nout_er_mort_num flag_nout_icu_mort_num, /// 			
+
 			i(region zone org*) j(month) string	   
 * Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -131,6 +133,7 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIERS TABLE 
 preserve
+
 	collapse (count) sb_mort_num-totaldel (sum) flag_pout* flag_nout* , by (year month preCovid)
 	foreach x of global all {
 		gen pct_pout`x' = flag_pout_`x' / `x'
@@ -142,6 +145,7 @@ preserve
 	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
 	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * Note: The few missing for pct_out is because there were 0 in the count for some diab and hyper indicators 
@@ -177,6 +181,7 @@ global all opd_util fp_util anc_util cerv_qual del_util pnc_util vacc_qual diab_
            hyper_util mat_mort_num sb_mort_num
 keep orgunitlevel1-orgunitlevel3 ID Number opd_util* fp_util* anc_util* cerv_qual* del_util* /// 
 	 pnc_util* vacc_qual* diab_util* hyper_util* mat_mort_num* sb_mort_num*
+
 	
 *Facilities also report mortality inconsistently. Treating mortality as it was in first paper
 egen total_del = rowtotal(del_util*)
@@ -190,6 +195,7 @@ forval i=1/12 {
 }
 }
 	
+
 * For Outlier assessment 
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
@@ -208,11 +214,13 @@ foreach x of global all {
 
 
 reshape long opd_util fp_util anc_util cerv_qual del_util pnc_util vacc_qual diab_util ///
+
 				 hyper_util mat_mort_num sb_mort_num flag_poutlier_opd_util flag_poutlier_fp_util flag_poutlier_anc_util  /// 
 				 flag_poutlier_cerv_qual flag_poutlier_del_util flag_poutlier_pnc_util /// 
 				 flag_poutlier_vacc_qual flag_poutlier_diab_util flag_poutlier_hyper_util flag_poutlier_mat_mort_num flag_poutlier_sb_mort_num ///
 				 flag_noutlier_cerv_qual flag_noutlier_del_util flag_noutlier_pnc_util flag_noutlier_opd_util flag_noutlier_fp_util flag_noutlier_anc_util /// 
 				 flag_noutlier_vacc_qual flag_noutlier_diab_util flag_noutlier_hyper_util flag_noutlier_mat_mort_num flag_noutlier_sb_mort_num, ///				 
+
 				 i(orgunitlevel1 orgunitlevel2 orgunitlevel3 ID Number) j(month) string	
 * Month and year
 drop if month == "1_21" | month == "2_21" | month == "3_21"
@@ -241,6 +249,7 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIERS TABLE 
 preserve
+
 	collapse (count) mat_mort_num-vacc_qual (sum) flag_poutlier* flag_noutlier*, by (year month preCovid)
 	foreach x of global all {
 		gen pct_pout`x' = flag_poutlier_`x' / `x'
@@ -252,6 +261,7 @@ preserve
 	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
 	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Hat_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 
@@ -340,6 +350,7 @@ reshape long anc1_util totaldel cs_util pnc_util diarr_util pneum_util  ///
              tbdetect_qual tbtreat_qual vacc_qual bcg_qual pent_qual measles_qual ///
              pneum_qual rota_qual  trauma_util icu_util kmcn_qual sam_util /// 
 			 newborn_mort_num sb_mort_num mat_mort_num ipd_mort_num icu_mort_num trauma_mort_num ///
+
 			 flag_poutlier_anc1_util flag_poutlier_totaldel flag_poutlier_cs_util ///
 			 flag_poutlier_pnc_util flag_poutlier_diarr_util flag_poutlier_pneum_util ///
 			 flag_poutlier_art_util flag_poutlier_opd_util flag_poutlier_ipd_util flag_poutlier_road_util /// 
@@ -360,6 +371,7 @@ reshape long anc1_util totaldel cs_util pnc_util diarr_util pneum_util  ///
 			 flag_noutlier_icu_util flag_noutlier_kmcn_qual flag_noutlier_sam_util ///
 			 flag_noutlier_newborn_mort_num flag_noutlier_sb_mort_num flag_noutlier_mat_mort_num ///
 			 flag_noutlier_ipd_mort_num flag_noutlier_icu_mort_num flag_noutlier_trauma_mort_num, /// 			 
+
 			 i(Province dist subdist Facility) j(month)	
 *Month and year
 gen year = 2019
@@ -369,6 +381,7 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIER TABLE 
 preserve
+
 	collapse (count) anc1_util-trauma_util (sum) flag_poutlier* flag_noutlier*  , by (year month preCovid)
 	foreach x of global all {
 		gen pct_pout`x' = flag_poutlier_`x' / `x'
@@ -380,6 +393,7 @@ preserve
 	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
 	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(KZN_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 
@@ -448,6 +462,7 @@ forval i=1/12 {
 }
 drop totalcs
 		
+
 			
 * For Outlier assessment 
 foreach x of global all {
@@ -470,6 +485,7 @@ reshape long fp_sa_util anc_util del_util cs_util pnc_util diarr_util pneum_util
                 bcg_qual pent_qual measles_qual opv3_qual pneum_qual opd_util er_util ///
                 ipd_util  diab_util hyper_util tbdetect_qual hivtest_qual sam_util hivdiag_qual ///
 				ipd_mort_num neo_mort_num sb_mort_num mat_mort_num ///
+
 				flag_poutlier_fp_sa_util flag_poutlier_anc_util flag_poutlier_del_util /// 
 				flag_poutlier_cs_util flag_poutlier_pnc_util flag_poutlier_diarr_util ///
 				flag_poutlier_pneum_util flag_poutlier_bcg_qual flag_poutlier_pent_qual /// 
@@ -486,6 +502,7 @@ reshape long fp_sa_util anc_util del_util cs_util pnc_util diarr_util pneum_util
 				flag_noutlier_diab_util flag_noutlier_hyper_util flag_noutlier_tbdetect_qual /// 
 				flag_noutlier_hivtest_qual flag_noutlier_sam_util flag_noutlier_hivdiag_qual ///
 				flag_noutlier_ipd_mort_num flag_noutlier_neo_mort_num flag_noutlier_sb_mort_num flag_noutlier_mat_mort_num, ///
+
 				i(orgunitlevel1-organisationunitname) j(month) string
 *Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -513,6 +530,7 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIER TABLE 
 preserve 
+
 	collapse (count) hyper_util-fp_sa_util (sum) flag_poutlier* flag_noutlier* , by (year month preCovid)
 	foreach x of global all {
 		gen pct_pout`x' = flag_poutlier_`x' / `x'
@@ -524,6 +542,7 @@ preserve
 	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
 	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Nep_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 
@@ -560,7 +579,7 @@ global all opd_util ipd_util fp_sa_util anc_util del_util cs_util pnc_util ///
 keep org* opd_util* ipd_util* fp_sa_util* anc_util* del_util* cs_util* pnc_util* ///
                 bcg_qual* pent_qual* opv3_qual* pneum_qual* diab_util* hyper_util* /// 
 				road_util* measles_qual* mat_mort_num* sb_mort_num* neo_mort_num*
-				
+
 *Treating mortality as it was in first paper: if the service is provided, replace to missing. If it is not provided, keep missing.
 egen total_del = rowtotal(del_util*)
 foreach var in mat_mort_num neo_mort_num sb_mort_num {
@@ -572,6 +591,7 @@ forval i=1/12 {
 	replace `var'`i'_20=. if total_del==0 & total`var'==0	
 }
 }				
+
 
 * For Outlier assessment 
 foreach x of global all {
@@ -588,10 +608,12 @@ foreach x of global all {
 	}
 	drop rowmean`x' rowsd`x' pos_out`x' neg_out`x'
 }
+
 * Reshaping from wide to long 
 reshape long opd_util ipd_util fp_sa_util anc_util del_util cs_util pnc_util ///
                  bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util /// 
 				 road_util  measles_qual mat_mort_num sb_mort_num neo_mort_num /// 
+
 				 flag_poutlier_opd_util flag_poutlier_ipd_util flag_poutlier_fp_sa_util ///
 				 flag_poutlier_anc_util flag_poutlier_pnc_util flag_poutlier_del_util /// 
 				 flag_poutlier_cs_util flag_poutlier_bcg_qual flag_poutlier_measles_qual ///
@@ -604,6 +626,7 @@ reshape long opd_util ipd_util fp_sa_util anc_util del_util cs_util pnc_util ///
 				 flag_noutlier_pent_qual flag_noutlier_opv3_qual flag_noutlier_pneum_qual /// 
 				 flag_noutlier_diab_util flag_noutlier_hyper_util flag_noutlier_road_util ///
 				 flag_noutlier_mat_mort_num flag_noutlier_sb_mort_num flag_noutlier_neo_mort_num, ///				 
+
 				 i(orgunitlevel2-organisationunitname) j(month) string
 *Month and year
 gen year = 2020 if month=="1_20" |	month=="2_20" |	month=="3_20" |	month=="4_20" |	///
@@ -631,6 +654,7 @@ gen preCovid= year==2019 | year==2020 & month <4
 
 * OUTLIER TABLE 
 preserve 
+
 	collapse (count) mat_mort_num-fp_sa_util (sum) flag_poutlier* flag_noutlier* , by (year month  preCovid)
 	foreach x of global all {
 		gen pct_pout`x' = flag_poutlier_`x' / `x'
@@ -642,6 +666,7 @@ preserve
 	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
 	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Lao_outliers) firstrow(variable) sheetreplace  
+
 restore 
 
 * COMPLETENESS TABLE 
