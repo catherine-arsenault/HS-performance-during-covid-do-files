@@ -991,6 +991,7 @@ foreach p in 1 2 3 4 5 6 7 {
 }
 
 * Organized by service type 
+
 foreach var of global all {
 	putexcel set "$user/$analysis/Percent change in utilization v2.xlsx", sheet("`var'") modify
 	putexcel A1 = "province" B1 = "service" C1="avg_preCovid" D1= "pct_change" E1="lcl_pct_change" F1="ucl_pct_change" 
