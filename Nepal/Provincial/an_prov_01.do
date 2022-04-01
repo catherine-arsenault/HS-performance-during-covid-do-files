@@ -51,14 +51,14 @@ tsset prov rmonth
 * Province 3 
 	eststo: itsa opd_util i.season,  single treatid(3) trperiod(15) lag(1) replace /// 
 			figure(xlabel(1(1)24) ylabel(0(100000)500000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Outpatient visits, Province 3") ytitle("") xtitle("Month"))
+		    legend(off) title("Outpatient visits, Bagmati Province") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_3.pdf", replace
 	
 * Province 4 
 	eststo: itsa opd_util i.season,  single treatid(4) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(100000)400000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Outpatient visits, Province 4") ytitle("") xtitle("Month"))	
+		    legend(off) title("Outpatient visits, Gandaki Province") ytitle("") xtitle("Month"))	
 					 
 	graph export "$user/$analysis/Graphs/opd_util_4.pdf", replace
 	
@@ -72,14 +72,14 @@ tsset prov rmonth
 * Province 6 
 	eststo: itsa opd_util i.season,  single treatid(6) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(50000)300000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Outpatient visits, Province 6") ytitle("") xtitle("Month"))
+		    legend(off) title("Outpatient visits, Karnali Province") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_6.pdf", replace
 	
 * Province 7
 	eststo: itsa opd_util i.season,  single treatid(7) trperiod(15) lag(1) replace ///
 			figure(xlabel(1(1)24) ylabel(0(100000)500000, labsize(vsmall)) graphregion(color(white)) ///
-		    legend(off) title("Outpatient visits, Province 7") ytitle("") xtitle("Month"))
+		    legend(off) title("Outpatient visits, Sudurpashchim Province") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_7.pdf", replace
 	
@@ -91,8 +91,8 @@ tsset prov rmonth
 	3.season "Season 3" 4.season "Season 4")
 	
 	eststo clear 
-					 
 
+					 
 ********************************************************************************					 
 * IPD
 
@@ -950,3 +950,78 @@ gen sick_visits = diarr_util + pneum_util
 	3.season "Season 3" 4.season "Season 4")
 	
 	eststo clear
+
+	
+******************************************************************************************
+*** Forest plots - percent change in utilization, including UCL and LCL (level change) ***
+*** Using the average in the pre-period ***
+
+global all opd_util ipd_util er_util fp_sa_util del_util cs_util anc_util pnc_util sick_visits ///
+pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util tbdetect_qual
+
+* Organized by province 
+
+foreach p in 1 2 3 4 5 6 7 {
+	putexcel set "$user/$analysis/Percent change in utilization v1.xlsx", sheet("`p'") modify
+	putexcel A1 = "province" B1 = "service" C1="avg_preCovid" D1= "pct_change" E1="lcl_pct_change" F1="ucl_pct_change" 
+	local i = 1
+	tsset prov rmonth
+	foreach var of global all {
+		local i = `i'+1
+		itsa `var' i.season,  single treatid(`p') trperiod(15) lag(1) replace
+		mat m1= r(table) 
+		mat b = m1[1..., 2]'
+		scalar beta = b[1,1]
+		scalar lcl = b[1,5]
+		scalar ucl = b[1,6]
+		sum `var' if timeafter == 0 & prov == `p'
+		scalar avg = r(mean)
+		scalar pct_chg = (beta/avg)*100
+		scalar lcl_pct_chg = (lcl/avg)*100
+		scalar ucl_pct_chg = (ucl/avg)*100
+		putexcel A`i' = "Province `p'"
+		putexcel B`i' = "`var'"
+		putexcel C`i' = `r(mean)'
+		putexcel D`i' = pct_chg
+		putexcel E`i' = lcl_pct_chg 
+		putexcel F`i' = ucl_pct_chg 
+		scalar drop _all	
+	}
+	
+}
+
+* Organized by service type 
+
+foreach var of global all {
+	putexcel set "$user/$analysis/Percent change in utilization v2.xlsx", sheet("`var'") modify
+	putexcel A1 = "province" B1 = "service" C1="avg_preCovid" D1= "pct_change" E1="lcl_pct_change" F1="ucl_pct_change" 
+	local i = 1
+	tsset prov rmonth
+	foreach p in 1 2 3 4 5 6 7 {
+		local i = `i'+1
+		itsa `var' i.season,  single treatid(`p') trperiod(15) lag(1) replace
+		mat m1= r(table) 
+		mat b = m1[1..., 2]'
+		scalar beta = b[1,1]
+		scalar lcl = b[1,5]
+		scalar ucl = b[1,6]
+		sum `var' if timeafter == 0 & prov == `p'
+		scalar avg = r(mean)
+		scalar pct_chg = (beta/avg)*100
+		scalar lcl_pct_chg = (lcl/avg)*100
+		scalar ucl_pct_chg = (ucl/avg)*100
+		putexcel A`i' = "Province `p'"
+		putexcel B`i' = "`var'"
+		putexcel C`i' = `r(mean)'
+		putexcel D`i' = pct_chg
+		putexcel E`i' = lcl_pct_chg 
+		putexcel F`i' = ucl_pct_chg 
+		scalar drop _all	
+	}
+	
+}
+
+
+
+
+
