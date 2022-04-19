@@ -3,6 +3,10 @@
 clear all
 use "$user/$NEPdata/Data for analysis/Nepal_provincial_analysis.dta", clear
 
+gen sick_visits = diarr_util + pneum_util 
+global all opd_util ipd_util er_util fp_sa_util del_util cs_util anc_util pnc_util sick_visits ///
+pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util 
+
 *******************************************************************************
 * Descriptive table (see analysis plan)
 ********************************************************************************
@@ -28,6 +32,19 @@ gen post_covid_opd = opd_util if timeafter > 0
 drop timeafter opd_util 
 collapse (first) Npalika (sum) covid_case (mean) pre_covid_opd post_covid_opd, by (province)
 export excel "$user/$analysis/table_1_output.xlsx", firstrow(variables) replace
+restore 
+
+** Appendix table 
+preserve
+foreach var of global all {
+	gen pre_`var' = `var' if timeafter == 0
+	gen post_`var'=`var' if timeafter > 0
+	
+}
+keep province Npalika pre* post*
+collapse (first) Npalika (mean) pre* post*, by (province)
+order province Npalika *opd* *ipd* *_er* *fp* *del* *cs* *anc* *pnc* *sick* *pent* *measles* *hiv* *tb* *diab* *hyper*
+export excel "$user/$analysis/appendix_prepost_means.xlsx", firstrow(variables) replace
 restore 
 
 *ITS Analysis 
@@ -523,7 +540,6 @@ tsset prov rmonth
 
 ********************************************************************************					 
 * Combining diarrhea visits and sick child visits
-gen sick_visits = diarr_util + pneum_util 
 
 * Province 1 
 	eststo: itsa sick_visits i.season,  single treatid(1) trperiod(15) lag(1) replace ///
@@ -956,8 +972,10 @@ gen sick_visits = diarr_util + pneum_util
 *** Forest plots - percent change in utilization, including UCL and LCL (level change) ***
 *** Using the average in the pre-period ***
 
+
 global all opd_util ipd_util er_util fp_sa_util del_util cs_util anc_util pnc_util sick_visits ///
 pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util tbdetect_qual
+
 
 * Organized by province 
 
