@@ -973,6 +973,10 @@ tsset prov rmonth
 *** Using the average in the pre-period ***
 
 
+global all opd_util ipd_util er_util fp_sa_util del_util cs_util anc_util pnc_util sick_visits ///
+pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util tbdetect_qual
+
+
 * Organized by province 
 
 foreach p in 1 2 3 4 5 6 7 {
