@@ -7,7 +7,7 @@ global user "/Users/acatherine/Dropbox (Harvard University)"
 global dofiles "/Users/acatherine/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 4"
 
 *global user "/Users/nek096/Dropbox (Harvard University)"
-*global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 4 Factors Associated"
+*global dofiles "/Users/nek096/Documents/GitHub/HS-performance-during-covid-do-files/Multi-country/Paper 4"
 
 global analysis "SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Multi-country papers/Paper 4"
 
@@ -69,3 +69,8 @@ do "$dofiles/cr_p4_01.do"
 ********************************************************************************
 * Compiling and merging policy data
 do "$dofiles/cr_p4_02.do"
+
+********************************************************************************
+* Analysis 
+do "$dofiles/an_p4_01.do"
+
