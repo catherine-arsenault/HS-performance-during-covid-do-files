@@ -1,7 +1,7 @@
 * Nepal provincial analysis
 
 global user "/Users/acatherine/Dropbox (Harvard University)"
-global user "/Users/nek096/Dropbox (Harvard University)"
+*global user "/Users/nek096/Dropbox (Harvard University)"
 global NEPdata "/HMIS Data for Health System Performance Covid (Nepal)"
 global analysis "/SPH-Kruk Team/QuEST Network/Core Research/HS performance Covid (internal)/Country-specific papers/Nepal/Service disruption/Results"
 

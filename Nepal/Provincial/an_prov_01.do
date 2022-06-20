@@ -4,8 +4,8 @@ clear all
 use "$user/$NEPdata/Data for analysis/Nepal_provincial_analysis.dta", clear
 
 gen sick_visits = diarr_util + pneum_util 
-global all opd_util ipd_util er_util fp_sa_util del_util cs_util anc_util pnc_util sick_visits ///
-pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util 
+global all opd_util ipd_util er_util fp_sa_util del_util cs_util anc_util ///
+pnc_util sick_visits pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util 
 
 *******************************************************************************
 * Descriptive table (see analysis plan)
@@ -16,10 +16,9 @@ pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util
 *
 * ITS analysis
 *
-* Services: opd_util, ipd_util, er_util, fp_util, del_util, cs_util, anc_util, pnc_util 
-*			diarr_util, pneum_util, pent_qual, measles_qual,
-*			hivtest_qual, tbdetect_qual, diab_util, hyper_util
-*
+* Services: opd_util, ipd_util, er_util, fp_util, del_util, cs_util, anc_util, 
+* pnc_util diarr_util, pneum_util, pent_qual, measles_qual,
+* hivtest_qual, tbdetect_qual, diab_util, hyper_util
 ********************************************************************************
 
 * Descriptive table
@@ -47,12 +46,21 @@ order province Npalika *opd* *ipd* *_er* *fp* *del* *cs* *anc* *pnc* *sick* *pen
 export excel "$user/$analysis/appendix_prepost_means.xlsx", firstrow(variables) replace
 restore 
 
+*Test for autocorrelation
+********************************************************************************
+tsset prov rmonth
+foreach var of global all {
+	forval i =1/7 {
+		quietly itsa opd_util i.season,  single treatid(`i') trperiod(15) lag(1) replace
+		actest, lags(6)
+	}
+}
 *ITS Analysis 
 ********************************************************************************
 tsset prov rmonth
 * OPD
 * Province 1 
-	eststo: itsa opd_util i.season,  single treatid(1) trperiod(15) lag(1) replace ///
+	eststo: itsa opd_util i.season,  single treatid(1) trperiod(15) lag(1)  replace ///
 			figure(xlabel(1(1)24) ylabel(0(100000)500000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Province 1") ytitle("") xtitle("Month"))
 	
@@ -1039,7 +1047,155 @@ foreach var of global all {
 	
 }
 
+* Meta analysis to pull estimates by province
+import excel using "$user/$analysis/Percent change in utilization v2.xlsx", sheet("opd_util") firstrow clear
+save  "$user/$analysis/tmp.dta", replace
+
+foreach var in ipd_util er_util fp_sa_util del_util cs_util anc_util ///
+pnc_util sick_visits pent_qual measles_qual hivtest_qual tbdetect_qual diab_util hyper_util  {
+import excel using "$user/$analysis/Percent change in utilization v2.xlsx", sheet("`var'") firstrow clear
+append using "$user/$analysis/tmp.dta" 
+save  "$user/$analysis/tmp.dta", replace
+}
 
 
+metan pct_change lcl_pct_change ucl_pct_change, by(province) random nograph
 
+/*
+. metan pct_change	lcl_pct_change ucl_pct_change, by(province) random	nograph
+
+Study	ES    [95% Conf. Interval]     % Weight
+		
+Province 1
+1	-51.955   -66.512   -37.398          1.26
+2	-2.056    -6.732     2.620          1.42
+3	-19.795   -63.847    24.256          0.62
+4	-1.075   -12.392    10.241          1.33
+5	-29.319   -53.546    -5.093          1.03
+6	-64.321   -97.974   -30.669          0.81
+7	11.631   -50.300    73.561          0.40
+8	-27.103   -60.683     6.478          0.81
+9	-45.093   -84.984    -5.202          0.69
+10	-32.815   -51.529   -14.101          1.16
+11	-87.697   -120.725   -54.670         0.83
+12	-68.325   -99.475   -37.175          0.87
+13	-33.903   -55.882   -11.924          1.08
+14	-19.003   -78.772    40.766          0.42
+15	-3.359   -11.231     4.513          1.38
+Sub-total	  
+D+L pooled ES	-30.870   -43.672   -18.067         14.11
+		
+Province 2
+16	-60.161   -78.723   -41.599          1.17
+17	-28.708   -57.871     0.454          0.91
+18	-24.057   -44.528    -3.586          1.12
+19	-48.362   -76.192   -20.531          0.94
+20	-11.122   -54.536    32.291          0.63
+21	-21.977   -59.294    15.339          0.74
+22	-24.730   -48.368    -1.093          1.04
+23	-77.638   -136.482   -18.794         0.43
+24	-26.339   -55.501     2.824          0.91
+25	-3.796   -10.625     3.034          1.40
+26	-24.613   -43.113    -6.112          1.17
+27	2.186   -22.232    26.604          1.02
+28	-5.724   -33.245    21.796          0.95
+29	-1.186   -37.683    35.311          0.75
+30	-20.541   -83.051    41.969          0.39
+Sub-total	  
+D+L pooled ES	-23.590   -35.454   -11.725         13.58
+		
+Province 3
+31	-34.186   -55.609   -12.764          1.10
+32	-93.263   -143.753   -42.774         0.53
+33	-19.252   -51.269    12.764          0.85
+34	-63.564   -73.552   -53.575          1.35
+35	-64.281   -80.506   -48.056          1.22
+36	-27.844   -69.898    14.210          0.65
+37	-46.264   -73.695   -18.833          0.95
+38	-45.785   -79.934   -11.637          0.80
+39	-25.666   -50.316    -1.016          1.02
+40	-1.410    -8.460     5.640          1.39
+41	1.651   -15.508    18.811          1.20
+42	-46.389   -64.652   -28.127          1.17
+43	-31.872   -75.139    11.395          0.63
+44	-22.875   -38.078    -7.672          1.25
+45	-40.371   -63.663   -17.079          1.05
+Sub-total	  
+D+L pooled ES	-36.101   -51.857   -20.345         15.17
+		
+Province 4
+46	-2.177   -17.903    13.549          1.23
+47	-9.949   -54.735    34.837          0.61
+48	-29.116   -68.189     9.956          0.71
+49	-57.260   -83.226   -31.293          0.99
+50	-13.895   -46.836    19.045          0.83
+51	-35.245   -49.912   -20.577          1.26
+52	-2.887    -6.079     0.305          1.43
+53	-63.640   -80.268   -47.013          1.21
+54	-42.533   -81.897    -3.169          0.70
+55	-45.704   -67.687   -23.720          1.08
+56	-13.295   -23.939    -2.650          1.34
+57	-60.493   -88.829   -32.158          0.93
+58	-8.316   -28.975    12.343          1.12
+59	-20.252   -43.397     2.893          1.06
+60	-15.458   -58.868    27.953          0.63
+Sub-total	  
+D+L pooled ES	-27.659   -40.138   -15.181         15.12
+		
+Province 5
+61	-59.713   -75.741   -43.686          1.23
+62	-12.522   -27.556     2.513          1.25
+63	-67.155   -86.088   -48.222          1.16
+64	-16.391   -39.556     6.773          1.06
+65	-66.626   -80.586   -52.666          1.27
+66	-29.295   -68.030     9.440          0.71
+67	-52.928   -81.656   -24.199          0.92
+68	-32.133   -55.105    -9.161          1.06
+69	-32.485   -80.915    15.945          0.55
+70	-29.237   -56.921    -1.553          0.95
+71	-48.739   -67.662   -29.816          1.16
+72	16.972   -17.073    51.018          0.80
+73	-3.819   -18.378    10.741          1.26
+74	-16.512   -48.219    15.196          0.85
+75	-2.362   -40.789    36.065          0.72
+Sub-total	  
+D+L pooled ES	-31.646   -45.886   -17.406         14.95
+		
+Province 6
+76	-41.993   -69.964   -14.022          0.94
+77	-28.415   -56.140    -0.689          0.95
+78	-43.108   -83.346    -2.870          0.68
+79	-3.749   -55.779    48.282          0.51
+80	-7.317   -18.797     4.163          1.32
+81	-2.411   -10.725     5.904          1.38
+82	-53.149   -88.698   -17.599          0.77
+83	-10.094   -25.813     5.624          1.23
+84	-40.736   -87.957     6.485          0.57
+85	-49.435   -72.767   -26.104          1.05
+86	-2.359   -26.105    21.387          1.04
+87	-17.030   -40.124     6.063          1.06
+88	2.884   -26.681    32.450          0.90
+89	-59.771   -104.176   -15.366         0.61
+90	-31.213   -86.990    24.564          0.46
+Sub-total	  
+D+L pooled ES	-21.350   -31.491   -11.210         13.48
+		
+Province 7
+91	-0.405   -29.517    28.708          0.91
+92	-19.512   -39.348     0.324          1.14
+93	-27.501   -62.518     7.517          0.78
+94	-11.715   -31.020     7.590          1.15
+95	-23.376   -47.448     0.695          1.03
+96	-6.003   -11.311    -0.694          1.41
+97	-60.280   -81.575   -38.985          1.10
+98	9.115   -22.325    40.554          0.86
+99	-30.174   -58.670    -1.679          0.93
+100	21.163   -69.868   112.193          0.22
+101	-43.346   -73.482   -13.211          0.89
+102	-21.429   -52.554     9.696          0.87
+103	-22.979   -72.727    26.770          0.54
+104	-29.259   -65.361     6.843          0.76
+105	-19.014   -44.854     6.825          0.99
+Sub-total	  
+D+L pooled ES	-20.690   -30.894   -10.485         13.58
 
