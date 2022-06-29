@@ -47,64 +47,72 @@ append using "$analysis/Results/inttmpEthiopia.dta" ///
 order country, first			 
 export excel using "$analysis/Results/Results_internal_external.xlsx", sheet(Internal_consistency) firstrow(variable) sheetreplace  
 
-
 ********************************************************************************
-
 **** External consistency: ANC, Deliveries, BCG, Pent and Pneum vaccines ****
 ********************************************************************************
-
 *Ethiopia 
 u "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Data for analysis/Ethiopia_su_24months_for_analyses.dta", clear
-keep month year del_util cs_util
-collapse (sum) del_util cs_util, by (year)
+keep month year del_util cs_util totaldel
+collapse (sum) del_util cs_util totaldel, by (year)
 gen country = "Ethiopia"
-reshape wide del_util cs_util, i(country) j(year) 
-order country del* cs*
-save "$analysis/Results/exttmpEthiopia.dta", replace
-
+reshape wide del_util cs_util totaldel, i(country) j(year) 
+order country del* cs* total*
+*save "$analysis/Results/exttmpEthiopia.dta", replace
+save "$user/$analysis/Results/exttmpEthiopia.dta", replace
 * Nepal
 u "$user/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_su_24months_for_analyses.dta", clear
-keep month year del_util cs_util
-collapse (sum) del_util cs_util, by (year)
+keep month year del_util cs_util 
+collapse (sum) del_util cs_util , by (year)
 gen country = "Nepal"
-reshape wide del_util cs_util, i(country) j(year) 
-order country del* cs*
-save "$analysis/Results/exttmpNepal.dta", replace
+reshape wide del_util cs_util , i(country) j(year) 
+order country del* cs* 
+*save "$analysis/Results/exttmpNepal.dta", replace
+save "$user/$analysis/Results/exttmpNepal.dta", replace
 
 * KZN 
 u "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/KZN_su_24months_for_analyses.dta", clear
-keep month year del_util cs_util
-collapse (sum) del_util cs_util, by (year)
+keep month year del_util cs_util totaldel
+collapse (sum) del_util cs_util totaldel, by (year)
 gen country = "KZN"
-reshape wide del_util cs_util, i(country) j(year) 
-order country del* cs*
-save "$analysis/Results/exttmpKZN.dta", replace
+reshape wide del_util cs_util totaldel, i(country) j(year) 
+order country del* cs* total*
+*save "$analysis/Results/exttmpKZN.dta", replace
+save "$user/$analysis/Results/exttmpKZN.dta", replace
 
 *Lao
 u "$user/HMIS Data for Health System Performance Covid (Lao PDR)/Data for analysis/Lao_su_24months_for_analyses.dta", clear 
-keep month year del_util cs_util
-collapse (sum) del_util cs_util, by (year)
+keep month year del_util cs_util totaldel
+collapse (sum) del_util cs_util totaldel, by (year)
 gen country = "Lao"
-reshape wide del_util cs_util, i(country) j(year) 
-order country del* cs*
-save "$analysis/Results/exttmpLao.dta", replace
+reshape wide del_util cs_util totaldel, i(country) j(year) 
+order country del* cs* total*
+*save "$analysis/Results/exttmpLao.dta", replace
+save "$user/$analysis/Results/exttmpLao.dta", replace
 
 * Creating overall table of totals for volumes  
 clear
-append using "$analysis/Results/exttmpEthiopia.dta" /// 
+/*append using "$analysis/Results/exttmpEthiopia.dta" /// 
 			 "$analysis/Results/exttmpKZN.dta" "$analysis/Results/exttmpLao.dta" /// 
-			 "$analysis/Results/exttmpNepal.dta"
+			 "$analysis/Results/exttmpNepal.dta" */
+			 
+append using "$user/$analysis/Results/exttmpEthiopia.dta" /// 
+			 "$user/$analysis/Results/exttmpKZN.dta" "$user/$analysis/Results/exttmpLao.dta" /// 
+			 "$user/$analysis/Results/exttmpNepal.dta"			 
 drop *2020		 
-export excel using "$analysis/Results/Results_internal_external.xlsx", sheet(External_consistency) firstrow(variable) sheetreplace  
+*export excel using "$analysis/Results/Results_internal_external_CA.xlsx", sheet(External_consistency) firstrow(variable) sheetreplace  
+export excel using "$user/$analysis/Results/Results_internal_external_CA.xlsx", sheet(External_consistency) firstrow(variable) sheetreplace  
 
 
 * Remove temp files 
 global country Ethiopia KZN Lao Nepal 
-foreach x of global country {
+/*foreach x of global country {
 		rm "$analysis/Results/inttmp`x'.dta"
 		rm "$analysis/Results/exttmp`x'.dta"
+	} */
+foreach x of global country {
+		rm "$user/$analysis/Results/inttmp`x'.dta"
+		rm "$user/$analysis/Results/exttmp`x'.dta"
 	}
-
 
 /* Mortality code 
 **************** Totals table for mortality ****************
