@@ -49,12 +49,14 @@ restore
 *Test for autocorrelation
 ********************************************************************************
 tsset prov rmonth
+log using "$user/$analysis/autocorrelation", replace
 foreach var of global all {
 	forval i =1/7 {
-		quietly itsa opd_util i.season,  single treatid(`i') trperiod(15) lag(1) replace
+		quietly itsa `var' i.season,  single treatid(`i') trperiod(15) lag(1) replace
 		actest, lags(6)
 	}
-}
+} 
+log close
 *ITS Analysis 
 ********************************************************************************
 tsset prov rmonth
