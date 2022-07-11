@@ -63,49 +63,49 @@ tsset prov rmonth
 * OPD
 * Province 1 
 	eststo: itsa opd_util i.season,  single treatid(1) trperiod(15) lag(1)  replace ///
-			figure(xlabel(1(1)24) ylabel(0(100000)500000, labsize(vsmall)) graphregion(color(white)) ///
+			figure(xlabel(1(1)24) ylabel(100000(100000)400000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Province 1") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_1.pdf", replace
 
 * Province 2 
 	eststo: itsa opd_util i.season,  single treatid(2) trperiod(15) lag(1) replace /// 
-			figure(xlabel(1(1)24) ylabel(0(100000)500000, labsize(vsmall)) graphregion(color(white)) ///
+			figure(xlabel(1(1)24) ylabel(100000(100000)400000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Province 2") ytitle("") xtitle("Month"))
 					 
 	graph export "$user/$analysis/Graphs/opd_util_2.pdf", replace
 	
 * Province 3 
 	eststo: itsa opd_util i.season,  single treatid(3) trperiod(15) lag(1) replace /// 
-			figure(xlabel(1(1)24) ylabel(0(100000)500000, labsize(vsmall)) graphregion(color(white)) ///
+			figure(xlabel(1(1)24) ylabel(100000(100000)400000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Bagmati Province") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_3.pdf", replace
 	
 * Province 4 
 	eststo: itsa opd_util i.season,  single treatid(4) trperiod(15) lag(1) replace ///
-			figure(xlabel(1(1)24) ylabel(0(100000)400000, labsize(vsmall)) graphregion(color(white)) ///
+			figure(xlabel(1(1)24) ylabel(0(100000)300000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Gandaki Province") ytitle("") xtitle("Month"))	
 					 
 	graph export "$user/$analysis/Graphs/opd_util_4.pdf", replace
 	
 * Province 5
 	eststo: itsa opd_util i.season,  single treatid(5) trperiod(15) lag(1) replace ///
-			figure(xlabel(1(1)24) ylabel(0(100000)600000, labsize(vsmall)) graphregion(color(white)) ///
+			figure(xlabel(1(1)24) ylabel(100000(100000)450000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Province 5") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_5.pdf", replace
 	
 * Province 6 
 	eststo: itsa opd_util i.season,  single treatid(6) trperiod(15) lag(1) replace ///
-			figure(xlabel(1(1)24) ylabel(0(50000)300000, labsize(vsmall)) graphregion(color(white)) ///
+			figure(xlabel(1(1)24) ylabel(0(50000)200000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Karnali Province") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_6.pdf", replace
 	
 * Province 7
 	eststo: itsa opd_util i.season,  single treatid(7) trperiod(15) lag(1) replace ///
-			figure(xlabel(1(1)24) ylabel(0(100000)500000, labsize(vsmall)) graphregion(color(white)) ///
+			figure(xlabel(1(1)24) ylabel(0(100000)300000, labsize(vsmall)) graphregion(color(white)) ///
 		    legend(off) title("Outpatient visits, Sudurpashchim Province") ytitle("") xtitle("Month"))
 	
 	graph export "$user/$analysis/Graphs/opd_util_7.pdf", replace
