@@ -66,39 +66,49 @@ twoway (line mean_rel_vol_perc month if service==`i',lcolor(red) lwidth(medthick
 graph save "$user/$p4/Graphs/twoway_vol_string_`i'.gph", replace
 }  
 
+* To add black line at 100
+gen string_100 = 100 
+
 /*** RMN****/
 twoway (line mean_rel_vol_perc month if service==1,lcolor(navy) lwidth(medthick) ///
 	     ylabel(0(25)150,angle(horizontal)) ytitle("Relative service volume (%)")) ///
 	   (scatter rel_vol_perc month if service==1,mcolor(navy) msize(vsmall)) ///
 	   (line stringency_mean month if service==1, yaxis(2) ytitle("Stringency index (%)", ///
-	    axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon) ), ///
-		 graphregion(color(white)) xtitle("Month") by(country, noiy title("Reproductive, maternal, or newborn") cols(5)) 
+	    axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)) ///
+		(line string_100 month, lwidth(medium) lcolor(black)), ///		
+		 graphregion(color(white)) xtitle("Month") by(country, noiy title("Reproductive, maternal, and newborn health services") cols(5)) 
 		
 graph save "$user/$p4/Graphs/twoway_vol_string_rmn.gph", replace
 
 /*** Summative ****/
 twoway (line mean_rel_vol_perc month if service==2,lcolor(navy) lwidth(medthick) ylabel(0(25)150,angle(horizontal)) ytitle("Relative service volume (%)")) ///
  (scatter rel_vol_perc month if service==2,mcolor(navy) msize(vsmall)) ///
- (line stringency_mean month if service==2, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)), xtitle("Month") by(country, noiy title("Service use overall and injuries") cols(5))
+ (line stringency_mean month if service==2, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)) /// 
+ (line string_100 month, lwidth(medium) lcolor(black)), xtitle("Month") by(country, noiy title("Service use overall and injuries") cols(5))
+ 
 graph save "$user/$p4/Graphs/twoway_vol_string_summ.gph", replace
 
 
 /*** Child ****/
 twoway (line mean_rel_vol_perc month if service==3,lcolor(navy) lwidth(medthick) ylabel(0(25)150,angle(horizontal)) ytitle("Relative service volume (%)")) ///
  (scatter rel_vol_perc month if service==3,mcolor(navy) msize(vsmall)) ///
- (line stringency_mean month if service==3, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)), xtitle("Month") by(country, noiy title("Child health services") cols(5))
+ (line stringency_mean month if service==3, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)) /// 
+ (line string_100 month, lwidth(medium) lcolor(black)), xtitle("Month") by(country, noiy title("Child health services") cols(5))
+ 
 graph save "$user/$p4/Graphs/twoway_vol_string_child.gph", replace
 
 /*** ART ****/
 twoway (line mean_rel_vol_perc month if service==4,lcolor(navy) lwidth(medthick) ylabel(0(25)150,angle(horizontal)) ytitle("Relative service volume (%)")) ///
  (scatter rel_vol_perc month if service==4,mcolor(navy) msize(vsmall)) ///
- (line stringency_mean month if service==4, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)), xtitle("Month") by(country, noiy title("Antiretroviral therapy") cols(5))
+ (line stringency_mean month if service==4, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)) /// 
+ (line string_100 month if country == "ETH" | country == "MEX" | country == "KZN" | country == "KOR", lwidth(medium) lcolor(black)), xtitle("Month") by(country, noiy title("Antiretroviral therapy") cols(5))
 graph save "$user/$p4/Graphs/twoway_vol_string_art.gph", replace
 
 /*** Chronic diseases ****/
 twoway (line mean_rel_vol_perc month if service==5,lcolor(navy) lwidth(medthick) ylabel(0(25)150,angle(horizontal)) ytitle("Relative service volume (%)")) ///
  (scatter rel_vol_perc month if service==5,mcolor(navy) msize(vsmall)) ///
- (line stringency_mean month if service==5, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)), xtitle("Month") by(country, noiy title("Chronic diseases") cols(5))
+ (line stringency_mean month if service==5, yaxis(2) ytitle("Stringency index (%)", axis(2)) ylabel(0(25)150, angle(horizontal) axis(2)) lwidth(medthick) lcolor(maroon)) /// 
+ (line string_100 month if country != "ETH", lwidth(medium) lcolor(black)), xtitle("Month") by(country, noiy title("Chronic diseases") cols(5))
 graph save "$user/$p4/Graphs/twoway_vol_string_chronic.gph", replace
 
 
