@@ -39,7 +39,13 @@ restore
 preserve
 collapse (first) Totalpopulation, by(organisationunitname eased_fixed)
 collapse (sum) Totalpopulation, by(eased_fixed)
-export excel "$user/$analysis/Table1.xlsx", firstrow(variables) sheet(palikapopulation, replace)
+export excel "$user/$analysis/Table1.xlsx", firstrow(variables) sheet(palikapopulationtotal, replace)
+restore 
+
+preserve
+collapse (first) Totalpopulation, by(organisationunitname eased_fixed)
+collapse (mean) Totalpopulation, by(eased_fixed)
+export excel "$user/$analysis/Table1.xlsx", firstrow(variables) sheet(palikapopulationavg, replace)
 restore 
 
 
