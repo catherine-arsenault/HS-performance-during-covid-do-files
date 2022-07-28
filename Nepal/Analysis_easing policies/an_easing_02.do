@@ -18,12 +18,30 @@ drop if month == 1 | month == 2
 * Simple comparison of means 
 tabstat fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0 , stat(N mean) col(stat)
 tabstat fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 , stat(N mean) col(stat)
-tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 0, stat(N mean) col(stat)
-tabstat  fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual if eased_fixed == 1 , stat(N mean) col(stat)
 
 summtab if post == 0, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(pre-period) replace title(Table1)
 
 summtab if post == 1, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(eased_fixed) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(post-period) replace title(Table1)
+
+summtab if eased_fixed == 1, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(post) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(treated) replace title(Table1)
+
+summtab if eased_fixed == 0, contvars(fp_util anc_util pnc_util pneum_util measles_qual opd_util diab_util hyper_util hivtest_qual tbdetect_qual)  by(post) pnonmiss mean directory("$user/$analysis") excel excelname(Table1) sheetname(control) replace title(Table1)
+
+
+* Number of new COVID cases - since COVID cases is at the district level and treatment status is at the palika level, this is basically double/triple/quadruple counting th COVID cases ... 
+preserve 
+collapse (first) covid_case, by(orgunitlevel3 organisationunitname month eased_fixed post)
+collapse (sum) covid_case, by(eased_fixed post)
+export excel "$user/$analysis/Table1.xlsx", firstrow(variables) sheet(covid_cases, replace)
+restore 
+
+*Palika populations
+preserve
+collapse (first) Totalpopulation, by(organisationunitname eased_fixed)
+collapse (sum) Totalpopulation, by(eased_fixed)
+export excel "$user/$analysis/Table1.xlsx", firstrow(variables) sheet(palikapopulation, replace)
+restore 
+
 
 *** Difference-in-differences analysis - time varying treatment status 
 
