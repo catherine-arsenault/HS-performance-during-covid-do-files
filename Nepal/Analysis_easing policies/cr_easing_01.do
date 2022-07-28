@@ -73,6 +73,11 @@ import excel using "$user/$analysis/Death_DistrictWise_EDCD Data_2033 Cases.xlsx
 drop District K L
 save "$user/$data/Data for analysis/Nepal_covid_deaths.dta", replace
 
+* Importing and saving palika population data as .dta file
+import excel using "$user/$data/Data for analysis/preliminary-data-of-national-population-and-housing-census-2021-english.xlsm", clear firstrow
+drop Totalfamilynumber Totalhouseholdnumber TotalMale TotalFemale Notes Site
+save "$user/$data/Data for analysis/Nepal_palika_population.dta", replace
+
 * Importing policy data for merging. This is at the palika level
 * For each month, did the palika "ease" containment policies or not 
 import excel using "$user/$analysis/policy_data.xlsx", firstrow clear 
@@ -122,14 +127,21 @@ order org* year month
 merge m:1 orgunitlevel3 year month using "$user/$data/Data for analysis/Nepal_covid_cases.dta"
 drop _merge
 
+* Shortened palika name to merge on population size
+gen districtkey = substr(orgunitlevel3, 4, .)
+gen palikakey = substr(organisationunitname, 7, .)
+
+* Merge with palika population data 
+merge m:m palikakey using "$user/$data/Data for analysis/Nepal_palika_population.dta"
+* Drop empty row and one palika that was dropped during complete case analysis 
+drop if _merge == 2
+drop District LocalLevelName _merge
+
 * Other cleaning 
 * If covid case or death is missing, 0 cases or deaths 
 replace covid_death_ = 0 if covid_death_ == .
 replace covid_case = 0 if covid_case == .
 
-* DROP PALIKAS THAT REMOVED POLICIES AND THEN REIMPOSED THEM
-* drop if orgunitlevel3 == "501 RUKUM EAST"  | orgunitlevel3 == "407 TANAHU"
- 
 * Renaming family planning
 rename fp_sa_util fp_util
 
@@ -138,6 +150,7 @@ encode organisationunitname, gen(palikaid)
 
 * Creates a tag for palika
 egen tag = tag(organisationunitname)
+
 
 *******************************************************************************
 * Assign time-varying treatment status 
