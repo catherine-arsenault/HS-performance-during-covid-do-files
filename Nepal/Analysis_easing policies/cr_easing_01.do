@@ -66,6 +66,7 @@ rename month_new month
 
 order orgunitlevel3 year month covid_case
 collapse (sum) covid_case, by (year month orgunitlevel3) 
+sort orgunitlevel3 year month
 save "$user/$data/Data for analysis/Nepal_covid_cases.dta", replace
 
 * Importing and saving COVID death data as .dta file at the district level
@@ -76,6 +77,7 @@ save "$user/$data/Data for analysis/Nepal_covid_deaths.dta", replace
 * Importing and saving palika population data as .dta file
 import excel using "$user/$data/Data for analysis/preliminary-data-of-national-population-and-housing-census-2021-english.xlsm", clear firstrow
 drop Totalfamilynumber Totalhouseholdnumber TotalMale TotalFemale Notes Site
+sort districtkey palikakey
 save "$user/$data/Data for analysis/Nepal_palika_population.dta", replace
 
 * Importing policy data for merging. This is at the palika level
