@@ -59,6 +59,60 @@ foreach x of global volumes {
 	drop rowmean`x' rowsd`x' pos_out`x'  flag_outlier_`x'*
 }
 
+******************************************************************
+* Checking number excluded
+preserve
+foreach x of global volumes {
+	drop `x'*_19 `x'11_20 `x'12_20 `x'1_20 `x'2_20 `x'7_20 `x'9_20 `x'10_20 
+	}
+* Number of palika reporting any data, for each indicator
+foreach var of global volumes {
+	egen `var'_report = rownonmiss(`var'*) // counts the number of non missing cells
+}
+	recode *_report (0=0) (1/5=1) // 0 never any value, 1 some values
+
+putexcel set "$user/$data/DIDcompleteness.xlsx", sheet(Before )  modify
+putexcel A2 = "Variable"
+putexcel B2 = "Number reporting any data"	
+local i= 2
+foreach var of global volumes {	
+	local i = `i'+1
+	putexcel A`i' = "`var'"
+	qui sum `var'_report
+	putexcel B`i' = `r(sum)'
+}
+drop *report
+
+* Sum and average volumes 
+foreach var of global volumes {
+	egen `var'_report = rownonmiss(`var'*)
+	recode `var'_report (0=0) (1/999999=1) 
+	* Total facilities ever reporting each indicator
+	egen `var'_total_report = total(`var'_report) 
+	* Sum/volume of services or deaths per palika over 5 months
+	egen `var'_sum = rowtotal( `var'3_20 `var'4_20 `var'5_20 `var'6_20  ///
+	 `var'8_20  ), m
+	* Sum/volume of services across whole country
+	egen `var'_total_sum = total(`var'_sum)
+	* Average volume per Palika
+	gen `var'_total_mean = `var'_total_sum /`var'_total_report
+}
+putexcel set "$user/$data/DIDcompleteness.xlsx", sheet(Before )  modify
+putexcel F2 = "Variable"
+putexcel G2 = "Sum of services"	
+putexcel H2 = "Average per unit/facility"
+local i= 2
+	foreach var of global volumes {	
+		local i = `i'+1
+		putexcel F`i' = "`var'"
+		qui sum `var'_total_sum
+		putexcel G`i' = `r(mean)'
+		qui sum `var'_total_mean
+		putexcel H`i' = `r(mean)'
+	}
+
+drop *_report *_sum *_mean
+restore
 **************************************************************
                  *COMPLETE CASE ANALYSIS 1 
 				 * 5/5 months reported 
