@@ -77,7 +77,7 @@ save "$user/$data/Data for analysis/Nepal_covid_deaths.dta", replace
 * Importing and saving palika population data as .dta file
 import excel using "$user/$data/Data for analysis/preliminary-data-of-national-population-and-housing-census-2021-english.xlsm", clear firstrow
 drop Totalfamilynumber Totalhouseholdnumber TotalMale TotalFemale Notes Site
-sort districtkey palikakey
+sort orgunitlevel3 palikakey
 save "$user/$data/Data for analysis/Nepal_palika_population.dta", replace
 
 * Importing policy data for merging. This is at the palika level
@@ -130,11 +130,10 @@ merge m:1 orgunitlevel3 year month using "$user/$data/Data for analysis/Nepal_co
 drop _merge
 
 * Shortened palika name to merge on population size
-gen districtkey = substr(orgunitlevel3, 4, .)
 gen palikakey = substr(organisationunitname, 7, .)
 
 * Merge with palika population data 
-merge m:m palikakey using "$user/$data/Data for analysis/Nepal_palika_population.dta"
+merge m:1 orgunitlevel3 palikakey using "$user/$data/Data for analysis/Nepal_palika_population.dta"
 * Drop empty row and one palika that was dropped during complete case analysis 
 drop if _merge == 2
 drop District LocalLevelName _merge
