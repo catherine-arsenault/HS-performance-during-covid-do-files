@@ -41,12 +41,14 @@ twoway (scatter anc_util month if eased_fixed == 1, mcolor(green) msize(vsmall))
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Antenatal care visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(20)180) ///
-	   xtitle(Month) legend(off) text(35 5 "Lifted lockdown" 122 5  "Maintained lockdown" /// 
+	   xtitle(Month) legend(off) text(35 5 "Lifted restrictions" 122 5  "Maintained restrictions" /// 
 	   158 16.5 "National"  152 16.5 "lockdown" 146 16.5 "(pre-period)" /// 
-	   158 19.5 "National" 152 19.5 "lockdown lifted" 146 19.5 "(post-period)", size(small)) 
+	   158 19.5 "National" 152 19.5 "lockdown lifted" 146 19.5 "(post-period)", size(vsmall)) 
 	  
 	   
 	   graph export "$user/$analysis/Graphs/anc_util.pdf", replace
+	   graph export "$user/$analysis/Graphs/anc_util.png", replace
+
 	   
 twoway (scatter fp_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
 	   (line fp_util month if eased_fixed == 1, lcolor(green)) ///
@@ -55,13 +57,16 @@ twoway (scatter fp_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) 
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Contraceptive users", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(400(100)1000) ///
-	   xtitle(Month) legend(off) text(580 5 "Lifted lockdown" 850 5 "Maintained lockdown" /// 
+	   xtitle(Month) legend(off) text(580 5 "Lifted restritions" 850 5 "Maintained restrictions" /// 
 	   950 16.5 "National"  930 16.5 "lockdown" 910 16.5 "(pre-period)" /// 
-	   950 19.5 "National" 930 19.5 "lockdown lifted" 910 19.5 "(post-period)", size(small))
+	   950 19.5 "National" 930 19.5 "lockdown lifted" 910 19.5 "(post-period)", size(vsmall))
 	  
 	   
 	   graph export "$user/$analysis/Graphs/fp_util.pdf", replace
+	   graph export "$user/$analysis/Graphs/fp_util.png", replace
 
+	   
+	   
 twoway (scatter pnc_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
 	   (line pnc_util month if eased_fixed == 1, lcolor(green)) ///
 	   (scatter pnc_util month if eased_fixed == 0, mcolor(orange) msize(vsmall)) ///
@@ -69,11 +74,13 @@ twoway (scatter pnc_util month if eased_fixed == 1, mcolor(green) msize(vsmall))
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Postnatal care visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(10)60) ///
-	   xtitle(Month) legend(off) text(6 5 "Eased policies" 22 4.5  "Maintained policies" /// 
+	   xtitle(Month) legend(off) text(6 5 "Lifted restrictions" 22 4.5  "Maintained restrictions" /// 
 	   50 16.5 "National"  48 16.5 "lockdown" 46 16.5 "(pre-period)" /// 
-	   50 19.5 "National" 48 19.5 "lockdown lifted" 46 19.5 "(post-period)", size(small))
+	   50 19.5 "National" 48 19.5 "lockdown lifted" 46 19.5 "(post-period)", size(vsmall))
 	   
 	   graph export "$user/$analysis/Graphs/pnc_util.pdf", replace
+	   graph export "$user/$analysis/Graphs/pnc_util.png", replace
+
 	   
 	   
 twoway (scatter pneum_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
@@ -83,11 +90,13 @@ twoway (scatter pneum_util month if eased_fixed == 1, mcolor(green) msize(vsmall
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Pneumonia visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(5)40) ///
-	   xtitle(Month) legend(off) text(14 5  "Maintained policies" 20 5 "Eased policies" /// 
+	   xtitle(Month) legend(off) text(14 5  "Maintained restrictions" 20 5 "Lifted restrictions" /// 
 	   34 16.5 "National"  32.5 16.5 "lockdown" 31 16.5 "(pre-period)" /// 
-	   34 19.5 "National" 32.5 19.5 "lockdown lifted" 31 19.5 "(post-period)", size(small))
+	   34 19.5 "National" 32.5 19.5 "lockdown lifted" 31 19.5 "(post-period)", size(vsmall))
 	   
 	   graph export "$user/$analysis/Graphs/pneum_util.pdf", replace
+	   graph export "$user/$analysis/Graphs/pneum_util.png", replace
+
 
 twoway (scatter measles_qual month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
 	   (line measles_qual month if eased_fixed == 1, lcolor(green)) ///
@@ -96,12 +105,14 @@ twoway (scatter measles_qual month if eased_fixed == 1, mcolor(green) msize(vsma
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Measles vaccines", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(25)250) ///
-	   xtitle(Month) legend(off) text(75 12 "Eased policies" 125 12  "Maintained policies" ///
+	   xtitle(Month) legend(off) text(75 12 "Lifted restrictions" 125 12  "Maintained restrictions" ///
 	   225 16.5 "National"  215 16.5 "lockdown" 205 16.5 "(pre-period)" /// 
-	   225 19.5 "National" 215 19.5 "lockdown lifted" 205 19.5 "(post-period)", size(small))
+	   225 19.5 "National" 215 19.5 "lockdown lifted" 205 19.5 "(post-period)", size(vsmall))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/measles_qual.pdf", replace
+	   graph export "$user/$analysis/Graphs/measles_qual.png", replace
+
 	   
 
 twoway (scatter opd_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
@@ -111,12 +122,14 @@ twoway (scatter opd_util month if eased_fixed == 1, mcolor(green) msize(vsmall))
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Outpatient visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(500)4000) ///
-	   xtitle(Month) legend(off) text(1300 4.5 "Eased policies" 2150 4.4  "Maintained policies" ///
+	   xtitle(Month) legend(off) text(1300 4.5 "Lifted restrictions" 2150 4.4  "Maintained restrictions" ///
 	   3400 16.5 "National"  3250 16.5 "lockdown" 3100 16.5 "(pre-period)" /// 
-	   3400 19.5 "National" 3250 19.5 "lockdown lifted" 3100 19.5 "(post-period)", size(small))
+	   3400 19.5 "National" 3250 19.5 "lockdown lifted" 3100 19.5 "(post-period)", size(vsmall))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/opd_util.pdf", replace
+	   graph export "$user/$analysis/Graphs/opd_util.png", replace
+
 
 twoway (scatter diab_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
 	   (line diab_util month if eased_fixed == 1, lcolor(green)) ///
@@ -125,12 +138,13 @@ twoway (scatter diab_util month if eased_fixed == 1, mcolor(green) msize(vsmall)
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Diabetes visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(50)200) ///
-	   xtitle(Month) legend(off) text(44 5 "Eased policies" 110 5  "Maintained policies" /// 
+	   xtitle(Month) legend(off) text(40 5 "Lifted restrictions" 110 5  "Maintained restrictions" /// 
 	   178 16.5 "National"  172 16.5 "lockdown" 166 16.5 "(pre-period)" /// 
-	   178 19.5 "National" 172 19.5 "lockdown lifted" 166 19.5 "(post-period)", size(small))
+	   178 19.5 "National" 172 19.5 "lockdown lifted" 166 19.5 "(post-period)", size(vsmall))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/diab_util.pdf", replace	   
+	   graph export "$user/$analysis/Graphs/diab_util.png", replace	   
 
 
 twoway (scatter hyper_util month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
@@ -140,11 +154,13 @@ twoway (scatter hyper_util month if eased_fixed == 1, mcolor(green) msize(vsmall
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("Hypertension visits", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(50)200) ///
-	   xtitle(Month) legend(off) text(45 12 "Eased policies" 110 12  "Maintained policies" /// 
+	   xtitle(Month) legend(off) text(45 12 "Lifted restrictions" 110 12  "Maintained restrictions" /// 
 	   168 16.5 "National"  162 16.5 "lockdown" 156 16.5 "(pre-period)" /// 
-	   168 19.5 "National" 162 19.5 "lockdown lifted" 156 19.5 "(post-period)", size(small))
+	   168 19.5 "National" 162 19.5 "lockdown lifted" 156 19.5 "(post-period)", size(vsmall))
 	  
-	   graph export "$user/$analysis/Graphs/hyper_util.pdf", replace	  
+	   graph export "$user/$analysis/Graphs/hyper_util.pdf", replace	
+	   graph export "$user/$analysis/Graphs/hyper_util.png", replace	  
+
 
 twoway (scatter hivtest_qual month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
 	   (line hivtest_qual month if eased_fixed == 1, lcolor(green)) ///
@@ -153,12 +169,14 @@ twoway (scatter hivtest_qual month if eased_fixed == 1, mcolor(green) msize(vsma
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("HIV Tests", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(100)1000) ///
-	   xtitle(Month) legend(off) text(70 5 "Eased policies" 450 4.2  "Maintained policies" ///
+	   xtitle(Month) legend(off) text(70 5 "Lifted restrictions" 450 4.2  "Maintained restrictions" ///
 	   880 16.5 "National"  850 16.5 "lockdown" 820 16.5 "(pre-period)" /// 
-	   880 19.5 "National" 850 19.5 "lockdown lifted" 820 19.5 "(post-period)", size(small))
+	   880 19.5 "National" 850 19.5 "lockdown lifted" 820 19.5 "(post-period)", size(vsmall))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/hivtest_qual.pdf", replace	   
+	   graph export "$user/$analysis/Graphs/hivtest_qual.png", replace	   
+
 	   
 twoway (scatter tbdetect_qual month if eased_fixed == 1, mcolor(green) msize(vsmall)) ///
 	   (line tbdetect_qual month if eased_fixed == 1, lcolor(green)) ///
@@ -167,11 +185,12 @@ twoway (scatter tbdetect_qual month if eased_fixed == 1, mcolor(green) msize(vsm
 	   xline(15, lpattern(dash) lcolor(ebg)) xline(18, lpattern(dash) lcolor(ebg)) ///
 	   graphregion(color(white)) title("TB cases detected", size(small)) ///
 	   xlabel(1(1)20) ytitle("Average number of visits per palika") ylabel(0(4)20) ///
-	   xtitle(Month) legend(off) text(3.75 5 "Eased policies" 8 5  "Maintained policies" /// 
+	   xtitle(Month) legend(off) text(3.75 5 "Lifted restrictions" 8 5  "Maintained restrictions" /// 
 	   18 16.5 "National"  17.3 16.5 "lockdown" 16.6 16.5 "(pre-period)" /// 
-	   18 19.5 "National" 17.3 19.5 "lockdown lifted" 16.6 19.5 "(post-period)", size(small))
+	   18 19.5 "National" 17.3 19.5 "lockdown lifted" 16.6 19.5 "(post-period)", size(vsmall))
 	  
 	  
 	   graph export "$user/$analysis/Graphs/tbdetect_qual.pdf", replace	   
+	   graph export "$user/$analysis/Graphs/tbdetect_qual.png", replace	   
 
 			
