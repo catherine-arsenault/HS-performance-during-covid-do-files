@@ -149,6 +149,7 @@ restore
 
 * Note: The few missing for pct_out is because there were 0 in the count for some diab and hyper indicators 
 * COMPLETENESS GRAPHS
+preserve
 collapse (count) sb_mort_num-totaldel , by (year month preCovid)			  
 	foreach x of global all {
 	cap egen max`x'=max(`x')
@@ -159,40 +160,13 @@ collapse (count) sb_mort_num-totaldel , by (year month preCovid)
 	gen rmonth = month if year==2019
 	replace rmonth= month+12 if year==2020
 	
-	*ANC
-	twoway (line completeanc_util rmonth ) , ///
+	* OPD
+	twoway (line completeopd_util rmonth, lcolor(blue)) , ///
 	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
 	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
-	graphregion(color(white)) title("", size(small) color(black))  ///
+	graphregion(color(white)) title("Completeness in reporting of outpatient visits Ethiopia", size(msmall) color(black))  ///
 	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
-	
-	*Pentavalent
-	twoway (line completepent_qual rmonth, lcolor(green)) , ///
-	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
-	graphregion(color(white)) title("", size(small) color(black))  ///
-	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
-	
-	*ART
-	twoway (line completeart_util rmonth, lcolor(red)) , ///
-	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
-	graphregion(color(white)) title("", size(small) color(black))  ///
-	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
-	
-	*Diabetes
-	twoway (line completeopd_util rmonth, lcolor(cyan)) , ///
-	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
-	graphregion(color(white)) title("", size(small) color(black))  ///
-	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
-	
-	*Newborn deaths
-	twoway (line completenewborn_mort_num rmonth, lcolor(purple)) , ///
-	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
-	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
-	graphregion(color(white)) title("", size(small) color(black))  ///
-	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+restore
 * COMPLETENESS TABLE 
 preserve
 	collapse (count) sb_mort_num-totaldel , by (year month preCovid)			  
@@ -200,7 +174,9 @@ preserve
 	cap egen max`x'=max(`x')
 	cap gen complete`x'= `x'/max`x'
 	*cap drop max`x'
-	}		
+	}	
+	export excel year month preCovid complete* using "$user/$analysis/Results/completeness_table.xlsx", sheet(Ethiopia_completeness) firstrow(variable) sheetreplace
+	
 	collapse (mean) complete* max*, by(preCovid)
 	reshape long complete max, i(preCovid) j(service) string
 	reshape wide complete max, i(service) j(preCovid) 
@@ -217,8 +193,8 @@ restore
 ********************************************************************************
 * HAITI
 * Use dataset before cleaning
-clear
-u "$user/HMIS Data for Health System Performance Covid (Haiti)/Data for analysis/Haiti_Jan19-March21_WIDE.dta", clear
+clear all
+u "$user/HMIS Data for Health System Performance Covid (all countries)/HMIS Data for Health System Performance Covid (Haiti)/Data for analysis/Haiti_Jan19-March21_WIDE.dta", clear
 
 global all opd_util fp_util anc_util cerv_qual del_util pnc_util vacc_qual diab_util ///
            hyper_util mat_mort_num sb_mort_num
@@ -238,7 +214,6 @@ forval i=1/12 {
 }
 }
 	
-
 * For Outlier assessment 
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
@@ -304,7 +279,52 @@ preserve
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Hat_outliers) firstrow(variable) sheetreplace  
 
 restore 
-
+* COMPLETENESS GRAPHS
+preserve 
+collapse (count) mat_mort_num-vacc_qual , by (year month preCovid)	  
+	foreach x of global all {
+	cap egen max`x'=max(`x')
+	cap gen complete`x'= `x'/max`x'
+	cap replace complete`x' = complete`x'*100
+	*cap drop max`x'
+	}			
+	gen rmonth = month if year==2019
+	replace rmonth= month+12 if year==2020
+	
+	twoway (line completeopd_util rmonth, lcolor(blue)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("Completeness in reporting of outpatient visits Haiti", size(msmall) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	/*ANC
+	twoway (line completeanc_util rmonth ) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	
+	Full vax
+	twoway (line completevacc_qual rmonth, lcolor(green)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	
+	*Diabetes
+	twoway (line completeopd_util rmonth, lcolor(cyan)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	
+	*Newborn deaths
+	twoway (line completenewborn_mort_num rmonth, lcolor(purple)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+*/
+restore 
 * COMPLETENESS TABLE 
 
 preserve
@@ -313,7 +333,8 @@ preserve
 	cap egen max`x'=max(`x')
 	cap gen complete`x'= `x'/max`x'
 	*cap drop max`x'
-	}		
+	}	
+	export excel year month preCovid complete* using "$user/$analysis/Results/completeness_table.xlsx", sheet(Haiti_completeness) firstrow(variable) sheetreplace
 	collapse (mean) complete* max*, by(preCovid)
 	reshape long complete max, i(preCovid) j(service) string
 	reshape wide complete max, i(service) j(preCovid) 
@@ -331,7 +352,7 @@ restore
 * KWAZULU NATAL, SOUTH AFRICA
 * Use dataset before cleaning
 clear
-u "$user/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", clear
+u "$user/HMIS Data for Health System Performance Covid (all countries)/HMIS Data for Health System Performance Covid (South Africa)/Data for analysis/fac_wide.dta", clear
 
 global all anc1_util totaldel cs_util pnc_util diarr_util pneum_util  ///
            art_util opd_util ipd_util road_util diab_util cerv_qual tbscreen_qual ///
@@ -435,15 +456,34 @@ preserve
 
 restore 
 
-* COMPLETENESS TABLE 
+* COMPLETENESS GRAPH 
+preserve
+collapse (count) anc1_util-trauma_util , by (year month preCovid)	  
+	foreach x of global all {
+	cap egen max`x'=max(`x')
+	cap gen complete`x'= `x'/max`x'
+	cap replace complete`x' = complete`x'*100
+	*cap drop max`x'
+	}			
+	gen rmonth = month if year==2019
+	replace rmonth= month+12 if year==2020
+	
+	twoway (line completeopd_util rmonth, lcolor(blue)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("Completeness in reporting of outpatient visits South Africa", size(msmall) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+restore
 
+* COMPLETENESS TABLE
 preserve 
 	collapse (count) anc1_util-trauma_util , by (year month preCovid)	  
 	foreach x of global all {
 	cap egen max`x'=max(`x')
 	cap gen complete`x'= `x'/max`x'
 	*cap drop max`x'
-	}		
+	}	
+	export excel year month preCovid complete* using "$user/$analysis/Results/completeness_table.xlsx", sheet(SouthAfrica_completeness) firstrow(variable) sheetreplace
 	collapse (mean) complete* max*, by(preCovid)
 	reshape long complete max, i(preCovid) j(service) string
 	reshape wide complete max, i(service) j(preCovid) 
@@ -461,7 +501,7 @@ restore
 * Use dataset before cleaning
 * Nepal
 clear
-u "$user/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_dq.dta", clear
+u "$user/HMIS Data for Health System Performance Covid (all countries)/HMIS Data for Health System Performance Covid (Nepal)/Data for analysis/Nepal_palika_Jan19-Dec20_WIDE_dq.dta", clear
 
 global all fp_sa_util anc_util del_util cs_util pnc_util diarr_util pneum_util ///
                 bcg_qual pent_qual measles_qual opv3_qual pneum_qual opd_util er_util ///
@@ -500,9 +540,7 @@ forval i=1/12 {
 	replace cs_util`i'_20=. if totalcs==0	
 }
 drop totalcs
-		
-
-			
+				
 * For Outlier assessment 
 foreach x of global all {
 	egen rowmean`x'= rowmean(`x'*)
@@ -581,7 +619,25 @@ preserve
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Nep_outliers) firstrow(variable) sheetreplace  
 
 restore 
-
+* COMPLETENESS GRAPHS
+preserve
+	collapse (count) hyper_util-fp_sa_util, by (year month preCovid)		  
+	foreach x of global all {
+	cap egen max`x'=max(`x')
+	cap gen complete`x'= `x'/max`x'
+	cap replace complete`x' = complete`x'*100
+	*cap drop max`x'
+	}			
+	gen rmonth = month if year==2019
+	replace rmonth= month+12 if year==2020
+	
+	twoway (line completeopd_util rmonth, lcolor(blue)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("Completeness in reporting of outpatient visits Nepal", size(msmall) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+restore
+	
 * COMPLETENESS TABLE 
 
 preserve
@@ -590,7 +646,8 @@ preserve
 	cap egen max`x'=max(`x')
 	cap gen complete`x'= `x'/max`x'
 	*cap drop max`x'
-	}		
+	}	
+	export excel year month preCovid complete* using "$user/$analysis/Results/completeness_table.xlsx", sheet(Nepal_completeness) firstrow(variable) sheetreplace
 	collapse (mean) complete* max*, by(preCovid)
 	reshape long complete max, i(preCovid) j(service) string
 	reshape wide complete max, i(service) j(preCovid) 
@@ -608,7 +665,7 @@ restore
 * Use dataset before cleaning
 * Lao
 clear
-u "$user/HMIS Data for Health System Performance Covid (Lao PDR)/Data for analysis/Lao_Jan19-Dec20_WIDE_dq.dta", clear
+u "$user/HMIS Data for Health System Performance Covid (all countries)/HMIS Data for Health System Performance Covid (Lao PDR)/Data for analysis/Lao_Jan19-Dec20_WIDE_dq.dta", clear
 
 global all opd_util ipd_util fp_sa_util anc_util del_util cs_util pnc_util ///
                 bcg_qual pent_qual opv3_qual pneum_qual diab_util hyper_util /// 
@@ -703,7 +760,24 @@ preserve
 	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Lao_outliers) firstrow(variable) sheetreplace  
 
 restore 
-
+* COMPLETENESS GRAPH
+preserve 
+	collapse (count) mat_mort_num-fp_sa_util, by (year month preCovid)	  
+	foreach x of global all {
+	cap egen max`x'=max(`x')
+	cap gen complete`x'= `x'/max`x'
+	cap replace complete`x' = complete`x'*100
+	*cap drop max`x'
+	}			
+	gen rmonth = month if year==2019
+	replace rmonth= month+12 if year==2020
+	
+	twoway (line completeopd_util rmonth, lcolor(blue)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("Completeness in reporting of outpatient visits Lao PDR", size(msmall) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+restore
 * COMPLETENESS TABLE 
 preserve 
 	collapse (count) mat_mort_num-fp_sa_util, by (year month preCovid)	  
@@ -711,7 +785,8 @@ preserve
 	cap egen max`x'=max(`x')
 	cap gen complete`x'= `x'/max`x'
 	*cap drop max`x'
-	}		
+	}	
+	export excel year month preCovid complete* using "$user/$analysis/Results/completeness_table.xlsx", sheet(Laos_completeness) firstrow(variable) sheetreplace
 	collapse (mean) complete* max*, by(preCovid)
 	reshape long complete max, i(preCovid) j(service) string
 	reshape wide complete max, i(service) j(preCovid) 
