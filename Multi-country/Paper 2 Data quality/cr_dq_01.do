@@ -8,7 +8,8 @@ set more off
 ********************************************************************************
 * ETHIOPIA
 * Use dataset before cleaning
-u "$user/HMIS Data for Health System Performance Covid (Ethiopia)/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_dq.dta", clear
+
+u "$user/HMIS Data for Health System Performance Covid (all countries)/HMIS Data for Health System Performance Covid (Ethiopia)/Data for analysis/Ethiopia_Jan19-Dec20_WIDE_dq.dta", clear
 
 * All indicators 
 global all fp_util anc_util totaldel cs_util pnc_util diarr_util pneum_util ///
@@ -142,12 +143,56 @@ preserve
 	reshape long c_ pct_pout pct_nout, i(preCovid) j(service) string
 	reshape wide c_ pct_pout pct_nout, i(service) j(preCovid)
 	rename (c_0 pct_pout0 pct_nout0 c_1 pct_pout1 pct_nout1) (Pre_Count Pre_PosOutlier Pre_NegOutlier Post_count post_PosOutlier post_NegOutlier) 
-	export excel using "$analysis/Results/ResultsMar29.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
+	export excel using "$user/$analysis/Results/ResultsMar29.xlsx", sheet(Eth_outliers) firstrow(variable) sheetreplace  
 
 restore 
 
 * Note: The few missing for pct_out is because there were 0 in the count for some diab and hyper indicators 
-
+* COMPLETENESS GRAPHS
+collapse (count) sb_mort_num-totaldel , by (year month preCovid)			  
+	foreach x of global all {
+	cap egen max`x'=max(`x')
+	cap gen complete`x'= `x'/max`x'
+	cap replace complete`x' = complete`x'*100
+	*cap drop max`x'
+	}		
+	gen rmonth = month if year==2019
+	replace rmonth= month+12 if year==2020
+	
+	*ANC
+	twoway (line completeanc_util rmonth ) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	
+	*Pentavalent
+	twoway (line completepent_qual rmonth, lcolor(green)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	
+	*ART
+	twoway (line completeart_util rmonth, lcolor(red)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	
+	*Diabetes
+	twoway (line completeopd_util rmonth, lcolor(cyan)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
+	
+	*Newborn deaths
+	twoway (line completenewborn_mort_num rmonth, lcolor(purple)) , ///
+	ylabel(, labsize(small)) xline(15, lpattern(dash) lcolor(black)) ///
+	xtitle("", size(small)) legend(off) ytitle("Percentage", size(small)) legend(off) ///
+	graphregion(color(white)) title("", size(small) color(black))  ///
+	xlabel(1(1)24) xlabel(,  labsize(small)) ylabel(0(10)100, labsize(small))
 * COMPLETENESS TABLE 
 preserve
 	collapse (count) sb_mort_num-totaldel , by (year month preCovid)			  
